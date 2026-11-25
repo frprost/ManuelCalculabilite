@@ -1,0 +1,471 @@
+<!--
+titre: Fonctions récursives
+court: Fonctions récursives
+chapo: Partir de fonctions évidemment calculables, et les combiner par composition, récurrence et recherche du minimum : l’approche « mathématicienne » du calcul, et une boîte à outils dont tout le reste du manuel se sert.
+prerequis: bases.html#entiers|Entiers ; bases.html#fonctions|Fonctions et notations
+-->
+
+<h2>Une approche mathématique du calculable</h2>
+
+<p>Le formalisme des fonctions récursives part de fonctions de base, évidemment calculables, et ajoute des opérateurs qui construisent des fonctions de plus en plus élaborées. C’est une approche compositionnelle : chaque fonction se définit à partir des précédentes, comme dans une bibliothèque de programmes. Il faut se le représenter comme un <em>langage d’assemblage mathématique</em> vers lequel on « compile » les fonctions usuelles.</p>
+
+<p>La définition par récurrence généralise une tradition ancienne, celle des suites récurrentes. Par exemple, pour une valeur de départ $X$ :</p>
+$$u_0=X,\qquad u_{n+1}=\begin{cases}u_n/2&\text{si }u_n\text{ est pair},\\ 3u_n+1&\text{sinon.}\end{cases}$$
+<p>Avec $X=10$, on calcule mécaniquement $u_1=5$, $u_2=16$, $u_3=8$, $u_4=4$, $u_5=2$, $u_6=1$, $u_7=4$, $u_8=2$, … : la suite boucle ensuite sur $4,2,1$.</p>
+<p>Un programme OCaml équivalent :</p>
+<pre><code>let rec collatz x n =
+  if n = 0 then x
+  else let p = collatz x (n - 1) in
+       if p mod 2 = 0 then p / 2 else 3 * p + 1</code></pre>
+
+<h2>Fonctions récursives primitives</h2>
+
+<res type="Définition" nom="Fonctions récursives primitives" id="def-rp">
+<enonce>
+<p>L’ensemble $\RP$ des fonctions récursives primitives est le plus petit ensemble de fonctions totales $\N^k\to\N$ ($k\ge0$) qui contient :</p>
+<ul>
+<li>les <strong>constantes</strong> $m^{(k)}:(x_1,\dots,x_k)\mapsto m$, pour tous $k,m\in\N$ ;</li>
+<li>le <strong>successeur</strong> $S:x\mapsto x+1$ ;</li>
+<li>les <strong>projections</strong> (choix d’argument) $A^{(k)}_i:(x_1,\dots,x_k)\mapsto x_i$, pour $1\le i\le k$ ;</li>
+</ul>
+<p>et qui est clos par :</p>
+<ul>
+<li><strong>substitution</strong> (composition) : si $g$ est d’arité $k$ et $h_1,\dots,h_k$ d’arité $m$, alors $\sigma[g,h_1,\dots,h_k]$ est la fonction d’arité $m$
+$$(x_1,\dots,x_m)\mapsto g\big(h_1(x_1,\dots,x_m),\dots,h_k(x_1,\dots,x_m)\big);$$</li>
+<li><strong>récursion primitive</strong> : si $g$ est d’arité $k-1$ et $h$ d’arité $k+1$, alors $f=\rho[g,h]$ est la fonction d’arité $k$ définie par
+$$f(0,x_2,\dots,x_k)=g(x_2,\dots,x_k),\qquad f(y+1,x_2,\dots,x_k)=h\big(y,\,f(y,x_2,\dots,x_k),\,x_2,\dots,x_k\big).$$</li>
+</ul>
+</enonce>
+<philo>
+<p>Ce sont les fonctions que l’on peut programmer avec des boucles <code>pour i allant de 1 à n</code> dont le nombre de tours est connu <em>avant</em> d’entrer dans la boucle. De tels programmes s’arrêtent toujours. On a longtemps cru que cela suffisait à tout calculer ; ce n’est pas le cas (<a href="ackermann.html">fonction d’Ackermann</a>), et l’argument diagonal des <a href="motivations.html#diagonale-totale">motivations</a> montre que <em>aucun</em> langage où tout termine ne peut suffire.</p>
+</philo>
+<tech>
+<p>Une définition par récurrence correspond exactement au programme suivant, ce qui montre que toute fonction récursive primitive est calculable et totale (par induction sur sa construction) :</p>
+<pre><code>res := g(x2, ..., xk)
+pour i allant de 0 à y-1 :
+    res := h(i, res, x2, ..., xk)
+renvoyer res</code></pre>
+<p>La récurrence porte par convention sur le <em>premier</em> argument ; les projections permettent de permuter les arguments, donc ce choix ne restreint rien.</p>
+</tech>
+<techno>
+<p>Le simulateur de la page <a href="equivalence.html#compilateur">Équivalence</a> compile n’importe quel terme construit avec $m^{(k)}$, $S$, $A^{(k)}_i$, $\sigma$, $\rho$ (et $\mu$, ci-dessous) en une machine de Turing complète. Ses termes sont écrits exactement dans la syntaxe de cette définition, par exemple $\mathrm{add}=\rho[A^{(1)}_1,\sigma[S,A^{(3)}_2]]$.</p>
+</techno>
+</res>
+<res type="Proposition" nom="Le schéma de récursion définit bien une fonction ; substitution générale" id="existence-unicite">
+<enonce>
+<ol>
+<li>Si $g$ et $h$ sont totales, il existe une et une seule fonction $f=\rho[g,h]$ qui vérifie les équations de récursion primitive.</li>
+<li>Toute classe de fonctions qui contient les projections $A^{(m)}_i$ et est close par composition (au sens de la définition) est close par <strong>substitution générale</strong> : si $g$ est d’arité $k$ et les $g_j$ sont dans la classe, alors $f(x_1,\dots,x_m)=g(B_1,\dots,B_k)$ y est aussi, où chaque $B_i$ est soit une variable $x_{p_i}$, soit un $g_{j}$ appliqué à des variables prises parmi $x_1,\dots,x_m$, dans n’importe quel ordre et avec répétitions.</li>
+</ol>
+</enonce>
+<philo>
+<p>Toutes les « définitions par récurrence » ne définissent pas un calcul. Le système $f(0)=1$, $f(n)=f(n+1)\ \mathrm{div}\ (n+1)$ est vérifié par la factorielle, mais le programme qu’il suggère (« pour calculer $f(n)$, calculer $f(n+1)$… ») ne termine jamais : il remonte au lieu de descendre. Kleene définissait les fonctions récursives par des systèmes d’équations quelconques, ce qui pose trois problèmes : un système peut définir une relation et non une fonction, il peut définir une fonction non calculable, et la règle de calcul n’est pas toujours évidente. Le schéma de récursion primitive impose la descente $y+1\to y$, ce qui garantit à la fois l’existence, l’unicité et la terminaison.</p>
+<p>La substitution générale justifie les « raccourcis » que l’on prend constamment, comme écrire $h(x,y)=g(y,x,x)$ ou $\mathrm{mult}(x+1,y)=\mathrm{add}(y,\mathrm{mult}(x,y))$ sans passer explicitement par les projections. Boitet met en garde : on arrête souvent la démonstration quand on « voit » qu’elle est triviale, « mais… attention aux illusions ».</p>
+</philo>
+<tech>
+<p>(1) Existence : par récurrence sur $y$, $f(y,\vec x)$ est défini pour tout $\vec x$ (cas $y=0$ par $g$ totale, cas $y+1$ par $h$ totale). Unicité : si $f_1\ne f_2$ vérifient le système, soit $y_0$ le plus petit $y$ tel que $f_1(y,\vec x)\ne f_2(y,\vec x)$ pour un $\vec x$ ; $y_0=0$ est impossible (les deux valent $g(\vec x)$), et si $y_0>0$, $f_1(y_0,\vec x)=h(y_0-1,a,\vec x)=f_2(y_0,\vec x)$ avec $a=f_1(y_0-1,\vec x)=f_2(y_0-1,\vec x)$ : contradiction.</p>
+<p>(2) On pose $h_i=A^{(m)}_{p_i}$ dans le premier cas et $h_i=\sigma[g_{j_i},A^{(m)}_{q_1},\dots,A^{(m)}_{q_s}]$ dans le second ; chaque $h_i$ est dans la classe, et $f=\sigma[g,h_1,\dots,h_k]$.</p>
+</tech>
+</res>
+
+
+<h3>Premiers exemples</h3>
+
+<res type="Exemple" nom="Addition, multiplication, puissance, factorielle, prédécesseur" id="exemples-rp">
+<enonce><p>Les fonctions $x+y$, $x\times y$, $x^y$, $x!$ et $\mathrm{pred}(x)=x\monus 1$ sont récursives primitives.</p></enonce>
+<tech>
+<p>On donne les équations de récurrence ; chaque membre droit est une composition de fonctions déjà obtenues.</p>
+<ul>
+<li>Successeur général : $S_a(0)=a$, $S_a(x+1)=S(S_a(x))$.</li>
+<li>Addition : $\mathrm{add}(0,y)=y$, $\mathrm{add}(x+1,y)=S(\mathrm{add}(x,y))$.</li>
+<li>Multiplication : $\mathrm{mult}(0,y)=0$, $\mathrm{mult}(x+1,y)=\mathrm{add}(y,\mathrm{mult}(x,y))$.</li>
+<li>Puissance : la récurrence se fait sur l’exposant, qui est le second argument de $x^y$ ; on définit d’abord $t(y,x)=x^y$ par $t(0,x)=1$, $t(y+1,x)=\mathrm{mult}(x,t(y,x))$, puis $x^y=t(A^{(2)}_2(x,y),A^{(2)}_1(x,y))$.</li>
+<li>Factorielle : $0!=1$, $(y+1)!=\mathrm{mult}(S(y),y!)$.</li>
+<li>Prédécesseur : $\mathrm{pred}(0)=0$, $\mathrm{pred}(y+1)=y$. Le pas de récurrence ignore l’appel récursif : $h=A^{(2)}_1$.</li>
+</ul>
+</tech>
+<techno>
+<p>Les mêmes fonctions, entièrement écrites dans le formalisme (arités en exposant) :</p>
+$$\begin{aligned}
+S_a&=\rho\big[a^{(0)},\ \sigma[S,A^{(2)}_2]\big]\\
+\mathrm{add}&=\rho\big[A^{(1)}_1,\ \sigma[S,A^{(3)}_2]\big]\\
+\mathrm{mult}&=\rho\big[0^{(1)},\ \sigma[\mathrm{add},A^{(3)}_3,A^{(3)}_2]\big]=\rho\big[0^{(1)},\ \sigma[\rho[A^{(1)}_1,\sigma[S,A^{(3)}_2]],A^{(3)}_3,A^{(3)}_2]\big]\\
+t&=\rho\big[1^{(1)},\ \sigma[\mathrm{mult},A^{(3)}_3,A^{(3)}_2]\big],\qquad \mathrm{puiss}=\sigma[t,A^{(2)}_2,A^{(2)}_1]\\
+\mathrm{fact}&=\rho\big[1^{(0)},\ \sigma[\mathrm{mult},\sigma[S,A^{(2)}_1],A^{(2)}_2]\big]\\
+\mathrm{pred}&=\rho\big[0^{(0)},\ A^{(2)}_1\big]
+\end{aligned}$$
+<p>Vérifions $\mathrm{mult}$ : $\mathrm{mult}(x+1,y)=h(x,\mathrm{mult}(x,y),y)$ avec $h=\sigma[\mathrm{add},A^{(3)}_3,A^{(3)}_2]$, soit $\mathrm{add}(y,\mathrm{mult}(x,y))$. Ces termes ont été évalués et compilés en machines de Turing ; les résultats concordent (voir le <a href="equivalence.html#compilateur">compilateur</a>).</p>
+</techno>
+</res>
+
+<h2 id="bibliotheque">Bibliothèque de fonctions récursives primitives</h2>
+
+<p>On utilise désormais la notation usuelle ($a+b$ plutôt que $\mathrm{add}(a,b)$). Toutes les fonctions et tous les prédicats ci-dessous sont récursifs primitifs ; un prédicat $P$ est récursif primitif si sa <em>fonction caractéristique</em> $\chi_P$ (qui vaut 1 si $P$ est vrai, 0 sinon) l’est.</p>
+
+<table>
+<tr><th>Fonction</th><th>Définition</th></tr>
+<tr><td>Différence propre $x\monus y$</td><td>$x\monus 0=x$, $\ x\monus(y+1)=\mathrm{pred}(x\monus y)$ (récurrence sur $y$, puis permutation des arguments)</td></tr>
+<tr><td>Différence absolue</td><td>$|x-y|=(x\monus y)+(y\monus x)$</td></tr>
+<tr><td>Minimum, maximum</td><td>$\min(x,y)=x\monus(x\monus y)$, $\ \max(x,y)=(x+y)\monus\min(x,y)$</td></tr>
+<tr><td>Signe, signe barre</td><td>$\mathrm{sg}(0)=0$, $\mathrm{sg}(y+1)=1$ ; $\ \overline{\mathrm{sg}}(x)=1\monus x$</td></tr>
+<tr><td>Égalité, ordre</td><td>$\chi_{=}(x,y)=\overline{\mathrm{sg}}(|x-y|)$, $\ \chi_{<}(x,y)=\mathrm{sg}(y\monus x)$</td></tr>
+<tr><td>Connecteurs</td><td>$\chi_{\neg P}=1\monus\chi_P$, $\ \chi_{P\wedge Q}=\chi_P\cdot\chi_Q$, $\ \chi_{P\vee Q}=\mathrm{sg}(\chi_P+\chi_Q)$</td></tr>
+<tr><td>Somme et produit bornés</td><td>$\sum_{z<y}f(z,\vec x)$ et $\prod_{z<y}f(z,\vec x)$, par récurrence sur $y$</td></tr>
+<tr><td>Quantificateurs bornés</td><td>$\exists z< y\ P(z,\vec x)$ : $\mathrm{sg}\big(\sum_{z<y}\chi_P(z,\vec x)\big)$ ; $\ \forall z<y\ P$ : $\prod_{z<y}\chi_P$</td></tr>
+<tr><td>Minimisation bornée</td><td>$\mu z< y\,[P(z,\vec x)]$ = le plus petit $z<y$ vérifiant $P$, et $y$ s’il n’y en a pas : $\sum_{v<y}\prod_{z\le v}\big(1\monus\chi_P(z,\vec x)\big)$</td></tr>
+<tr><td>Quotient $\lfloor x/y\rfloor$ ($y\ge1$)</td><td>$\mu q\le x\,[\,x<(q+1)\,y\,]$</td></tr>
+<tr><td>Reste $x \bmod y$</td><td>$x\monus y\lfloor x/y\rfloor$</td></tr>
+<tr><td>Divisibilité</td><td>$y\mid x \iff \exists q\le x\ (q\,y=x)$</td></tr>
+<tr><td>Primalité</td><td>$\mathrm{Prem}(x)\iff x\ge2\wedge\forall d< x\,(d\le1\vee\neg(d\mid x))$</td></tr>
+<tr><td>$k$<sup>e</sup> nombre premier $p_k$</td><td>$p_1=2$, $\ p_{k+1}=\mu z\le p_k!+1\,[\,z>p_k\wedge\mathrm{Prem}(z)\,]$</td></tr>
+<tr><td>Exposant $(x)_k$</td><td>exposant de $p_k$ dans $x$ : $\mu e\le x\,[\,\neg(p_k^{e+1}\mid x)\,]$</td></tr>
+</table>
+
+<res type="Proposition" nom="Minimisation bornée, quotient, reste et nombres premiers" id="mu-borne">
+<enonce><p>Si $P$ est un prédicat récursif primitif, $\mu z<y\,[P(z,\vec x)]$ est récursive primitive. Par conséquent le quotient, le reste, la primalité, la suite $(p_k)$ des nombres premiers et les exposants $(x)_k$ sont récursifs primitifs.</p></enonce>
+<philo><p>Une recherche dont on connaît d’avance une borne est une boucle « pour », qui termine toujours. Ce n’est que lorsqu’on ne sait pas jusqu’où chercher qu’apparaît le risque de ne jamais s’arrêter. Toute la difficulté de la calculabilité est dans cette différence.</p></philo>
+<tech>
+<p>Le produit $\prod_{z\le v}(1\monus\chi_P(z,\vec x))$ vaut 1 tant qu’aucun $z\le v$ ne vérifie $P$, et 0 ensuite ; la somme de ces produits pour $v<y$ compte donc les $v<y$ qui précèdent le premier témoin, c’est-à-dire vaut ce témoin (ou $y$). Pour le quotient, la borne $x$ suffit car $q=x$ vérifie $x<(x+1)y$ dès que $y\ge1$. Pour $p_{k+1}$, la borne $p_k!+1$ est justifiée par l’argument d’Euclide : tout facteur premier de $p_k!+1$ est strictement supérieur à $p_k$.</p>
+</tech>
+<techno><p>Le <a href="equivalence.html#compilateur">compilateur</a> contient la différence propre et le quotient (ce dernier défini par minimisation non bornée, pour illustrer la partialité en $y=0$).</p></techno>
+</res>
+<res type="Proposition" nom="Autres fonctions, prédicats et constructions récursifs primitifs" id="bibliotheque-boitet">
+<enonce>
+<p>Sont récursifs primitifs (ces exemples viennent du polycopié de Ch. Boitet ; les formules ont été vérifiées par programme) :</p>
+<ul>
+<li>$|x-y|=(x\monus y)+(y\monus x)$, $\ \min(x,y)=y\monus(y\monus x)$, $\ \max(x,y)=(x+y)\monus\min(x,y)$ ;</li>
+<li>le signe $\mathrm{sg}(0)=0$, $\mathrm{sg}(x+1)=1$, et son opposé $\overline{\mathrm{sg}}(x)=1\monus\mathrm{sg}(x)$ ;</li>
+<li>le reste et le quotient, par récurrence sur $x$ : $R(0,y)=0$, $R(x+1,y)=(R(x,y)+1)\cdot\mathrm{sg}\,|y-(R(x,y)+1)|$, et $\lfloor 0/y\rfloor=0$, $\lfloor (x+1)/y\rfloor=\lfloor x/y\rfloor+\overline{\mathrm{sg}}\,|y-(R(x,y)+1)|$ ;</li>
+<li>les sommes et produits cumulatifs $\sum_{y\le z}f(y,\vec x)$ et $\prod_{y\le z}f(y,\vec x)$, et plus généralement bornés par des fonctions récursives primitives $f_1(\vec x)\le y\le f_2(\vec x)$ ; par exemple $\lfloor\sqrt x\rfloor=\sum_{i=1}^{x}\overline{\mathrm{sg}}(i^2\monus x)$ ;</li>
+<li>les fonctions <strong>définies par morceaux</strong> : si $P_1,\dots,P_s$ sont des prédicats récursifs primitifs deux à deux exclusifs et $f_1,\dots,f_{s+1}$ des fonctions récursives primitives, la fonction égale à $f_i$ là où $P_i$ est vrai et à $f_{s+1}$ ailleurs, qui s’écrit $\sum_i f_i\,\chi_{P_i}+f_{s+1}\,\overline{\mathrm{sg}}\big(\sum_i\chi_{P_i}\big)$ ;</li>
+<li>les prédicats $x=y$ (de fonction caractéristique $\overline{\mathrm{sg}}|x-y|$), $x<y$ ($\mathrm{sg}(y\monus x)$), « $x$ est pair » ($\chi(0)=1$, $\chi(x+1)=\overline{\mathrm{sg}}(\chi(x))$), « $x$ divise $y$ » ($\overline{\mathrm{sg}}\,R(y,x)$), et leurs combinaisons par $\neg,\wedge,\vee$ et par quantification bornée ;</li>
+<li>le prédicat « $x$ est premier » et la fonction $\mathrm{Pr}(n)$ = $n$-ième nombre premier : $\mathrm{Pr}(0)=0$, $\mathrm{Pr}(n+1)=\mu y\le \mathrm{Pr}(n)!+1\ [y\text{ premier}\wedge y>\mathrm{Pr}(n)]$, la borne venant de la preuve d’Euclide (un facteur premier de $\mathrm{Pr}(n)!+1$ est plus grand que $\mathrm{Pr}(n)$). Ainsi $\mathrm{Pr}(k)=p_k$ pour $k\ge1$, avec la numérotation $p_1=2$, $p_2=3$, … employée dans tout le manuel.</li>
+</ul>
+</enonce>
+<philo><p>Ce catalogue montre que la quasi-totalité des fonctions de l’arithmétique élémentaire, et tous les tests qu’on y fait, sont récursifs primitifs : on peut les programmer avec des boucles « pour » dont le nombre de tours est connu d’avance. Le traitement par morceaux correspond à l’instruction « si… alors… sinon » ; il ne demande rien de plus que des multiplications par 0 ou 1.</p></philo>
+<tech>
+<p>Pour le reste : si $R(x,y)+1<y$, le reste augmente de 1 ; s’il atteint $y$, il retombe à 0, et c’est alors que le quotient augmente. Avec la convention $y=0$, on obtient $R(x,0)=x$ et $\lfloor x/0\rfloor=0$, et l’on a toujours $x=y\lfloor x/y\rfloor+R(x,y)$. Pour la racine : $\overline{\mathrm{sg}}(i^2\monus x)=1$ si et seulement si $i^2\le x$, et l’on compte les $i\ge1$ qui vérifient cette condition.</p>
+</tech>
+</res>
+
+<res type="Théorème" nom="Théorèmes de Robinson" id="robinson">
+<enonce>
+<p>Soit $S(x)=x+1$ et $Q(x)=x\monus\lfloor\sqrt x\rfloor^2$ (l’excès de $x$ sur le plus grand carré qui lui est inférieur).</p>
+<ol>
+<li>(R. M. Robinson, 1947) Les fonctions récursives primitives d’<em>une</em> variable forment la plus petite classe $\mathcal C_1$ contenant $S$ et $Q$, close par addition ($f+g$), composition ($f\circ g$) et itération $J$ : $J[g](0)=0$, $J[g](n+1)=g(J[g](n))$.</li>
+<li>(J. Robinson, 1950) Les fonctions récursives totales d’une variable forment la plus petite classe $\mathcal C_2$ contenant $S$ et $Q$, close par addition, composition et <em>inversion des fonctions surjectives</em> : $I[f](x)=\mu y\,[f(y)=x]$, pour $f$ surjective.</li>
+</ol>
+</enonce>
+<philo><p>On peut décrire tout le calculable à une variable sans jamais parler de fonctions à plusieurs arguments, avec deux fonctions de base et trois opérations. Dans le second énoncé, la seule opération « dangereuse », la recherche non bornée, n’apparaît que sous la forme de l’inversion d’une fonction qui prend toutes les valeurs : la recherche aboutit toujours.</p>
+<p>La fonction $Q$ est le seul ingrédient non linéaire, et elle suffit : comme elle « remet à zéro » à chaque carré, elle permet des tests (« $x$ est-il un carré ? »), et en la composant avec des carrés bien choisis on fabrique la soustraction, la racine carrée, la moitié, puis un codage des couples. Avec un codage des couples, une seule variable vaut autant que plusieurs. La preuve ci-contre est longue mais entièrement élémentaire : ce sont des astuces de calcul sur les carrés.</p></philo>
+<tech>
+<p>Les inclusions faciles : $Q$ est récursive primitive (bibliothèque), l’itération est un cas particulier de récursion primitive ($f(n+1)=h(n,f(n))$ avec $h=\sigma[g,A^{(2)}_2]$), donc $\mathcal C_1\subseteq\mathrm{RP}^{(1)}$. Si $f$ est récursive totale et surjective, $I[f]$ est récursive (par minimisation) et totale, donc $\mathcal C_2$ ne contient que des fonctions récursives totales. Reste à montrer les inclusions inverses. Dans toute la suite, « $F\in\mathcal C$ » désigne une fonction d’une variable $n$, et une égalité comme $F=G^2+3G+1$ se lit $F(n)=G(n)^2+3G(n)+1$ : elle s’obtient par addition et composition, dès que $n\mapsto n^2$ est dans la classe. Le fait de base, constamment utilisé, est
+$$Q(m^2+r)=r\quad\text{si }0\le r\le 2m,\qquad\text{car }m^2\le m^2+r<(m+1)^2.$$</p>
+
+<p><strong>1. Premières fonctions de $\mathcal C_1$.</strong> L’identité est $J[S]$, la fonction nulle $Z=J[Q]$ (car $Q(0)=0$), les constantes sont $S\circ\cdots\circ S\circ Z$, et $kF=F+\cdots+F$.</p>
+<ul>
+<li>$\mathrm{sg}=J[S\circ Q]$ (la suite $0,1,1,1,\dots$ car $Q(0)+1=Q(1)+1=1$), et $\overline{\mathrm{sg}}(n)=Q(2\,\mathrm{sg}(n)+2)$, puisque $Q(2)=1$ et $Q(4)=0$.</li>
+<li>$U(n)=n^2+2n$ : c’est $J[g]$ avec $g(x)=x+Q(x)+3$, car si $x=n^2+2n$ alors $Q(x)=2n$ et $g(x)=n^2+4n+3=U(n+1)$.</li>
+<li>Prédécesseur : $\mathrm{pd}(n)=Q(n^2+3n)$, car $n^2+3n=(n+1)^2+(n-1)$ pour $n\ge1$. Et $n\mapsto n^2+3n$ est $J[g]$ avec $g(x)=x+4+2Q(x+1)$ : si $x=n^2+3n$, alors $x+1=(n+1)^2+n$, $Q(x+1)=n$, et $g(x)=n^2+5n+4=(n+1)^2+3(n+1)$.</li>
+<li>Carré : $n^2=U(\mathrm{pd}(n))+\mathrm{sg}(n)$.</li>
+<li>Parité $\mathrm{par}=J[Q\circ(S+S)]$ (la suite $0,1,0,1,\dots$ car $Q(2)=1$, $Q(4)=0$), et reste modulo 3, $m_3=J[Q\circ S\circ S]$ (car $Q(2)=1$, $Q(3)=2$, $Q(4)=0$).</li>
+</ul>
+
+<p><strong>2. Soustraction restreinte.</strong> Posons $D(a,b)=Q\big((a+b)^2+3a+b+1\big)$. Si $a\ge b$, alors $D(a,b)=a-b$ : en effet $(a+b)^2+3a+b+1=(a+b+1)^2+(a-b)$ et $0\le a-b\le 2(a+b+1)$. (Si $a&lt;b$, le même calcul donne $D(a,b)=3a+b+1$.) Ainsi $F\monus G\in\mathcal C$ dès que $F\ge G$. On en tire :</p>
+<ul>
+<li>l’égalité : $D(a,b)+D(b,a)=(2a+2b+1)\cdot[a\ne b]$, donc $\mathrm{eq}(a,b)=\overline{\mathrm{sg}}\big(D(a,b)+D(b,a)\big)$ vaut $1$ si $a=b$, $0$ sinon ;</li>
+<li>la comparaison : $D_2(a,b)=Q\big((a+b)^2+4a+1\big)$ vaut $2(a-b)$ (pair) si $a\ge b$ et $4a+1$ (impair) si $a&lt;b$ ; donc $\mathrm{lt}(a,b)=\mathrm{par}(D_2(a,b))=[a&lt;b]$.</li>
+</ul>
+
+<p><strong>3. Moitié et racine carrée dans $\mathcal C_1$.</strong> La suite $\sigma(n)=\lfloor 3n/2\rfloor$ est $J[g]$ avec $g(x)=x+1+\mathrm{par}(m_3(x))$ : on avance de $1$ ou de $2$ selon que $\sigma(n)\equiv0$ ou $1\pmod 3$, c’est-à-dire selon la parité de $n$. Donc $\lfloor n/2\rfloor=D(\sigma(n),n)$. De même $\tau(n)=n+\lfloor\sqrt n\rfloor$ est $J[g]$ avec $g(x)=x+1+\overline{\mathrm{sg}}\big(Q(4x+9)\big)$, d’où $\lfloor\sqrt n\rfloor=D(\tau(n),n)$. Justification : si $n=r^2+q$ ($0\le q\le 2r$), alors $x=\tau(n)=r^2+r+q$, et $n+1$ est un carré si et seulement si $q=2r$, si et seulement si $4x+9=(2r+3)^2$ ; pour $q&lt;2r$, on a $(2r+1)^2&lt;4x+9&lt;(2r+3)^2$, et $4x+9$, impair, ne peut valoir $(2r+2)^2$.</p>
+
+<p><strong>4. Produit et couples.</strong> Le produit par un booléen : pour $c\in\{0,1\}$, $Q\big((x+c)^2+2x+1\big)=c\,(2x+1)$, donc $c\cdot x=\big\lfloor D\big(c(2x+1),c\big)/2\big\rfloor$. D’où le choix « si $c$ alors $u$ sinon $v$ » : $\mathrm{sel}(c,u,v)=c\cdot u+\overline{\mathrm{sg}}(c)\cdot v$. Le produit général : $ab=\big\lfloor D\big((a+b)^2,\,a^2+b^2\big)/2\big\rfloor$. Le codage des couples
+$$\pi(a,b)=(a+b)^2+a,\qquad K(z)=Q(z),\qquad L(z)=D\big(\lfloor\sqrt z\rfloor,\,Q(z)\big)$$
+vérifie $K(\pi(a,b))=a$ et $L(\pi(a,b))=b$ (car $a\le 2(a+b)$), $\pi(0,0)=0$, et $\pi(a,b)$ croît strictement avec $b$. Si $F,G\in\mathcal C$, alors $\pi(F,G)\in\mathcal C$. On code les $k$-uplets par emboîtement à gauche : $\langle x\rangle=x$, $\langle x_1,\dots,x_k,y\rangle=\pi(\langle x_1,\dots,x_k\rangle,y)$.</p>
+
+<p><strong>5. Itération à point de départ quelconque.</strong> Pour $g\in\mathcal C_1$, posons $\Phi_g(\pi(a,b))=g^b(a)$. Montrons que $\Phi_g\in\mathcal C_1$ (sur les codes ; ailleurs sa valeur est sans importance). L’idée est d’ordonnancer tous les calculs dans <em>une seule</em> itération partant de $0$ : on consacre au code $c$ le bloc d’étapes $[T(c),T(c+1)[$, où $T(c)=c^2+c$, de longueur $2c+2$, assez pour appliquer $g$ jusqu’à $L(c)\le c$ fois. L’état est $w=\pi(c,\pi(k,v))$ (bloc en cours, étape dans le bloc, valeur courante), et l’on pose $G(w)=\pi(c',\pi(k',v'))$ avec $e=\mathrm{eq}(k,2c+1)$ et
+$$c'=c+e,\qquad k'=\overline{\mathrm{sg}}(e)\cdot(k+1),\qquad v'=\mathrm{sel}\Big(e,\ K(c+1),\ \mathrm{sel}\big(\mathrm{lt}(k,L(c)),\,g(v),\,v\big)\Big).$$
+Dans le bloc $c$, on part de $v=K(c)$, on applique $g$ tant que $k&lt;L(c)$, puis on attend ; à la fin du bloc, on passe au code $c+1$. Comme l’itération $J[G]$ part de l’état $0=\pi(0,\pi(0,\,K(0)))$, une récurrence sur $c$ montre que $J[G](T(c)+2c+1)=\pi(c,\pi(2c+1,\,g^{L(c)}(K(c))))$ pour tout code $c$, d’où $\Phi_g(c)=L\big(L(J[G](c^2+3c+1))\big)$, qui est dans $\mathcal C_1$.</p>
+
+<p><strong>6. Toutes les fonctions récursives primitives.</strong> Quitte à permuter les arguments et à ajouter un argument muet, on peut supposer les récursions de la forme $f(\vec x,0)=g(\vec x)$, $f(\vec x,y+1)=h(\vec x,y,f(\vec x,y))$, sans fonction d’arité $0$. À toute $f$ récursive primitive d’arité $k$, associons $\hat f(z)=f(x_1,\dots,x_k)$ où $z=\langle x_1,\dots,x_k\rangle$ (les $x_i$ s’obtiennent à partir de $z$ par $K$ et $L$). Montrons par induction que $\hat f\in\mathcal C_1$ ; pour $k=1$, $\hat f=f$, ce qui prouve le théorème.</p>
+<ul>
+<li>Fonctions de base : constantes, $S$, et projections, qui sont des composées de $K$ et $L$.</li>
+<li>Substitution $f=\sigma[g,h_1,\dots,h_m]$ : $\hat f(z)=\hat g\big(\langle\hat h_1(z),\dots,\hat h_m(z)\rangle\big)$.</li>
+<li>Récursion : pour $z=\pi(X,y)$ avec $X=\langle\vec x\rangle$, on itère sur les états $w=\pi(\pi(X,i),v)$ la fonction $G(w)=\pi\big(\pi(K(K(w)),\,L(K(w))+1),\ \hat h(w)\big)$ (remarquons que $w$ est exactement le code de $(\vec x,i,v)$), à partir de $s(X)=\pi(\pi(X,0),\hat g(X))$. Alors $\hat f(z)=L\Big(\Phi_G\big(\pi(s(K(z)),L(z))\big)\Big)$.</li>
+</ul>
+
+<p><strong>7. Le second théorème.</strong> Il suffit de montrer que $\mathcal C_2$ contient $\mathcal C_1$ et permet la minimisation.</p>
+<ul>
+<li><em>Premières fonctions par inversion.</em> $Q$ est surjective et $I[Q](x)=\lceil x/2\rceil^2+x$ (le plus petit $y=m^2+x$ avec $x\le 2m$). D’où l’identité $Q\circ I[Q]$, le double $2x=Q(I[Q](x))+Q(I[Q](x))$, et $U(k)=I[Q](2k)=k^2+2k$. La fonction $y\mapsto Q(y+1)$ est surjective et $\mathrm{pd}=Q\circ I[Q\circ S]$. Ensuite $Z=Q\circ S\circ U$ ; $\mathrm{pd}$ est surjective et $I[\mathrm{pd}](x)=x+\mathrm{sg}(x)$, d’où $\mathrm{sg}(n)=Q\big(I[\mathrm{pd}](U(n))+1\big)=Q\big((n+1)^2+\mathrm{sg}(n)\big)$. Le carré, $\overline{\mathrm{sg}}$, $D$ et $\mathrm{eq}$ s’obtiennent alors comme aux étapes 1 et 2.</li>
+<li><em>Moitié.</em> La fonction $f(z)=2Q(z)+\mathrm{eq}\big(D(z,Q(z)),\,Q(z)^2\big)$ est surjective : pour $z=s^2+q$ ($q\le 2s$), elle vaut $2q+[s=q]$, et $s=q+1$ et $s=q$ donnent $2q$ et $2q+1$. Si $f(z)=n$, alors $Q(z)=\lfloor n/2\rfloor$ : donc $\lfloor n/2\rfloor=Q(I[f](n))$, puis $\mathrm{par}(n)=D(n,2\lfloor n/2\rfloor)$.</li>
+<li><em>Racine.</em> $P(x)=D(x,Q(x))=\lfloor\sqrt x\rfloor^2$ est un carré $s^2$, et $Q(s^2-1)=2s-2$ pour $s\ge1$ (car $s^2-1=(s-1)^2+2(s-1)$). Donc $\lfloor\sqrt x\rfloor=\big\lfloor\big(Q(\mathrm{pd}(P(x)))+2\,\mathrm{sg}(P(x))\big)/2\big\rfloor$.</li>
+<li><em>Minimisation.</em> Avec ces fonctions, les étapes 2 et 4 valent dans $\mathcal C_2$. Soit $\chi\in\mathcal C_2$ à valeurs dans $\{0,1\}$ telle que, pour tout $X$, il existe $y$ avec $\chi(\pi(X,y))=1$. Posons, pour $w$ pair, $z=w/2$ et $c=[Q(z)\le\lfloor\sqrt z\rfloor]\cdot\chi(z)$ ($z$ est un vrai code et vérifie la condition), $h(w)=2Q(z)$ si $c=1$, $h(w)=1$ si $c=0$ ; et $h(w)=w$ pour $w$ impair. Alors $h\in\mathcal C_2$ (sélections), $h$ est surjective (les impairs sont atteints par eux-mêmes, $2X$ par $2\pi(X,y)$ pour un $y$ convenable), et le plus petit antécédent de $2X$ est $2\pi(X,y_0)$ où $y_0=\mu y\,[\chi(\pi(X,y))=1]$, puisque $\pi(X,y)$ croît avec $y$. Donc $X\mapsto y_0=L\big(\lfloor I[h](2X)/2\rfloor\big)$ est dans $\mathcal C_2$.</li>
+<li><em>Itération.</em> Pour $g\in\mathcal C_2$, $J[g](n)=\Gamma(n,w_n)$ où $\Gamma$ est la fonction de Gödel (voir <a href="#relative">récursivité relative</a> : $\Gamma(i,w)$ est le reste de $K(w)$ modulo $1+(i+1)L(w)$, et toute suite finie a un code $w$), et $w_n=\mu w\,[\Gamma(0,w)=0\wedge E(n,w)=n]$ avec $E(n,w)=\mu z\,[z=n\vee\Gamma(z+1,w)\ne g(\Gamma(z,w))]$. Ces deux recherches aboutissent toujours (la seconde avant $n$, la première par le théorème chinois des restes), le reste $u\bmod m=D(u,\,m\lfloor u/m\rfloor)$ et le quotient $\lfloor u/m\rfloor=\mu z\,[u&lt;(z+1)m]$ ($m\ge1$) aussi : tout s’exprime dans $\mathcal C_2$ par les opérations codées et la minimisation ci-dessus. Donc $\mathcal C_2$ est close par itération, et contient $\mathcal C_1=\mathrm{RP}^{(1)}$.</li>
+<li><em>Conclusion.</em> Cette étape utilise la forme normale de Kleene, démontrée au chapitre 6. Sa preuve n’emploie pas les théorèmes de Robinson, qui ne servent nulle part ailleurs : il n’y a pas de cercle, et l’on peut lire cette étape après le chapitre 6. Si $f$ est récursive totale d’une variable, la <a href="equivalence.html#forme-normale">forme normale</a> donne $f(x)=U(\mu y\,T_1(e,x,y))$ avec $T_1$ et $U$ récursifs primitifs, et la recherche aboutit pour tout $x$. Par l’étape 6, $\hat T_1(\pi(x,y))$ est dans $\mathcal C_1\subseteq\mathcal C_2$, et la minimisation ci-dessus donne $f\in\mathcal C_2$.</li>
+</ul>
+
+</tech>
+<techno>
+<p>Chaque construction a été vérifiée par programme, en implémentant littéralement les opérations $+$, $\circ$, $J$ et $I$ (l’inversion par recherche dans une table) :</p>
+<ul>
+<li>dans $\mathcal C_1$ : identité, nulle, $\mathrm{sg}$, $\overline{\mathrm{sg}}$, $U$, $\mathrm{pd}$, carré, $\mathrm{par}$, $m_3$, $\sigma$, moitié, $\tau$ et racine, pour $n&lt;400$ ; $D$, $\mathrm{lt}$, $\mathrm{eq}$, le produit par un booléen et le codage $(\pi,K,L)$ sur des grilles de couples ;</li>
+<li>l’itération ordonnancée $\Phi_g$, comparée à l’itération directe pour $g(x)=2x+1$ et une autre fonction, sur les codes $\pi(a,b)$ avec $a,b&lt;6$ ; et la multiplication obtenue par l’étape 6 ;</li>
+<li>dans $\mathcal C_2$ : identité, double, $U$, $\mathrm{pd}$, $\mathrm{sg}$, carré, moitié et racine par inversion, pour $n&lt;120$, ainsi que la surjectivité de la fonction $f$ de la moitié sur les valeurs testées ; et la minimisation par inversion, comparée à une recherche directe pour un prédicat de test sur $X&lt;40$.</li>
+</ul>
+<p>Ces vérifications ne remplacent pas les preuves, mais elles écartent les erreurs de calcul, fréquentes dans ce genre de constructions. Par exemple, voici en Python la racine carrée de $\mathcal C_1$ :</p>
+<pre><code>from math import isqrt
+
+def J(g):                      # itération : J(g)(n) = g^n(0)
+    def f(n):
+        x = 0
+        for _ in range(n): x = g(x)
+        return x
+    return f
+Q = lambda x: x - isqrt(x)**2
+sg = J(lambda x: Q(x) + 1)
+sgbar = lambda n: Q(2*sg(n) + 2)
+tau = J(lambda x: x + 1 + sgbar(Q(4*x + 9)))     # tau(n) = n + racine(n)
+D = lambda a, b: Q((a + b)**2 + 3*a + b + 1)     # a - b si a >= b
+racine = lambda n: D(tau(n), n)</code></pre>
+</techno>
+</res>
+
+
+<h2 id="codages">Codages dans les entiers</h2>
+
+<p>Les codages permettent de ramener des objets structurés (couples, suites, mots, programmes) à des entiers, par des fonctions récursives primitives dans les deux sens.</p>
+
+<res type="Proposition" nom="Codage de Cantor des couples" id="cantor-couple">
+<enonce>
+<p>La fonction $\langle x,y\rangle=\dfrac{(x+y)(x+y+1)}{2}+x$ est une bijection récursive primitive de $\N^2$ sur $\N$, dont les inverses $\pi_1,\pi_2$ (avec $\pi_1(\langle x,y\rangle)=x$, $\pi_2(\langle x,y\rangle)=y$) sont récursives primitives. En itérant, $\langle x_1,\dots,x_n\rangle=\langle x_1,\langle x_2,\dots,x_n\rangle\rangle$ code bijectivement $\N^n$.</p>
+</enonce>
+<philo><p>On range les couples en diagonales : $(0,0)$ ; puis $(0,1),(1,0)$ ; puis $(0,2),(1,1),(2,0)$… Chaque couple reçoit son numéro d’ordre. Un plan infini se range sur une seule ligne : il n’y a pas « plus » de couples que d’entiers.</p></philo>
+<tech>
+<p>Posons $w=x+y$ et $T(w)=w(w+1)/2$, le nombre de couples de somme $<w$. Les couples de somme $w$ reçoivent les numéros $T(w),T(w)+1,\dots,T(w)+w$, dans l’ordre $x=0,\dots,w$ ; comme $T(w)+w<T(w+1)$, on obtient une bijection. Inversement, pour $z$ donné, $w=\mu w\le z\,[T(w+1)>z]$, puis $\pi_1(z)=z\monus T(w)$ et $\pi_2(z)=w\monus\pi_1(z)$ : ce sont des minimisations bornées, donc récursives primitives. Explicitement, $w=\big\lfloor(\sqrt{8z+1}-1)/2\big\rfloor$.</p>
+<p>Remarque : $\dfrac{(x+y)(x+y+1)}{2}+x=\dfrac{(x+y)^2+3x+y}{2}$, une autre forme courante.</p>
+</tech>
+<techno>
+<table><tr><th>$z$</th><td>0</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td><td>9</td></tr>
+<tr><th>$(\pi_1 z,\pi_2 z)$</th><td>(0,0)</td><td>(0,1)</td><td>(1,0)</td><td>(0,2)</td><td>(1,1)</td><td>(2,0)</td><td>(0,3)</td><td>(1,2)</td><td>(2,1)</td><td>(3,0)</td></tr></table>
+<p>Exemple : $\langle 2,1\rangle=T(3)+2=6+2=8$ ; et pour $z=8$, $w=3$ car $T(3)=6\le8<10=T(4)$, d’où $\pi_1=2$, $\pi_2=1$.</p>
+</techno>
+</res>
+
+<res type="Définition" nom="Codage de Gödel des mots et des suites de mots" id="godel">
+<enonce>
+<p>Soit $\Sigma=\{S_0,\dots,S_n\}$ un alphabet, dont les lettres sont codées par $\gamma(S_i)=2i+1$ (des nombres impairs). On note $p_1=2,p_2=3,p_3=5,\dots$ les nombres premiers.</p>
+<ul>
+<li>Le nombre de Gödel d’un mot non vide $a_1\cdots a_n$ est $\mathrm{gn}(a_1\cdots a_n)=\prod_{k=1}^n p_k^{\gamma(a_k)}$.</li>
+<li>Le nombre de Gödel d’une suite non vide de mots non vides $M_1,\dots,M_n$ est $\prod_{k=1}^n p_k^{\mathrm{gn}(M_k)}$.</li>
+</ul>
+</enonce>
+<philo><p>C’est l’idée qui a permis à Gödel de faire parler l’arithmétique d’elle-même : un énoncé, une preuve, un programme deviennent des nombres, et les propriétés syntaxiques (« ceci est une preuve de cela ») deviennent des propriétés arithmétiques de ces nombres. L’unicité de la décomposition en facteurs premiers garantit qu’on peut toujours décoder.</p></philo>
+<tech>
+<p>Le codage est injectif par unicité de la décomposition en facteurs premiers, et le décodage est récursif primitif grâce aux fonctions $(x)_k$ et à la longueur $\ell(x)=\mu k\le x\,[(x)_{k+1}=0]$. Un code de mot a un exposant de 2 <em>impair</em> (code d’une lettre), un code de suite un exposant de 2 <em>pair</em> (code d’un mot non vide, qui est pair) : on distingue donc les deux sortes de codes.</p>
+</tech>
+<techno>
+<p>Avec $\gamma(B)=\gamma(S_0)=1$ et $\gamma(1)=\gamma(S_1)=3$ : $\mathrm{gn}(1\,1\,B)=2^3\cdot3^3\cdot5^1=1080$. Décodage de 1080 : $1080=2^3\cdot3^3\cdot5$, exposants $3,3,1$, donc le mot $S_1S_1S_0$.</p>
+<p>Les codes de suites deviennent vite gigantesques : la suite formée du seul mot $11B$ a pour code $2^{1080}$, un nombre de 326 chiffres. On ne calcule jamais ces nombres en pratique ; seule compte l’existence de fonctions récursives primitives qui les manipulent.</p>
+</techno>
+</res>
+<res type="Proposition" nom="Autres codages des couples et des suites" id="codages-suites">
+<enonce>
+<ul>
+<li>Le <strong>codage binaire</strong> $P(x,y)=2^x(2y+1)\monus1$ est une bijection récursive primitive de $\N^2$ sur $\N$, d’inverses $Q(z)$ = exposant de 2 dans $z+1$ et $R(z)=\big((z+1)/2^{Q(z)}\monus1\big)/2$.</li>
+<li>Si $\tau$ est un codage récursif primitif de $\N^2$ sur $\N$ (Cantor ou binaire), on code les $k$-uplets par $\tau^1(x)=x$, $\tau^{k+1}(x_1,\dots,x_{k+1})=\tau(\tau^k(x_1,\dots,x_k),x_{k+1})$, et les suites finies de longueur quelconque par $\tau^*(\,)=0$, $\tau^*(x_1,\dots,x_k)=\tau(\tau^k(x_1,\dots,x_k),k\monus1)+1$. On note souvent $\langle x_1,\dots,x_k\rangle$ (notation « crochet »).</li>
+</ul>
+</enonce>
+<philo><p>Dès qu’on a une manière de ranger les couples d’entiers en une seule file, on en a une infinité (il suffit de permuter un nombre fini de positions). Le choix est affaire de commodité : le codage de Cantor est « dense », le codage binaire se décode en lisant l’écriture en base 2 de $z+1$ (le nombre de zéros finaux donne $x$).</p></philo>
+<tech><p>Tout entier $z+1\ge1$ s’écrit de façon unique $2^x\cdot m$ avec $m$ impair, $m=2y+1$, ce qui prouve la bijectivité. $Q(z)=\exp(1,z+1)$ où $\exp(n,x)$, l’exposant de $\mathrm{Pr}(n)$ dans $x$, vaut $\mu y\le x\,[\neg\,\mathrm{Pr}(n)^{y+1}\mid x]$, récursive primitive. Les formules ont été vérifiées par programme sur tous les $z<500$, ainsi que les formules explicites d’inversion du codage de Cantor données plus haut.</p></tech>
+</res>
+
+<res type="Proposition" nom="Les fonctions récursives primitives ne s’énumèrent pas de façon récursive primitive" id="rp-non-enumerable">
+<enonce><p>Il n’existe pas de fonction récursive primitive $g(n,x)$ telle que toute fonction récursive primitive $f$ d’une variable s’écrive $f=g(n,\cdot)$ pour un $n$. (Il existe bien une telle $g$ <em>récursive totale</em>, mais elle n’est pas récursive primitive.)</p></enonce>
+<philo><p>C’est la même diagonale que pour les fonctions totales en général (voir <a href="motivations.html#diagonale-totale">Motivations</a>) : une classe de fonctions totales qui contiendrait son propre interprète se contredirait. La fonction d’évaluation des programmes « à boucles pour » existe, elle est calculable et totale, mais elle n’est pas elle-même programmable avec des boucles « pour » ; la <a href="ackermann.html">fonction d’Ackermann</a> en donne une autre illustration.</p></philo>
+<tech><p>Si $g$ existait, $h(x)=g(x,x)+1$ serait récursive primitive, donc $h=g(n,\cdot)$ pour un $n$, et $h(n)=g(n,n)+1\ne g(n,n)=h(n)$.</p></tech>
+</res>
+
+
+<h2>Fonctions récursives partielles</h2>
+
+<res type="Définition" nom="Minimisation non bornée et fonctions récursives (partielles)" id="def-mu">
+<enonce>
+<p>Si $g:\N^{n+1}\to\N$ est une fonction (partielle), la <strong>minimisation</strong> $\mu[g]$ est la fonction partielle d’arité $n$ :</p>
+$$\mu[g](\vec x)\simeq\text{le plus petit } y \text{ tel que } g(\vec x,y)=0 \text{ et } g(\vec x,z)\conv \text{ pour tout } z<y,$$
+<p>indéfinie si un tel $y$ n’existe pas. L’ensemble $\PR$ des <strong>fonctions récursives (partielles)</strong> est le plus petit ensemble de fonctions partielles contenant les fonctions de base ($m^{(k)}$, $S$, $A^{(k)}_i$) et clos par substitution, récursion primitive <em>et</em> minimisation. On note $\mathcal R$ l’ensemble des fonctions récursives totales.</p>
+</enonce>
+<philo>
+<p>C’est la boucle <code>tant que</code> : on essaie $y=0,1,2,\dots$ jusqu’à trouver. Si l’on ne trouve jamais, la recherche ne s’arrête pas, et la fonction n’a pas de valeur. Ce seul ajout suffit : on obtiendra toutes les fonctions calculables (<a href="equivalence.html">Équivalence</a>).</p>
+<p>Exemple : la division. $\lfloor x/y\rfloor$ est le plus petit $q$ tel que $(q+1)\,y>x$. Si $y=0$, aucun $q$ ne convient, la recherche est infinie, et la division par zéro n’a pas de valeur. La partialité n’est pas un accident à éviter, c’est la manifestation naturelle d’une recherche sans fin.</p>
+</philo>
+<tech>
+<p>La condition « $g(\vec x,z)\conv$ pour tout $z<y$ » traduit l’exécution réelle : pour atteindre le candidat $y$, il faut avoir terminé les calculs de $g(\vec x,0),\dots,g(\vec x,y-1)$. On peut restreindre la minimisation aux fonctions $g$ <em>totales</em> (on parle alors de « minimisation régulière ») sans changer la classe obtenue : c’est une conséquence du <a href="equivalence.html#forme-normale">théorème de la forme normale</a>, démontré au chapitre 6 sans utiliser ce point, qui montre que toute fonction récursive s’écrit $U(\mu y\,T_n(e,\vec x,y))$ avec une seule minimisation, appliquée à une fonction récursive primitive.</p>
+<p>La division s’écrit, en restant dans $\N$ : $\lfloor x/y\rfloor\simeq\mu q\,\big[\,\overline{\mathrm{sg}}\big(((q+1)\,y)\monus x\big)=0\,\big]$.</p>
+</tech>
+<techno><p>Un exemple de fonction partielle obtenue par minimisation (polycopié Boitet) : $f(x)=\mu y\,[\,|y+y-x|=0\,]$ vaut $x/2$ si $x$ est pair et n’est pas définie si $x$ est impair. La fonction $(y,x)\mapsto|y+y-x|$ n’est pas <em>régulière</em> : pour $x$ impair, elle ne s’annule jamais, et la recherche ne termine pas.</p>
+
+<p>Dans le <a href="equivalence.html#compilateur">compilateur</a>, choisissez « Quotient » avec l’entrée <code>7, 0</code> : la machine de Turing produite ne s’arrête pas (le simulateur abandonne après 5 millions de pas), alors qu’avec <code>7, 2</code> elle répond 3.</p>
+<div class="compil-widget" data-fn="div" data-args="7, 2"></div>
+</techno>
+</res>
+
+<res type="Définition" nom="Ensembles et prédicats récursifs" id="ensembles-recursifs">
+<enonce>
+<p>Un ensemble $A\subseteq\N^n$ (ou un prédicat) est <strong>récursif</strong> (resp. <strong>récursif primitif</strong>) si sa fonction caractéristique $\chi_A$ est récursive (resp. récursive primitive). Pour un prédicat $P$ d’arité $n+1$, on note $\mu y\,P(\vec x,y)\simeq\mu[(\vec x,y)\mapsto 1\monus\chi_P(\vec x,y)]$, le plus petit $y$ rendant $P$ vrai.</p>
+</enonce>
+<tech><p>« Récursif », « décidable » et « calculable » sont synonymes pour les ensembles : un ensemble est décidable si un programme qui s’arrête toujours répond à la question « $x\in A$ ? ».</p></tech>
+</res>
+<res type="Théorème" nom="Récursivité relative ; la récursion primitive est superflue" id="relative">
+<enonce>
+<p>Soit $A\subseteq\N$ et $c_A$ sa fonction caractéristique.</p>
+<ol>
+<li>La classe $P^A$ des fonctions <strong>récursives relativement à $A$</strong> (ou $A$-récursives) est la plus petite classe contenant les fonctions de base et $c_A$, close par composition, récursion primitive et minimisation (appliquée à des fonctions totales). Pour $A=\emptyset$, on retrouve les fonctions récursives partielles ; un ensemble est $A$-récursif (ou $A$-décidable) si sa fonction caractéristique est dans $P^A$.</li>
+<li>Soit $D^A$ la plus petite classe contenant les projections $A^{(n)}_i$, $S$, $+$, $\monus$, $\times$ et $c_A$, close par composition et minimisation (appliquée à des fonctions totales), <em>sans</em> récursion primitive. Alors $D^A=P^A$.</li>
+</ol>
+</enonce>
+<philo>
+<p>La récursivité relative formalise l’idée de calcul « avec une aide extérieure » : un oracle qui répond à des questions « $n\in A$ ? ». Elle permet de comparer les problèmes indécidables entre eux (voir <a href="indecidabilite.html#reductibilites">réductibilités</a> et <a href="hierarchie-arithmetique.html">hiérarchie arithmétique</a>) ; elle correspond exactement aux <a href="machines-turing.html#def-oracle">machines de Turing avec oracle</a> (<a href="equivalence.html#relatif">équivalence relative</a>).</p>
+<p>Le second point est surprenant : la récurrence n’est pas nécessaire dès que l’on dispose de l’addition, de la multiplication et de la recherche non bornée. On peut remplacer toute boucle « pour » par une boucle « tant que » qui <em>devine</em> d’un coup toute la suite des valeurs intermédiaires, codée dans un seul entier, puis la vérifie. C’est l’astuce de Gödel, fondée sur le théorème chinois des restes ; c’est aussi elle qui permet d’exprimer le calcul dans le seul langage de l’arithmétique (<a href="incompletude.html#representabilite">incomplétude</a>).</p>
+</philo>
+<tech>
+<p>$D^A\subseteq P^A$ est clair. Pour l’inverse, les fonctions de base sont dans $D^A$ ($0^{(n)}=A^{(n)}_1\monus A^{(n)}_1$), et il faut montrer que $D^A$ est close par récursion primitive. Soit $f(0,\vec y)=g(\vec y)$, $f(x+1,\vec y)=h(x,f(x,\vec y),\vec y)$. Supposons disposer d’une fonction $\Gamma\in D^A$ telle que toute suite finie $a_0,\dots,a_n$ soit « codée » par un $w$ : $\Gamma(i,w)=a_i$ pour $i\le n$. Alors</p>
+$$f(x,\vec y)=\Gamma\Big(x,\ \mu w\,\big[\,\Gamma(0,w)=g(\vec y)\ \wedge\ \forall z<x\ \ \Gamma(z+1,w)=h(z,\Gamma(z,w),\vec y)\,\big]\Big),$$
+<p>où la quantification bornée s’élimine par une seconde minimisation : $\eta(x,w,\vec y)=\mu z\,[z=x\vee\Gamma(z+1,w)\ne h(z,\Gamma(z,w),\vec y)]$ et la condition devient $\eta(x,w,\vec y)=x$, qu’on exprime avec $|a-b|=(a\monus b)+(b\monus a)$.</p>
+<p><strong>Construction de $\Gamma$.</strong> Le reste $R(u,m)=u\monus m\cdot\mu z[(z+1)m>u]$ est dans $D$. On pose</p>
+$$\Gamma(i,w)=R\big(\pi_1(w),\ 1+(i+1)\pi_2(w)\big),$$
+<p>où $\pi_1,\pi_2$ sont les inverses du <a href="#cantor-couple">codage de Cantor</a> $\langle x,y\rangle=((x+y)^2+3x+y)/2$, définissables dans $D$ par minimisation. Étant donnés $a_0,\dots,a_n$, soit $M=\max_i a_i+1$ et $v=2M\cdot(n+1)!$. Les nombres $m_i=1+(i+1)v$ ($0\le i\le n$) sont deux à deux premiers entre eux (un premier $p$ qui diviserait $m_i$ et $m_j$ diviserait $(j-i)v$, donc $v$ puisque $j-i\le n$ divise $(n+1)!$, mais $p\mid m_i=1+(i+1)v$ ne divise pas $v$), et $a_i<M\le v<m_i$. Par le théorème chinois des restes, il existe $u$ avec $R(u,m_i)=a_i$ pour tout $i$, et $w=\langle u,v\rangle$ convient.</p>
+<p><strong>Théorème chinois des restes.</strong> Si $m_1,\dots,m_n$ sont deux à deux premiers entre eux et $a_i<m_i$, il existe $u$ avec $u\equiv a_i\pmod{m_i}$ pour tout $i$. Par récurrence sur $n$ : si $u_n$ convient pour les $n$ premiers, $M_n=m_1\cdots m_n$ est premier avec $m_{n+1}$ ; par Bézout, $xM_n+ym_{n+1}=1$ avec $x,y$ relatifs, d’où $s,r$ avec $u_n+sM_n=a_{n+1}+rm_{n+1}$ ; quitte à ajouter un multiple de $m_{n+1}$ à $s$, on prend $s\ge0$, et $u_{n+1}=u_n+sM_n$ convient.</p>
+</tech>
+<techno><p>La fonction $\Gamma$ a été testée : pour les suites $(3,0,7)$, $(5,5,1,2)$, $(0)$ et $(9,2)$, on a calculé $v$, les modules $m_i$, vérifié qu’ils sont premiers entre eux, trouvé $u$ par restes chinois et vérifié $\Gamma(i,\langle u,v\rangle)=a_i$. Par exemple pour $(9,2)$ : $M=10$, $v=2\cdot10\cdot2!=40$, $m_0=41$, $m_1=81$, et le plus petit $u$ qui convient est $u=2756=67\cdot41+9=34\cdot81+2$.</p></techno>
+</res>
+
+<h2 id="bibliotheque-commune">Une bibliothèque commune aux trois modèles</h2>
+<p>Les mêmes douze fonctions sont définies dans les trois modèles de ce manuel : ici par les schémas de récurrence, dans le chapitre <a href="machines-turing.html#bibliotheque-commune">Machines de Turing</a> par des machines, dans le chapitre <a href="lambda-calcul.html#bibliotheque-commune">λ-calcul</a> par des termes. Pour chacune, on démontre que la définition est correcte vis-à-vis de sa spécification arithmétique ; chaque fiche renvoie aux deux autres versions. Les preuves suivent la forme de la définition : une récurrence primitive se vérifie par une récurrence sur le même argument, une minimisation par l’examen des valeurs qui précèdent le premier zéro.</p>
+<table class="table-trois">
+<tr><th>Fonction</th><th>Spécification</th><th>Récursive</th><th>Turing</th><th>λ-calcul</th></tr>
+<tr><td>Successeur</td><td>$S(x)=x+1$</td><td><a href="#f-succ">définition</a></td><td><a href="machines-turing.html#f-succ">machine</a></td><td><a href="lambda-calcul.html#f-succ">terme</a></td></tr>
+<tr><td>Constantes</td><td>$m^{(k)}(x_1,\dots,x_k)=m$</td><td><a href="#f-const">définition</a></td><td><a href="machines-turing.html#f-const">machine</a></td><td><a href="lambda-calcul.html#f-const">terme</a></td></tr>
+<tr><td>Projections</td><td>$A^{(k)}_i(x_1,\dots,x_k)=x_i$</td><td><a href="#f-proj">définition</a></td><td><a href="machines-turing.html#f-proj">machine</a></td><td><a href="lambda-calcul.html#f-proj">terme</a></td></tr>
+<tr><td>Addition</td><td>$\mathrm{add}(x,y)=x+y$</td><td><a href="#f-add">définition</a></td><td><a href="machines-turing.html#f-add">machine</a></td><td><a href="lambda-calcul.html#f-add">terme</a></td></tr>
+<tr><td>Prédécesseur</td><td>$\mathrm{pred}(x)=x\monus1$</td><td><a href="#f-pred">définition</a></td><td><a href="machines-turing.html#f-pred">machine</a></td><td><a href="lambda-calcul.html#f-pred">terme</a></td></tr>
+<tr><td>Soustraction propre</td><td>$x\monus y=\max(x-y,0)$</td><td><a href="#f-monus">définition</a></td><td><a href="machines-turing.html#f-monus">machine</a></td><td><a href="lambda-calcul.html#f-monus">terme</a></td></tr>
+<tr><td>Multiplication</td><td>$\mathrm{mult}(x,y)=x\times y$</td><td><a href="#f-mult">définition</a></td><td><a href="machines-turing.html#f-mult">machine</a></td><td><a href="lambda-calcul.html#f-mult">terme</a></td></tr>
+<tr><td>Puissance</td><td>$\mathrm{puiss}(x,y)=x^y$</td><td><a href="#f-pow">définition</a></td><td><a href="machines-turing.html#f-pow">machine</a></td><td><a href="lambda-calcul.html#f-pow">terme</a></td></tr>
+<tr><td>Factorielle</td><td>$\mathrm{fact}(y)=y!$</td><td><a href="#f-fact">définition</a></td><td><a href="machines-turing.html#f-fact">machine</a></td><td><a href="lambda-calcul.html#f-fact">terme</a></td></tr>
+<tr><td>Signe et test de nullité</td><td>$\mathrm{sg}(x)=1$ si $x>0$, $0$ sinon ; $\overline{\mathrm{sg}}(x)=1-\mathrm{sg}(x)$</td><td><a href="#f-sg">définition</a></td><td><a href="machines-turing.html#f-sg">machine</a></td><td><a href="lambda-calcul.html#f-sg">terme</a></td></tr>
+<tr><td>Égalité</td><td>$\chi_=(x,y)=1$ si $x=y$, $0$ sinon</td><td><a href="#f-eq">définition</a></td><td><a href="machines-turing.html#f-eq">machine</a></td><td><a href="lambda-calcul.html#f-eq">terme</a></td></tr>
+<tr><td>Quotient (minimisation)</td><td>$\mathrm{quot}(x,y)=\lfloor x/y\rfloor$ si $y\ge1$, indéfini si $y=0$</td><td><a href="#f-div">définition</a></td><td><a href="machines-turing.html#f-div">machine</a></td><td><a href="lambda-calcul.html#f-div">terme</a></td></tr>
+</table>
+<res type="Exemple" nom="Successeur" id="f-succ">
+<enonce><p>Spécification : $S(x)=x+1$.</p><p>$S$ est une fonction de base : $S(x)=x+1$.</p><p class="trois-vues">Les trois versions : <strong>récursive</strong> · <a href="machines-turing.html#f-succ">Turing</a> · <a href="lambda-calcul.html#f-succ">λ-calcul</a>.</p></enonce>
+<tech><p>Rien à démontrer : la spécification est la définition.</p></tech>
+<techno><p>Terme : $S$.</p></techno>
+</res>
+<res type="Exemple" nom="Constantes" id="f-const">
+<enonce><p>Spécification : $m^{(k)}(x_1,\dots,x_k)=m$.</p><p>Les constantes $m^{(k)}$ sont des fonctions de base.</p><p class="trois-vues">Les trois versions : <strong>récursive</strong> · <a href="machines-turing.html#f-const">Turing</a> · <a href="lambda-calcul.html#f-const">λ-calcul</a>.</p></enonce>
+<tech><p>Par définition.</p></tech>
+<techno><p>Terme : $m^{(k)}$. (Si l’on ne garde que $0^{(0)}$ comme constante de base, $m^{(k)}=\sigma[S,\sigma[S,\dots\sigma[S,0^{(k)}]]]$, et $0^{(k)}=\rho[0^{(k-1)},A^{(k+1)}_2]$ par récurrence sur le premier argument.)</p></techno>
+</res>
+<res type="Exemple" nom="Projections" id="f-proj">
+<enonce><p>Spécification : $A^{(k)}_i(x_1,\dots,x_k)=x_i$.</p><p>Les projections $A^{(k)}_i$ sont des fonctions de base.</p><p class="trois-vues">Les trois versions : <strong>récursive</strong> · <a href="machines-turing.html#f-proj">Turing</a> · <a href="lambda-calcul.html#f-proj">λ-calcul</a>.</p></enonce>
+<tech><p>Par définition.</p></tech>
+<techno><p>Terme : $A^{(k)}_i$.</p></techno>
+</res>
+<res type="Exemple" nom="Addition" id="f-add">
+<enonce><p>Spécification : $\mathrm{add}(x,y)=x+y$.</p><p>$\mathrm{add}=\rho\big[A^{(1)}_1,\ \sigma[S,A^{(3)}_2]\big]$, c’est-à-dire $\mathrm{add}(0,y)=y$ et $\mathrm{add}(x+1,y)=S(\mathrm{add}(x,y))$.</p><p class="trois-vues">Les trois versions : <strong>récursive</strong> · <a href="machines-turing.html#f-add">Turing</a> · <a href="lambda-calcul.html#f-add">λ-calcul</a>.</p></enonce>
+<tech><p>Par récurrence sur $x$. $\mathrm{add}(0,y)=A^{(1)}_1(y)=y=0+y$. Si $\mathrm{add}(x,y)=x+y$, alors $\mathrm{add}(x+1,y)=\sigma[S,A^{(3)}_2](x,\mathrm{add}(x,y),y)=S(x+y)=(x+1)+y$.</p></tech>
+<techno><p>Avec la convention du site, $\rho[g,h](x+1,\vec y)=h(x,\rho[g,h](x,\vec y),\vec y)$ : le deuxième argument de $h$ est l’appel récursif, d’où $A^{(3)}_2$.</p></techno>
+</res>
+<res type="Exemple" nom="Prédécesseur" id="f-pred">
+<enonce><p>Spécification : $\mathrm{pred}(x)=x\monus1$.</p><p>$\mathrm{pred}=\rho\big[0^{(0)},\ A^{(2)}_1\big]$ : $\mathrm{pred}(0)=0$, $\mathrm{pred}(y+1)=y$.</p><p class="trois-vues">Les trois versions : <strong>récursive</strong> · <a href="machines-turing.html#f-pred">Turing</a> · <a href="lambda-calcul.html#f-pred">λ-calcul</a>.</p></enonce>
+<tech><p>$\mathrm{pred}(0)=0=0\monus1$ et $\mathrm{pred}(y+1)=A^{(2)}_1(y,\mathrm{pred}(y))=y=(y+1)\monus1$. Le pas de récurrence n’utilise pas l’appel récursif, seulement le compteur.</p></tech>
+<techno><p>Terme : $\rho[0^{(0)},A^{(2)}_1]$, fonction d’arité 1.</p></techno>
+</res>
+<res type="Exemple" nom="Soustraction propre" id="f-monus">
+<enonce><p>Spécification : $x\monus y=\max(x-y,0)$.</p><p>$x\monus0=x$, $x\monus(y+1)=\mathrm{pred}(x\monus y)$ ; formellement $\monus=\sigma\big[\rho[A^{(1)}_1,\sigma[\mathrm{pred},A^{(3)}_2]],\ A^{(2)}_2,A^{(2)}_1\big]$ (récurrence sur $y$, puis échange des arguments).</p><p class="trois-vues">Les trois versions : <strong>récursive</strong> · <a href="machines-turing.html#f-monus">Turing</a> · <a href="lambda-calcul.html#f-monus">λ-calcul</a>.</p></enonce>
+<tech><p>Par récurrence sur $y$. $x\monus0=x$. Si $x\monus y=\max(x-y,0)$ : lorsque $x>y$, $\mathrm{pred}(x-y)=x-y-1=\max(x-(y+1),0)$ ; lorsque $x\le y$, $\mathrm{pred}(0)=0=\max(x-y-1,0)$.</p></tech>
+<techno><p>La récurrence porte sur le premier argument de $\rho$ ; on définit donc $r(y,x)=x\monus y$ par $\rho$, puis $x\monus y=r(A^{(2)}_2(x,y),A^{(2)}_1(x,y))$.</p></techno>
+</res>
+<res type="Exemple" nom="Multiplication" id="f-mult">
+<enonce><p>Spécification : $\mathrm{mult}(x,y)=x\times y$.</p><p>$\mathrm{mult}=\rho\big[0^{(1)},\ \sigma[\mathrm{add},A^{(3)}_3,A^{(3)}_2]\big]$ : $\mathrm{mult}(0,y)=0$, $\mathrm{mult}(x+1,y)=y+\mathrm{mult}(x,y)$.</p><p class="trois-vues">Les trois versions : <strong>récursive</strong> · <a href="machines-turing.html#f-mult">Turing</a> · <a href="lambda-calcul.html#f-mult">λ-calcul</a>.</p></enonce>
+<tech><p>Par récurrence sur $x$ : $\mathrm{mult}(0,y)=0$ et $\mathrm{mult}(x+1,y)=\mathrm{add}(y,xy)=y+xy=(x+1)y$, en utilisant la correction de $\mathrm{add}$.</p></tech>
+<techno><p>$h(x,v,y)=\mathrm{add}(A^{(3)}_3,A^{(3)}_2)(x,v,y)=y+v$ : le pas ajoute $y$ à l’appel récursif $v$.</p></techno>
+</res>
+<res type="Exemple" nom="Puissance" id="f-pow">
+<enonce><p>Spécification : $\mathrm{puiss}(x,y)=x^y$.</p><p>$t(0,x)=1$, $t(y+1,x)=x\times t(y,x)$, et $x^y=t(y,x)$ : $t=\rho\big[1^{(1)},\sigma[\mathrm{mult},A^{(3)}_3,A^{(3)}_2]\big]$, $\mathrm{puiss}=\sigma[t,A^{(2)}_2,A^{(2)}_1]$.</p><p class="trois-vues">Les trois versions : <strong>récursive</strong> · <a href="machines-turing.html#f-pow">Turing</a> · <a href="lambda-calcul.html#f-pow">λ-calcul</a>.</p></enonce>
+<tech><p>Par récurrence sur $y$ : $t(0,x)=1=x^0$ et $t(y+1,x)=\mathrm{mult}(x,x^y)=x^{y+1}$.</p></tech>
+<techno><p>Évaluation et compilation : voir la <a href="machines-turing.html#f-pow">machine compilée</a>.</p></techno>
+</res>
+<res type="Exemple" nom="Factorielle" id="f-fact">
+<enonce><p>Spécification : $\mathrm{fact}(y)=y!$.</p><p>$\mathrm{fact}=\rho\big[1^{(0)},\ \sigma[\mathrm{mult},\sigma[S,A^{(2)}_1],A^{(2)}_2]\big]$ : $0!=1$, $(y+1)!=(y+1)\times y!$.</p><p class="trois-vues">Les trois versions : <strong>récursive</strong> · <a href="machines-turing.html#f-fact">Turing</a> · <a href="lambda-calcul.html#f-fact">λ-calcul</a>.</p></enonce>
+<tech><p>C’est la définition de la factorielle : $\mathrm{fact}(0)=1=0!$ et $\mathrm{fact}(y+1)=\mathrm{mult}(S(y),\mathrm{fact}(y))=(y+1)\cdot y!=(y+1)!$, par récurrence. Ici le pas <em>utilise le compteur</em> $y$, pas seulement l’appel récursif.</p></tech>
+<techno><p>Évaluation et compilation : voir la <a href="machines-turing.html#f-fact">machine compilée</a>.</p></techno>
+</res>
+<res type="Exemple" nom="Signe et test de nullité" id="f-sg">
+<enonce><p>Spécification : $\mathrm{sg}(x)=1$ si $x>0$, $0$ sinon ; $\overline{\mathrm{sg}}(x)=1-\mathrm{sg}(x)$.</p><p>$\mathrm{sg}=\rho\big[0^{(0)},1^{(2)}\big]$ et $\overline{\mathrm{sg}}=\rho\big[1^{(0)},0^{(2)}\big]$.</p><p class="trois-vues">Les trois versions : <strong>récursive</strong> · <a href="machines-turing.html#f-sg">Turing</a> · <a href="lambda-calcul.html#f-sg">λ-calcul</a>.</p></enonce>
+<tech><p>$\mathrm{sg}(0)=0$ et $\mathrm{sg}(y+1)=1^{(2)}(y,\mathrm{sg}(y))=1$ ; de même pour $\overline{\mathrm{sg}}$. Le pas ignore tout : une récurrence primitive sert ici de simple test « nul ou non ».</p></tech>
+<techno><p>Ces deux fonctions servent de booléens : $\chi_{P\wedge Q}=\chi_P\cdot\chi_Q$, $\chi_{\neg P}=\overline{\mathrm{sg}}(\chi_P)$, etc. (<a href="#bibliotheque">bibliothèque</a>).</p></techno>
+</res>
+<res type="Exemple" nom="Égalité" id="f-eq">
+<enonce><p>Spécification : $\chi_=(x,y)=1$ si $x=y$, $0$ sinon.</p><p>$\chi_=(x,y)=\overline{\mathrm{sg}}\big((x\monus y)+(y\monus x)\big)$, soit $\chi_==\sigma\big[\overline{\mathrm{sg}},\sigma[\mathrm{add},\monus,\sigma[\monus,A^{(2)}_2,A^{(2)}_1]]\big]$.</p><p class="trois-vues">Les trois versions : <strong>récursive</strong> · <a href="machines-turing.html#f-eq">Turing</a> · <a href="lambda-calcul.html#f-eq">λ-calcul</a>.</p></enonce>
+<tech><p>$(x\monus y)+(y\monus x)=|x-y|$ (l’un des deux termes est nul, l’autre est la différence), qui est nul si et seulement si $x=y$ ; $\overline{\mathrm{sg}}$ rend alors $1$, et $0$ sinon.</p></tech>
+<techno><p>Évaluation et compilation (7 633 quadruplets) : voir la <a href="machines-turing.html#f-eq">version Turing</a>, où l’on donne aussi une machine écrite à la main de 27 quadruplets.</p></techno>
+</res>
+<res type="Exemple" nom="Quotient (minimisation)" id="f-div">
+<enonce><p>Spécification : $\mathrm{quot}(x,y)=\lfloor x/y\rfloor$ si $y\ge1$, indéfini si $y=0$.</p><p>$\mathrm{quot}(x,y)=\mu z\,\big[\overline{\mathrm{sg}}\big((z+1)\,y\monus x\big)=0\big]$, c’est-à-dire le plus petit $z$ tel que $(z+1)\,y>x$.</p><p class="trois-vues">Les trois versions : <strong>récursive</strong> · <a href="machines-turing.html#f-div">Turing</a> · <a href="lambda-calcul.html#f-div">λ-calcul</a>.</p></enonce>
+<tech><p>La fonction minimisée $g(x,y,z)=\overline{\mathrm{sg}}((z+1)y\monus x)$ est totale et vaut $0$ exactement quand $(z+1)y>x$. Si $y\ge1$, soit $q=\lfloor x/y\rfloor$ : $qy\le x<(q+1)y$, donc $g(x,y,q)=0$, et pour $z<q$, $(z+1)y\le qy\le x$, donc $g(x,y,z)=1$ : la minimisation rend $q$. Si $y=0$, $(z+1)\cdot0=0\not>x$ pour tout $z$ : il n’y a pas de témoin et $\mathrm{quot}(x,0)$ est indéfini, comme le veut la <a href="#def-mu">définition de $\mu$</a>.</p></tech>
+<techno><p>Terme :</p>$$\mu\big[\sigma[\overline{\mathrm{sg}},\sigma[\monus,\sigma[\mathrm{mult},\sigma[S,A^{(3)}_3],A^{(3)}_2],A^{(3)}_1]]\big]$$<p>Évaluation et compilation : voir la <a href="machines-turing.html#f-div">machine compilée</a>.</p></techno>
+</res>
+
+<!--EXERCICES-->
+<h2 id="exercices">Exercices</h2>
+
+<exo niveau="1" titre="Écrire un terme" id="ex-fr-terme">
+<p>Écrire la fonction $f(x,y)=2x+y$ à l’aide des seules fonctions de base et des schémas $\sigma$ et $\rho$.</p>
+<corrige>
+<p>Par récurrence sur le premier argument : $f(0,y)=y$ et $f(x+1,y)=f(x,y)+2=S(S(f(x,y)))$. Avec les arités de la <a href="#def-rp">définition</a> ($g$ d’arité 1, $h$ d’arité 3, appliquée à $(x,f(x,y),y)$) :</p>
+$$f=\rho\Big[A^{(1)}_1,\ \sigma\big[S,\ \sigma[S,A^{(3)}_2]\big]\Big].$$
+<p>On vérifie : $\sigma[S,A^{(3)}_2](x,u,y)=u+1$, puis $\sigma[S,\sigma[S,A^{(3)}_2]](x,u,y)=u+2$.</p>
+</corrige>
+</exo>
+
+<exo niveau="1" titre="Une minimisation partielle" id="ex-fr-racine">
+<p>Soit $g(x,y)=|x-y^2|$. Quelle est la fonction $\mu[g]$ ? Est-elle totale ?</p>
+<corrige>
+<p>$g$ est totale (récursive primitive), donc la condition « $g(x,z)\conv$ pour $z<y$ » est automatique, et $\mu[g](x)$ est le plus petit $y$ tel que $y^2=x$. Ainsi $\mu[g](x)=\sqrt x$ si $x$ est un carré parfait, et $\mu[g](x)\ind$ sinon : $\mu[g](4)=2$, $\mu[g](5)\ind$. La minimisation d’une fonction totale peut donc produire une fonction partielle ; c’est ce qui distingue $\PR$ de $\RP$.</p>
+</corrige>
+</exo>
+
+<exo niveau="1" titre="Coder et décoder des couples" id="ex-fr-cantor">
+<p>Calculer $\langle 2,3\rangle$ pour le <a href="#cantor-couple">codage de Cantor</a>, puis retrouver le couple codé par $17$ et par $20$. Montrer que $\pi_1$ et $\pi_2$ sont récursives primitives.</p>
+<corrige>
+<p>$\langle2,3\rangle=\frac{5\cdot6}2+2=17$. Pour décoder $z$, on cherche la « diagonale » $s=x+y$ : c’est le plus grand $s$ tel que $\frac{s(s+1)}2\le z$. Pour $z=17$ : $\frac{5\cdot6}2=15\le17<21=\frac{6\cdot7}2$, donc $s=5$, $x=17-15=2$, $y=s-x=3$. Pour $z=20$ : $s=5$, $x=5$, $y=0$.</p>
+<p>En général $s(z)=\mu s\le z\,\big[(s+1)(s+2)>2z\big]$ (minimisation bornée d’un prédicat récursif primitif), puis $\pi_1(z)=z\monus\frac{s(z)(s(z)+1)}2$ et $\pi_2(z)=s(z)\monus\pi_1(z)$ ; la division par 2 est le quotient de la <a href="#bibliotheque-boitet">bibliothèque</a>.</p>
+</corrige>
+</exo>
+
+<exo niveau="2" titre="Fibonacci par les couples" id="ex-fr-fibonacci">
+<p>La suite de Fibonacci est définie par $F(0)=0$, $F(1)=1$, $F(x+2)=F(x+1)+F(x)$. Le schéma $\rho$ ne permet d’utiliser que la valeur précédente. Montrer pourtant que $F$ est récursive primitive.</p>
+<corrige>
+<p>On calcule deux valeurs à la fois, rangées dans un couple : $g(x)=\langle F(x),F(x+1)\rangle$. Alors $g(0)=\langle0,1\rangle=1$ et</p>
+$$g(x+1)=\big\langle F(x+1),F(x)+F(x+1)\big\rangle=\big\langle\pi_2(g(x)),\ \pi_1(g(x))+\pi_2(g(x))\big\rangle,$$
+<p>qui est de la forme $g(x+1)=h(x,g(x))$ avec $h$ récursive primitive (exercice précédent). Donc $g\in\RP$, et $F=\pi_1\circ g\in\RP$. La même idée traite toute récurrence qui fait intervenir un nombre fixé de valeurs précédentes, ou plusieurs fonctions définies simultanément.</p>
+</corrige>
+</exo>
+
+<exo niveau="2" titre="Image d’une fonction croissante" id="ex-fr-image">
+<p>Soit $f:\N\to\N$ récursive primitive et strictement croissante. Montrer que son image $\{f(x):x\in\N\}$ est un ensemble récursif primitif.</p>
+<corrige>
+<p>Par récurrence, $f(x)\ge x$ : $f(0)\ge0$, et $f(x+1)>f(x)\ge x$ donne $f(x+1)\ge x+1$. Donc si $y=f(x)$, alors $x\le y$ : $y\in\mathrm{Im}\,f\iff\exists x\le y\ f(x)=y$. La fonction caractéristique s’écrit $\mathrm{sg}\big(\sum_{x\le y}\overline{\mathrm{sg}}\,|f(x)-y|\big)$, récursive primitive par les sommes bornées. Sans la croissance, l’image d’une fonction récursive primitive peut être indécidable : c’est un ensemble semi-décidable quelconque (non vide), voir le chapitre <a href="semi-decidabilite.html#domaines-images">Semi-décidabilité</a>.</p>
+</corrige>
+</exo>
+
+<exo niveau="3" titre="Récurrence sur toutes les valeurs antérieures" id="ex-fr-cov">
+<p>Soit $h$ récursive primitive et $f$ définie par $f(0)=a$ et $f(x+1)=h\big(x,\bar f(x)\big)$, où $\bar f(x)=\prod_{i\le x}p_{i+1}^{f(i)}$ code la liste $f(0),\dots,f(x)$. Montrer que $f$ est récursive primitive. Application : la fonction $c(0)=1$, $c(x+1)=\sum_{i\le x}c(i)\,c(x-i)$ (nombres de Catalan) est récursive primitive.</p>
+<corrige>
+<p>On montre d’abord que $\bar f$ est récursive primitive : $\bar f(0)=2^a$, et</p>
+$$\bar f(x+1)=\bar f(x)\cdot p_{x+2}^{\,f(x+1)}=\bar f(x)\cdot\mathrm{Pr}(x+2)^{\,h(x,\bar f(x))},$$
+<p>de la forme $\bar f(x+1)=H(x,\bar f(x))$ avec $H(x,u)=u\cdot\mathrm{Pr}(x+2)^{h(x,u)}$ récursive primitive. Puis $f(x)=\exp(x+1,\bar f(x))$, l’exposant de $p_{x+1}$ dans $\bar f(x)$, récursif primitif (<a href="#codages-suites">codages</a>).</p>
+<p>Pour les nombres de Catalan, $c(i)=\exp(i+1,u)$ quand $u=\bar c(x)$ et $i\le x$, donc $c(x+1)=h(x,\bar c(x))$ avec $h(x,u)=\sum_{i\le x}\exp(i+1,u)\cdot\exp(x-i+1,u)$, récursive primitive par somme bornée. On obtient $1,1,2,5,14,42,\dots$</p>
+</corrige>
+</exo>

@@ -1,0 +1,229 @@
+<!--
+titre: Complexité de Kolmogorov et nombre Ω de Chaitin
+court: Kolmogorov et Ω
+chapo: Combien de bits faut-il pour décrire un objet ? La question a une réponse précise, que nul algorithme ne calcule. Elle donne une forme quantitative de l’incomplétude et un nombre réel, Ω, dont les chiffres contiennent tout le problème de l’arrêt.
+prerequis: universalite.html#enumeration|Théorème d’énumération ; indecidabilite.html|Indécidabilité ; semi-decidabilite.html#k-complet|Complétude de l’arrêt ; indecidabilite.html#reductibilites|Réduction de Turing ; incompletude.html|Incomplétude
+-->
+
+<p>Une suite d’un million de zéros se décrit en une ligne ; une suite d’un million de bits tirés à pile ou face, semble-t-il, ne se décrit qu’en la recopiant. Kolmogorov (1965), Solomonoff (1964) et Chaitin (1966) ont donné un sens précis à cette intuition : la complexité d’un objet est la longueur du plus court programme qui l’engendre. Ce chapitre en tire trois conséquences : une nouvelle preuve de l’incomplétude, où l’on voit <em>combien</em> une théorie ne peut pas démontrer ; une définition du hasard pour une suite infinie ; et le nombre $\Omega$, probabilité d’arrêt d’un programme tiré au hasard.</p>
+
+<h2 id="description">Décrire un mot</h2>
+
+<res type="Convention" nom="Mots binaires, entiers et codage auto-délimitant" id="mots-entiers">
+<enonce>
+<p>On note $\{0,1\}^\ast$ l’ensemble des mots binaires, $|w|$ la longueur d’un mot $w$ et $\varepsilon$ le mot vide. On identifie l’entier $n$ au mot obtenu en écrivant $n+1$ en binaire et en effaçant le premier chiffre 1 : $0\leftrightarrow\varepsilon$, $1\leftrightarrow0$, $2\leftrightarrow1$, $3\leftrightarrow00$, $4\leftrightarrow01$, etc. C’est une bijection entre $\N$ et $\{0,1\}^\ast$, qui respecte l’ordre « par longueur, puis alphabétique », et le mot de $n$ a pour longueur $\lfloor\log_2(n+1)\rfloor$. Les fonctions $\varphi_e$ (<a href="universalite.html#phi">notation</a>) sont ainsi vues comme des fonctions partielles de $\{0,1\}^\ast$ dans $\{0,1\}^\ast$.</p>
+<p>Le <strong>codage auto-délimitant</strong> d’un mot $w$ est $\bar w=1^{|w|}0\,w$, de longueur $2|w|+1$. Si l’on lit un mot qui commence par $\bar w$, on sait où $\bar w$ se termine : on compte les 1 jusqu’au premier 0, puis on lit autant de chiffres. Ainsi $\bar w\,p=\bar w'\,p'$ entraîne $w=w'$ et $p=p'$.</p>
+</enonce>
+<philo><p>Un programme est un texte, donc un mot ; un résultat aussi. Le codage auto-délimitant répond à une difficulté pratique : quand on colle deux mots, on perd la frontière entre eux. Le préfixe $1^{|w|}0$ joue le rôle d’une déclaration de longueur, au prix d’un doublement de la taille.</p></philo>
+<tech><p>La bijection est récursive primitive dans les deux sens : $n\mapsto$ son mot s’obtient par divisions successives de $n+1$ par 2, et le mot $w$ correspond à l’entier dont l’écriture binaire est $1w$, moins 1. Les mots de longueur $k$ correspondent aux entiers de $2^k-1$ à $2^{k+1}-2$ : il y en a $2^k$, et il y a $2^k-1$ mots de longueur strictement inférieure à $k$.</p></tech>
+<techno><p>Le fichier <a href="assets/code/kolmogorov.py">kolmogorov.py</a> programme la bijection et le codage auto-délimitant. Avec $e=12$, dont le mot est $101$, et le programme $p=0110$, l’entrée $\bar e\,p$ de la machine universelle définie plus bas est $1110\,101\,0110$, que la fonction <code>lire_auto</code> redécoupe sans ambiguïté.</p></techno>
+</res>
+
+<res type="Définition" nom="Complexité de Kolmogorov" id="def-c">
+<enonce>
+<p>Pour une fonction partielle calculable $\varphi_e$ et un mot $x$, la <strong>complexité de $x$ relativement à $e$</strong> est</p>
+$$C_e(x)=\min\{|p|:\varphi_e(p)=x\}\qquad(\min\varnothing=\infty).$$
+<p>Soit $U$ la fonction définie par $U(\bar e\,p)=\varphi_e(p)$, et non définie sur les mots qui ne sont pas de la forme $\bar e\,p$. On pose $C(x)=C_U(x)$, la <strong>complexité de Kolmogorov</strong> de $x$.</p>
+</enonce>
+<philo><p>$C(x)$ est la taille de la plus courte explication de $x$ : un programme, écrit dans un langage fixé une fois pour toutes, qui produit $x$ et s’arrête. Un mot très régulier a une explication courte ; un mot sans régularité n’en a pas de plus courte que lui-même. Le théorème suivant montre que le choix du langage ne change cette mesure que d’une constante.</p></philo>
+<tech><p>$U$ est partielle calculable : sur l’entrée $q$, on compte les 1 en tête de $q$ jusqu’au premier 0 (s’il n’y en a pas, on boucle), on lit le mot $e$ de cette longueur, puis on calcule $\varphi_e(p)$ sur le reste $p$ à l’aide de la fonction universelle (<a href="universalite.html#enumeration">théorème d’énumération</a>). Par la convention précédente, chaque mot s’écrit d’au plus une façon sous la forme $\bar e\,p$, donc $U$ est bien définie.</p></tech>
+<techno><p>Un compresseur sans perte (zip, zlib) fournit des <em>bornes supérieures</em> de la complexité : si le décompresseur est un programme fixe de longueur $d$, alors $C(x)\le|\mathrm{zip}(x)|+O(d)$. Le fichier <a href="assets/code/kolmogorov.py">kolmogorov.py</a> compresse quatre suites de 800 000 bits : un million de zéros, le motif <code>ab</code> répété et les décimales périodiques de $1/7$ tombent à moins de 1 400 bits ; une suite d’octets tirés par le générateur aléatoire du système reste vers 800 300 bits. Aucun programme ne peut donner la borne <em>inférieure</em> correspondante, comme on le verra.</p></techno>
+</res>
+
+<res type="Théorème" nom="Théorème d’invariance (Kolmogorov, Solomonoff, Chaitin)" id="invariance">
+<enonce>
+<p>Pour tout $e$ et tout mot $x$, $C(x)\le C_e(x)+2|e|+1$. En particulier :</p>
+<ol>
+<li>il existe une constante $c$ telle que $C(x)\le|x|+c$ pour tout $x$ ;</li>
+<li>pour toute fonction calculable totale $f$, il existe $c_f$ tel que $C(f(x))\le C(x)+c_f$ ;</li>
+<li>si $V$ est une autre fonction partielle calculable qui a la même propriété que $U$ (pour tout $e$ il existe $c'_e$ avec $C_V\le C_e+c'_e$), alors $|C(x)-C_V(x)|$ est borné indépendamment de $x$.</li>
+</ol>
+</enonce>
+<philo><p>La complexité dépend du langage de programmation, mais seulement par une constante : celle qu’il faut pour écrire un interprète de l’un dans l’autre. Sur les objets assez grands, cette constante ne compte plus. C’est ce qui fait de $C$ une notion intrinsèque, à une constante additive près, comme la calculabilité elle-même ne dépend pas du modèle choisi.</p></philo>
+<tech><p>Si $\varphi_e(p)=x$ avec $|p|=C_e(x)$, alors $U(\bar e\,p)=x$ et $|\bar e\,p|=2|e|+1+C_e(x)$. (1) On applique ce qui précède à un indice $e$ de l’identité, pour lequel $C_e(x)=|x|$. (2) Si $U(p)=x$, alors $f(U(p))=f(x)$ ; la fonction $f\circ U$ est partielle calculable, d’indice $a$, et $C(f(x))\le C_a(f(x))+2|a|+1\le C(x)+2|a|+1$. (3) Par hypothèse appliquée à un indice $b$ de $U$, $C_V\le C_U+c'_b$, et l’inégalité principale, appliquée à un indice de $V$, donne l’autre sens.</p></tech>
+<techno><p>La constante $2|e|+1$ est le prix du codage auto-délimitant de l’interprète. Avec un codage plus économe de $e$, par exemple $\overline{\ell}\,e$ où $\ell$ est le mot de l’entier $|e|$, on obtient $|e|+2\log_2|e|+O(1)$ : seule la constante change, jamais la forme du résultat.</p></techno>
+</res>
+
+<res type="Proposition" nom="Il existe des mots incompressibles" id="incompressibles">
+<enonce>
+<p>Pour tous $n$ et $k\le n$, plus de $2^n(1-2^{-k})$ mots de longueur $n$ vérifient $C(x)\ge n-k$. En particulier, pour tout $n$, il existe un mot de longueur $n$ tel que $C(x)\ge n$ : on dit qu’il est <strong>incompressible</strong>.</p>
+</enonce>
+<philo><p>Presque tous les mots sont sans régularité exploitable : moins d’un mot sur mille se laisse comprimer de dix bits. Les objets que nous savons décrire brièvement, ceux qui nous intéressent, sont donc des exceptions. Et la proposition affirme l’existence de mots incompressibles sans en exhiber un seul : on va voir qu’on ne peut pas, au-delà d’une certaine taille, démontrer qu’un mot donné l’est.</p></philo>
+<tech><p>Les programmes de longueur strictement inférieure à $n-k$ sont au nombre de $2^{n-k}-1$ (<a href="#mots-entiers">convention</a>), et chacun produit au plus un mot. Au plus $2^{n-k}-1<2^n\cdot2^{-k}$ mots ont donc une complexité inférieure à $n-k$. Le cas $k=0$ donne : au plus $2^n-1$ mots de complexité $<n$, alors qu’il y a $2^n$ mots de longueur $n$.</p></tech>
+<techno><p>Le compteur est impitoyable pour les « compresseurs universels » : aucun programme de compression sans perte ne raccourcit tous les fichiers, puisqu’il y a moins de fichiers courts que de fichiers longs. Un compresseur ne gagne sur certains fichiers qu’en perdant (un peu) sur d’autres, comme les octets aléatoires de l’exemple précédent, qui grossissent de quelques centaines de bits.</p></techno>
+</res>
+
+<h2 id="non-calculable">Une fonction que l’on approche sans la calculer</h2>
+
+<res type="Théorème" nom="C n’est pas calculable (argument de Berry)" id="c-non-calculable">
+<enonce>
+<ol>
+<li>Toute fonction calculable totale $m$ telle que $m(x)\le C(x)$ pour tout mot $x$ est bornée. En particulier, $C$ n’est pas calculable.</li>
+<li>L’ensemble $\{(x,k):C(x)\le k\}$ est semi-décidable. De façon équivalente, il existe une fonction calculable totale $(x,s)\mapsto C_s(x)$, décroissante en $s$, telle que $C(x)=\lim_s C_s(x)$ : $C$ est <strong>approchable par au-dessus</strong>.</li>
+<li>L’ensemble $R=\{x:C(x)\ge|x|\}$ des mots incompressibles est infini, mais il ne contient aucun ensemble semi-décidable infini.</li>
+</ol>
+</enonce>
+<philo><p>Berry, bibliothécaire à Oxford, proposa à Russell en 1906 le paradoxe suivant : « le plus petit entier qui ne peut pas être défini en moins de quinze mots » vient d’être défini en quatorze mots. En logique, le paradoxe est une contradiction ; en calculabilité, il devient une démonstration. Si l’on pouvait calculer la complexité, un programme court chercherait « le premier mot de complexité supérieure à un million », et le produirait, ce qui lui donnerait une complexité très inférieure à un million. On peut toujours <em>améliorer</em> une description (trouver un programme plus court), mais on ne sait jamais si l’on a trouvé la meilleure.</p></philo>
+<tech>
+<p>(1) Supposons $m$ non bornée. Soit $M$ la machine qui, sur l’entrée $k$ (un mot, lu comme un entier), parcourt les mots dans l’ordre et renvoie le premier $x$ tel que $m(x)\ge k$ : la recherche aboutit toujours, et $M$ est calculable totale, d’indice $a$. Le mot $x_k=M(k)$ vérifie $C(x_k)\ge m(x_k)\ge k$ et, par l’<a href="#invariance">invariance</a>, $C(x_k)\le C_a(x_k)+2|a|+1\le\log_2(k+1)+2|a|+1$. Pour $k$ assez grand, $\log_2(k+1)+2|a|+1<k$ : contradiction. Enfin $C$ n’est pas bornée, puisqu’il n’y a qu’un nombre fini de programmes de longueur donnée ; elle ne peut donc pas être calculable, sans quoi $m=C$ contredirait ce qui précède.</p>
+<p>(2) Soit $c$ la constante de l’invariance (1). On pose $C_s(x)=\min\big(\{|x|+c\}\cup\{|p|:|p|\le s,\ U(p)=x\text{ en au plus }s\text{ pas}\}\big)$, calculable par simulation. Elle décroît en $s$, et vaut $C(x)$ dès que $s$ dépasse la longueur et le temps de calcul d’un plus court programme de $x$. Alors $C(x)\le k\iff\exists s\ C_s(x)\le k$, ce qui est semi-décidable (<a href="semi-decidabilite.html#projection">projection</a>). Réciproquement, d’une semi-décision de $\{(x,k):C(x)\le k\}$ on tire $C_s(x)=\min(\{|x|+c\}\cup\{k:$ la semi-décision accepte $(x,k)$ en au plus $s$ pas$\})$.</p>
+<p>(3) $R$ est infini par la <a href="#incompressibles">proposition précédente</a>. Si $W\subseteq R$ était semi-décidable et infini, la machine qui, sur l’entrée $k$, énumère $W$ et renvoie le premier élément énuméré de longueur au moins $k$ serait calculable totale ; elle produirait des mots $x_k\in R$, donc avec $C(x_k)\ge|x_k|\ge k$, et la même majoration $C(x_k)\le\log_2(k+1)+O(1)$ qu’en (1) conduit à la même contradiction.</p>
+</tech>
+<techno><p>Le point (2) est le statut de tout compresseur réel : chaque algorithme de compression fournit une majoration, et l’on peut les combiner (prendre le meilleur de plusieurs compresseurs, laisser tourner plus longtemps une recherche de programmes courts) pour faire baisser la majoration. Ce qui est impossible, c’est d’arrêter la recherche en sachant qu’on a atteint le minimum. Avec un oracle pour l’arrêt, en revanche, $C(x)$ se calcule : on demande, pour chaque programme $p$ de longueur au plus $|x|+c$, si $U(p)$ s’arrête (l’arrêt de $U$ est semi-décidable, donc se ramène à $K$ par la <a href="semi-decidabilite.html#k-complet">complétude de l’arrêt</a>), puis on exécute ceux qui s’arrêtent. Donc $C\le_T K$ (<a href="indecidabilite.html#reductibilites">réduction de Turing</a>).</p></techno>
+</res>
+
+<h2 id="chaitin-incompletude">L’incomplétude selon Chaitin</h2>
+
+<res type="Théorème" nom="Théorème d’incomplétude de Chaitin (1974)" id="chaitin">
+<enonce>
+<p>Soit $\mathsf T$ une théorie cohérente qui contient $\mathsf{PA}$ et dont l’ensemble des axiomes est décidable. Il existe un entier $L$ tel que, pour tout $k\ge L$ et tout mot $x$, $\mathsf T$ ne démontre pas l’énoncé « $C(x)>k$ ». Pourtant, cet énoncé est vrai pour une infinité de mots $x$.</p>
+<p>Ici « $C(x)>k$ » désigne la négation de la formule Σ qui définit, par la <a href="incompletude.html#representabilite">proposition de définissabilité</a>, l’ensemble semi-décidable $\{(x,k):C(x)\le k\}$.</p>
+</enonce>
+<philo>
+<p>Le premier théorème de Gödel dit qu’une théorie laisse échapper des vérités ; Chaitin dit lesquelles, et en mesure la quantité. Une théorie ne peut pas démontrer qu’un objet est plus complexe qu’elle-même : la constante $L$ est, à peu de chose près, la longueur d’un programme qui énumère les théorèmes de $\mathsf T$. Des axiomes de quelques milliers de bits ne permettent de démontrer l’incompressibilité d’aucun mot de plus de quelques milliers de bits, alors que presque tous les mots longs sont incompressibles.</p>
+<p>Chaitin y a vu une raison de traiter les mathématiques un peu comme une science expérimentale : pour démontrer davantage, il faut ajouter de l’information, c’est-à-dire de nouveaux axiomes.</p>
+</philo>
+<tech>
+<p>Les théorèmes de $\mathsf T$ forment un ensemble semi-décidable, puisque les axiomes sont décidables et que la vérification d’une preuve est mécanique. Soit $P$ la machine qui, sur l’entrée $k$, énumère les théorèmes de $\mathsf T$ et s’arrête sur le premier de la forme « $C(x)>k$ », en renvoyant $x$. Soit $a$ un indice de $P$. Si $P(k)=x$, alors $C(x)\le|k|+2|a|+1\le\log_2(k+1)+2|a|+1$ (<a href="#invariance">invariance</a>). Choisissons $L$ tel que $\log_2(k+1)+2|a|+1\le k$ pour tout $k\ge L$.</p>
+<p>Supposons que $\mathsf T$ démontre « $C(x)>k$ » pour un $k\ge L$ et un mot $x$. Alors $P(k)$ s’arrête, et renvoie un mot $x'$ (peut-être différent de $x$) tel que $\mathsf T$ démontre « $C(x')>k$ ». Or $C(x')\le\log_2(k+1)+2|a|+1\le k$ : l’énoncé Σ « $C(x')\le k$ » est vrai, donc démontrable dans $\mathsf{PA}$ (<a href="incompletude.html#sigma-complet">Σ-complétude</a>), donc dans $\mathsf T$. La théorie démontrerait un énoncé et sa négation, contrairement à l’hypothèse.</p>
+<p>Enfin, il existe des mots de toute longueur $n$ avec $C(x)\ge n$ (<a href="#incompressibles">proposition</a>) : pour $n>L$, l’énoncé « $C(x)>L$ » est vrai et indémontrable. La machine $P$ n’a pas besoin de connaître sa propre longueur : $L$ est choisi après $P$, et l’argument ne fait aucun appel au <a href="smn-recursion.html#kleene">théorème de récursion</a>.</p>
+</tech>
+<techno><p>Pour $\mathsf T=\mathsf{PA}$ ou $\mathsf T=$ <a href="bases.html#zfc">ZFC</a>, la constante $L$ dépend de la taille d’un programme qui vérifie les preuves de $\mathsf T$, écrit pour la machine universelle choisie. Avec un langage de programmation raisonnable, quelques kilo-octets suffisent ; mais la valeur exacte de $L$ n’a pas de sens intrinsèque, puisque $C$ n’est définie qu’à une constante près.</p></techno>
+</res>
+
+<h2 id="prefixe">Programmes auto-délimités</h2>
+
+<p>Pour définir une probabilité d’arrêt, il faut tirer un programme au hasard, bit après bit, sans savoir à l’avance quand s’arrêter. On se restreint pour cela à des machines dont aucun programme n’est le début d’un autre.</p>
+
+<res type="Proposition" nom="Ensembles sans préfixe et inégalité de Kraft" id="kraft">
+<enonce>
+<p>Un ensemble $S\subseteq\{0,1\}^\ast$ est <strong>sans préfixe</strong> si aucun mot de $S$ n’est un début strict (préfixe) d’un autre mot de $S$. On a alors</p>
+$$\sum_{p\in S}2^{-|p|}\le1.$$
+</enonce>
+<philo><p>Imaginons qu’on tire les bits d’un programme à pile ou face, un par un, jusqu’à obtenir un mot de $S$. Le mot $p$ sort avec probabilité $2^{-|p|}$, et, comme aucun mot de $S$ n’en prolonge un autre, ces événements s’excluent : leurs probabilités ne peuvent pas totaliser plus de 1.</p></philo>
+<tech><p>Au mot $p=p_1\cdots p_\ell$ on associe l’intervalle $I_p=[0{,}p_1\cdots p_\ell,\ 0{,}p_1\cdots p_\ell+2^{-\ell}[$ de $[0,1[$ (écriture en base 2), de longueur $2^{-|p|}$ : ce sont les réels dont le développement binaire commence par $p$. Si ni $p$ ni $q$ n’est préfixe de l’autre, ils diffèrent à une position $i\le\min(|p|,|q|)$, et $I_p$, $I_q$ sont disjoints (l’un est dans la moitié gauche, l’autre dans la moitié droite de l’intervalle associé à leur début commun). Pour toute partie finie de $S$, les intervalles sont donc disjoints et contenus dans $[0,1[$, et la somme de leurs longueurs est au plus 1. Une série à termes positifs dont toutes les sommes partielles sont majorées par 1 a une somme au plus 1.</p></tech>
+<techno><p>Les codes de longueur variable des formats de compression (codes de Huffman) sont sans préfixe pour la même raison : le décodeur doit savoir où finit chaque mot de code sans séparateur. L’inégalité de Kraft dit exactement quelles longueurs de mots de code sont possibles.</p></techno>
+</res>
+
+<res type="Théorème" nom="Machine universelle sans préfixe et complexité préfixe" id="universelle-prefixe">
+<enonce>
+<p>Une fonction partielle calculable est <strong>sans préfixe</strong> si son domaine l’est. Il existe une fonction partielle calculable $(e,p)\mapsto M_e(p)$ telle que :</p>
+<ul>
+<li>chaque $M_e$ est sans préfixe ;</li>
+<li>si $\varphi_e$ est sans préfixe, alors $M_e=\varphi_e$.</li>
+</ul>
+<p>La fonction $U(\bar e\,p)=M_e(p)$ est alors partielle calculable et sans préfixe. On définit la <strong>complexité préfixe</strong> $\mathit{KP}(x)=\min\{|p|:U(p)=x\}$, et, pour $M$ sans préfixe, $\mathit{KP}_M(x)=\min\{|p|:M(p)=x\}$. On a :</p>
+<ol>
+<li>pour toute $M$ sans préfixe, d’indice $e$, $\mathit{KP}(x)\le\mathit{KP}_M(x)+2|e|+1$ ;</li>
+<li>$C(x)\le\mathit{KP}(x)+c$ et $\mathit{KP}(x)\le|x|+2\log_2(|x|+1)+c$ pour une constante $c$ ;</li>
+<li>$\sum_x2^{-\mathit{KP}(x)}\le1$.</li>
+</ol>
+<p>(La littérature note $K(x)$ la complexité préfixe ; on écrit $\mathit{KP}$ pour ne pas la confondre avec l’ensemble $K$ de l’arrêt.)</p>
+</enonce>
+<philo><p>Un programme sans préfixe porte en lui sa propre fin : on peut le lire sur un ruban sans marque de fin, et la machine sait quand elle a tout lu. C’est la situation d’un ordinateur qui lit un fichier dont la taille est écrite dans l’en-tête. La complexité préfixe est un peu plus grande que la complexité simple (il faut inclure la longueur dans la description, ce qui coûte de l’ordre de $\log|x|$ bits), mais elle a de meilleures propriétés : elle se comporte comme une mesure de probabilité, comme le dit le point (3).</p></philo>
+<tech>
+<p><strong>Construction de $M_e$.</strong> Au stade $s$, on calcule $s$ pas de $\varphi_e$ sur chacun des $s$ premiers mots, et l’on range les mots dont le calcul vient de s’arrêter dans l’ordre des mots. On parcourt ces mots un par un : un mot $q$ est <em>accepté</em> s’il n’est ni préfixe ni prolongement d’un mot déjà accepté. On pose $M_e(p)=\varphi_e(p)$ si $p$ est accepté à un stade, et $M_e(p)$ non défini sinon. Pour calculer $M_e(p)$, on fait tourner les stades jusqu’à ce que $p$ soit accepté : c’est une procédure uniforme en $(e,p)$, donc $(e,p)\mapsto M_e(p)$ est partielle calculable (<a href="these-church.html">thèse de Church</a>, ou une écriture directe avec la <a href="universalite.html#enumeration">fonction universelle</a>). Le domaine de $M_e$ est l’ensemble des mots acceptés, sans préfixe par construction. Si le domaine de $\varphi_e$ est sans préfixe, chaque mot du domaine finit par apparaître et n’est comparable à aucun autre : tous sont acceptés, et $M_e=\varphi_e$.</p>
+<p><strong>$U$ est sans préfixe.</strong> Si $\bar e\,p$ est préfixe de $\bar e'\,p'$, la lecture des deux codes auto-délimitants donne $e=e'$, puis $p$ préfixe de $p'$ ; comme $p,p'\in\mathrm{dom}\,M_e$, $p=p'$.</p>
+<p>(1) Si $M=\varphi_e$ est sans préfixe, $M=M_e$, et $M(p)=x$ entraîne $U(\bar e\,p)=x$. (2) $U$ est une fonction partielle calculable : par l’<a href="#invariance">invariance</a> appliquée à un de ses indices, $C\le\mathit{KP}+c$. Pour la seconde inégalité, soit $M$ la fonction qui, sur l’entrée $\bar\ell\,x$, où $\ell$ est le mot de l’entier $|x|$, renvoie $x$ : son domaine est sans préfixe (on lit $\ell$, donc la longueur de la suite, puis exactement $|x|$ chiffres), et $|\bar\ell\,x|=|x|+2|\ell|+1\le|x|+2\log_2(|x|+1)+1$. On conclut par (1). (3) Les plus courts programmes $p_x$ des différents $x$ sont des mots distincts du domaine de $U$, qui est sans préfixe : on applique l’<a href="#kraft">inégalité de Kraft</a>.</p>
+</tech>
+<techno><p>La construction de $M_e$ est la technique de l’<em>entrelacement</em> (ou queue d’aronde) : on ne peut pas savoir à l’avance si un calcul s’arrêtera, alors on les fait tous avancer d’un pas à tour de rôle, et l’on prend les décisions au fur et à mesure des arrêts observés. Le même procédé sert à énumérer un ensemble semi-décidable (<a href="semi-decidabilite.html#caracterisations-re">caractérisations</a>).</p></techno>
+</res>
+
+<h2 id="omega">Le nombre Ω</h2>
+
+<res type="Définition" nom="Probabilité d’arrêt Ω (Chaitin, 1975)" id="def-omega">
+<enonce>
+<p>On pose</p>
+$$\Omega=\sum_{p\in\mathrm{dom}\,U}2^{-|p|},\qquad \Omega_s=\sum\big\{2^{-|p|}:|p|\le s\text{ et }U(p)\text{ s’arrête en au plus }s\text{ pas}\big\}.$$
+<p>Alors $0<\Omega\le1$, chaque $\Omega_s$ est un rationnel calculable à partir de $s$, la suite $(\Omega_s)$ est croissante et tend vers $\Omega$. Pour tout $n\ge1$, il existe un unique entier $j_n$ tel que $j_n2^{-n}<\Omega\le(j_n+1)2^{-n}$.</p>
+</enonce>
+<philo><p>$\Omega$ est la probabilité qu’un programme, dont on tire les bits à pile ou face, s’arrête. C’est un nombre réel bien défini, entre 0 et 1, que l’on peut approcher par en dessous en faisant tourner de plus en plus de programmes de plus en plus longtemps. Mais on ne sait jamais à quelle distance on est encore de la limite : les programmes qui ne se sont pas encore arrêtés le feront peut-être plus tard.</p></philo>
+<tech><p>$\Omega\le1$ par l’<a href="#kraft">inégalité de Kraft</a>, et $\Omega>0$ car $U$ s’arrête sur au moins un programme (par exemple sur $\bar e$, si $\varphi_e$ est définie seulement sur le mot vide : son domaine $\{\varepsilon\}$ est sans préfixe, donc $M_e=\varphi_e$ et $U(\bar e)=\varphi_e(\varepsilon)$). $\Omega_s$ est une somme finie que l’on calcule en simulant au plus $2^{s+1}$ programmes pendant $s$ pas. Elle croît avec $s$, et pour tout $\epsilon>0$, une somme partielle finie de $\Omega$ dépasse $\Omega-\epsilon$ ; les programmes qu’elle fait intervenir sont tous comptés dans $\Omega_s$ pour $s$ assez grand. Enfin $j_n$ est le plus grand entier $j$ tel que $j2^{-n}<\Omega$ ; il est compris entre $0$ et $2^n-1$.</p></tech>
+<techno><p>$\Omega$ dépend de la machine universelle choisie, comme la complexité. Toutes les propriétés démontrées ci-dessous valent pour chaque choix. Le dernier résultat du chapitre calcule les premiers chiffres d’un nombre de même nature pour une machine jouet, construite à partir des castors affairés.</p></techno>
+</res>
+
+<res type="Théorème" nom="Les n premiers bits de Ω décident l’arrêt des programmes de longueur au plus n" id="omega-arret">
+<enonce>
+<p>Il existe un algorithme qui, à partir de $n$ et de $j_n$, décide, pour chaque programme $p$ de longueur au plus $n$, si $U(p)$ s’arrête. Par conséquent :</p>
+<ol>
+<li>$\Omega$ est irrationnel ; en particulier $\Omega<1$, et $j_n$ est l’entier qui s’écrit en binaire avec les $n$ premiers chiffres de $\Omega$ ;</li>
+<li>la suite des chiffres binaires de $\Omega$ n’est pas calculable ;</li>
+<li>$\Omega\equiv_TK$ : chacun est calculable avec un oracle pour l’autre.</li>
+</ol>
+</enonce>
+<philo><p>Les premiers chiffres de $\Omega$ résument, sous forme comprimée, les réponses à une quantité exponentielle de questions d’arrêt : $n$ bits répondent pour les $2^{n+1}-1$ programmes de longueur au plus $n$. Connaître un millier de chiffres de $\Omega$ suffirait, en principe, à décider toute conjecture de la forme « tel programme ne s’arrête pas » qui s’écrit en moins d’un millier de bits, comme la <a href="indecidabilite.html#goldbach">conjecture de Goldbach</a>. Mais ces chiffres sont « en principe » seulement : la méthode de calcul demande d’attendre un temps qui croît comme les castors affairés.</p></philo>
+<tech>
+<p><strong>L’algorithme.</strong> On cherche un $s\ge n$ tel que $\Omega_s>j_n2^{-n}$ : il existe, puisque $\Omega_s$ tend vers $\Omega>j_n2^{-n}$. On répond alors « $U(p)$ s’arrête » si et seulement si $U(p)$ s’arrête en au plus $s$ pas. Si $|p|\le n$ et si $U(p)$ s’arrêtait au pas $t>s$, alors, au stade $t$, $\Omega_t\ge\Omega_s+2^{-|p|}>j_n2^{-n}+2^{-n}\ge\Omega$, ce qui est impossible puisque $\Omega_t\le\Omega$.</p>
+<p><strong>Un programme $U$-indécidable.</strong> Soit $M$ la fonction partielle calculable $M(1^e0)=\varphi_e(e)$, non définie ailleurs. Son domaine est contenu dans $\{1^e0:e\in\N\}$, sans préfixe ; si $a$ est un indice de $M$, alors $M=M_a$ et $e\in K\iff U(\bar a\,1^e0)$ s’arrête. Comme $K$ n’est pas décidable (<a href="indecidabilite.html#arret">arrêt</a>), l’arrêt de $U$ ne l’est pas, même restreint à ces programmes.</p>
+<p>(1) Si $\Omega$ était rationnel, $\Omega=u/v$, on calculerait $j_n=\lceil u2^n/v\rceil-1$ à partir de $n$, et l’algorithme déciderait l’arrêt de tous les programmes $U(\bar a\,1^e0)$ (prendre $n=|\bar a|+e+1$) : contradiction. Un irrationnel n’est pas de la forme $j2^{-n}$ ; donc $j_n2^{-n}<\Omega<(j_n+1)2^{-n}$, ce qui signifie que $j_n$ s’écrit avec les $n$ premiers chiffres de $\Omega$. (2) Ces chiffres calculables donneraient de même $j_n$ et l’arrêt. (3) Le raisonnement précédent montre $K\le_T\Omega$. Inversement, l’ensemble $\{(n,j):\Omega>j2^{-n}\}=\{(n,j):\exists s\ \Omega_s>j2^{-n}\}$ est semi-décidable, donc se réduit à $K$ (<a href="semi-decidabilite.html#k-complet">complétude de l’arrêt</a>). Avec un oracle pour $K$, on obtient $j_n$ comme le plus grand $j<2^n$ tel que $\Omega>j2^{-n}$, et donc les $n$ premiers chiffres de $\Omega$.</p>
+</tech>
+<techno><p>L’algorithme est une version quantitative de l’argument qui relie l’arrêt aux <a href="castors-affaires.html#sigma-non-calculable">castors affairés</a> : connaître $S(n)$, c’est connaître le temps au-delà duquel une machine à $n$ états ne s’arrêtera plus ; connaître $j_n$, c’est pouvoir calculer un tel temps $s$ pour les programmes de longueur $n$. Le temps $s$ ainsi obtenu majore la durée de tous les calculs de $U$ qui s’arrêtent sur des programmes de longueur au plus $n$ ; comme pour $S$, une telle fonction de $n$ finit par dépasser toute fonction calculable.</p></techno>
+</res>
+
+<res type="Théorème" nom="Ω est aléatoire (Chaitin, 1975)" id="omega-aleatoire">
+<enonce>
+<p>Notons $\Omega\!\restriction\!n$ le mot formé des $n$ premiers chiffres binaires de $\Omega$. Il existe une constante $c$ telle que, pour tout $n$,</p>
+$$\mathit{KP}(\Omega\!\restriction\!n)\ge n-c.$$
+</enonce>
+<philo>
+<p>Aucun programme ne produit les $n$ premiers chiffres de $\Omega$ en beaucoup moins de $n$ bits : il n’y a pas de raccourci, pas de motif. Les chiffres de $\Omega$ se comportent comme des tirages à pile ou face indépendants, alors que $\Omega$ est parfaitement défini. Le hasard, défini comme absence de description plus courte, coexiste ici avec la détermination la plus complète.</p>
+<p>On peut en déduire, par exemple, que chaque bloc de $k$ chiffres apparaît dans $\Omega$ avec la fréquence $2^{-k}$ (résultat cité pour information).</p>
+</philo>
+<tech><p>Soit $M$ la fonction partielle qui, sur l’entrée $p$, calcule $w=U(p)$ (si ce calcul s’arrête). Elle pose $n=|w|$ et note $j$ l’entier écrit en binaire par $w$. Elle cherche ensuite un $s\ge n$ tel que $\Omega_s>j2^{-n}$. Si elle le trouve, elle forme la liste finie des résultats $U(q)$ des programmes $q$ de longueur au plus $n$ qui s’arrêtent en au plus $s$ pas, et renvoie le premier mot $y$ qui n’est pas dans cette liste. Le domaine de $M$ est contenu dans celui de $U$, donc sans préfixe ; soit $a$ un indice de $M$. Prenons pour $p$ un plus court programme de $\Omega\!\restriction\!n$. Alors $w=\Omega\!\restriction\!n$, $j=j_n$ par le <a href="#omega-arret">théorème précédent</a>, et ce théorème montre que la liste contient <em>tous</em> les résultats des programmes de longueur au plus $n$. Le mot $y=M(p)$ n’est produit par aucun d’eux : $\mathit{KP}(y)>n$. Mais $\mathit{KP}(y)\le|p|+2|a|+1=\mathit{KP}(\Omega\!\restriction\!n)+2|a|+1$ (<a href="#universelle-prefixe">invariance</a>). Donc $\mathit{KP}(\Omega\!\restriction\!n)>n-2|a|-1$.</p></tech>
+<techno><p>Comme $C\le\mathit{KP}+c$ et $\mathit{KP}(x)\le C(x)+2\log_2|x|+O(1)$ (en préfixant un plus court programme simple par sa longueur), on en déduit aussi $C(\Omega\!\restriction\!n)\ge n-2\log_2n-O(1)$. Avec la complexité simple, on ne peut pas faire mieux pour aucune suite infinie : toute suite a une infinité de préfixes compressibles de $\log n$ bits environ (Martin-Löf, résultat cité). C’est une raison du choix de la complexité préfixe pour définir le hasard des suites infinies.</p></techno>
+</res>
+
+<res type="Théorème" nom="Une théorie ne détermine qu’un nombre fini de chiffres de Ω" id="omega-theorie">
+<enonce>
+<p>Soit $\mathsf T$ une théorie de l’arithmétique, correcte (elle ne démontre que des énoncés vrais) et dont l’ensemble des axiomes est décidable. Il existe $N$ tel que, pour tout $n\ge N$, $\mathsf T$ ne démontre aucun énoncé de la forme « $\Omega\!\restriction\!n=w$ ».</p>
+<p>L’énoncé « $\Omega\!\restriction\!n=w$ », c’est-à-dire « $j2^{-n}<\Omega<(j+1)2^{-n}$ » où $j$ est l’entier écrit par $w$, s’écrit dans l’arithmétique comme la conjonction de « $\exists s\ \Omega_s>j2^{-n}$ » et de « $\forall s\ \Omega_s\le(j+1)2^{-n}$ » (<a href="incompletude.html#representabilite">définissabilité</a>).</p>
+</enonce>
+<philo><p>Les axiomes d’une théorie forment une description finie. Ils ne peuvent donc fixer qu’un nombre fini de chiffres d’un nombre dont les chiffres sont incompressibles : au-delà, chaque chiffre de $\Omega$ est un fait mathématique vrai « sans raison », sans démonstration à partir de principes plus simples. C’est la forme la plus radicale de l’incomplétude, et elle vaut pour <a href="bases.html#zfc">ZFC</a> comme pour toute théorie raisonnable qui ne démontre que des vérités arithmétiques.</p></philo>
+<tech><p>Soit $M$ la fonction qui, sur l’entrée $\bar\nu$, où $\nu$ est le mot de l’entier $n$, énumère les théorèmes de $\mathsf T$ et renvoie le $w$ du premier théorème de la forme « $\Omega\!\restriction\!n=w$ ». Son domaine est contenu dans l’ensemble des codes auto-délimitants, qui est sans préfixe. Si $\mathsf T$ démontre « $\Omega\!\restriction\!n=w$ », alors $M(\bar\nu)$ est défini, et c’est $\Omega\!\restriction\!n$ puisque $\mathsf T$ est correcte. Donc $\mathit{KP}(\Omega\!\restriction\!n)\le|\bar\nu|+c_M\le2\log_2(n+1)+1+c_M$ (<a href="#universelle-prefixe">invariance</a>). Avec le <a href="#omega-aleatoire">théorème précédent</a>, $n-c\le2\log_2(n+1)+1+c_M$, ce qui est faux pour $n$ assez grand.</p>
+<p>La correction est nécessaire ici : l’énoncé « $\Omega\!\restriction\!n=w$ » contient une partie universelle, et une théorie cohérente mais incorrecte pourrait en démontrer de faux. Chaitin a obtenu un résultat plus fort, cité ici pour information : une telle théorie ne détermine qu’un nombre fini de chiffres de $\Omega$, à des positions quelconques, et ce nombre est majoré par la complexité de ses axiomes plus une constante. Il a aussi écrit une <a href="equations-diophantiennes.html#conjectures">équation diophantienne</a> exponentielle à un paramètre $k$ qui a une infinité de solutions si et seulement si le $k$-ième chiffre de $\Omega$ vaut 1 (1987).</p></tech>
+<techno><p>Les énoncés « $\Omega>q$ » sont Σ₁ : quand ils sont vrais, $\mathsf{PA}$ les démontre (<a href="incompletude.html#sigma-complet">Σ-complétude</a>), en exhibant un stade $s$ et les calculs qui s’arrêtent. Les minorations de $\Omega$ sont donc accessibles ; ce qui échappe aux théories, ce sont les majorations, qui disent qu’aucun autre programme ne s’arrêtera.</p></techno>
+</res>
+
+<res type="Exemple" nom="Un Ω jouet calculé à partir des castors affairés" id="omega-castors">
+<enonce>
+<p>Cet exemple utilise le chapitre <a href="castors-affaires.html">Castors affairés</a>, placé plus loin ; rien d’autre n’en dépend. Codons une <a href="castors-affaires.html#def-rado">machine de Radó</a> à $n$ états par le mot $1^n0$ suivi, pour chacune des $2n$ transitions, du symbole écrit (1 bit), du déplacement (1 bit) et de l’état suivant (un nombre de $0$ à $n$, $0$ pour $H$, écrit sur $\lceil\log_2(n+1)\rceil$ bits). Ce code a pour longueur $\ell(n)=n+1+2n\,(2+\lceil\log_2(n+1)\rceil)$, et l’ensemble des codes est sans préfixe. La machine $V$ qui, sur un code, exécute la machine codée sur une bande de 0, a pour domaine les codes des machines qui s’arrêtent, et</p>
+$$\Omega_V=\sum_{n\ge1}h(n)\,2^{-\ell(n)},$$
+<p>où $h(n)$ est le nombre de tables à $n$ états qui s’arrêtent. Avec $h(1)=32$, $h(2)=9\,784$ et $h(3)=7\,571\,840$, on obtient $0{,}17287<\Omega_V<0{,}17899$, et les sept premiers chiffres binaires : $\Omega_V=0{,}0010110\ldots$</p>
+</enonce>
+<philo><p>$V$ n’est pas une machine universelle sans préfixe, et les théorèmes précédents ne s’appliquent pas à elle : rien n’est affirmé ici sur le hasard de $\Omega_V$. Mais l’exemple montre où se loge la difficulté : chaque nouveau chiffre exige de connaître $h(n)$ pour des $n$ plus grands, c’est-à-dire de décider l’arrêt de toutes les machines à $n$ états. On sait le faire jusqu’à $n=5$, au prix de décennies d’efforts, et l’on sait que ZFC ne le permet plus au-delà d’un certain rang (<a href="castors-affaires.html#castors-zfc">castors et ZFC</a>).</p></philo>
+<tech><p>Le code est sans préfixe : le bloc $1^n0$ donne $n$, donc la longueur totale. Il y a $(4n+4)^{2n}$ tables à $n$ états (certains mots de longueur $\ell(n)$ ne codent aucune table, quand un champ d’état dépasse $n$). Une machine à $n$ états qui s’arrête le fait en au plus $S(n)$ pas, avec $S(1)=1$, $S(2)=6$, $S(3)=21$ (<a href="castors-affaires.html#valeurs-bb">valeurs démontrées</a>) : on obtient $h(1),h(2),h(3)$ en simulant chaque table pendant $S(n)$ pas. La contribution exacte des $n\le3$ est $A=32\cdot2^{-8}+9\,784\cdot2^{-19}+7\,571\,840\cdot2^{-28}\approx0{,}171869$. Pour $n\ge4$, la contribution de $n$ est comprise entre la masse des tables dont la première transition ($A0$) va en $H$, soit une proportion $1/(n+1)$ des tables, et la masse de toutes les tables, $m(n)=(4n+4)^{2n}2^{-\ell(n)}=2^{-(n+1)}\big((n+1)/2^{\lceil\log_2(n+1)\rceil}\big)^{2n}\le2^{-(n+1)}$. Le calcul exact des sommes pour $4\le n<200$, et la majoration du reste par $2^{-200}$, donnent $A+\sum m(n)/(n+1)\approx0{,}172876$ et $A+\sum m(n)\approx0{,}178980$, dont les développements binaires commencent par $0{,}0010110\,0$ et $0{,}0010110\,1$.</p></tech>
+<techno><p>Le programme <a href="assets/code/castor_omega.c">castor_omega.c</a> énumère les $64$, $20\,736$ et $16\,777\,216$ tables à 1, 2 et 3 états et compte celles qui s’arrêtent (environ une seconde). Le plus gros terme du reste vient de $n=7$, où le champ d’état utilise ses huit valeurs : tous les mots de longueur $\ell(7)$ sont des codes, de masse totale $2^{-8}$. Pour gagner le huitième chiffre, il faudrait resserrer l’encadrement, donc connaître au moins en partie $h(4),\dots,h(7)$ ; pour 7 états, c’est hors de portée.</p></techno>
+</res>
+
+<!--EXERCICES-->
+<h2 id="exercices">Exercices</h2>
+
+<exo niveau="1" titre="Les mots réguliers sont compressibles" id="ex-ko-zeros">
+<p>Montrer qu’il existe une constante $c$ telle que, pour tout $n$ : $C(0^n)\le\log_2(n+1)+c$ et $C(ww)\le C(w)+c$ pour tout mot $w$.</p>
+<corrige>
+<p>La fonction $f(n)=0^n$ (de l’entier $n$, identifié à un mot de longueur $\lfloor\log_2(n+1)\rfloor$, vers le mot $0^n$) est calculable totale. Par l’<a href="#invariance">invariance</a>, $C(0^n)\le C(n)+c_f\le|n|+c+c_f\le\log_2(n+1)+c'$. De même $g(w)=ww$ est calculable totale, d’où $C(ww)\le C(w)+c_g$. Un mot de longueur $n$ formé de zéros se décrit donc avec environ $\log_2 n$ bits : il est très compressible, alors que la plupart des mots de longueur $n$ ne le sont pas (<a href="#incompressibles">incompressibles</a>).</p>
+</corrige>
+</exo>
+
+<exo niveau="2" titre="Complexité d’une concaténation" id="ex-ko-concat">
+<p>Montrer qu’il existe une constante $c$ telle que $C(xy)\le2\,C(x)+C(y)+c$ pour tous mots $x,y$.</p>
+<corrige>
+<p>Le problème est de savoir où finit la description de $x$ et où commence celle de $y$. On utilise le <a href="#mots-entiers">codage auto-délimitant</a> $\bar p=1^{|p|}0\,p$. Soit $V$ la fonction partielle calculable qui, sur l’entrée $\bar p\,q$, lit $|p|$ (les 1 de tête), puis $p$, puis le reste $q$, et renvoie $U(p)\,U(q)$ si les deux calculs s’arrêtent. Si $p$ et $q$ sont des descriptions minimales de $x$ et $y$, alors $V(\bar p\,q)=xy$, avec $|\bar p\,q|=2|p|+1+|q|$. Donc $C_V(xy)\le2C(x)+1+C(y)$. Comme $V=\varphi_e$ pour un $e$ fixé, l’invariance donne $C(xy)\le C_V(xy)+2|e|+1$. Le facteur 2 vient du codage auto-délimitant ; on peut le ramener à $C(x)+O(\log C(x))$ avec un codage plus économe de la longueur, mais pas supprimer tout terme correctif en général (résultat cité pour information).</p>
+</corrige>
+</exo>
+
+<exo niveau="2" titre="On ne peut pas calculer un programme minimal" id="ex-ko-minimal">
+<p>Montrer qu’il n’existe pas de fonction calculable totale $f$ telle que, pour tout mot $x$, $f(x)$ soit un programme de longueur minimale pour $x$ (c’est-à-dire $U(f(x))=x$ et $|f(x)|=C(x)$).</p>
+<corrige>
+<p>Si une telle $f$ existait, $C(x)=|f(x)|$ serait calculable, ce qui contredit le <a href="#c-non-calculable">théorème</a>. On ne peut même pas calculer une fonction $f$ telle que $U(f(x))=x$ et $|f(x)|\le C(x)+k$ pour une constante $k$ : $|f(x)|-k$ serait une minoration calculable non bornée de $C$. Un compresseur réel (zip, etc.) donne une majoration calculable de $C$, à une constante près ; il n’est jamais optimal sur tous les mots.</p>
+</corrige>
+</exo>
+
+<exo niveau="3" titre="Peu de 1, peu d’information" id="ex-ko-binomial">
+<p>Soit $x$ un mot de longueur $n$ qui contient exactement $k$ fois la lettre 1. Montrer que $C(x)\le\log_2\binom nk+4\log_2(n+1)+c$, avec $c$ indépendant de $x$, $n$ et $k$. Application numérique pour $n=1000$ et $k=100$.</p>
+<corrige>
+<p>On décrit $x$ par trois données : $n$, $k$, et le rang $i$ de $x$ dans la liste, rangée par ordre alphabétique, des mots de longueur $n$ à $k$ uns. Soit $V$ qui, sur $\bar n\,\bar k\,i$, énumère cette liste et renvoie son $i$-ième élément. Il y a $\binom nk$ mots dans la liste, donc $i<\binom nk$ s’écrit avec au plus $\log_2\binom nk+1$ bits ; $\bar n$ et $\bar k$ coûtent $2|n|+1$ et $2|k|+1$ bits, avec $|k|\le|n|\le\log_2(n+1)$. Par l’invariance :</p>
+$$C(x)\le\log_2\tbinom nk+1+4\log_2(n+1)+2+2|e|+1 .$$
+<p>Pour $n=1000$, $k=100$ : $\log_2\binom{1000}{100}\approx464{,}4$ et $4\log_2 1001\approx39{,}9$, soit environ 505 bits plus une constante, au lieu de 1000. Avec $k=250$ on trouve environ 806 bits, et avec $k=500$ environ 995 : un mot équilibré n’est presque pas compressible par cette méthode. C’est le lien avec l’entropie de Shannon : $\log_2\binom nk\approx n\,H(k/n)$, où $H(p)=-p\log_2p-(1-p)\log_2(1-p)$.</p>
+</corrige>
+</exo>

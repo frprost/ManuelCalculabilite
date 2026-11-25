@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Frédéric Prost et Claude">
+<title>Logique et calcul : décidabilité, types et preuves · Calculabilité</title>
+<link rel="stylesheet" href="assets/katex/katex.min.css">
+<link rel="stylesheet" href="assets/style.css">
+<script>try{var t=localStorage.getItem('calc-theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}document.documentElement.classList.add('js');</script>
+</head>
+<body>
+<header class="entete"><div class="entete-int">
+  <button type="button" class="btn-menu" aria-label="Sommaire">☰ Sommaire</button>
+  <a class="titre-site" href="index.html">Calculabilité <span>·</span> un manuel à trois niveaux</a>
+  <span class="selecteur-legende">Niveau de lecture :</span>
+  <div class="selecteur" role="group" aria-label="Niveau de lecture">
+    <button type="button" data-niveau="philo" title="Sens et implications">Philosophique</button>
+    <button type="button" data-niveau="tech" title="Preuves mathématiques">Technique</button>
+    <button type="button" data-niveau="techno" title="Constructions complètes, machines de Turing">Technologique</button>
+    <button type="button" data-niveau="tout" title="Afficher les trois niveaux">Tout</button>
+  </div>
+  <button type="button" class="btn-theme" aria-label="Changer de thème" title="Clair / sombre">◐</button>
+</div></header>
+<div class="page">
+<nav class="sommaire" aria-label="Sommaire"><ul><li><a href="index.html">Accueil et mode d’emploi</a></li></ul><h2>Entrer dans le sujet</h2><ol><li><a href="motivations.html"><span class="num">1</span>Motivations</a></li><li><a href="trois-approches.html"><span class="num">2</span>Trois approches du calcul</a></li></ol><h2>Modèles de calcul</h2><ol><li><a href="machines-turing.html"><span class="num">3</span>Machines de Turing</a></li><li><a href="fonctions-recursives.html"><span class="num">4</span>Fonctions récursives</a></li><li><a href="lambda-calcul.html"><span class="num">5</span>λ-calcul</a></li><li><a href="equivalence.html"><span class="num">6</span>Équivalence des modèles</a></li><li><a href="these-church.html"><span class="num">7</span>Thèse de Church-Turing</a></li></ol><h2>Théorèmes fondamentaux</h2><ol><li><a href="universalite.html"><span class="num">8</span>Universalité</a></li><li><a href="smn-recursion.html"><span class="num">9</span>s-m-n et récursion</a></li></ol><h2>Limites du calcul</h2><ol><li><a href="indecidabilite.html"><span class="num">10</span>Indécidabilité</a></li><li><a href="semi-decidabilite.html"><span class="num">11</span>Semi-décidabilité</a></li><li><a href="hierarchie-arithmetique.html"><span class="num">12</span>Hiérarchie arithmétique</a></li><li><a href="incompletude.html"><span class="num">13</span>Incomplétude</a></li><li><a href="equations-diophantiennes.html"><span class="num">14</span>Équations diophantiennes</a></li><li><a href="logique-types.html" aria-current="page"><span class="num">15</span>Logique et types</a></li><li><a href="theories-decidables.html"><span class="num">16</span>Théories décidables</a></li><li><a href="mathematiques-indecidables.html"><span class="num">17</span>Mathématiques ordinaires</a></li><li><a href="kolmogorov-omega.html"><span class="num">18</span>Kolmogorov et Ω</a></li><li><a href="langages.html"><span class="num">19</span>Langages et grammaires</a></li></ol><h2>Complexité</h2><ol><li><a href="complexite.html"><span class="num">20</span>Complexité</a></li><li><a href="hasard-quantique.html"><span class="num">21</span>Hasard et quantique</a></li></ol><h2>Études de cas</h2><ol><li><a href="ackermann.html"><span class="num">22</span>Fonction d’Ackermann</a></li><li><a href="castors-affaires.html"><span class="num">23</span>Castors affairés</a></li><li><a href="calculabilite-ia.html"><span class="num">24</span>Calculabilité et IA</a></li><li><a href="autres-modeles.html"><span class="num">25</span>Autres modèles</a></li></ol><h2>Annexes</h2><ol><li><a href="parcours.html">Parcours de lecture</a></li><li><a href="cantor.html">Diagonale de Cantor</a></li><li><a href="bases.html">Notions de base</a></li><li><a href="leibniz.html">Leibniz et le binaire</a></li><li><a href="bibliographie.html">Bibliographie</a></li></ol></nav>
+<main class="contenu">
+<h1>Logique et calcul : décidabilité, types et preuves</h1>
+<p class="chapo">Où passe la frontière entre logiques décidables et indécidables ? Il suffit d’une relation à deux places pour dessiner la bande d’une machine de Turing. Et, dans l’autre sens, des langages où tout programme termine sont exactement des systèmes de preuves : c’est la correspondance de Curry-Howard. Du Système F au calcul des constructions, ces langages sont le cœur des assistants de preuve Lean et Rocq, qui vérifient aujourd’hui des démonstrations produites par des humains comme par des IA.</p>
+<div class="prerequis"><strong>Pré-requis</strong><a href="incompletude.html#entscheidung">Problème de la décision</a> · <a href="lambda-calcul.html">λ-calcul</a> · <a href="universalite.html#pas-universelle-totale">Pas d’interpréteur total</a> · <a href="complexite.html#cook-levin">NP-complétude</a></div>
+<nav class="toc-locale" aria-label="Dans ce chapitre"><strong>Dans ce chapitre</strong><ol><li><a href="#frontiere">La frontière du décidable en logique</a></li><li><a href="#totaux">Des langages où tout programme termine</a></li><li><a href="#curry-howard">La correspondance de Curry-Howard</a></li><li><a href="#au-dela">Au-delà des types simples : du Système F au calcul des constructions</a></li><li><a href="#exercices">Exercices</a></li></ol></nav>
+
+
+<p>La calculabilité est née de la logique : Turing a inventé ses machines pour répondre à une question de logique, le problème de la décision. Ce chapitre suit les deux sens de ce lien. Dans le premier, on se demande quelles logiques on peut décider : le calcul propositionnel le peut, le calcul des prédicats avec des relations à une place aussi, mais il suffit d’une relation à deux places pour que tout bascule, parce qu’une relation binaire permet de décrire un quadrillage, et donc l’histoire complète d’un calcul (le temps sur un axe, la bande sur l’autre). Dans le second sens, on part du calcul pour arriver à la logique : en interdisant les programmes qui ne terminent pas, on obtient des langages dont les programmes sont, littéralement, des démonstrations.</p>
+
+<h2 id="frontiere">La frontière du décidable en logique</h2>
+
+<div class="resultat theoreme" id="propositionnel"><div class="entete-res"><div class="type">Théorème</div><div class="nom">Le calcul propositionnel est décidable</div></div>
+<div class="enonce"><p>On peut décider si une formule propositionnelle (construite à partir de variables par $\neg,\wedge,\vee,\Rightarrow$) est une tautologie. Le problème est $\mathrm{co}\mathsf{NP}$-complet, et la satisfaisabilité est $\mathsf{NP}$-complète.</p></div>
+<div class="niveau" data-niveau="philo"><p>Une formule propositionnelle ne parle que d’un nombre fini de propositions élémentaires, chacune vraie ou fausse : on peut toutes les essayer. La question n’est donc pas de savoir si l’on peut décider, mais à quel prix, et c’est une question de complexité, non de calculabilité. Le point de bascule est ailleurs : dès que la logique parle d’<em>objets</em> (un domaine, peut-être infini) et de <em>relations</em> entre eux.</p></div>
+<div class="niveau" data-niveau="tech"><p>Une formule à $n$ variables a $2^n$ valuations ; on évalue la formule sur chacune (table de vérité), en temps $O(2^n\cdot|\phi|)$. Une formule est une tautologie si et seulement si sa négation n’est pas satisfaisable ; la satisfaisabilité est $\mathsf{NP}$-complète (<a href="complexite.html#cook-levin">Cook et Levin</a>), donc les tautologies forment un problème $\mathrm{co}\mathsf{NP}$-complet (passage au complémentaire, avec la réduction $\phi\mapsto\neg\phi$).</p></div>
+</div>
+
+<div class="resultat theoreme" id="monadique"><div class="entete-res"><div class="type">Théorème</div><div class="nom">La logique monadique est décidable (Löwenheim, 1915)</div></div>
+<div class="enonce"><p>Considérons les énoncés du calcul des prédicats sans égalité dont les seuls symboles sont des relations <em>unaires</em> $P_1,\dots,P_k$ (pas de fonction, pas de constante, pas de relation à deux places). Si un tel énoncé a un modèle, il a un modèle d’au plus $2^k$ éléments. Par conséquent, la validité de ces énoncés est décidable.</p></div>
+<div class="niveau" data-niveau="philo"><p>Avec des propriétés à une place, on peut seulement classer les objets dans des cases : « est $P_1$ ou non », « est $P_2$ ou non », etc. Deux objets rangés dans la même case sont indiscernables par le langage, et il n’y a que $2^k$ cases. Le langage ne peut pas exprimer de structure entre les objets (un ordre, un voisinage, une succession) : il ne peut pas décrire un calcul. C’est la logique des syllogismes d’Aristote (« tous les $P$ sont $Q$, tous les $Q$ sont $R$, donc tous les $P$ sont $R$ »), et c’est pour cela qu’elle est décidable.</p></div>
+<div class="niveau" data-niveau="tech">
+<p>Soit $\mathcal M$ un modèle de domaine $D$. Le <em>type</em> d’un élément $a$ est $\tau(a)=(\chi_{P_1}(a),\dots,\chi_{P_k}(a))\in\{0,1\}^k$. Soit $\mathcal M'$ la structure dont le domaine est l’ensemble $D'=\tau(D)$ des types réalisés (au plus $2^k$ éléments, et au moins un, puisque $D\ne\emptyset$), où $P_i$ est vrai d’un type $t$ si et seulement si $t_i=1$.</p>
+<p><em>Lemme.</em> Pour toute formule $\phi(x_1,\dots,x_n)$ et tous $a_1,\dots,a_n\in D$ : $\mathcal M\models\phi(\vec a)\iff\mathcal M'\models\phi(\tau(a_1),\dots,\tau(a_n))$. Par récurrence sur $\phi$. Pour un atome $P_i(x_j)$, c’est la définition de $\mathcal M'$. Les connecteurs passent sans difficulté. Pour $\exists y\,\phi$ : $\mathcal M\models\exists y\,\phi(y,\vec a)$ si et seulement s’il existe $b\in D$ avec $\mathcal M\models\phi(b,\vec a)$, si et seulement si (hypothèse de récurrence) il existe $b$ avec $\mathcal M'\models\phi(\tau(b),\tau(\vec a))$, si et seulement s’il existe $t\in D'$ avec $\mathcal M'\models\phi(t,\tau(\vec a))$, puisque $D'$ est exactement l’ensemble des $\tau(b)$. Le cas $\forall$ s’en déduit par $\forall=\neg\exists\neg$.</p>
+<p>Appliqué à un énoncé, le lemme donne le modèle annoncé. Pour décider si $\phi$ est valide, on regarde si $\neg\phi$ a un modèle : il suffit d’essayer les structures de domaine $\{1,\dots,m\}$ pour $m\le2^k$, en nombre fini ($2^{km}$ interprétations pour chaque $m$), et d’évaluer $\neg\phi$ dans chacune, ce qui est un calcul fini sur un domaine fini.</p>
+</div>
+<div class="niveau" data-niveau="techno"><p>Le programme <a href="assets/code/logique.py">logique.py</a> applique cette procédure. Il confirme que le syllogisme ci-dessus est valide, et il trouve un contre-modèle à deux éléments pour l’énoncé faux « s’il existe un $P$ et un $Q$, il existe un objet à la fois $P$ et $Q$ ». La procédure est doublement exponentielle ; on fait beaucoup mieux en pratique, mais le problème reste au moins aussi difficile que SAT, qui en est un cas particulier.</p></div>
+</div>
+
+<div class="resultat theoreme" id="binaire"><div class="entete-res"><div class="type">Théorème</div><div class="nom">Une relation binaire suffit à rendre la logique indécidable</div></div>
+<div class="enonce"><p>La validité des énoncés du calcul des prédicats est indécidable dès que le langage contient des relations à deux places. Plus précisément, le <a href="incompletude.html#entscheidung">théorème de Church et Turing</a> associe à toute machine $Z$ et toute entrée $x$ un énoncé, valide si et seulement si $Z$ s’arrête sur $x$, qui n’emploie que des relations binaires, une constante et deux fonctions unaires. Résultat cité pour information : une seule relation binaire, sans aucun autre symbole, suffit déjà (Kalmár, 1936).</p></div>
+<div class="niveau" data-niveau="philo">
+<p>Voici la frontière, nette : avec des relations à une place, tout est décidable ; avec une seule relation à deux places, plus rien ne l’est en général. La raison est géométrique. Le calcul d’une machine de Turing est un tableau à deux dimensions : une ligne par instant, une colonne par case de la bande. Une relation binaire suffit pour parler des couples (instant, case) : « à l’instant $t$, la case $u$ contient tel symbole », « à l’instant $t$, la tête est en $h$ ». Et des axiomes qui ne regardent que des cases voisines suffisent à dire que chaque ligne se déduit de la précédente selon le programme. Décider la logique reviendrait à décider si ce tableau a une dernière ligne, c’est-à-dire l’arrêt.</p>
+<p>La même idée revient dans tout ce manuel : les problèmes de pavage, la correspondance de Post, les équations diophantiennes, la démonstration du théorème de Cook et Levin. Chaque fois qu’un formalisme sait décrire un quadrillage localement contraint, il sait simuler un calcul.</p>
+</div>
+<div class="niveau" data-niveau="tech">
+<p>La réduction du <a href="incompletude.html#entscheidung">théorème de Church et Turing</a> utilise exactement ce codage : les relations binaires $Q_i(t,h)$ (« à l’instant $t$, état $q_i$, tête en $h$ ») et $C_j(t,u)$ (« à l’instant $t$, la case $u$ contient $S_j$ »), plus $E$ et $L$ pour l’égalité et l’ordre des cases, une constante $o$ et les fonctions $s,p$ (successeur, prédécesseur). Les symboles de fonction ne sont pas indispensables : on peut les remplacer par leurs graphes, des relations binaires, en ajoutant des axiomes qui disent que ces relations sont fonctionnelles et totales ; c’est une transformation classique, que l’on ne détaille pas ici.</p>
+<p>Comparaison avec le <a href="#monadique">cas monadique</a> : la réduction a besoin de parler de couples (instant, case), ce que des prédicats unaires ne permettent pas. On sait par ailleurs (résultats cités) que la logique monadique reste décidable avec l’égalité, et que des classes d’énoncés définies par la forme de leurs quantificateurs sont décidables (préfixe $\exists^\ast\forall^\ast$, Bernays et Schönfinkel, 1928) ou indécidables (préfixe $\forall\exists\forall$, Kahr, Moore et Wang, 1962).</p>
+</div>
+</div>
+
+<div class="resultat theoreme" id="paysage-logique"><div class="entete-res"><div class="type">Remarque</div><div class="nom">Validité, validité finie, théories décidables</div></div>
+<div class="enonce"><p>Résultats cités pour information, sauf le premier point.</p>
+<ul>
+<li>Les énoncés valides du premier ordre forment un ensemble semi-décidable (<a href="incompletude.html#completude">complétude</a>), non décidable : ils sont $\Sigma_1$-complets.</li>
+<li>Les énoncés vrais dans toutes les structures <em>finies</em> ne forment même pas un ensemble semi-décidable (Trakhtenbrot, 1950) : en se restreignant au fini, on perd le théorème de complétude.</li>
+<li>Certaines théories sont décidables : l’arithmétique de l’addition seule (Presburger, 1929), la théorie des nombres réels avec addition et multiplication (Tarski, 1948), la géométrie élémentaire. Ajouter la multiplication aux entiers fait tout basculer (<a href="incompletude.html">incomplétude</a>) : avec $+$ et $\times$ sur $\N$, on peut parler de suites finies, donc de calculs. Le <a href="theories-decidables.html">chapitre suivant</a> est consacré à ces théories décidables.</li>
+</ul>
+</div>
+</div>
+
+<h2 id="totaux">Des langages où tout programme termine</h2>
+
+<p>Le problème de l’arrêt dit qu’on ne peut pas trier automatiquement les programmes qui terminent. Mais on peut <em>concevoir</em> un langage dont tous les programmes terminent, en restreignant ce qu’on a le droit d’écrire : les fonctions récursives primitives en sont un exemple. La question est de savoir ce que l’on perd. La réponse, toujours la même, vient de la diagonale : un langage total ne peut pas contenir son propre interpréteur.</p>
+
+<div class="resultat definition" id="lambda-type"><div class="entete-res"><div class="type">Définition</div><div class="nom">λ-calcul simplement typé</div></div>
+<div class="enonce">
+<p>Les <strong>types</strong> sont construits à partir de types atomiques $o,p,q,\dots$ par la flèche : $A,B::=o\mid p\mid\cdots\mid A\to B$ (la flèche associe à droite). Un <strong>contexte</strong> $\Gamma$ est une liste $x_1:A_1,\dots,x_n:A_n$ de variables typées. Le jugement $\Gamma\vdash M:A$ (« dans le contexte $\Gamma$, le terme $M$ a le type $A$ ») est défini par trois règles :</p>
+$$\frac{}{\Gamma,x:A\vdash x:A}\qquad\frac{\Gamma,x:A\vdash M:B}{\Gamma\vdash\lambda x.M:A\to B}\qquad\frac{\Gamma\vdash M:A\to B\quad\Gamma\vdash N:A}{\Gamma\vdash M\,N:B}$$
+<p>Un terme est <strong>typable</strong> s’il a un type dans un contexte.</p>
+</div>
+<div class="niveau" data-niveau="philo"><p>Le type est une promesse sur ce que fait un terme : $A\to B$ promet de transformer un objet de type $A$ en objet de type $B$. Le terme $\lambda x.\,x\,x$, qui s’applique à lui-même, ne peut tenir aucune promesse de ce genre : il faudrait que le type de $x$ soit à la fois $A$ et $A\to B$. Les types interdisent l’autoréférence, et avec elle les calculs infinis comme $\Omega=(\lambda x.\,x\,x)(\lambda x.\,x\,x)$.</p></div>
+<div class="niveau" data-niveau="tech"><p>$\lambda x.\,x\,x$ n’est pas typable : la règle d’application imposerait au type $A$ de $x$ d’être de la forme $A\to B$, impossible puisqu’un type est un arbre fini, strictement plus grand que ses sous-types. En revanche, $\lambda x.x:A\to A$ pour tout $A$, $\mathsf K=\lambda x.\lambda y.\,x:A\to B\to A$, et les entiers de Church $\mathbf n=\lambda f.\lambda x.\,f^n\,x$ ont tous le type $(o\to o)\to o\to o$. Le typage est préservé par la β-réduction (<em>réduction du sujet</em>) : si $\Gamma\vdash M:A$ et $M\to_\beta M'$, alors $\Gamma\vdash M':A$. Cela se démontre par un lemme de substitution : si $\Gamma,x:A\vdash M:B$ et $\Gamma\vdash N:A$, alors $\Gamma\vdash M[x:=N]:B$ (récurrence sur $M$).</p></div>
+</div>
+
+<div class="resultat theoreme" id="normalisation-typee"><div class="entete-res"><div class="type">Théorème</div><div class="nom">Normalisation du λ-calcul simplement typé (Turing, Tait)</div></div>
+<div class="enonce"><p>Tout terme typable a une forme normale. (Mieux, résultat de Tait, 1967, cité ici pour information : toute suite de β-réductions issue d’un terme typable est finie.)</p></div>
+<div class="niveau" data-niveau="philo"><p>Un langage typé est donc un langage <em>total</em> : aucun programme ne boucle. On ne peut pas décider l’arrêt d’un programme quelconque, mais on peut décider si un programme est typable (un algorithme simple le fait), et la typabilité garantit l’arrêt. On a échangé un problème indécidable contre une restriction décidable, au prix d’une perte d’expressivité.</p></div>
+<div class="niveau" data-niveau="tech">
+<p>On définit la <em>hauteur</em> d’un type : $h(o)=0$, $h(A\to B)=1+\max(h(A),h(B))$. Le <em>degré</em> d’un rédex $(\lambda x.M)\,N$, où $\lambda x.M:A\to B$, est $h(A\to B)$. À un terme on associe la paire $(d,n)$ formée du degré maximal $d$ de ses rédex et du nombre $n$ de rédex de ce degré (et $(0,0)$ s’il est normal). On ordonne ces paires lexicographiquement ; c’est un bon ordre.</p>
+<p>Soit $R=(\lambda x.M)\,N$ un rédex de degré maximal $d$ qui ne contient aucun autre rédex de degré $d$ (on en prend un minimal pour l’inclusion). Contractons-le en $M[x:=N]$. Les rédex de degré $d$ situés hors de $R$ ne sont ni dupliqués ni modifiés dans leur degré. Les copies de $N$ ne contiennent que des rédex de degré $&lt;d$. Restent les rédex <em>créés</em> par la contraction, de trois sortes : (1) si $M$ est une abstraction $\lambda y.P$ et que $R$ était appliqué à un terme $Q$, le nouveau rédex $(\lambda y.P[x:=N])\,Q$ a pour degré la hauteur du type $B$ de $M$ ; (2) si $M=x$ et que $R$ était appliqué à $Q$, le nouveau rédex $N\,Q$ a le degré $h(A)$ ; (3) si $M$ contient une application $x\,P$ et que $N$ est une abstraction, le nouveau rédex $N\,P[x:=N]$ a le degré $h(A)$. Dans tous les cas le degré est $&lt;h(A\to B)=d$. Ainsi le nombre de rédex de degré $d$ diminue de 1, sans en créer d’autres de degré $\ge d$ : la paire $(d,n)$ décroît strictement. Une suite strictement décroissante pour un bon ordre est finie : cette stratégie atteint une forme normale. L’argument est dû à Turing (manuscrit des années 1940, publié par Gandy en 1980).</p>
+</div>
+</div>
+
+<div class="resultat definition" id="systeme-t"><div class="entete-res"><div class="type">Définition</div><div class="nom">Le Système T de Gödel (1958)</div></div>
+<div class="enonce">
+<p>On ajoute aux types simples un type $\mathbf N$ des entiers, et aux termes les constantes $0:\mathbf N$, $\mathsf S:\mathbf N\to\mathbf N$, et pour chaque type $A$ un <strong>récurseur</strong> $\mathsf R_A:A\to(\mathbf N\to A\to A)\to\mathbf N\to A$, avec les règles de calcul</p>
+$$\mathsf R\,a\,g\,0\to a,\qquad \mathsf R\,a\,g\,(\mathsf S\,n)\to g\,n\,(\mathsf R\,a\,g\,n).$$
+<p>Résultats cités pour information : tout terme du Système T se normalise (Tait, 1967), et les fonctions $\N\to\N$ définissables dans T sont exactement les fonctions récursives dont la totalité est démontrable dans l’arithmétique de Peano (Gödel, 1958 ; Kreisel).</p>
+</div>
+<div class="niveau" data-niveau="philo"><p>Le récurseur est la récursion primitive, mais autorisée à tous les types : on peut définir par récurrence non seulement des entiers, mais des fonctions, des fonctions de fonctions, etc. Ce simple changement fait sortir des fonctions récursives primitives : la fonction d’Ackermann devient définissable. Le Système T est pourtant total, et contient donc une infinité de fonctions calculables, mais pas toutes.</p></div>
+<div class="niveau" data-niveau="tech">
+<p><em>Ackermann dans T.</em> Posons $\mathsf{it}=\lambda n.\lambda f.\lambda a.\ \mathsf R_{\mathbf N}\,a\,(\lambda k.f)\,n$, qui calcule $f^n(a)$. Pour la <a href="ackermann.html#def-ackermann">fonction de Péter</a>, on a $A(m+1,n)=A(m,\cdot)^{\,n+1}(1)$ : en effet $A(m+1,0)=A(m,1)$, et $A(m+1,n+1)=A(m,A(m+1,n))$. On définit donc, par une récursion au type $\mathbf N\to\mathbf N$ :</p>
+$$\mathsf{ack}=\lambda m.\ \mathsf R_{\mathbf N\to\mathbf N}\ \mathsf S\ \big(\lambda k.\lambda f.\lambda n.\ \mathsf{it}\,(\mathsf S\,n)\,f\,(\mathsf S\,0)\big)\ m,$$
+<p>de sorte que $\mathsf{ack}\,0=\mathsf S$ et $\mathsf{ack}\,(m+1)=\lambda n.\,(\mathsf{ack}\,m)^{n+1}(1)$. Par récurrence sur $m$, $\mathsf{ack}\,m\,n$ se réduit vers $A(m,n)$.</p>
+</div>
+<div class="niveau" data-niveau="techno"><p>Le programme <a href="assets/code/logique.py">logique.py</a> traduit littéralement ce terme en Python (le récurseur devient une boucle) et vérifie qu’il coïncide avec la définition de Péter pour $m<4$, $n<5$ ; par exemple $\mathsf{ack}\,3\,3=61$. Les assistants de preuve Coq (Rocq), Lean et Agda reposent sur des langages totaux de ce genre, beaucoup plus riches ; ils refusent une définition récursive s’ils ne peuvent pas vérifier qu’elle termine.</p></div>
+</div>
+
+<div class="resultat theoreme" id="pas-interpreteur"><div class="entete-res"><div class="type">Théorème</div><div class="nom">Un langage total ne contient pas son interpréteur</div></div>
+<div class="enonce"><p>Soit $\mathcal L$ un langage de programmes, chacun définissant une fonction totale $\N\to\N$, avec un codage $p\mapsto\ulcorner p\urcorner$ des programmes par des entiers, et tel que les fonctions définissables dans $\mathcal L$ soient closes par composition avec le successeur et par diagonalisation ($n\mapsto f(n,n)$). Alors la fonction d’évaluation $(\ulcorner p\urcorner,n)\mapsto p(n)$ n’est pas définissable dans $\mathcal L$. C’est le cas pour les fonctions récursives primitives, le λ-calcul simplement typé, le Système T, et tous les langages totaux de la <a href="#au-dela">section suivante</a> (Système F, calcul des constructions).</p></div>
+<div class="niveau" data-niveau="philo"><p>C’est le prix de la totalité. Un langage universel (machines de Turing, λ-calcul pur, Python) contient son propre interpréteur, mais on ne peut pas savoir si ses programmes s’arrêtent. Un langage total garantit l’arrêt, mais il lui manque au moins une fonction calculable totale : la sienne. On peut toujours ajouter cette fonction, et l’on obtient un langage plus fort, encore total, auquel il manque son nouvel interpréteur, et ainsi de suite, sans jamais atteindre toutes les fonctions calculables totales.</p></div>
+<div class="niveau" data-niveau="tech"><p>Si $E$ définissait l’évaluation, $d(n)=E(n,n)+1$ serait définissable, donc $d$ serait calculée par un programme $p$. Alors $d(\ulcorner p\urcorner)=p(\ulcorner p\urcorner)=E(\ulcorner p\urcorner,\ulcorner p\urcorner)$, et aussi $d(\ulcorner p\urcorner)=E(\ulcorner p\urcorner,\ulcorner p\urcorner)+1$ : contradiction. C’est l’argument du <a href="universalite.html#pas-universelle-totale">théorème sur les fonctions totales</a>, appliqué à l’intérieur d’un langage. Pour les fonctions récursives primitives, voir aussi l’<a href="universalite.html#ex-un-rp">exercice correspondant</a>.</p></div>
+</div>
+
+<h2 id="curry-howard">La correspondance de Curry-Howard</h2>
+
+<div class="resultat theoreme" id="curry-howard-thm"><div class="entete-res"><div class="type">Théorème</div><div class="nom">Les types sont des énoncés, les programmes sont des preuves</div></div>
+<div class="enonce">
+<p>Lisons le type $A\to B$ comme l’implication « $A$ entraîne $B$ », les types atomiques $o,p,q,\dots$ comme des propositions atomiques. Alors un type $A$ est le type d’un terme clos si et seulement si $A$ est démontrable en <strong>logique minimale implicative</strong>, c’est-à-dire en déduction naturelle avec les seules règles</p>
+$$\frac{}{\Gamma,A\vdash A}\ (\text{hyp})\qquad\frac{\Gamma,A\vdash B}{\Gamma\vdash A\Rightarrow B}\ ({\Rightarrow}\text{I})\qquad\frac{\Gamma\vdash A\Rightarrow B\quad\Gamma\vdash A}{\Gamma\vdash B}\ ({\Rightarrow}\text{E}).$$
+<p>De plus, la β-réduction d’un terme correspond à l’élimination des détours dans la preuve correspondante.</p>
+</div>
+<div class="niveau" data-niveau="philo">
+<p>Les règles de typage et les règles de déduction sont <em>les mêmes</em>, aux noms près. Une hypothèse est une variable. Démontrer « $A$ entraîne $B$ », c’est fournir une méthode qui transforme toute preuve de $A$ en preuve de $B$ : c’est une fonction, $\lambda x.M$. Utiliser une implication (modus ponens), c’est appliquer cette fonction à une preuve de $A$. Le tableau se lit dans les deux sens :</p>
+<table>
+<tr><th>Logique</th><th>Programmation</th></tr>
+<tr><td>énoncé</td><td>type</td></tr>
+<tr><td>démonstration</td><td>programme (terme)</td></tr>
+<tr><td>hypothèse</td><td>variable</td></tr>
+<tr><td>implication, modus ponens</td><td>fonction, application</td></tr>
+<tr><td>conjonction, disjonction</td><td>paire, union étiquetée</td></tr>
+<tr><td>quantificateurs</td><td>types dépendants</td></tr>
+<tr><td>élimination des coupures</td><td>exécution (β-réduction)</td></tr>
+<tr><td>cohérence</td><td>terminaison</td></tr>
+</table>
+<p>Observée par Curry (1934, pour les combinateurs) puis par Howard (1969, publié en 1980), cette correspondance est au cœur des assistants de preuve : vérifier une démonstration, c’est vérifier le type d’un programme, ce qui est décidable, alors que trouver une démonstration ne l’est pas en général.</p>
+</div>
+<div class="niveau" data-niveau="tech">
+<p><em>Des termes aux preuves.</em> Par récurrence sur une dérivation de $\Gamma\vdash M:A$, on efface les termes : la règle de variable devient (hyp), l’abstraction devient (${\Rightarrow}$I), l’application (${\Rightarrow}$E). On obtient une preuve de $A$ sous les hypothèses de $\Gamma$ ; si $M$ est clos, sans hypothèse. <em>Des preuves aux termes.</em> Inversement, on annote une preuve en donnant un nom de variable à chaque hypothèse ; chaque règle fabrique le terme correspondant. Exemples : $\lambda x.\lambda y.\,x:A\to B\to A$ démontre $A\Rightarrow(B\Rightarrow A)$ ; $\lambda x.\lambda y.\lambda z.\,x\,z\,(y\,z):(A\to B\to C)\to(A\to B)\to A\to C$ démontre le second axiome des systèmes de Hilbert. Ce sont les combinateurs $\mathsf K$ et $\mathsf S$ (ce $\mathsf S$ de la logique combinatoire n’a rien à voir avec le successeur $\mathsf S$ du Système T), et le modus ponens est l’application : la logique de Hilbert est la logique combinatoire.</p>
+<p><em>Détours et réduction.</em> Un détour est une introduction (${\Rightarrow}$I) immédiatement suivie d’une élimination (${\Rightarrow}$E) de la même implication : on démontre $A\Rightarrow B$ pour l’appliquer aussitôt à une preuve de $A$. C’est exactement un rédex $(\lambda x.M)\,N$, et l’éliminer (remplacer chaque usage de l’hypothèse $A$ par la preuve de $A$) est exactement $M[x:=N]$.</p>
+</div>
+</div>
+
+<div class="resultat theoreme" id="coherence-normalisation"><div class="entete-res"><div class="type">Corollaire</div><div class="nom">La normalisation entraîne la cohérence</div></div>
+<div class="enonce"><p>Aucun terme clos n’a un type atomique, comme $o$. Autrement dit, la logique minimale implicative ne démontre pas une proposition atomique sans hypothèse : elle est cohérente. Plus généralement, une formule démontrable a une démonstration sans détour.</p></div>
+<div class="niveau" data-niveau="philo"><p>C’est une preuve de cohérence par le calcul : comme tout programme typé termine, toute démonstration se simplifie en une démonstration sans détour, et une démonstration sans détour d’un énoncé atomique, sans hypothèse, n’existe pas. Gentzen a démontré en 1936 la cohérence de l’arithmétique de Peano par une méthode de ce type (élimination des coupures), en utilisant une récurrence sur un ordinal plus grand que ceux que l’arithmétique sait manipuler : c’est compatible avec le <a href="incompletude.html#godel2">second théorème d’incomplétude</a>, qui interdit seulement une preuve <em>dans</em> l’arithmétique.</p></div>
+<div class="niveau" data-niveau="tech"><p>Un terme normal s’écrit $\lambda x_1\cdots\lambda x_n.\,y\,M_1\cdots M_k$, où $y$ est une variable (par récurrence sur le terme : un terme normal qui n’est pas une abstraction est une variable appliquée à des arguments, sinon il contiendrait un rédex). Supposons $\vdash M:o$ avec $M$ clos. Par la <a href="#normalisation-typee">normalisation</a> et la réduction du sujet, $M$ a une forme normale close $M'$ de type $o$. Comme $o$ n’est pas une flèche, $n=0$, et $M'=y\,M_1\cdots M_k$ avec $y$ libre : contradiction avec le fait que $M'$ est clos. Pour la seconde affirmation, la forme normale d’un terme est une preuve sans détour du même énoncé.</p></div>
+<div class="niveau" data-niveau="techno"><p>Résultats cités pour information : la loi de Peirce $((A\Rightarrow B)\Rightarrow A)\Rightarrow A$, vraie en logique classique (table de vérité), n’a pas d’habitant ; il faut ajouter des opérateurs de contrôle (comme <code>call/cc</code> dans Scheme) pour étendre la correspondance à la logique classique (Griffin, 1990). Décider si un type simple a un habitant est $\mathsf{PSPACE}$-complet (Statman, 1979), tandis que vérifier qu’un terme donné a un type donné se fait en temps polynomial. Le Système F et ses extensions sont présentés <a href="#au-dela">plus loin</a>.</p></div>
+</div>
+
+<h2 id="au-dela">Au-delà des types simples : du Système F au calcul des constructions</h2>
+
+<p>Le λ-calcul simplement typé est total, mais pauvre : ses fonctions sur les entiers de Church sont des polynômes à peine étendus. On peut l’enrichir sans perdre la terminaison, en autorisant les types à varier. Chaque enrichissement donne un langage total plus expressif et, par Curry-Howard, une logique plus forte. Le sommet de cette construction, le calcul des constructions, est le noyau théorique des assistants de preuve actuels.</p>
+
+<div class="resultat definition" id="systeme-f"><div class="entete-res"><div class="type">Définition</div><div class="nom">Le Système F (Girard, 1972 ; Reynolds, 1974)</div></div>
+<div class="enonce">
+<p>Les types du <strong>Système F</strong> ajoutent aux types simples des variables de type $\alpha,\beta,\dots$ et une quantification sur les types : $A,B::=\alpha\mid A\to B\mid\forall\alpha.A$. Les termes ajoutent l’abstraction de type $\Lambda\alpha.M$ et l’application à un type $M\,B$, avec deux règles :</p>
+$$\frac{\Gamma\vdash M:A\quad(\alpha\text{ non libre dans }\Gamma)}{\Gamma\vdash\Lambda\alpha.M:\forall\alpha.A}\qquad\frac{\Gamma\vdash M:\forall\alpha.A}{\Gamma\vdash M\,B:A[\alpha:=B]}$$
+<p>et la règle de calcul $(\Lambda\alpha.M)\,B\to M[\alpha:=B]$. Résultats cités pour information : tout terme du Système F est fortement normalisable (Girard, 1972, par la méthode des <em>candidats de réductibilité</em>), et les fonctions $\N\to\N$ représentables dans F sont exactement les fonctions récursives dont la totalité est démontrable dans l’<strong>arithmétique du second ordre</strong> (Girard, 1972).</p>
+</div>
+<div class="niveau" data-niveau="philo">
+<p>Le Système F est le langage du <em>polymorphisme</em> : la fonction identité $\Lambda\alpha.\lambda x{:}\alpha.\,x$, de type $\forall\alpha.\alpha\to\alpha$, sert pour tous les types à la fois, comme les « génériques » de Java ou les fonctions polymorphes d’OCaml et de Haskell. Les données n’ont plus besoin d’être primitives : les entiers, les booléens, les paires, les listes s’écrivent comme des termes, et chaque donnée apporte avec elle sa propre façon d’être parcourue.</p>
+<p>Une précision importante : le Système F ne représente pas <em>toutes</em> les fonctions calculables totales. Aucun langage total ne le peut, puisqu’il <a href="#pas-interpreteur">ne contient pas son propre interpréteur</a>. Il représente exactement celles dont l’arithmétique du second ordre démontre qu’elles sont totales, ce qui est énorme : la fonction d’Ackermann, toutes les fonctions du Système T, et bien au-delà. Mais la fonction d’évaluation des termes de F, qui est calculable et totale (puisque F normalise), en est exclue. Par le théorème de Girard, cela veut dire que l’arithmétique du second ordre ne démontre pas que cette fonction est totale, c’est-à-dire ne démontre pas la normalisation de F : la démonstration de Girard utilise un principe plus fort.</p>
+</div>
+<div class="niveau" data-niveau="tech">
+<p><em>Les entiers.</em> Posons $\mathrm{Nat}=\forall\alpha.(\alpha\to\alpha)\to\alpha\to\alpha$, et, comme pour les <a href="lambda-calcul.html#church">entiers de Church</a>, $\mathbf n=\Lambda\alpha.\lambda f{:}\alpha\to\alpha.\lambda x{:}\alpha.\,f^n\,x$. Le successeur est $\mathsf S=\lambda n{:}\mathrm{Nat}.\Lambda\alpha.\lambda f.\lambda x.\,f\,(n\,\alpha\,f\,x)$. Un entier <em>est</em> un itérateur, utilisable à n’importe quel type : $\mathbf n\,B\,g\,b=g^n(b)$ pour tout type $B$. Dans le λ-calcul simplement typé, au contraire, un entier de Church a un seul type, fixé une fois pour toutes, et l’on ne peut itérer qu’à ce type.</p>
+<p><em>Ackermann.</em> On itère au type $\mathrm{Nat}\to\mathrm{Nat}$, comme dans le <a href="#systeme-t">Système T</a>, mais sans récurseur primitif :</p>
+$$H=\lambda f{:}\mathrm{Nat}\to\mathrm{Nat}.\,\lambda n{:}\mathrm{Nat}.\ (\mathsf S\,n)\,\mathrm{Nat}\,f\,\mathbf 1,\qquad \mathsf{ack}=\lambda m{:}\mathrm{Nat}.\ m\,(\mathrm{Nat}\to\mathrm{Nat})\,H\,\mathsf S.$$
+<p>On a $H:(\mathrm{Nat}\to\mathrm{Nat})\to\mathrm{Nat}\to\mathrm{Nat}$ et $H\,f\,n=f^{n+1}(1)$, donc $\mathsf{ack}\,\mathbf 0=\mathsf S$ et $\mathsf{ack}\,\mathbf{m+1}=H(\mathsf{ack}\,\mathbf m)$, ce qui est la relation $A(m+1,n)=A(m,\cdot)^{n+1}(1)$ de la <a href="ackermann.html#def-ackermann">fonction de Péter</a>. Le terme $\mathsf{ack}$ a le type $\mathrm{Nat}\to\mathrm{Nat}\to\mathrm{Nat}$ : c’est l’application de $m$ au type $\mathrm{Nat}\to\mathrm{Nat}$, impossible avec des types simples, qui fait sortir des fonctions récursives primitives.</p>
+<p><em>La logique.</em> Par Curry-Howard, F correspond à la logique propositionnelle du second ordre, où l’on peut quantifier sur les propositions. Les autres connecteurs s’y définissent : $\bot=\forall\alpha.\alpha$, $A\wedge B=\forall\alpha.(A\to B\to\alpha)\to\alpha$, $A\vee B=\forall\alpha.(A\to\alpha)\to(B\to\alpha)\to\alpha$. La normalisation entraîne qu’aucun terme clos n’a le type $\bot$ : la logique est cohérente.</p>
+</div>
+<div class="niveau" data-niveau="techno"><p>Le programme <a href="assets/code/logique.py">logique.py</a> écrit ces termes en Python, en effaçant les types (Python n’en vérifie pas), et vérifie que $\mathsf{ack}\,\mathbf m\,\mathbf n$ coïncide avec la définition de Péter pour $m,n<4$ ; par exemple $\mathsf{ack}\,\mathbf 3\,\mathbf 3=\mathbf{61}$. Résultat cité pour information : retrouver les types effacés, c’est-à-dire décider si un λ-terme pur est typable dans F, est indécidable (Wells, 1994). C’est pourquoi les langages fondés sur le polymorphisme, comme OCaml et Haskell, se limitent à des fragments où l’inférence de types est décidable (le système de Hindley et Milner), ou demandent des annotations.</p></div>
+</div>
+
+<div class="resultat definition" id="lambda-cube"><div class="entete-res"><div class="type">Définition</div><div class="nom">Le λ-cube de Barendregt (1991)</div></div>
+<div class="enonce">
+<p>Dans le λ-calcul simplement typé, les termes dépendent de termes : $\lambda x{:}A.\,M$. On peut ajouter trois autres sortes de dépendance, indépendamment les unes des autres :</p>
+<ul>
+<li>des <strong>termes qui dépendent de types</strong> (le polymorphisme : $\Lambda\alpha.M$) ;</li>
+<li>des <strong>types qui dépendent de types</strong> (les opérateurs de types : $\lambda\alpha.\,\alpha\to\alpha$, une fonction des types vers les types) ;</li>
+<li>des <strong>types qui dépendent de termes</strong> (les types dépendants : $\mathrm{Vec}\,n$, le type des listes de longueur $n$).</li>
+</ul>
+<p>Les $2^3=8$ combinaisons forment les sommets d’un cube. L’origine est $\lambda{\to}$ (types simples), le polymorphisme seul donne $\lambda2$ (le Système F), les opérateurs seuls $\lambda\underline\omega$, les types dépendants seuls $\lambda P$ (le langage LF) ; le sommet opposé à l’origine, avec les trois dépendances, est le <strong>calcul des constructions</strong> $\lambda C$ (Coquand et Huet, 1988). Résultat cité pour information : les huit systèmes sont fortement normalisables, donc totaux et, par Curry-Howard, cohérents.</p>
+</div>
+<div class="niveau" data-niveau="philo">
+<svg viewBox="0 0 440 290" width="440" style="max-width:100%;height:auto;display:block;margin:10px auto" role="img" aria-label="Le λ-cube : huit systèmes de types aux sommets d’un cube">
+<g stroke="currentColor" stroke-width="1.4" fill="none" opacity="0.55">
+<path d="M70 240 H270 V110 H70 Z"/><path d="M160 50 H360 V180"/>
+<path d="M270 240 L360 180 M270 110 L360 50 M70 110 L160 50"/>
+<path d="M160 180 H360 M160 180 V50 M160 180 L70 240" stroke-dasharray="4 3"/>
+</g>
+<g fill="currentColor" font-family="sans-serif" font-size="15" text-anchor="middle">
+<text x="70" y="262">λ→</text><text x="270" y="262">λP</text>
+<text x="48" y="104">λ2 (F)</text><text x="296" y="128">λP2</text>
+<text x="160" y="200">λω̲</text><text x="378" y="198">λPω̲</text>
+<text x="160" y="38">λω (Fω)</text><text x="372" y="38">λC</text>
+</g>
+<g fill="currentColor" font-family="sans-serif" font-size="11.5" opacity="0.8">
+<text x="8" y="180">polymorphisme ↑</text><text x="150" y="282">types dépendants →</text>
+<text x="300" y="268" text-anchor="start">opérateurs de types ↗</text>
+</g>
+</svg>
+<p>Le cube range les langages typés selon ce qu’ils permettent d’abstraire. Monter, c’est gagner la généricité (une fonction pour tous les types) ; aller à droite, c’est pouvoir parler de valeurs dans les types (« une liste de longueur $n$ », « un entier premier ») ; aller en profondeur, c’est calculer sur les types eux-mêmes. Barendregt a montré qu’un même cadre, les <em>systèmes de types purs</em>, décrit les huit sommets, en ne changeant que la liste des dépendances autorisées.</p>
+<p>Le cube est aussi un cube de logiques : $\lambda{\to}$ correspond à la logique propositionnelle minimale, $\lambda2$ à la logique propositionnelle du second ordre, $\lambda\omega$ à la logique propositionnelle d’ordre supérieur, $\lambda P$ à la logique des prédicats du premier ordre, et $\lambda C$ à la logique des prédicats d’ordre supérieur. Plus on monte dans le cube, plus les énoncés que l’on peut écrire comme types, et les fonctions totales que l’on peut programmer, sont nombreux.</p>
+</div>
+<div class="niveau" data-niveau="tech"><p>Dans la présentation de Barendregt, il y a deux <em>sortes</em> : $\ast$ (le type des types, où vivent les propositions) et $\square$ (où vit $\ast$ lui-même). Le produit dépendant $\Pi x{:}A.\,B$ généralise à la fois la flèche ($A\to B$ quand $x$ n’apparaît pas dans $B$) et le quantificateur ($\forall\alpha.B$ quand $A=\ast$). Une règle $(s_1,s_2)$ autorise $\Pi x{:}A.B:s_2$ lorsque $A:s_1$ et $B:s_2$. Le λ-calcul simplement typé n’a que la règle $(\ast,\ast)$ ; on obtient $\lambda2$ en ajoutant $(\square,\ast)$, $\lambda\underline\omega$ en ajoutant $(\square,\square)$, $\lambda P$ en ajoutant $(\ast,\square)$, et $\lambda C$ avec les quatre règles.</p></div>
+</div>
+
+<div class="resultat theoreme" id="constructions"><div class="entete-res"><div class="type">Remarque</div><div class="nom">Le calcul des constructions et les assistants de preuve</div></div>
+<div class="enonce">
+<p>Dans le calcul des constructions, un énoncé comme « pour tout entier $n$, $n+0=n$ » est un type $\Pi n{:}\mathrm{Nat}.\ n+0=n$, et une démonstration est une fonction qui, à chaque $n$, associe une preuve de $n+0=n$. Vérifier une démonstration, c’est vérifier le type d’un terme, ce qui est décidable. Les assistants de preuve actuels reposent sur des extensions de ce calcul (résultats et faits cités pour information) :</p>
+<ul>
+<li><strong>Rocq</strong> (appelé Coq jusqu’en 2025) repose sur le calcul des constructions inductives (Coquand et Paulin-Mohring, fin des années 1980), qui ajoute les types inductifs (entiers, listes, arbres définis par leurs constructeurs) et une hiérarchie d’univers. Site : <a href="https://rocq-prover.org">rocq-prover.org</a> ; pour commencer, le cours en ligne <em>Software Foundations</em>.</li>
+<li><strong>Lean</strong> (Leonardo de Moura, depuis 2013 ; Lean 4 depuis 2021) repose sur une théorie des types dépendants voisine, avec types inductifs et univers. Sa bibliothèque communautaire <em>Mathlib</em> couvre une part importante des mathématiques de licence et une partie de celles de master. Site : <a href="https://lean-lang.org">lean-lang.org</a> ; pour commencer, <em>Theorem Proving in Lean 4</em> et le <em>Natural Number Game</em>.</li>
+<li><strong>Agda</strong> repose sur la théorie des types de Martin-Löf (1972), une autre théorie des types dépendants, prédicative.</li>
+</ul>
+<p>Quelques réalisations : le théorème des quatre couleurs (Gonthier, 2005) et le théorème de Feit-Thompson (Gonthier et al., 2012) en Coq ; le compilateur C vérifié CompCert (Leroy, en Coq) ; l’<em>expérience du tenseur liquide</em> (2022), qui a vérifié en Lean un théorème difficile de Clausen et Scholze ; la détermination de la valeur du <a href="castors-affaires.html#valeurs-bb">castor affairé à 5 états</a> (2024), en Coq.</p>
+</div>
+<div class="niveau" data-niveau="philo">
+<p>Le calcul des constructions est total, comme tout le cube : un programme qu’il accepte termine. C’est précisément ce qui en fait une logique cohérente, et la raison pour laquelle Rocq et Lean refusent les définitions récursives dont ils ne savent pas établir la terminaison. Le prix est celui de tous les langages totaux : on ne peut pas tout y programmer directement, et l’on doit parfois démontrer qu’une fonction termine avant de pouvoir l’écrire.</p>
+<p>Ces systèmes sont constructifs : une preuve de « il existe $n$ tel que $P(n)$ » contient un calcul de $n$. On peut y ajouter des axiomes classiques (le tiers exclu, l’axiome du choix), ce que fait Mathlib ; les preuves restent vérifiables, mais elles perdent leur contenu calculatoire.</p>
+</div>
+</div>
+
+<div class="resultat theoreme" id="preuves-ia"><div class="entete-res"><div class="type">Remarque</div><div class="nom">Vérifier les preuves produites par des IA</div></div>
+<div class="enonce">
+<p>Faits cités pour information. Des systèmes d’intelligence artificielle produisent désormais des démonstrations formelles, écrites en Lean, que le noyau de Lean vérifie. En 2024, AlphaProof (Google DeepMind) a résolu ainsi plusieurs problèmes des Olympiades internationales de mathématiques ; en 2025, plusieurs systèmes ont annoncé des solutions formalisées en Lean de problèmes de l’édition de l’année. Le même schéma sert en recherche : des projets collaboratifs, comme celui que Terence Tao a lancé en 2024 sur les théories équationnelles des magmas, combinent contributions humaines, démonstrateurs automatiques et vérification en Lean.</p>
+</div>
+<div class="niveau" data-niveau="philo">
+<p>La correspondance de Curry-Howard donne la clé de ces projets. Une démonstration formelle est un programme typé, et vérifier une démonstration, c’est vérifier un type : une opération décidable, faite par un noyau de petite taille, écrit pour être relu, alors que <em>trouver</em> une démonstration est seulement semi-décidable (<a href="calculabilite-ia.html#proposer-verifier">vérifier une preuve est décidable, la trouver ne l’est pas</a>). On peut donc laisser une IA chercher par des moyens faillibles, statistiques, opaques, et ne faire confiance qu’au vérificateur. Une démonstration produite par une IA qui « hallucine » est simplement rejetée.</p>
+<p>Trois limites demeurent. D’abord, le noyau vérifie que la preuve démontre l’énoncé <em>formel</em> ; il ne vérifie pas que l’énoncé formel dit bien ce que l’on voulait dire, et cette traduction reste un travail humain (c’est le problème de la <a href="calculabilite-ia.html#specification">spécification</a>). Ensuite, il faut croire le noyau et la cohérence de la théorie sous-jacente, que celle-ci ne peut pas démontrer elle-même (<a href="incompletude.html#godel2">second théorème d’incomplétude</a>) ; on réduit ce risque en faisant relire les preuves par des vérificateurs indépendants. Enfin, une preuve vérifiée peut être illisible : savoir qu’un énoncé est vrai n’est pas encore comprendre pourquoi.</p>
+</div>
+</div>
+
+<!--EXERCICES-->
+<h2 id="exercices">Exercices</h2>
+
+<p class="legende-exo">Niveaux : ★ application directe du cours, ★★ exercice standard, ★★★ approfondissement. Les corrections sont masquées : cliquer sur « Correction » pour les afficher.</p><div class="exercice" id="ex-lt-typer"><div class="entete-exo"><span class="etoiles" title="niveau 1">★</span><span class="nom-exo">Exercice 1 — Typer des termes</span></div><div class="corps-exo">
+<p>Donner un type à chacun des termes suivants, ou expliquer pourquoi il n’en a pas : (a) $\lambda x.\lambda y.\,y\,x$ ; (b) $\lambda f.\lambda g.\lambda x.\,g\,(f\,x)$ ; (c) $\lambda x.\,x\,x$ ; (d) $\lambda f.\lambda x.\,f\,(f\,x)$. Quelle formule logique chacun démontre-t-il ?</p>
+<details class="corrige"><summary>Correction</summary><div class="texte-corrige">
+<ul>
+<li>(a) $A\to(A\to B)\to B$ : de $A$ et de $A\Rightarrow B$, on déduit $B$ (le modus ponens, sous forme d’énoncé).</li>
+<li>(b) $(A\to B)\to(B\to C)\to A\to C$ : la transitivité de l’implication ; le terme est la composition des fonctions.</li>
+<li>(c) n’a pas de type (voir la <a href="#lambda-type">définition</a>) : le type de $x$ devrait être à la fois $A$ et $A\to B$.</li>
+<li>(d) $(A\to A)\to A\to A$ : c’est l’entier de Church $\mathbf 2$. La formule $(A\Rightarrow A)\Rightarrow(A\Rightarrow A)$ a une infinité de preuves sans détour, une par entier : les preuves d’une même formule ne sont pas interchangeables, elles ont un contenu calculatoire.</li>
+</ul>
+</div></details>
+</div></div>
+
+<div class="exercice" id="ex-lt-monadique"><div class="entete-exo"><span class="etoiles" title="niveau 1">★</span><span class="nom-exo">Exercice 2 — Un syllogisme décidé mécaniquement</span></div><div class="corps-exo">
+<p>L’énoncé « si tout $P$ est $Q$ et si quelque $P$ est $R$, alors quelque $Q$ est $R$ » est-il valide ? Et « si quelque $P$ est $Q$ et si quelque $Q$ est $R$, alors quelque $P$ est $R$ » ? Pour le second, donner un contre-modèle et dire combien d’éléments il faut au plus en essayer.</p>
+<details class="corrige"><summary>Correction</summary><div class="texte-corrige">
+<p>Le premier est valide : si $a$ est $P$ et $R$, il est $Q$ (puisque tout $P$ est $Q$), donc $a$ est $Q$ et $R$. Le second ne l’est pas : domaine $\{1,2\}$, $P=\{1\}$, $Q=\{1,2\}$, $R=\{2\}$. Il y a trois prédicats, donc d’après le <a href="#monadique">théorème de Löwenheim</a> il suffit d’essayer les domaines d’au plus $2^3=8$ éléments ; ici deux suffisent. Le programme <a href="assets/code/logique.py">logique.py</a> trouve un contre-modèle du même genre pour l’énoncé voisin du texte.</p>
+</div></details>
+</div></div>
+
+<div class="exercice" id="ex-lt-habitants"><div class="entete-exo"><span class="etoiles" title="niveau 2">★★</span><span class="nom-exo">Exercice 3 — Habitants et non-habitants</span></div><div class="corps-exo">
+<p>(a) Trouver un terme clos de type $(A\to B\to C)\to B\to A\to C$. (b) Montrer qu’aucun terme clos n’a le type $(A\to B)\to A$, où $A$ et $B$ sont des types atomiques distincts.</p>
+<details class="corrige"><summary>Correction</summary><div class="texte-corrige">
+<p>(a) $\lambda f.\lambda b.\lambda a.\,f\,a\,b$ : échanger l’ordre des hypothèses.</p>
+<p>(b) Par la <a href="#coherence-normalisation">normalisation</a>, il suffirait de considérer un terme clos normal $M$ de ce type. Un terme normal est de la forme $\lambda x_1\cdots\lambda x_n.\,y\,M_1\cdots M_k$. Le type $(A\to B)\to A$ a une seule flèche « en tête » : $M=\lambda f.\,N$ avec $f:A\to B$ et $N:A$ normal (si $n\ge2$, le type devrait avoir deux flèches en tête ; et $n=0$ est impossible pour un terme clos). Comme $A$ est atomique, $N=y\,M_1\cdots M_k$ avec $y$ libre dans $N$, donc $y=f$. Mais $f\,M_1\cdots M_k$ a le type $B$ si $k=1$ et le type $A\to B$ si $k=0$, jamais $A$ (et $k\ge2$ est impossible, car $B$ n’est pas une flèche). Contradiction. Logiquement : $(A\Rightarrow B)\Rightarrow A$ n’est pas démontrable, ce qui se voit aussi par la table de vérité ($A$ faux, $B$ faux rend la formule fausse).</p>
+</div></details>
+</div></div>
+
+<div class="exercice" id="ex-lt-t"><div class="entete-exo"><span class="etoiles" title="niveau 2">★★</span><span class="nom-exo">Exercice 4 — L’addition et la multiplication dans le Système T</span></div><div class="corps-exo">
+<p>Écrire dans le <a href="#systeme-t">Système T</a> des termes $\mathsf{add},\mathsf{mul}:\mathbf N\to\mathbf N\to\mathbf N$, puis la fonction $\mathsf{exp}\,m\,n=2^n$, en n’utilisant que le récurseur au type $\mathbf N$. Pourquoi Ackermann demande-t-il le récurseur à un type plus haut ?</p>
+<details class="corrige"><summary>Correction</summary><div class="texte-corrige">
+<p>$\mathsf{add}=\lambda m.\lambda n.\ \mathsf R_{\mathbf N}\,m\,(\lambda k.\lambda r.\,\mathsf S\,r)\,n$ ; $\mathsf{mul}=\lambda m.\lambda n.\ \mathsf R_{\mathbf N}\,0\,(\lambda k.\lambda r.\,\mathsf{add}\,r\,m)\,n$ ; $\mathsf{exp}=\lambda n.\ \mathsf R_{\mathbf N}\,(\mathsf S\,0)\,(\lambda k.\lambda r.\,\mathsf{add}\,r\,r)\,n$. Toute fonction récursive primitive se définit ainsi, avec le seul récurseur $\mathsf R_{\mathbf N}$ ; inversement, et c’est un résultat cité pour information, ce fragment du Système T ne définit que des fonctions récursives primitives ; or la <a href="ackermann.html#ack-non-rp">fonction d’Ackermann n’est pas récursive primitive</a>. Dans la définition du texte, la récurrence sur $m$ ne construit pas un entier mais une <em>fonction</em> $\mathsf{ack}\,m:\mathbf N\to\mathbf N$ : c’est une récursion au type $\mathbf N\to\mathbf N$.</p>
+</div></details>
+</div></div>
+
+<div class="exercice" id="ex-lt-y"><div class="entete-exo"><span class="etoiles" title="niveau 3">★★★</span><span class="nom-exo">Exercice 5 — Pourquoi un langage total n’a pas de point fixe</span></div><div class="corps-exo">
+<p>(a) Montrer que le combinateur de point fixe $\mathsf Y$ du <a href="lambda-calcul.html#programmes-lambda">λ-calcul</a> n’est pas typable. (b) On ajoute au λ-calcul simplement typé une constante $\mathsf{fix}_A:(A\to A)\to A$ avec la règle $\mathsf{fix}\,f\to f\,(\mathsf{fix}\,f)$. Montrer que tout type devient habité, et en déduire que la logique correspondante est incohérente.</p>
+<details class="corrige"><summary>Correction</summary><div class="texte-corrige">
+<p>(a) $\mathsf Y=\lambda f.(\lambda x.f(x\,x))(\lambda x.f(x\,x))$ contient le sous-terme $x\,x$, qui n’est pas typable (même argument que pour $\lambda x.\,x\,x$) ; or tout sous-terme d’un terme typable est typable. Autre argument : $\mathsf Y\,(\lambda x.x)$ n’a pas de forme normale, ce que la <a href="#normalisation-typee">normalisation</a> interdit pour un terme typable.</p>
+<p>(b) $\mathsf{fix}_A\,(\lambda x.x)$ est un terme clos de type $A$, pour tout $A$, en particulier pour un type atomique $o$. Par la correspondance de Curry-Howard, $\mathsf{fix}$ est l’« axiome » $(A\Rightarrow A)\Rightarrow A$, qui démontre n’importe quoi : la logique est incohérente. C’est le prix exact de l’universalité. Les langages de programmation usuels ont un $\mathsf{fix}$ (la récursion générale), donc leurs types ne sont pas des énoncés fiables ; les assistants de preuve l’interdisent, et n’acceptent que des récursions dont ils vérifient la terminaison.</p>
+</div></details>
+</div></div>
+
+<div class="exercice" id="ex-lt-f-donnees"><div class="entete-exo"><span class="etoiles" title="niveau 2">★★</span><span class="nom-exo">Exercice 6 — Booléens et paires dans le Système F</span></div><div class="corps-exo">
+<p>Dans le <a href="#systeme-f">Système F</a>, on pose $\mathrm{Bool}=\forall\alpha.\alpha\to\alpha\to\alpha$. (a) Écrire deux termes clos $\mathsf{vrai},\mathsf{faux}:\mathrm{Bool}$ et un terme $\mathsf{et}:\mathrm{Bool}\to\mathrm{Bool}\to\mathrm{Bool}$. (b) Écrire le type $A\times B$ des paires, un constructeur $\mathsf{paire}:A\to B\to A\times B$ et la première projection.</p>
+<details class="corrige"><summary>Correction</summary><div class="texte-corrige">
+<p>(a) $\mathsf{vrai}=\Lambda\alpha.\lambda x{:}\alpha.\lambda y{:}\alpha.\,x$, $\mathsf{faux}=\Lambda\alpha.\lambda x{:}\alpha.\lambda y{:}\alpha.\,y$. Un booléen est un « si alors sinon » : $b\,C\,u\,v$ vaut $u$ si $b=\mathsf{vrai}$, $v$ si $b=\mathsf{faux}$. D’où $\mathsf{et}=\lambda a{:}\mathrm{Bool}.\lambda b{:}\mathrm{Bool}.\ a\,\mathrm{Bool}\,b\,\mathsf{faux}$ : si $a$ est vrai, le résultat est $b$, sinon faux.</p>
+<p>(b) $A\times B=\forall\alpha.(A\to B\to\alpha)\to\alpha$ : une paire est ce qui, à toute fonction de deux arguments, fournit ses deux composantes. $\mathsf{paire}=\lambda a{:}A.\lambda b{:}B.\Lambda\alpha.\lambda k{:}A\to B\to\alpha.\,k\,a\,b$, et $\pi_1=\lambda p{:}A\times B.\ p\,A\,(\lambda a{:}A.\lambda b{:}B.\,a)$. On reconnaît la définition de $A\wedge B$ donnée dans le texte : par Curry-Howard, une preuve de $A\wedge B$ est une paire de preuves.</p>
+</div></details>
+</div></div>
+
+<div class="exercice" id="ex-lt-f-limite"><div class="entete-exo"><span class="etoiles" title="niveau 3">★★★</span><span class="nom-exo">Exercice 7 — Ce que le Système F ne calcule pas</span></div><div class="corps-exo">
+<p>Montrer qu’il existe une fonction calculable totale $\N\to\N$ qui n’est pas représentable dans le Système F, sans utiliser le théorème de Girard. En déduire, avec ce théorème, que l’arithmétique du second ordre ne démontre pas la normalisation du Système F.</p>
+<details class="corrige"><summary>Correction</summary><div class="texte-corrige">
+<p>Numérotons les termes clos de type $\mathrm{Nat}\to\mathrm{Nat}$ : $t_0,t_1,\dots$ (on énumère les termes et l’on garde ceux qui ont ce type, ce qui est décidable puisque les termes portent leurs annotations de type). Soit $d(n)$ l’entier dont la forme normale de $t_n\,\mathbf n$ est l’entier de Church, plus $1$. Comme F normalise, et qu’une forme normale close de type $\mathrm{Nat}$ est un entier de Church (résultat cité pour information, analogue à la forme des termes normaux du <a href="#coherence-normalisation">corollaire</a>), $d$ est calculable et totale : on réduit $t_n\,\mathbf n$ jusqu’à sa forme normale. Si $d$ était représentée par $t_k$, on aurait $d(k)=d(k)+1$. C’est l’argument du <a href="#pas-interpreteur">théorème sur les langages totaux</a>.</p>
+<p>Par le théorème de Girard, une fonction dont l’arithmétique du second ordre démontre la totalité est représentable dans F. Donc l’arithmétique du second ordre ne démontre pas que $d$ est totale. Or la normalisation de F entraîne, dans cette arithmétique, la totalité de $d$ : elle ne peut donc pas démontrer la normalisation de F. La démonstration de Girard (par les candidats de réductibilité) utilise une compréhension qui dépasse l’arithmétique du second ordre formalisée.</p>
+</div></details>
+</div></div>
+
+<nav class="nav-chap"><a href="equations-diophantiennes.html"><small>← Précédent</small>Équations diophantiennes et dixième problème de Hilbert</a><a href="theories-decidables.html" style="text-align:right"><small>Suivant →</small>Théories décidables</a></nav>
+<footer class="pied">Calculabilité — manuel à trois niveaux de lecture. Auteurs : Frédéric Prost et Claude. Texte sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" rel="license">CC BY-SA 4.0</a>, code sous licence MIT. Les mathématiques sont rendues par KaTeX (licence MIT), embarqué localement : le site se lit sans connexion.</footer>
+</main>
+</div>
+<script src="assets/katex/katex.min.js"></script>
+<script src="assets/katex/contrib/auto-render.min.js"></script>
+<script src="assets/turing.js"></script>
+<script src="assets/lambda.js"></script>
+<script src="assets/pcp.js"></script>
+<script src="assets/automates.js"></script>
+<script src="assets/niveaux.js"></script>
+<script src="assets/widgets.js"></script>
+</body>
+</html>

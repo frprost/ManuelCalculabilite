@@ -1,0 +1,426 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Frédéric Prost et Claude">
+<title>Équivalence des modèles de calcul · Calculabilité</title>
+<link rel="stylesheet" href="assets/katex/katex.min.css">
+<link rel="stylesheet" href="assets/style.css">
+<script>try{var t=localStorage.getItem('calc-theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}document.documentElement.classList.add('js');</script>
+</head>
+<body>
+<header class="entete"><div class="entete-int">
+  <button type="button" class="btn-menu" aria-label="Sommaire">☰ Sommaire</button>
+  <a class="titre-site" href="index.html">Calculabilité <span>·</span> un manuel à trois niveaux</a>
+  <span class="selecteur-legende">Niveau de lecture :</span>
+  <div class="selecteur" role="group" aria-label="Niveau de lecture">
+    <button type="button" data-niveau="philo" title="Sens et implications">Philosophique</button>
+    <button type="button" data-niveau="tech" title="Preuves mathématiques">Technique</button>
+    <button type="button" data-niveau="techno" title="Constructions complètes, machines de Turing">Technologique</button>
+    <button type="button" data-niveau="tout" title="Afficher les trois niveaux">Tout</button>
+  </div>
+  <button type="button" class="btn-theme" aria-label="Changer de thème" title="Clair / sombre">◐</button>
+</div></header>
+<div class="page">
+<nav class="sommaire" aria-label="Sommaire"><ul><li><a href="index.html">Accueil et mode d’emploi</a></li></ul><h2>Entrer dans le sujet</h2><ol><li><a href="motivations.html"><span class="num">1</span>Motivations</a></li><li><a href="trois-approches.html"><span class="num">2</span>Trois approches du calcul</a></li></ol><h2>Modèles de calcul</h2><ol><li><a href="machines-turing.html"><span class="num">3</span>Machines de Turing</a></li><li><a href="fonctions-recursives.html"><span class="num">4</span>Fonctions récursives</a></li><li><a href="lambda-calcul.html"><span class="num">5</span>λ-calcul</a></li><li><a href="equivalence.html" aria-current="page"><span class="num">6</span>Équivalence des modèles</a></li><li><a href="these-church.html"><span class="num">7</span>Thèse de Church-Turing</a></li></ol><h2>Théorèmes fondamentaux</h2><ol><li><a href="universalite.html"><span class="num">8</span>Universalité</a></li><li><a href="smn-recursion.html"><span class="num">9</span>s-m-n et récursion</a></li></ol><h2>Limites du calcul</h2><ol><li><a href="indecidabilite.html"><span class="num">10</span>Indécidabilité</a></li><li><a href="semi-decidabilite.html"><span class="num">11</span>Semi-décidabilité</a></li><li><a href="hierarchie-arithmetique.html"><span class="num">12</span>Hiérarchie arithmétique</a></li><li><a href="incompletude.html"><span class="num">13</span>Incomplétude</a></li><li><a href="equations-diophantiennes.html"><span class="num">14</span>Équations diophantiennes</a></li><li><a href="logique-types.html"><span class="num">15</span>Logique et types</a></li><li><a href="theories-decidables.html"><span class="num">16</span>Théories décidables</a></li><li><a href="mathematiques-indecidables.html"><span class="num">17</span>Mathématiques ordinaires</a></li><li><a href="kolmogorov-omega.html"><span class="num">18</span>Kolmogorov et Ω</a></li><li><a href="langages.html"><span class="num">19</span>Langages et grammaires</a></li></ol><h2>Complexité</h2><ol><li><a href="complexite.html"><span class="num">20</span>Complexité</a></li><li><a href="hasard-quantique.html"><span class="num">21</span>Hasard et quantique</a></li></ol><h2>Études de cas</h2><ol><li><a href="ackermann.html"><span class="num">22</span>Fonction d’Ackermann</a></li><li><a href="castors-affaires.html"><span class="num">23</span>Castors affairés</a></li><li><a href="calculabilite-ia.html"><span class="num">24</span>Calculabilité et IA</a></li><li><a href="autres-modeles.html"><span class="num">25</span>Autres modèles</a></li></ol><h2>Annexes</h2><ol><li><a href="parcours.html">Parcours de lecture</a></li><li><a href="cantor.html">Diagonale de Cantor</a></li><li><a href="bases.html">Notions de base</a></li><li><a href="leibniz.html">Leibniz et le binaire</a></li><li><a href="bibliographie.html">Bibliographie</a></li></ol></nav>
+<main class="contenu">
+<h1>Équivalence des modèles de calcul</h1>
+<p class="chapo">Machines de Turing, fonctions récursives et λ-calcul calculent exactement les mêmes fonctions. Ce chapitre le démontre, et la page contient un compilateur qui réalise effectivement la traduction des fonctions récursives en machines de Turing.</p>
+<div class="prerequis"><strong>Pré-requis</strong><a href="machines-turing.html">Machines de Turing</a> · <a href="fonctions-recursives.html">Fonctions récursives</a> · <a href="lambda-calcul.html">λ-calcul</a></div>
+<nav class="toc-locale" aria-label="Dans ce chapitre"><strong>Dans ce chapitre</strong><ol><li><a href="#plan-de-la-demonstration">Plan de la démonstration</a></li><li><a href="#recursives-turing">Les fonctions récursives sont Turing-calculables</a></li><li><a href="#turing-recursives">Les fonctions Turing-calculables sont récursives</a></li><li><a href="#calcul-relatif">Calcul relatif à un oracle</a></li><li><a href="#lambda">Fonctions récursives et λ-calcul</a></li><li><a href="#classe">La classe des fonctions calculables</a></li><li><a href="#exercices">Exercices</a></li></ol></nav>
+
+
+<h2 id="plan-de-la-demonstration">Plan de la démonstration</h2>
+
+<p>Ce chapitre est le pendant technique de la <a href="these-church.html">thèse de Church</a>. On prend les fonctions récursives $\PR$ comme référence et l’on montre quatre inclusions :</p>
+$$\PR\subseteq\mathcal T\subseteq\PR \qquad\text{et}\qquad \PR\subseteq\Lambda\subseteq\PR,$$
+<p>où $\mathcal T$ désigne les fonctions Turing-calculables et $\Lambda$ les fonctions λ-définissables. Chaque inclusion est une <em>compilation</em> : on traduit un programme d’un modèle en un programme de l’autre qui calcule la même fonction. On peut toujours se limiter aux fonctions de $\N^n$ dans $\N$, grâce aux <a href="fonctions-recursives.html#codages">codages</a>.</p>
+
+<h2 id="recursives-turing">Les fonctions récursives sont Turing-calculables</h2>
+
+<div class="resultat theoreme" id="rec-turing"><div class="entete-res"><div class="type">Théorème</div><div class="nom">Toute fonction récursive est Turing-calculable</div></div>
+<div class="enonce"><p>Pour toute fonction récursive $f:\N^n\to\N$, il existe une machine de Turing $Z_f$ telle que $\Psi^{(n)}_{Z_f}=f$ (avec égalité aussi des domaines de définition).</p></div>
+<div class="niveau" data-niveau="philo">
+<p>Composer, répéter un nombre connu de fois, chercher jusqu’à trouver : ces trois manières de fabriquer des fonctions se réalisent toutes par une machine qui ne sait que lire, écrire et se déplacer d’une case. Il n’y a pas d’opération mathématique « primitive » qui échappe à la mécanique la plus élémentaire.</p>
+<p>La démonstration est une <em>compilation</em> : à partir de l’écriture d’une fonction, on fabrique mécaniquement le programme de la machine. C’est exactement ce que fait un compilateur de langage de programmation, et ce que fait le simulateur ci-dessous.</p>
+</div>
+<div class="niveau" data-niveau="tech">
+<p>On démontre un énoncé plus fort, adapté à la composition. Fixons une <strong>discipline de pile</strong> : la bande contient une suite de blocs $\overline{a_1}\,B\,\overline{a_2}\,B\cdots B\,\overline{a_r}$ (blocs de barres séparés par un seul blanc, rien au-delà), et l’on appelle $E$ la case située deux cases après la dernière barre (l’endroit où commencerait un nouveau bloc). On dit qu’une machine $M$ <strong>empile</strong> $f$ (d’arité $n$) si, partant en $E$ dans son état initial avec une bande dont les $n$ derniers blocs codent $\vec x$ :</p>
+<ul>
+<li>si $f(\vec x)\conv$, elle atteint son état final en $E$, avec la même bande augmentée d’un bloc $\overline{f(\vec x)}$, sans avoir modifié les blocs précédents ;</li>
+<li>si $f(\vec x)\ind$, elle n’atteint jamais son état final.</li>
+</ul>
+<p>Les états finaux n’ayant pas d’instruction, on peut <em>enchaîner</em> deux machines en identifiant l’état final de la première à l’état initial de la seconde (après renommage des états pour les rendre disjoints). On dispose de machines auxiliaires, paramétrées par des constantes $j\ge1$ connues à la compilation (construites explicitement au niveau technologique) :</p>
+<ul>
+<li>$\mathsf{Copier}_j$ : empile une copie du $j$<sup>e</sup> bloc compté depuis la fin ;</li>
+<li>$\mathsf{Supprimer}_j$ : supprime le $j$<sup>e</sup> bloc depuis la fin et recolle les suivants ;</li>
+<li>$\mathsf{Empiler}_m$ : empile le bloc $\overline m$ ; $\mathsf{Incr}$ : ajoute une barre au dernier bloc ; $\mathsf{Décr}_j$ : en retire une au $j$<sup>e</sup> ;</li>
+<li>$\mathsf{Zéro?}_j$ : se termine dans l’un de deux états selon que le $j$<sup>e</sup> bloc code 0 ou non.</li>
+</ul>
+<p>On montre alors, par induction sur la construction de $f$, qu’il existe une machine qui empile $f$ :</p>
+<ul>
+<li><strong>Bases.</strong> $m^{(k)}$ : $\mathsf{Empiler}_m$. Successeur : $\mathsf{Copier}_1$ puis $\mathsf{Incr}$. Projection $A^{(k)}_i$ : $\mathsf{Copier}_{k-i+1}$.</li>
+<li><strong>Substitution</strong> $\sigma[g,h_1,\dots,h_k]$ d’arité $m$ : pour $j=1,\dots,k$, empiler une copie des $m$ arguments ($m$ fois $\mathsf{Copier}_{m+j-1}$), exécuter la machine de $h_j$, puis supprimer les $m$ copies ($m$ fois $\mathsf{Supprimer}_2$) ; la bande porte alors $\vec x,y_1,\dots,y_k$. Exécuter la machine de $g$ sur les $k$ derniers blocs, puis supprimer $y_1,\dots,y_k$. Si un $h_j(\vec x)$ est indéfini, la machine de $h_j$ ne termine pas, ni donc l’ensemble : la composée est indéfinie, comme il se doit.</li>
+<li><strong>Récursion</strong> $\rho[g,h]$ : on empile un compteur $c:=y$, un indice $i:=0$ et $a:=g(\vec x)$, puis on boucle : si $c=0$ on supprime $c$ et $i$, et $a$ est le résultat ; sinon on décrémente $c$, on calcule $r=h(i,a,\vec x)$ sur des copies, et l’on remplace $(i,a)$ par $(i+1,r)$.</li>
+<li><strong>Minimisation</strong> $\mu[g]$ : on empile $z:=0$ ; on boucle : calculer $r=g(\vec x,z)$ sur des copies ; si $r=0$, supprimer $r$ et terminer (le bloc $z$ est le résultat) ; sinon supprimer $r$, incrémenter $z$ et recommencer. Si $g(\vec x,z)$ est indéfini pour un $z$ atteint, ou si $g$ ne s’annule jamais, la boucle ne termine pas.</li>
+</ul>
+<p>Enfin, la machine $Z_f$ demandée commence par se rendre en $E$, empile $f(\vec x)$, supprime les $n$ blocs d’arguments, et retire une barre du résultat : il reste exactement $f(\vec x)$ barres, ce qui est la convention de sortie de $\Psi^{(n)}$.</p>
+</div>
+<div class="niveau" data-niveau="techno">
+<h4 id="compilateur">Le compilateur</h4>
+<p>Le simulateur ci-dessous applique littéralement la démonstration : il compile le terme choisi en une machine de Turing complète (au format de quadruplets du <a href="machines-turing.html">chapitre 3</a>, symboles $B$, $1$ et une marque auxiliaire $X$), l’exécute sur l’entrée, et compare le résultat à une évaluation directe du terme. Le programme complet est affiché : quelques centaines à quelques milliers de quadruplets.</p>
+<div class="compil-widget" data-fn="add" data-args="2, 3"></div>
+<p>Tous les termes du catalogue ont été testés automatiquement sur des grilles d’entrées (par exemple $0\le x,y\le4$ pour l’addition, la multiplication et la différence propre) : la machine compilée et l’évaluation directe concordent toujours, y compris pour les entrées où la fonction n’est pas définie (la machine ne s’arrête pas).</p>
+
+<h4>Les machines auxiliaires</h4>
+<p>Voici les programmes des macros, tels que le compilateur les engendre (les noms d’états sont symboliques ; chaque utilisation reçoit des états neufs). On note $e$ l’état d’entrée, et « $\to s$ » l’état de sortie.</p>
+<table>
+<tr><th>Macro</th><th>Quadruplets</th><th>Effet</th></tr>
+<tr><td>$\mathsf{Fin}$</td><td><code>a 1 R a · a X R a · a B R b · b 1 R a · b X R a · b B B s</code></td><td>depuis une case du contenu, aller en $E$ (deux blancs consécutifs)</td></tr>
+<tr><td>$\mathsf{Bloc}_j$</td><td><code>e B L c₀</code> ; pour $t=1..j$ : <code>c B L l · l 1 L l</code> puis <code>l B B c'</code> (si $t&lt;j$) ou <code>l B R s</code></td><td>depuis $E$, aller au début du $j$<sup>e</sup> bloc depuis la fin</td></tr>
+<tr><td>$\mathsf{Empiler}_m$</td><td>$m+1$ fois <code>w B 1 w' · w' 1 R w''</code>, puis <code>w B R s</code></td><td>écrire $m+1$ barres en $E$</td></tr>
+<tr><td>$\mathsf{Copier}_j$</td><td>$\mathsf{Bloc}_j$ ; <code>s 1 X c₁</code> ; $\mathsf{Fin}$ ; <code>e₁ B 1 r</code> ; <code>r 1 L r · r B L r · r X 1 r₁ · r₁ 1 R r₂</code> ; <code>r₂ 1 X d</code> ; $\mathsf{Fin}$ ; <code>e₂ B L e₃ · e₃ B 1 r</code> ; <code>r₂ B B f</code> ; $\mathsf{Fin}$</td><td>marquer une barre de la source par $X$, aller au bout, y écrire une barre, revenir au $X$, le restaurer, passer à la barre suivante</td></tr>
+<tr><td>$\mathsf{Décaler}_k$</td><td>$k$ fois : <code>g B R a · a B 1 b · b 1 R b · b B L c · c 1 B g'</code> ; puis <code>g B R s</code></td><td>sur un trou de deux blancs, décaler les $k$ blocs suivants d’une case à gauche</td></tr>
+<tr><td>$\mathsf{Supprimer}_j$</td><td>boucle : $\mathsf{Bloc}_j$, aller à la dernière barre du bloc, l’effacer, $\mathsf{Décaler}_{j-1}$ ; quand le bloc est vide, un décalage supplémentaire résorbe le séparateur</td><td>retirer le bloc barre par barre en recollant la suite</td></tr>
+<tr><td>$\mathsf{Incr}$</td><td><code>e B L t · t B 1 u · u 1 R v · v B R s</code></td><td>ajouter une barre au dernier bloc</td></tr>
+<tr><td>$\mathsf{Zéro?}_j$</td><td>$\mathsf{Bloc}_j$ ; <code>s 1 R a · a B B z · a 1 1 n</code> ; $\mathsf{Fin}$ depuis $z$ et depuis $n$</td><td>tester si le bloc ne contient qu’une barre</td></tr>
+</table>
+<p>Un enchaînement inconditionnel vers un état déjà défini (retour en tête de boucle) s’écrit avec des quadruplets « sans effet » $q\,s\,s\,q'$ pour chaque symbole $s$ : la machine réécrit le symbole lu et change d’état. </p>
+<p>Le code source du compilateur est le fichier <code>assets/turing.js</code> du site (fonction <code>compileToTM</code>), lisible et commenté.</p>
+
+
+</div>
+</div>
+<div class="resultat definition" id="machines-regulieres"><div class="entete-res"><div class="type">Définition</div><div class="nom">Machines régulières (polycopié Boitet)</div></div>
+<div class="enonce">
+<p>Une machine $Z$ est dite <strong>$n$-régulière</strong> si, partant de $q_0\,\overline{(x_1,\dots,x_n)}$, elle s’arrête (quand elle s’arrête) dans une configuration $q_{r(Z)}\,\overline{(y_1,\dots,y_s)}$, où $q_{r(Z)}$ est son état de plus grand indice et ne commence aucun quadruplet : la tête est sur la première barre du résultat, et la bande ne contient rien d’autre que le résultat, écrit selon la convention des entrées.</p>
+<p>On note $Z^{(k)}$ la machine obtenue en remplaçant chaque $q_i$ par $q_{i+k}$ (translation des états) ; deux machines translatées assez loin l’une de l’autre n’ont aucun état commun, et l’on enchaîne $Z_1$ puis $Z_2$ en identifiant l’état final de $Z_1$ à l’état initial de $Z_2$.</p>
+</div>
+<div class="niveau" data-niveau="philo"><p>Pour composer des machines, il faut que le résultat de l’une ait la même forme qu’une entrée de l’autre. Une machine quelconque laisse en s’arrêtant une bande en désordre : des barres éparpillées, des symboles auxiliaires, la tête n’importe où. Une machine régulière est une machine « bien élevée » qui range la bande avant de rendre la main. C’est la même idée que la discipline de pile du <a href="#compilateur">compilateur</a> ci-dessus, prise par l’autre bout : au lieu de n’écrire que des machines propres, on prend une machine quelconque et l’on range après coup.</p></div>
+</div>
+
+<div class="resultat theoreme" id="normalisation"><div class="entete-res"><div class="type">Théorème</div><div class="nom">Normalisation d’une machine, avec paramètres</div></div>
+<div class="enonce">
+<p>Pour toute machine $Z$ et tout $m\ge 1$, on peut construire une machine $N_m(Z)$ telle que, pour toute bande de la forme $w\,B\,\overline{x_1}\,B\cdots B\,\overline{x_m}$, où $w$ est une suite (éventuellement vide) de blocs séparés par un blanc, la tête étant en $E$ (deux cases après la dernière barre) :</p>
+<ul>
+<li>si $\Psi^{(m)}_Z(\vec x)$ est indéfini, $N_m(Z)$ ne s’arrête pas ;</li>
+<li>si $\Psi^{(m)}_Z(\vec x)=y$, $N_m(Z)$ s’arrête, dans un état qui ne commence aucun quadruplet, sur la bande $w\,B\,\overline y$ (à une translation près), la tête en $E$.</li>
+</ul>
+<p>Les blocs de $w$ sont des <em>paramètres</em> : ils sont conservés intacts. En particulier, la machine $Z'=\mathsf{Fin}\,;\,N_n(Z)\,;\,\mathsf{Début}$ est $n$-régulière et $\mathrm{Res}_{Z'}(q_0\,\overline{\vec x})=q_{r(Z')}\,\overline{\Psi^{(n)}_Z(\vec x)}$, les deux membres étant définis ou non en même temps.</p>
+</div>
+<div class="niveau" data-niveau="philo"><p>On veut exécuter une machine inconnue sur un morceau de la bande sans qu’elle abîme le reste, puis récupérer proprement ce qu’elle a calculé. Une bande n’a pas de bord visible : on pose donc deux bornes, $\lambda$ à gauche et $\rho$ à droite, et l’on s’arrange pour que la machine ne les franchisse jamais. Quand elle bute sur une borne, on la repousse d’une case, en déplaçant au besoin tout ce qui est derrière. À la fin, il suffit de balayer l’intervalle entre les bornes pour compter les barres.</p></div>
+<div class="niveau" data-niveau="tech">
+<p>On choisit deux symboles $\lambda,\rho$ qui n’apparaissent pas dans $Z$. La macro $\mathsf{Fin}$ (aller en $E$) est celle du <a href="#compilateur">compilateur</a> ; $\mathsf{Début}$ va de $E$ à la première barre : $e\,B\,L\,v$, $v\,B\,L\,u$, $u\,|\,L\,u$, $u\,B\,L\,u'$, $u'\,|\,L\,u$, $u'\,B\,R\,u''$, $u''\,B\,R\,f$. $N_m(Z)$ est la réunion de quatre machines, aux états deux à deux distincts.</p>
+<p><strong>$Z_1$ : poser les bornes.</strong> Depuis $E$ : $e\,B\,L\,a$, $a\,B\,\rho\,a$, $a\,\rho\,L\,b_1$ ($\rho$ est posé juste après la dernière barre) ; puis, pour $k=1,\dots,m$ : $b_k\,|\,L\,b_k$ et, pour $k&lt;m$, $b_k\,B\,L\,b_{k+1}$ (on remonte $m$ blocs) ; enfin $b_m\,B\,\lambda\,c$ et $c\,\lambda\,R\,z_0$, où $z_0$ est l’état initial de (la copie translatée de) $Z$. La bande est alors $w\,\lambda\,\overline{x_1}B\cdots B\overline{x_m}\,\rho$, la tête sur la première barre de $\overline{x_1}$ : $\lambda$ occupe la case de séparation entre $w$ et les arguments.</p>
+<p><strong>$Z_2$ : simuler $Z$ entre les bornes.</strong> $Z_2$ contient les quadruplets de $Z$ (translatés) et, pour chaque état $q$ de $Z$, deux petites machines de débordement qui se terminent en $q$, la tête là où elle était, sur un blanc :</p>
+<ul>
+<li>sur $\rho$ : $q\,\rho\,B\,q_1$, $q_1\,B\,R\,q_2$, $q_2\,B\,\rho\,q_3$, $q_3\,\rho\,L\,q_4$, $q_4\,B\,B\,q$ : la borne avance d’une case et laisse un blanc à sa place ;</li>
+<li>sur $\lambda$ : tout ce qui est à gauche de $\lambda$ (les paramètres $w$) doit reculer d’une case. On va au bout gauche de $w$, reconnu au premier double blanc : $q\,\lambda\,\lambda\,g$, $g\,\lambda\,L\,g_1$, $g_1\,|\,L\,g_1$, $g_1\,B\,L\,g_2$, $g_2\,|\,L\,g_1$, $g_2\,B\,R\,g_3$, $g_3\,B\,R\,s$ ; puis on déplace chaque case d’un cran vers la gauche, de gauche à droite : $s\,|\,B\,s_1$, $s_1\,B\,L\,s_2$, $s_2\,B\,|\,s_3$, $s_3\,|\,R\,s_4$, $s_4\,B\,R\,s$, $s\,B\,R\,s$ ; arrivé à $\lambda$ : $s\,\lambda\,B\,t_1$, $t_1\,B\,L\,t_2$, $t_2\,B\,\lambda\,t_3$, $t_3\,\lambda\,R\,t_4$, $t_4\,B\,B\,q$.</li>
+</ul>
+<p>(Les états $q_1,\dots,g,\dots,t_4$ sont propres à chaque $q$ : une machine de Turing ne sait pas « revenir » dans un état mémorisé, il faut donc une copie de ces quadruplets par état.) On a l’invariant : à chaque instant où $Z_2$ est dans un état de $Z$, la bande est $w\,\lambda\,\beta\,\rho$, où le mot $\beta$ contient toutes les cases non blanches de la bande simulée de $Z$, la tête étant au même endroit relativement à $\beta$. Il est vrai au départ ; un quadruplet de $Z$ le conserve tant que la tête ne lit pas une borne ; quand elle en lit une, la machine de débordement le rétablit en insérant un blanc là où $Z$ aurait lu un blanc. Donc $Z_2$ simule $Z$ pas à pas, et $Z$ s’arrête en lisant $S$ dans l’état $q$ si et seulement si $Z_2$ atteint $q$ sur $S\ne\lambda,\rho$ sans quadruplet applicable.</p>
+<p><strong>$Z_3$ : signaler l’arrêt.</strong> Pour chaque couple $(q,S)$ qui ne commence aucun quadruplet de $Z$ ($S$ symbole de $Z$), on ajoute $q\,S\,S\,q_L$, avec un état nouveau $q_L$ commun.</p>
+<p><strong>$Z_4$ : ranger.</strong> Il faut maintenant regrouper les barres de $\beta$, effacer tout le reste et les bornes, et ajouter une barre (la sortie compte $y$ barres, l’entrée en demande $y+1$). En notant $\overline S$ un symbole quelconque autre que $|,\lambda,\rho$ :</p>
+<ul>
+<li>retour à $\lambda$ : $q_L\,S\,L\,q_L$ ($S\ne\lambda$), $q_L\,\lambda\,R\,A$ ;</li>
+<li>tassement : $A\,|\,R\,A$ (on longe le bloc déjà tassé), $A\,\overline S\,\overline S\,F$ ; $F\,\overline S\,R\,F$ (chercher la barre suivante), $F\,|\,B\,G$ (l’effacer) ; $G\,\overline S\,L\,G$, $G\,|\,R\,H$, $G\,\lambda\,R\,H$ (revenir après le bloc tassé), $H\,\overline S\,|\,A$ (y écrire la barre) ;</li>
+<li>fin : $A\,\rho\,\rho\,C$, $F\,\rho\,\rho\,C$ ; $C\,\rho\,B\,C_2$ ; $C_2\,B\,L\,C_2$, $C_2\,\overline S\,B\,C_2$ (effacer les symboles auxiliaires) ; $C_2\,|\,R\,C_3$, $C_2\,\lambda\,R\,C_3$ ; $C_3\,B\,|\,C_4$ (la barre supplémentaire) ; $C_4\,|\,L\,C_4$, $C_4\,\lambda\,B\,C_5$ (la case de $\lambda$ redevient le séparateur) ; $C_5\,B\,R\,C_6$, puis $\mathsf{Fin}$ depuis $C_6$.</li>
+</ul>
+<p>À la sortie de la boucle de tassement, les $y=\Psi^{(m)}_Z(\vec x)$ barres de $\beta$ forment un bloc collé à $\lambda$ et rien d’autre que des blancs et des symboles auxiliaires ne les suit jusqu’à $\rho$. Le balayage final efface ceux-ci et $\rho$, ajoute une barre : la bande est $w\,B\,1^{y+1}=w\,B\,\overline y$. Si $Z$ ne s’arrête pas, $Z_2$ non plus, et $q_L$ n’est jamais atteint.</p>
+<p><strong>Imbrication.</strong> Quand $N_m(Z)$ est lui-même exécuté à l’intérieur d’une autre normalisation (c’est le cas dans les assemblages ci-dessous), la bande porte aussi les bornes $\lambda',\rho'$ des niveaux extérieurs. On prend des symboles différents à chaque niveau, et les machines de débordement les traitent comme des cases ordinaires : en reculant $w$, on recule aussi les $\lambda'$ qu’il contient ; en avançant $\rho$, si la case suivante porte une borne extérieure $\rho'$, on la pousse à son tour d’une case (et ainsi de suite). Les invariants des niveaux extérieurs sont conservés.</p>
+</div>
+<div class="niveau" data-niveau="techno">
+<p>La construction a été programmée et exécutée : <a href="assets/code/machines_regulieres.py">machines_regulieres.py</a> construit $N_m(Z)$ quadruplet par quadruplet et le simule. Pour l’éprouver, on l’applique à trois machines volontairement « sales », qui ne sont pas régulières :</p>
+<ul>
+<li>$Z_a$ ($1$ argument) recule de deux cases à gauche de son entrée pour y écrire une barre, puis part à droite, écrit un $X$ et une barre au-delà : $\Psi_{Z_a}(x)=x+3$ ;</li>
+<li>$Z_b$ écrit trois cases vers la gauche (deux barres et un $X$) : $\Psi_{Z_b}(x)=x+3$, et déborde de $\lambda$ à chaque exécution ;</li>
+<li>$Z_c$ ($2$ arguments) remplace le séparateur par $X$, écrit une barre deux cases à droite puis une autre trois cases à gauche : $\Psi_{Z_c}(x,y)=x+y+4$, débordements des deux côtés.</li>
+</ul>
+<p>Pour chacune, $Z'=\mathsf{Fin}\,;N_n(Z)\,;\mathsf{Début}$ est vérifiée $n$-régulière (état final sans quadruplet, tête sur la première barre, bande égale à $\overline{\Psi_Z(\vec x)}$) pour tous les arguments $\le3$. Les machines $N_m$ sont aussi éprouvées avec paramètres et imbriquées sur deux niveaux (ci-dessous). Taille typique : $Z_c$ a 14 quadruplets, et la composition $Z_c(A^{(2)}_2,A^{(2)}_1)$ complète, normalisation comprise, en a 1 612.</p>
+</div>
+</div>
+
+<div class="resultat theoreme" id="regulieres-cloture"><div class="entete-res"><div class="type">Théorème</div><div class="nom">Composition, récursion primitive et minimisation de machines régulières</div></div>
+<div class="enonce">
+<p>Si $g,h_1,\dots,h_k$ (resp. $g,h$) sont calculées par des machines, on construit explicitement des machines pour $\sigma[g,h_1,\dots,h_k]$, pour la fonction définie par récursion primitive à partir de $g$ et $h$, et pour $\mu y\,[g(\vec x,y)=0]$. Par conséquent toute fonction récursive (partielle) est calculée par une machine régulière.</p>
+</div>
+<div class="niveau" data-niveau="philo"><p>Une fois qu’on dispose de la normalisation, une machine quelconque devient une « instruction » qu’on peut appeler sur les derniers blocs de la pile sans toucher aux autres. Les trois constructions de la définition des fonctions récursives deviennent alors trois petits programmes : recopier des arguments, appeler, tester, boucler.</p></div>
+<div class="niveau" data-niveau="tech">
+<p>On travaille sur une pile de blocs, la tête en $E$, avec les macros $\mathsf{Copier}_j$, $\mathsf{Supprimer}_j$, $\mathsf{Empiler}_m$, $\mathsf{Incr}$, $\mathsf{Décr}_j$, $\mathsf{Zéro?}_j$ du <a href="#compilateur">compilateur</a> ; $\mathsf{Garder}$ supprime tous les blocs sauf le dernier. Pour une machine $Z_f$ de $f$ d’arité $m$, on note $\llbracket f\rrbracket=N_m(Z_f)$ : appliqué à une pile $w,\vec x$, il donne $w,f(\vec x)$. Si un programme $P$ transforme la pile $\vec x$ en une pile dont le dernier bloc est $\overline{f(\vec x)}$, alors $\mathsf{Fin}\,;\,P\,;\,\mathsf{Garder}\,;\,\mathsf{Décr}_1$, lancé en $q_0$ sur la première barre de $\overline{\vec x}$, laisse $f(\vec x)$ barres : c’est une machine $Z_f$ de $f$ au sens de $\Psi$, à laquelle on peut de nouveau appliquer $N$.</p>
+<ul>
+<li><strong>Composition</strong> $f=\sigma[g,h_1,\dots,h_k]$, $f$ d’arité $n$ : pour $i=1,\dots,k$, $n$ fois $\mathsf{Copier}_{n+i-1}$ puis $\llbracket h_i\rrbracket$ ; la pile est $\vec x,h_1(\vec x),\dots,h_k(\vec x)$. Puis $k$ fois $\mathsf{Copier}_k$ et $\llbracket g\rrbracket$. Si l’un des $h_i(\vec x)$ est indéfini, $\llbracket h_i\rrbracket$ ne termine pas.</li>
+<li><strong>Récursion primitive</strong> $f(\vec x,0)=g(\vec x)$, $f(\vec x,y+1)=h(\vec x,y,f(\vec x,y))$ : on empile un compteur $i=0$ puis $g(\vec x)$ (copie de $\vec x$ et $\llbracket g\rrbracket$) : pile $\vec x,y,i,v$ avec $v=f(\vec x,i)$. Boucle : si $\mathsf{Zéro?}_3$ (c’est-à-dire $y$ restant nul), sortir ; sinon empiler $\vec x,i,v$ et appliquer $\llbracket h\rrbracket$, ce qui donne $\vec x,y,i,v,f(\vec x,i+1)$ ; puis empiler $\vec x,y-1,i+1,f(\vec x,i+1)$ par des copies, $\mathsf{Décr}$ et $\mathsf{Incr}$, et recommencer ; les anciens blocs restent dessous, $\mathsf{Garder}$ les effacera à la fin. À la sortie le dernier bloc est $f(\vec x,y)$. (Le cas $n=0$, où $g$ est une constante, remplace l’appel à $g$ par $\mathsf{Empiler}_c$.)</li>
+<li><strong>Minimisation</strong> $f(\vec x)=\mu y\,[g(\vec x,y)=0]$ : on empile $y=0$. Boucle : copier $\vec x,y$, appliquer $\llbracket g\rrbracket$, tester $\mathsf{Zéro?}_1$ ; si oui, supprimer la valeur et sortir avec $\mathsf{Garder}$ (il reste $\overline y$) ; sinon supprimer la valeur, $\mathsf{Incr}$, et recommencer. Si $g(\vec x,y)$ est indéfini pour un $y$ testé avant le premier zéro, ou s’il n’y a pas de zéro, la machine ne s’arrête pas : c’est exactement la sémantique de $\mu$.</li>
+</ul>
+<p>Les fonctions de base (successeur : la machine vide ; projections : $\mathsf{Copier}$ ; constantes : $\mathsf{Empiler}$) se traitent directement. Par récurrence sur la définition d’une fonction récursive, on obtient une machine $P_f$ ; $\mathsf{Fin}\,;P_f\,;\mathsf{Garder}\,;\mathsf{Début}$ est $n$-régulière et calcule $\overline{f(\vec x)}$. Chaque appel $\llbracket\cdot\rrbracket$ est une normalisation, avec ses propres bornes, à l’intérieur de celles des niveaux englobants : c’est le cas d’imbrication traité ci-dessus.</p>
+<p>La différence avec le <a href="#compilateur">compilateur</a> : là, chaque sous-machine est construite propre par induction, et l’on n’a jamais besoin de bornes ; ici, on peut appeler <em>n’importe quelle</em> machine, même une qui n’a pas été écrite avec la discipline de pile. C’est ce que demande le polycopié, et c’est plus fort : on peut brancher dans un assemblage une machine trouvée ailleurs, par exemple une machine universelle.</p>
+</div>
+<div class="niveau" data-niveau="techno">
+<p>Les assemblages sont programmés dans le même fichier <a href="assets/code/machines_regulieres.py">machines_regulieres.py</a>, à partir des seules primitives (projections, constantes, successeur) et des machines sales $Z_a,Z_b,Z_c$. Résultats de la simulation, comparés à un calcul direct, pour tous les arguments indiqués :</p>
+<table>
+<tr><th>fonction</th><th>arguments</th><th>quadruplets</th><th>pas au plus</th></tr>
+<tr><td>addition (récursion sur le successeur)</td><td>$\le 3$</td><td>7 229</td><td>13 800</td></tr>
+<tr><td>prédécesseur (récursion, $n=0$)</td><td>$\le 4$</td><td>883</td><td>4 576</td></tr>
+<tr><td>soustraction bornée $x\monus y$</td><td>$\le 3$</td><td>58 057</td><td>20 212</td></tr>
+<tr><td>multiplication (récursion sur l’addition)</td><td>$\le 2$</td><td>409 663</td><td>23 567</td></tr>
+<tr><td>$\mu y\,[x\monus y=0]$ (minimisation)</td><td>$\le 3$</td><td>3 671 771</td><td>68 278</td></tr>
+<tr><td>$Z_a\circ A^{(2)}_2$, $Z_b\circ A^{(3)}_1$, $Z_c(A^{(2)}_2,A^{(2)}_1)$</td><td>$\le 2$</td><td>857 à 1 612</td><td>$\le$ 1 894</td></tr>
+<tr><td>$Z_b(Z_a(x))$, $Z_c(Z_b(x),Z_a(x))$ (deux niveaux de bornes)</td><td>$\le 3$</td><td>7 040, 12 677</td><td>$\le$ 4 607</td></tr>
+<tr><td>récursion primitive de pas $h=Z_c(A^{(3)}_3,A^{(3)}_2)$</td><td>$\le 2$</td><td>14 336</td><td>13 591</td></tr>
+</table>
+<p>Les formes régulières $\mathsf{Fin}\,;P_f\,;\mathsf{Garder}\,;\mathsf{Début}$ de l’addition et de $Z_c(Z_b(x),Z_a(x))$ sont aussi vérifiées régulières. La croissance du nombre de quadruplets vient de ce que chaque niveau de normalisation ajoute une copie des machines de débordement <em>par état</em> de la machine qu’il enveloppe : c’est le prix de l’absence de mémoire de retour. Pour alléger, le programme n’ajoute la machine de débordement sur $\lambda$ (resp. $\rho$) qu’aux états atteints par un déplacement à gauche (resp. à droite), et les quadruplets de $Z_3$ que pour les symboles $B,|,X$ : ce sont les seuls cas qui peuvent se produire, et la simulation le confirme (sinon la machine s’arrêterait ailleurs qu’en son état final et le test échouerait).</p>
+</div>
+</div>
+
+
+<h2 id="turing-recursives">Les fonctions Turing-calculables sont récursives</h2>
+
+<p>Cette inclusion est la plus importante conceptuellement : pour simuler une machine par une fonction, il faut <em>coder la machine elle-même par un entier</em>. C’est là que naît l’idée de fonction universelle, c’est-à-dire de l’ordinateur : programmes et données sont de même nature, et il n’est pas nécessaire de modifier physiquement une machine pour changer ce qu’elle calcule.</p>
+
+<div class="resultat definition" id="godel-mt"><div class="entete-res"><div class="type">Définition</div><div class="nom">Nombres de Gödel des machines et des calculs</div></div>
+<div class="enonce">
+<p>On code les symboles du modèle par des entiers impairs :</p>
+<table><tr><th>symbole</th><td>$R$</td><td>$L$</td><td>$S_i$</td><td>$q_i$</td></tr><tr><th>code $\gamma$</th><td>3</td><td>5</td><td>$4i+9$</td><td>$4i+7$</td></tr></table>
+<p>Ainsi $\gamma(q_0)=7$, $\gamma(B)=\gamma(S_0)=9$, $\gamma(q_1)=11$, $\gamma(1)=\gamma(S_1)=13$. Une description instantanée ou un quadruplet est un mot, codé par $\mathrm{gn}(a_1\cdots a_n)=\prod_k p_k^{\gamma(a_k)}$ ; une machine $P_Z=\{M_1,\dots,M_n\}$ est une suite de quadruplets, et ses <strong>nombres de Gödel</strong> sont les $\prod_k p_k^{\mathrm{gn}(M_{\pi(k)})}$ pour toutes les permutations $\pi$ ; un calcul $\alpha_1,\dots,\alpha_p$ est codé par $\prod_k p_k^{\mathrm{gn}(\alpha_k)}$.</p>
+</div>
+<div class="niveau" data-niveau="tech"><p>Cette numérotation est celle du cours de F. Prost (<em>Introduction à la calculabilité</em>, 2026). M. Davis et le polycopié de Ch. Boitet échangent les rôles des états et des symboles ($\gamma(S_i)=4i+7$, $\gamma(q_i)=4i+9$) ; les deux conventions conviennent, pourvu qu’on adapte les prédicats $\mathrm{Etat}$ et $\mathrm{Symb}$. Les codes de $R$ et $L$ sont les seuls impairs inférieurs à 7, et les états et symboles se partagent les impairs suivants selon leur reste modulo 4 : on reconnaît la nature d’une lettre à son code. Exemples : $\mathrm{gn}(q_0\,|\,R\,q_1)=2^7\,3^{13}\,5^3\,7^{11}$, et une machine à deux quadruplets $\{M_1,M_2\}$ a deux nombres de Gödel, $2^{\mathrm{gn}(M_1)}3^{\mathrm{gn}(M_2)}$ et $2^{\mathrm{gn}(M_2)}3^{\mathrm{gn}(M_1)}$. Un code de mot a un exposant de 2 impair (le code d’une lettre), un code de suite de mots un exposant de 2 pair (le code d’un mot) : on ne confond jamais les deux.</p>
+</div>
+<div class="niveau" data-niveau="techno">
+<p>La machine du successeur, $\{q_0\,B\,B\,q_0\}$, a un seul quadruplet, de code $2^{7}\cdot3^{9}\cdot5^{9}\cdot7^{7}=4\,052\,449\,217\,250\,000\,000$. La machine a pour nombre de Gödel $2^{4\,052\,449\,217\,250\,000\,000}$, un entier d’environ $1{,}22\times10^{18}$ chiffres. La machine de l’identité, $Z_{\mathrm{id}}=\{q_0\,|\,B\,q_1\}$ (elle efface une barre : $x+1$ barres deviennent $x$), a pour nombre de Gödel $2^{2^7\,3^{13}\,5^{9}\,7^{11}}$. Ces nombres ne sont jamais calculés ; on ne manipule que les fonctions récursives primitives qui les décomposent.</p>
+</div>
+</div>
+
+<div class="resultat theoreme" id="forme-normale"><div class="entete-res"><div class="type">Théorème</div><div class="nom">Forme normale de Kleene</div></div>
+<div class="enonce">
+<p>Pour tout $n$, il existe un prédicat récursif primitif $T_n(z,x_1,\dots,x_n,y)$ et une fonction récursive primitive $U(y)$ tels que, pour toute machine $Z$ et tout nombre de Gödel $z$ de $Z$ :</p>
+$$\Psi^{(n)}_Z(x_1,\dots,x_n)\simeq U\big(\mu y\ T_n(z,x_1,\dots,x_n,y)\big).$$
+<p>$T_n(z,\vec x,y)$ (le <em>prédicat de Kleene</em>) exprime : « $z$ code une machine $Z$ et $y$ code un calcul complet de $Z$ partant de $q_0\overline{x_1}B\cdots B\overline{x_n}$ » ; $U(y)$ est le nombre de barres de la dernière description du calcul codé par $y$. En particulier toute fonction Turing-calculable est récursive, et s’obtient avec <em>une seule</em> minimisation.</p>
+</div>
+<div class="niveau" data-niveau="philo">
+<p>Tout calcul, aussi long soit-il, se ramène à une seule recherche : « chercher un entier qui code une exécution complète du programme sur cette entrée ». Vérifier qu’un entier code une exécution correcte est facile (une boucle bornée) ; c’est <em>trouver</em> cet entier qui peut prendre un temps illimité. Toute la difficulté du calcul se concentre dans cette unique recherche non bornée.</p>
+<p>Le théorème contient aussi, en germe, l’<a href="universalite.html">ordinateur</a> : la formule de droite ne dépend de la machine que par le nombre $z$. Une seule fonction, $(z,\vec x)\mapsto U(\mu y\,T_n(z,\vec x,y))$, simule toutes les machines.</p>
+</div>
+<div class="niveau" data-niveau="tech">
+<p>On construit une suite de fonctions et prédicats récursifs primitifs (chacun utilise les précédents et la <a href="fonctions-recursives.html#bibliotheque">bibliothèque</a> ; toutes les quantifications sont bornées par l’argument, puisque les composantes d’un code sont plus petites que lui) :</p>
+<ol>
+<li>$(x)_k$ : exposant de $p_k$ dans $x$ ; $\ \ell(x)$ : longueur, plus grand $k\le x$ tel que $(x)_k>0$.</li>
+<li>$\mathrm{GN}(x)$ : $x>1$ et $x=\prod_{k\le\ell(x)}p_k^{(x)_k}$ avec tous les $(x)_k>0$ pour $k\le\ell(x)$ (pas de trou).</li>
+<li>$x*y$ : code de la concaténation, $x\cdot\prod_{i=1}^{\ell(y)}p_{\ell(x)+i}^{(y)_i}$.</li>
+<li>$\mathrm{Etat}(x)\iff\exists i\le x\ (x=4i+7)$ ; $\ \mathrm{Symb}(x)\iff\exists i\le x\ (x=4i+9)$.</li>
+<li>$\mathrm{Quad}(x)$ : $\mathrm{GN}(x)$, $\ell(x)=4$, $\mathrm{Etat}((x)_1)$, $\mathrm{Symb}((x)_2)$, $(x)_3\in\{3,5\}$ ou $\mathrm{Symb}((x)_3)$, $\mathrm{Etat}((x)_4)$.</li>
+<li>$\mathrm{MT}(z)$ : $\mathrm{GN}(z)$, chaque $(z)_k$ vérifie $\mathrm{Quad}$, et deux composantes distinctes ne commencent pas par le même couple (consistance).</li>
+<li>$\mathrm{DI}(x)$ : $x$ code une description instantanée, c’est-à-dire un mot contenant exactement un état, qui n’est pas la dernière lettre.</li>
+<li>$\mathrm{Init}_n(\vec x)=2^{7}*\mathrm{CG}(x_1)*2^{9}*\mathrm{CG}(x_2)*\cdots*2^9*\mathrm{CG}(x_n)$, où $\mathrm{CG}(x)$ code $1^{x+1}$ : $\mathrm{CG}(0)=2^{13}$, $\mathrm{CG}(x+1)=\mathrm{CG}(x)*2^{13}$.</li>
+<li>$\mathrm{Pas}(x,y,z)$ : $\mathrm{DI}(x)$, $\mathrm{DI}(y)$, $\mathrm{MT}(z)$ et $\alpha\vdash_Z\beta$, où $x,y,z$ codent $\alpha,\beta,Z$. C’est une disjonction de cinq cas (écriture ; déplacement à droite, avec ou sans ajout d’un blanc ; à gauche, avec ou sans ajout), chacun de la forme « il existe des découpages $x=g*2^{r}*3^{s}*d$… bornés par $x$, et un quadruplet de $z$ de la bonne forme ».</li>
+<li>$\mathrm{Final}(x,z)$ : $\mathrm{DI}(x)$ et aucun quadruplet de $z$ ne commence par l’état et le symbole lu de $x$.</li>
+<li>$\mathrm{Calcul}(y,z)$ : $\mathrm{GN}(y)$, $\mathrm{Pas}((y)_k,(y)_{k+1},z)$ pour tout $k<\ell(y)$, et $\mathrm{Final}((y)_{\ell(y)},z)$.</li>
+<li>$T_n(z,\vec x,y)\iff \mathrm{MT}(z)\wedge\mathrm{Calcul}(y,z)\wedge (y)_1=\mathrm{Init}_n(\vec x)$.</li>
+<li>$U(y)$ : nombre de $k\le\ell(w)$ tels que $(w)_k=13$ (le code de la barre), où $w=(y)_{\ell(y)}$.</li>
+</ol>
+<p>Si $\Psi^{(n)}_Z(\vec x)\conv$, il existe un unique calcul partant de $\mathrm{Init}_n(\vec x)$ ; son code $y$ est le seul à vérifier $T_n$, et $U(y)$ en lit le résultat. Sinon aucun $y$ ne vérifie $T_n$ et la minimisation diverge.</p>
+</div>
+<div class="niveau" data-niveau="techno">
+<p>Le prédicat $T_n$ est un <em>vérificateur</em> : étant donné un candidat, il contrôle mécaniquement chaque transition. En termes de programmation, c’est la différence entre <em>exécuter</em> un programme (on ne sait pas combien de temps cela prendra) et <em>vérifier la trace</em> d’une exécution (le temps est borné par la longueur de la trace). Le simulateur de machines de Turing produit précisément de telles traces (« Descriptions instantanées successives ») ; $T_n$ vérifie qu’une trace est cohérente, et $U$ compte les barres de sa dernière ligne.</p>
+<p>Pseudo-code de $\mathrm{Calcul}(y,z)$, entièrement fait de boucles bornées :</p>
+<pre><code>Calcul(y, z) :
+  si non GN(y) : faux
+  pour k de 1 à ℓ(y) - 1 :
+      si non Pas((y)_k, (y)_{k+1}, z) : faux
+  renvoyer Final((y)_{ℓ(y)}, z)</code></pre>
+</div>
+</div>
+
+<h2 id="calcul-relatif">Calcul relatif à un oracle</h2>
+
+<p>Tout ce qui précède se relativise : on ajoute aux fonctions récursives la fonction caractéristique $c_A$ d’un ensemble $A\subseteq\N$ quelconque (classe $P^A$, voir <a href="fonctions-recursives.html#relative">récursivité relative</a>), et aux machines les quadruplets d’oracle $q_i\,S_j\,q_k\,q_l$ (classe $\mathcal T^A$, voir <a href="machines-turing.html#def-oracle">machines avec oracle</a>). Le polycopié de Ch. Boitet démontre l’équivalence directement sous cette forme ; les deux preuves ci-dessus s’y étendent sans changement de méthode.</p>
+
+<div class="resultat theoreme" id="relatif"><div class="entete-res"><div class="type">Théorème</div><div class="nom">Équivalence relative : P^A = 𝒯^A</div></div>
+<div class="enonce">
+<p>Pour tout $A\subseteq\N$, les fonctions $A$-récursives sont exactement les fonctions $A$-calculables par machine de Turing : $P^A=\mathcal T^A$. Plus précisément, pour tout $n$ il existe un prédicat $T^A_n(z,\vec x,y)$, récursif primitif relativement à $A$, tel que pour toute machine $Z$ (avec ou sans quadruplets d’oracle) et tout nombre de Gödel $z$ de $Z$ :
+$$\Psi^{(n)}_{Z^A}(\vec x)\simeq U\big(\mu y\ T^A_n(z,\vec x,y)\big).$$
+De plus $T^A_n$ ne dépend de $A$ qu’à travers un segment initial fini de $c_A$ : il existe un prédicat récursif primitif $\hat T_n$ tel que
+$$T^A_n(z,\vec x,y)\iff \hat T_n\big(z,\vec x,y,\ \hat c_A(y)\big),\qquad \hat c_A(y)=\textstyle\prod_{i&lt;y}p_i^{\,c_A(i)}.$$</p>
+</div>
+<div class="niveau" data-niveau="philo">
+<p>Ajouter un oracle, c’est ajouter une « boîte noire » à un langage de programmation : une fonction de bibliothèque dont on ignore le code, mais qu’on peut appeler. Le théorème dit que l’équivalence des modèles n’en souffre pas : quelle que soit la boîte noire, programmes, machines et fonctions récursives qui l’utilisent calculent exactement les mêmes choses. La thèse de Church se relativise donc elle aussi.</p>
+<p>La dernière phrase est le <em>principe d’usage</em> : un calcul qui s’arrête n’a posé qu’un nombre fini de questions à l’oracle, et elles portaient sur des nombres plus petits que la longueur du calcul. Un calcul fini n’utilise qu’une information finie. C’est ce qui permet de traiter les oracles infinis, même non calculables, avec des outils finis, et d’écrire « il existe un calcul fini dont toutes les réponses d’oracle sont correctes » dans la <a href="hierarchie-arithmetique.html#post">hiérarchie arithmétique</a>.</p>
+</div>
+<div class="niveau" data-niveau="tech">
+<p><strong>$P^A\subseteq\mathcal T^A$.</strong> On reprend le <a href="#rec-turing">compilateur à discipline de pile</a>. La seule fonction de base nouvelle est $c_A$ ; il suffit de construire une machine $\mathsf{Oracle}_A$ qui <em>empile</em> $c_A(x)$, où $x$ est le dernier bloc. La question à l’oracle porte sur le nombre $\langle\alpha\rangle$ de barres de <em>toute</em> la bande : la machine remplace donc provisoirement les barres de tous les autres blocs, et la première barre du dernier bloc, par une marque $X$ ; il reste exactement $x$ barres. Elle pose alors la question « $x\in A$ ? » par un quadruplet $q\,B\,q_{\mathrm{oui}}\,q_{\mathrm{non}}$, puis, dans chacune des deux branches, restaure les barres et écrit en $E$ le bloc $\overline 1$ ou $\overline 0$. Les autres cas de l’induction (substitution, récursion, minimisation) n’utilisent pas l’oracle et restent tels quels ; la fonction $f\in P^A$ est donc calculée par la machine compilée, munie de l’oracle $A$.</p>
+<p>Pour l’extrémité gauche, on utilise le fait que les blocs sont séparés par <em>un</em> blanc et que chaque bloc a au moins une barre ($\overline x=1^{x+1}$) : deux blancs consécutifs à gauche signalent le début de la bande.</p>
+<p><strong>$\mathcal T^A\subseteq P^A$.</strong> On reprend la construction de la <a href="#forme-normale">forme normale</a>, avec trois modifications :</p>
+<ol>
+<li>$\mathrm{Quad}^A(x)$ accepte aussi la quatrième forme : $(x)_3$ peut être un état ($\mathrm{Etat}((x)_3)$). Le code du quadruplet $q_i\,S_j\,q_k\,q_l$ est $2^{4i+7}\,3^{4j+9}\,5^{4k+7}\,7^{4l+7}$. La consistance (deux quadruplets distincts ne commencent pas par le même couple) porte sur les quatre formes.</li>
+<li>Soit $N(x)$ le nombre de $k\le\ell(x)$ tels que $(x)_k=13$ : c’est $\langle\alpha\rangle$, le nombre de barres de la description codée par $x$. Le prédicat $\mathrm{Pas}^A(x,y,z)$ ajoute aux cinq cas de $\mathrm{Pas}$ un sixième : il existe un découpage $x=g*2^r*3^s*d$ et un quadruplet $2^r3^s5^k7^l$ de $z$ tels que
+$$\big(c_A(N(x))=1\ \wedge\ y=g*2^k*3^s*d\big)\ \vee\ \big(c_A(N(x))=0\ \wedge\ y=g*2^l*3^s*d\big).$$</li>
+<li>$\mathrm{Final}(x,z)$ ne change pas : une description est terminale si aucun quadruplet, de quelque forme que ce soit, ne commence par son état et son symbole lu.</li>
+</ol>
+<p>Tous ces prédicats sont obtenus à partir de fonctions récursives primitives et de $c_A$ par composition et récursion primitive : ils sont récursifs primitifs relativement à $A$, donc dans $P^A$. On pose $T^A_n(z,\vec x,y)\iff\mathrm{MT}^A(z)\wedge\mathrm{Calcul}^A(y,z)\wedge(y)_1=\mathrm{Init}_n(\vec x)$, et le raisonnement de la forme normale s’applique mot pour mot : le calcul est déterministe, puisque la réponse de l’oracle est déterminée par $A$ ; il existe donc au plus un calcul complet partant de $\mathrm{Init}_n(\vec x)$, et $U$ en lit le résultat. Ainsi $\Psi^{(n)}_{Z^A}\in P^A$.</p>
+<p><strong>Principe d’usage.</strong> Dans $T^A_n(z,\vec x,y)$, la fonction $c_A$ n’est évaluée qu’en des points $N(x)$ où $x=(y)_k$ est une composante de $y$ ; or $N(x)\le\ell(x)&lt;x&lt;y$. On remplace donc $c_A(i)$ par l’exposant $(\hat c_A(y))_i$, ce qui donne un prédicat $\hat T_n(z,\vec x,y,w)$ récursif primitif (sans oracle), avec $T^A_n(z,\vec x,y)\iff\hat T_n(z,\vec x,y,\hat c_A(y))$.</p>
+
+</div>
+<div class="niveau" data-niveau="techno">
+<p>La machine $\mathsf{Oracle}_A$, dans le format du <a href="#compilateur">compilateur</a> (symboles $B$, $1$ et la marque $X$ ; $e$ est l’état d’entrée, en $E$, et $s$ l’état de sortie, au nouveau $E$). Elle a 35 quadruplets, dont un seul de la quatrième forme.</p>
+<table>
+<tr><th>Étape</th><th>Quadruplets</th><th>Effet</th></tr>
+<tr><td>Aller au dernier bloc</td><td><code>e B L a₁ · a₁ B L a₂ · a₂ 1 L a₂ · a₂ B R a₃</code></td><td>tête sur la première barre du dernier bloc</td></tr>
+<tr><td>Marquer sa première barre</td><td><code>a₃ 1 X a₄ · a₄ X L a₅ · a₅ B L a₆</code></td><td>il reste $x$ barres dans ce bloc</td></tr>
+<tr><td>Marquer les autres blocs</td><td><code>a₆ 1 X b · b X L c · c 1 X b · c B L a₆</code></td><td>chaque barre devient $X$, de droite à gauche</td></tr>
+<tr><td>Question</td><td><code>a₆ B R o · o B oui non</code></td><td>deux blancs : début de la bande ; « $\langle\alpha\rangle=x\in A$ ? »</td></tr>
+<tr><td>Restaurer (oui)</td><td><code>oui B R u₁ · u₁ X 1 u₂ · u₂ 1 R u₁ · u₁ 1 R u₁ · u₁ B R u₃ · u₃ X 1 u₂ · u₃ 1 R u₁</code></td><td>chaque $X$ redevient une barre ; deux blancs : on est en $E$</td></tr>
+<tr><td>Écrire $\overline1$</td><td><code>u₃ B 1 w₁ · w₁ 1 R w₂ · w₂ B 1 w₃ · w₃ 1 R w₄ · w₄ B R s</code></td><td>bloc de deux barres, tête au nouveau $E$</td></tr>
+<tr><td>Restaurer (non)</td><td><code>non B R v₁ · v₁ X 1 v₂ · v₂ 1 R v₁ · v₁ 1 R v₁ · v₁ B R v₃ · v₃ X 1 v₂ · v₃ 1 R v₁</code></td><td>idem</td></tr>
+<tr><td>Écrire $\overline0$</td><td><code>v₃ B 1 x₃ · x₃ 1 R x₄ · x₄ B R s</code></td><td>bloc d’une barre</td></tr>
+</table>
+<p>Cette machine a été exécutée par un simulateur qui applique la règle de l’oracle (on compte les barres de toute la bande), avec $A=\{2,3,5,7,11,13\}$, sur toutes les piles de un à trois blocs de valeurs $0$ à $5$ (258 configurations) : elle est consistante, s’arrête toujours en $E+c_A(x)+2$, a ajouté le bloc $\overline{c_A(x)}$ et n’a modifié aucun des blocs précédents.</p>
+</div>
+</div>
+
+<div class="resultat theoreme" id="enumeration-relative"><div class="entete-res"><div class="type">Corollaire</div><div class="nom">Énumération, s-m-n et arrêt relatifs</div></div>
+<div class="enonce">
+<p>Pour $A\subseteq\N$, on note $\varphi^{A,(n)}_e=\Psi^{(n)}_{Z^A}$ où $Z$ est la machine de nombre de Gödel $\eta^\ast(e)$, le $e$<sup>e</sup> entier vérifiant $\mathrm{MT}^A$ dans l’ordre croissant (nombres de Gödel de machines, quadruplets d’oracle permis ; le prédicat $\mathrm{MT}^A$ ne dépend pas de $A$, et $\eta^\ast$ est récursive primitive pour la même raison que $\eta$), et $\varphi^A_e=\varphi^{A,(1)}_e$.</p>
+<ol>
+<li>(Énumération) La fonction $(e,\vec x)\mapsto\varphi^{A,(n)}_e(\vec x)\simeq U(\mu y\,T^A_n(\eta^\ast(e),\vec x,y))$ est dans $P^A$ et universelle pour les fonctions $A$-récursives d’arité $n$.</li>
+<li>(s-m-n) Il existe des fonctions récursives primitives $s^m_n$, construites ci-dessous, telles que pour tout $A$ : $\varphi^{A,(m+n)}_e(\vec y,\vec z)\simeq\varphi^{A,(n)}_{s^m_n(e,\vec y)}(\vec z)$. Elles ne dépendent pas de $A$.</li>
+<li>(Arrêt relatif) Le <em>saut</em> $A'=\{e:\varphi^A_e(e)\conv\}$ est semi-décidable relativement à $A$, mais n’est pas décidable relativement à $A$.</li>
+</ol>
+</div>
+<div class="niveau" data-niveau="philo"><p>Même avec une boîte noire qui répond à une question impossible, le problème de l’arrêt <em>des programmes qui utilisent cette boîte</em> reste hors d’atteinte. On obtient ainsi une échelle infinie de difficultés, $\emptyset$, $\emptyset'$, $\emptyset''$, …, chaque marche étant l’arrêt pour les machines de la marche précédente : c’est la colonne vertébrale de la <a href="hierarchie-arithmetique.html">hiérarchie arithmétique</a>.</p></div>
+<div class="niveau" data-niveau="tech">
+<p>(1) découle du théorème : pour toute machine $Z$ on a $\Psi^{(n)}_{Z^A}\simeq U(\mu y\,T^A_n(z,\vec x,y))$, et $\eta^\ast$ est récursive primitive. (2) La machine d’indice $s^m_n(e,\vec y)$ écrit $\overline{y_1}B\cdots B\overline{y_m}B$ devant son entrée puis exécute la machine d’indice $e$ ; l’écriture ne pose aucune question à l’oracle. Le code de cette machine se calcule à partir de $\eta^\ast(e)$ et de $\vec y$ par des opérations récursives primitives sur les nombres de Gödel (concaténation, renommage d’états), et l’on revient à un indice par l’inverse de $\eta^\ast$. Le chapitre 9 reprend cette construction sans oracle (<a href="smn-recursion.html#smn">théorème s-m-n</a>). (3) $A'=\mathrm{Dom}\,\lambda e.\varphi^A_e(e)$ est le domaine d’une fonction de $P^A$. Si $c_{A'}$ était dans $P^A$, la fonction $h(x)=0$ si $\varphi^A_x(x)\ind$, $h(x)$ indéfinie sinon, serait dans $P^A$ (on minimise sur $c_{A'}(x)$ : $h(x)\simeq\mu y\,[c_{A'}(x)=0]$), donc $h=\varphi^A_{x_0}$ pour un $x_0$ par (1) ; alors $\varphi^A_{x_0}(x_0)\conv\iff\varphi^A_{x_0}(x_0)\ind$, contradiction. Le chapitre 10 reprend cet argument sans oracle (<a href="indecidabilite.html#arret">indécidabilité de l’arrêt</a>).</p>
+</div>
+</div>
+
+<h2 id="lambda">Fonctions récursives et λ-calcul</h2>
+
+<div class="resultat theoreme" id="rec-lambda"><div class="entete-res"><div class="type">Théorème</div><div class="nom">Les fonctions récursives sont λ-définissables</div></div>
+<div class="enonce"><p>Pour toute fonction récursive $f:\N^n\to\N$, il existe un λ-terme $F$ tel que $F\,\mathbf{x_1}\cdots\mathbf{x_n}\twoheadrightarrow_\beta\mathbf{f(\vec x)}$ si $f(\vec x)\conv$, et $F\,\mathbf{x_1}\cdots\mathbf{x_n}$ n’a pas de forme normale si $f(\vec x)\ind$.</p></div>
+<div class="niveau" data-niveau="philo"><p>Un formalisme qui ne connaît ni nombres, ni mémoire, ni boucles, seulement la substitution, suffit à tout calculer. La boucle « tant que » y devient un point fixe : une fonction qui s’appelle elle-même.</p></div>
+<div class="niveau" data-niveau="tech">
+<p>On procède en trois étapes : d’abord les fonctions récursives primitives, qui sont totales ; puis la minimisation d’une fonction totale, seule source de non-terminaison ; enfin le cas général, grâce à la <a href="#forme-normale">forme normale de Kleene</a>. On utilise les termes du chapitre λ-calcul (<a href="lambda-calcul.html#programmes-lambda">proposition</a> et <a href="lambda-calcul.html#f-iteration">lemme d’itération</a>), la réduction de tête faible $\to_t$ et le <a href="lambda-calcul.html#tete-faible">théorème de normalisation de tête faible</a> : un terme clos dont la réduction de tête faible est infinie n’a pas de forme normale.</p>
+<p><strong>Étape 1 : fonctions récursives primitives.</strong> Pour toute $f$ récursive primitive, on construit $F$ avec $F\,\vec{\mathbf x}\twoheadrightarrow\mathbf{f(\vec x)}$ pour tout $\vec x$, par induction sur la définition de $f$.</p>
+<ul>
+<li>Constantes : $\lambda x_1\cdots x_k.\,\mathbf m$. Successeur : $\mathsf S$. Projections : $\lambda x_1\cdots x_k.\,x_i$.</li>
+<li>Substitution $\sigma[g,h_1,\dots,h_k]$ : $F=\lambda\vec x.\,G\,(H_1\vec x)\cdots(H_k\vec x)$. Comme $H_i\,\vec{\mathbf x}\twoheadrightarrow\mathbf{m_i}$ avec $m_i=h_i(\vec x)$, on a $F\,\vec{\mathbf x}\twoheadrightarrow G\,\mathbf{m_1}\cdots\mathbf{m_k}\twoheadrightarrow\mathbf{g(\vec m)}$.</li>
+<li>Récursion $\rho[g,h]$ : on itère sur des couples, avec $\mathsf{pair},\mathsf{fst},\mathsf{snd}$ du lemme d’itération :
+$$F=\lambda y\,\vec x.\ \mathsf{snd}\Big(y\,\big(\lambda p.\,\mathsf{pair}\,(\mathsf S(\mathsf{fst}\,p))\,(H\,(\mathsf{fst}\,p)\,(\mathsf{snd}\,p)\,\vec x)\big)\,\big(\mathsf{pair}\,\mathbf0\,(G\,\vec x)\big)\Big).$$
+Notons $P$ le terme $\lambda p.\cdots$ (avec $\vec x:=\vec{\mathbf x}$). Il envoie $\mathsf{pair}\,\mathbf k\,\mathbf v$, où $v=f(k,\vec x)$, sur $\mathsf{pair}\,(\mathsf S\,\mathbf k)\,(H\,\mathbf k\,\mathbf v\,\vec{\mathbf x})\twoheadrightarrow\mathsf{pair}\,\mathbf{k+1}\,\mathbf{f(k+1,\vec x)}$. Comme $\mathsf{pair}\,\mathbf0\,(G\vec{\mathbf x})\twoheadrightarrow\mathsf{pair}\,\mathbf0\,\mathbf{f(0,\vec x)}$, le point (4) du lemme d’itération donne $F\,\mathbf y\,\vec{\mathbf x}\twoheadrightarrow\mathsf{snd}\,(\mathsf{pair}\,\mathbf y\,\mathbf{f(y,\vec x)})\twoheadrightarrow\mathbf{f(y,\vec x)}$.</li>
+</ul>
+<p><strong>Étape 2 : minimisation d’une fonction totale.</strong> Soit $g:\N^{n+1}\to\N$ totale, λ-définie par $G$ au sens de l’étape 1. Avec le combinateur de Turing $\Theta=A\,A$, $A=\lambda x.\lambda y.\,y\,(x\,x\,y)$, posons</p>
+$$M=\lambda\vec x.\ \Theta\,W_{\vec x}\,\mathbf0,\qquad W_{\vec x}=\lambda r.\lambda m.\ \mathsf{zero?}\,(G\,\vec x\,m)\ m\ (r\,(\mathsf S\,m)).$$
+<p>Fixons $\vec x$, écrivons $W$ pour $W_{\vec{\mathbf x}}$, et posons $N_0=\mathbf0$, $N_{k+1}=\mathsf S\,N_k$ : ces termes sont clos et $N_k\twoheadrightarrow\mathbf k$. Pour tout $k$, avec $R=\Theta W N_{k+1}$, on a les pas de tête faible</p>
+$$\Theta W N_k\to_t(\lambda y.\,y(AAy))\,W\,N_k\to_t W(\Theta W)\,N_k\to_t(\lambda m.\cdots)\,N_k\to_t\mathsf{zero?}\,(G\,\vec{\mathbf x}\,N_k)\,N_k\,R\to_t(G\,\vec{\mathbf x}\,N_k)\,(\lambda z.\mathsf{ff})\,\mathsf{tt}\,N_k\,R.$$
+<p>et $G\,\vec{\mathbf x}\,N_k\twoheadrightarrow\mathbf{g(\vec x,k)}$. Si $g(\vec x,k)=0$, le dernier terme se réduit vers $\mathbf0\,(\lambda z.\mathsf{ff})\,\mathsf{tt}\,N_k\,R\twoheadrightarrow\mathsf{tt}\,N_k\,R\twoheadrightarrow N_k\twoheadrightarrow\mathbf k$. Si $g(\vec x,k)\ge1$, on utilise le lemme suivant.</p>
+<p><em>Lemme.</em> Si $Q\twoheadrightarrow\mathbf{j}$ avec $j\ge1$, alors, pour tous termes $a,b,c_1,\dots,c_l$, $Q\,a\,b\,\vec c\to_t^*a\,P\,\vec c$ pour un certain $P$. En effet, pour deux variables $f,x$ non libres dans $Q,a,b$, on a $Q\,f\,x\twoheadrightarrow\mathbf j\,f\,x\twoheadrightarrow f\,(f^{j-1}x)$, qui est normal de tête la variable $f$. Par le théorème de normalisation de tête faible et la seconde remarque qui le suit, la réduction de tête faible de $Q\,f\,x$ termine sur un terme $f\,L_1$. La réduction de tête faible étant stable par substitution et par application à des arguments (fait 0 de sa preuve), $Q\,a\,b\,\vec c=(Q\,f\,x)[f:=a][x:=b]\,\vec c\to_t^*a\,P\,\vec c$ avec $P=L_1[f:=a][x:=b]$.</p>
+<p>Si $g(\vec x,k)\ge1$, le lemme donne donc $(G\vec{\mathbf x}N_k)\,(\lambda z.\mathsf{ff})\,\mathsf{tt}\,N_k\,R\to_t^*(\lambda z.\mathsf{ff})\,P\,N_k\,R\to_t\mathsf{ff}\,N_k\,R\to_t(\lambda y.y)\,R\to_tR$. En résumé :</p>
+<ul>
+<li>si $g(\vec x,k)\ge1$, alors $\Theta W N_k\to_t^{+}\Theta W N_{k+1}$ (pas de tête faible uniquement) ;</li>
+<li>si $g(\vec x,k)=0$, alors $\Theta W N_k\twoheadrightarrow\mathbf k$.</li>
+</ul>
+<p>Si $\mu[g](\vec x)=q$ est défini, on en déduit $M\,\vec{\mathbf x}\twoheadrightarrow\Theta W N_0\twoheadrightarrow\Theta W N_1\twoheadrightarrow\cdots\twoheadrightarrow\Theta W N_q\twoheadrightarrow\mathbf q$. Sinon, $g(\vec x,k)\ge1$ pour tout $k$, et la réduction de tête faible de $M\,\vec{\mathbf x}$, qui atteint $\Theta W N_0$ en $n$ pas, passe ensuite par tous les $\Theta W N_k$ : elle est infinie.</p>
+<p><strong>Étape 3 : cas général.</strong> Soit $f$ récursive d’arité $n$. Par le <a href="#rec-turing">théorème précédent</a>, $f=\Psi^{(n)}_Z$ pour une machine $Z$, de nombre de Gödel $z$, et par la forme normale, $f(\vec x)\simeq U(\mu y\,[g(\vec x,y)=0])$ avec $g(\vec x,y)=1\monus\chi_{T_n}(z,\vec x,y)$, où $g$ et $U$ sont récursives primitives. Soient $M$ le terme de l’étape 2 pour $g$, $U'$ un terme qui λ-définit $U$ (étape 1), et $\mathsf I=\lambda u.u$. On pose</p>
+$$F=\lambda\vec x.\ M\,\vec x\ \mathsf I\ \mathsf I\ \big(U'\,(M\,\vec x)\big).$$
+<p>Si $f(\vec x)\conv$, alors $M\vec{\mathbf x}\twoheadrightarrow\mathbf q$ avec $q=\mu y\,[g(\vec x,y)=0]$, et $\mathbf q\,\mathsf I\,\mathsf I\twoheadrightarrow\mathsf I^q\,\mathsf I\twoheadrightarrow\mathsf I$, donc $F\vec{\mathbf x}\twoheadrightarrow\mathsf I\,(U'\,\mathbf q)\to U'\,\mathbf q\twoheadrightarrow\mathbf{U(q)}=\mathbf{f(\vec x)}$. Si $f(\vec x)\ind$, la réduction de tête faible de $M\vec{\mathbf x}$ est infinie, donc aussi celle de $F\,\vec{\mathbf x}$, qui commence par $n$ pas vers $M\vec{\mathbf x}\,\mathsf I\,\mathsf I\,(U'(M\vec{\mathbf x}))$ puis suit pas à pas celle de $M\vec{\mathbf x}$ (fait 0) ; $F\,\vec{\mathbf x}$ étant clos, il n’a pas de forme normale.</p>
+<p>Le préfixe $M\,\vec x\,\mathsf I\,\mathsf I$ est indispensable : sans lui, $U'\,(M\vec{\mathbf x})$ pourrait avoir une forme normale même si $M\vec{\mathbf x}$ n’en a pas, par exemple si $U'$ n’utilise pas son argument. Pour la même raison, une induction directe sur la définition de $f$, qui traiterait la substitution et la récursion de fonctions partielles, devrait forcer l’évaluation de chaque argument ; passer par la forme normale évite ces complications, puisque la seule fonction partielle à traiter est une minimisation de fonction totale.</p>
+</div>
+<div class="niveau" data-niveau="techno">
+<p>La minimisation et la récursion, testées dans le réducteur. Premier exemple : la plus petite valeur $m$ telle que $3\monus m=0$ (réponse $3$). Second : la factorielle par récursion sur des couples ($3!=6$).</p>
+<div class="lambda-widget"><pre class="src">tt = λx y.x
+ff = λx y.y
+if = λb x y.b x y
+S = λn f x.f (n f x)
+zero? = λn.n (λz.ff) tt
+pred = λn f x.n (λg h.h (g f)) (λu.x) (λu.u)
+moins = λm n.n pred m
+Y = λf.(λx.f (x x)) (λx.f (x x))
+MU = λg.Y (λr m.if (zero? (g m)) m (r (S m))) 0
+MU (λm.moins 3 m)</pre></div>
+<div class="lambda-widget"><pre class="src">tt = λx y.x
+ff = λx y.y
+S = λn f x.f (n f x)
+mult = λm n f.m (n f)
+pair = λa b s.s a b
+fst = λp.p tt
+snd = λp.p ff
+REC = λg h y.snd (y (λp.pair (S (fst p)) (h (fst p) (snd p))) (pair 0 g))
+FACT = REC 1 (λi a.mult (S i) a)
+FACT 3</pre></div>
+</div>
+</div>
+
+<div class="resultat theoreme" id="lambda-rec"><div class="entete-res"><div class="type">Théorème</div><div class="nom">Les fonctions λ-définissables sont récursives</div></div>
+<div class="enonce"><p>Toute fonction λ-définissable est récursive.</p></div>
+<div class="niveau" data-niveau="tech">
+<p>On code les λ-termes par des entiers (par exemple en indices de de Bruijn : $\ulcorner k\urcorner=\langle0,k\rangle$, $\ulcorner\lambda M\urcorner=\langle1,\ulcorner M\urcorner\rangle$, $\ulcorner MN\urcorner=\langle2,\langle\ulcorner M\urcorner,\ulcorner N\urcorner\rangle\rangle$). La substitution, le décalage des indices et un pas de réduction en ordre normal sont récursifs primitifs (récursions sur la structure du code), ainsi que « $t$ est une forme normale » et « $t$ est l’entier de Church $m$ ». Si $F$ λ-définit $f$, alors
+$$f(\vec x)\simeq \mathrm{val}\Big(\mathrm{red}^{\,s}\big(\ulcorner F\,\mathbf{x_1}\cdots\mathbf{x_n}\urcorner\big)\Big)\quad\text{avec}\quad s=\mu s\,\big[\mathrm{red}^{\,s}(\dots)\text{ est normal}\big],$$
+où $\mathrm{red}^{\,s}$ itère $s$ fois le pas de réduction (récursion primitive sur $s$) et $\mathrm{val}$ lit l’entier d’un numéral. Par le <a href="lambda-calcul.html#normalisation">théorème de normalisation</a>, l’ordre normal trouve la forme normale si elle existe, et par <a href="lambda-calcul.html#church-rosser">confluence</a> c’est la seule ; si $f(\vec x)\ind$, il n’y a pas de forme normale et la minimisation diverge.</p>
+</div>
+<div class="niveau" data-niveau="techno"><p>Le réducteur de cette page est exactement ce programme : <code>assets/lambda.js</code> représente les termes en indices de de Bruijn et itère <code>stepNormal</code> jusqu’à une forme normale. Il est écrit en JavaScript plutôt qu’en fonctions récursives, mais n’utilise que des récursions structurelles et une seule boucle non bornée.</p></div>
+</div>
+
+<h2 id="classe">La classe des fonctions calculables</h2>
+
+<div class="resultat definition" id="classe-calculable"><div class="entete-res"><div class="type">Définition</div><div class="nom">Fonctions calculables, ensembles décidables</div></div>
+<div class="enonce">
+<p>On appelle <strong>fonctions calculables</strong> les éléments de la classe commune $\PR=\mathcal T=\Lambda$, et l’on note $\mathcal R$ (ou $\mathcal T_{tot}$) les fonctions calculables totales. Un ensemble $A\subseteq\N$ est <strong>décidable</strong> (ou <em>récursif</em>) si sa fonction caractéristique $\chi_A$ est calculable. Un langage $L\subseteq\Sigma^*$ est décidable si l’ensemble des codes de ses mots l’est.</p>
+</div>
+<div class="niveau" data-niveau="philo"><p>Le mot « calculable » peut désormais s’employer sans préciser le modèle : trois idées très différentes du calcul (mécanique, syntaxique, mathématique) délimitent la même frontière. C’est l’argument le plus fort en faveur de la <a href="these-church.html">thèse de Church</a>.</p></div>
+<div class="niveau" data-niveau="tech">
+<p>Fonctions, ensembles, prédicats et langages sont quatre présentations de la même notion, grâce aux codages : un prédicat est la fonction caractéristique d’un ensemble ; un langage devient un ensemble d’entiers par numérotation de Gödel ; et une fonction totale $f$ est calculable si et seulement si son graphe $\{\langle x,f(x)\rangle\}$ est décidable (dans un sens on teste $f(x)=y$, dans l’autre on cherche $y$ par minimisation).</p>
+</div>
+</div>
+
+<!--EXERCICES-->
+<h2 id="exercices">Exercices</h2>
+
+<p class="legende-exo">Niveaux : ★ application directe du cours, ★★ exercice standard, ★★★ approfondissement. Les corrections sont masquées : cliquer sur « Correction » pour les afficher.</p><div class="exercice" id="ex-eq-godel"><div class="entete-exo"><span class="etoiles" title="niveau 1">★</span><span class="nom-exo">Exercice 1 — Coder un quadruplet</span></div><div class="corps-exo">
+<p>Avec les codes $\gamma$ de la <a href="#godel-mt">numérotation des machines</a>, écrire le nombre de Gödel du quadruplet $q_0\,1\,B\,q_1$, puis celui de la machine $\{q_0\,1\,B\,q_1\}$. Combien de nombres de Gödel a une machine à $k$ quadruplets ?</p>
+<details class="corrige"><summary>Correction</summary><div class="texte-corrige">
+<p>Les symboles du mot $q_0\,S_1\,S_0\,q_1$ ont pour codes $\gamma(q_0)=7$, $\gamma(S_1)=13$, $\gamma(S_0)=9$, $\gamma(q_1)=11$, donc $\mathrm{gn}(q_0\,1\,B\,q_1)=2^7\cdot3^{13}\cdot5^9\cdot7^{11}$. La machine, suite d’un seul quadruplet, a pour nombre de Gödel $2^{\,2^7\cdot3^{13}\cdot5^9\cdot7^{11}}$. Une machine à $k$ quadruplets (distincts) en a $k!$, un par ordre d’énumération des quadruplets. Ces nombres sont gigantesques ; seule compte la possibilité de coder et décoder par des fonctions récursives primitives.</p>
+</div></details>
+</div></div>
+
+<div class="exercice" id="ex-eq-reguliere"><div class="entete-exo"><span class="etoiles" title="niveau 1">★</span><span class="nom-exo">Exercice 2 — L’addition n’est pas régulière</span></div><div class="corps-exo">
+<p>La <a href="machines-turing.html#ex-add">machine de l’addition</a> du chapitre 3 est-elle 2-régulière ? Pourquoi la régularité est-elle nécessaire pour composer des machines ?</p>
+<details class="corrige"><summary>Correction</summary><div class="texte-corrige">
+<p>Non. À l’arrêt, la bande porte $B\,1^{x}\,B\,B\,1^{y}$ (le premier bloc a perdu sa barre de tête, le second aussi) : le résultat est en deux morceaux, la tête n’est pas sur sa première barre, et l’état final $q_4$ est bien le plus grand mais la bande ne respecte pas la convention $\overline{x+y}$. Pour enchaîner deux machines, la seconde doit trouver son entrée exactement sous la forme $q_0\,\overline{(y_1,\dots,y_s)}$ ; sinon elle lirait des débris de calcul comme des données. Une machine régulière rend son résultat « propre », prêt à servir d’entrée.</p>
+</div></details>
+</div></div>
+
+<div class="exercice" id="ex-eq-un-mu"><div class="entete-exo"><span class="etoiles" title="niveau 2">★★</span><span class="nom-exo">Exercice 3 — Une seule minimisation suffit</span></div><div class="corps-exo">
+<p>Déduire de la <a href="#forme-normale">forme normale de Kleene</a> que toute fonction récursive partielle s’écrit avec une seule minimisation non bornée, appliquée à une fonction récursive primitive.</p>
+<details class="corrige"><summary>Correction</summary><div class="texte-corrige">
+<p>Soit $f$ récursive partielle d’arité $n$. Elle est Turing-calculable (<a href="#rec-turing">premier sens</a>) : $f=\Psi^{(n)}_Z$ pour une machine $Z$ de nombre de Gödel $z$. Par la forme normale, $f(\vec x)\simeq U\big(\mu y\,T_n(z,\vec x,y)\big)$. Le prédicat $T_n(z,\vec x,y)$, à $z$ fixé, est récursif primitif, ainsi que $U$. Il y a donc une seule minimisation non bornée, appliquée à $\overline{\mathrm{sg}}\big(\chi_{T_n}(z,\vec x,y)\big)$, qui s’annule exactement quand $T_n$ est vrai. Les définitions récursives contenant plusieurs $\mu$ imbriqués n’apportent donc aucune fonction nouvelle.</p>
+</div></details>
+</div></div>
+
+<div class="exercice" id="ex-eq-temps"><div class="entete-exo"><span class="etoiles" title="niveau 2">★★</span><span class="nom-exo">Exercice 4 — Temps de calcul et récursivité primitive</span></div><div class="corps-exo">
+<p>Soit $f=\Psi^{(1)}_Z$ totale, et $t(x)$ le plus petit $y$ tel que $T_1(z,x,y)$ (le code du calcul). Montrer que si $t$ est majorée par une fonction récursive primitive $b$, alors $f$ est récursive primitive.</p>
+<details class="corrige"><summary>Correction</summary><div class="texte-corrige">
+<p>Si $t(x)\le b(x)$ pour tout $x$, alors $\mu y\,T_1(z,x,y)=\mu y\le b(x)\ T_1(z,x,y)$ : la recherche est bornée. Or la minimisation bornée par une fonction récursive primitive d’un prédicat récursif primitif est récursive primitive (<a href="fonctions-recursives.html#mu-borne">minimisation bornée</a>). Donc $f(x)=U\big(\mu y\le b(x)\,T_1(z,x,y)\big)$ est récursive primitive. Une fonction calculable qui n’est pas récursive primitive, comme la <a href="ackermann.html">fonction d’Ackermann</a>, a donc des calculs dont la taille n’est majorée par aucune fonction récursive primitive.</p>
+</div></details>
+</div></div>
+
+<div class="exercice" id="ex-eq-domine"><div class="entete-exo"><span class="etoiles" title="niveau 3">★★★</span><span class="nom-exo">Exercice 5 — Une fonction calculable plus grande que toutes les fonctions récursives primitives</span></div><div class="corps-exo">
+<p>On énumère les termes construits avec les fonctions de base, $\sigma$ et $\rho$, qui définissent des fonctions d’une variable : $f_0,f_1,\dots$ (par exemple par longueur croissante du texte du terme). Montrer que $g(x)=1+\max_{e\le x}f_e(x)$ est calculable et totale, mais n’est majorée par aucune fonction récursive primitive.</p>
+<details class="corrige"><summary>Correction</summary><div class="texte-corrige">
+<p><em>Calculable.</em> Les termes sont des mots finis ; on peut énumérer ceux qui sont bien formés et d’arité 1, et l’on peut évaluer un terme en un point en suivant les équations de $\sigma$ et $\rho$ (toutes les fonctions de $\RP$ sont totales, l’évaluation termine). Donc $(e,x)\mapsto f_e(x)$ est calculable totale, et $g$ aussi.</p>
+<p><em>Pas de majorant.</em> Soit $b$ récursive primitive d’une variable. Alors $b+1$ aussi, donc $b+1=f_k$ pour un $k$. Pour $x\ge k$, $g(x)>f_k(x)=b(x)+1>b(x)$. Ainsi $g$ dépasse $b$ à partir du rang $k$ : aucune fonction récursive primitive ne majore $g$. En particulier $g\notin\RP$ (sinon $g$ se majorerait elle-même), et, par l’exercice précédent, le temps de calcul de $g$ n’est majoré par aucune fonction récursive primitive.</p>
+<p>C’est la diagonale de la <a href="fonctions-recursives.html#rp-non-enumerable">proposition sur l’énumération</a>, renforcée : on obtient non seulement une fonction hors de $\RP$, mais une fonction qui les domine toutes.</p>
+</div></details>
+</div></div>
+
+<nav class="nav-chap"><a href="lambda-calcul.html"><small>← Précédent</small>Le λ-calcul</a><a href="these-church.html" style="text-align:right"><small>Suivant →</small>La thèse de Church-Turing</a></nav>
+<footer class="pied">Calculabilité — manuel à trois niveaux de lecture. Auteurs : Frédéric Prost et Claude. Texte sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" rel="license">CC BY-SA 4.0</a>, code sous licence MIT. Les mathématiques sont rendues par KaTeX (licence MIT), embarqué localement : le site se lit sans connexion.</footer>
+</main>
+</div>
+<script src="assets/katex/katex.min.js"></script>
+<script src="assets/katex/contrib/auto-render.min.js"></script>
+<script src="assets/turing.js"></script>
+<script src="assets/lambda.js"></script>
+<script src="assets/pcp.js"></script>
+<script src="assets/automates.js"></script>
+<script src="assets/niveaux.js"></script>
+<script src="assets/widgets.js"></script>
+</body>
+</html>

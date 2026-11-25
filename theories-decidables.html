@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Frédéric Prost et Claude">
+<title>Théories décidables · Calculabilité</title>
+<link rel="stylesheet" href="assets/katex/katex.min.css">
+<link rel="stylesheet" href="assets/style.css">
+<script>try{var t=localStorage.getItem('calc-theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}document.documentElement.classList.add('js');</script>
+</head>
+<body>
+<header class="entete"><div class="entete-int">
+  <button type="button" class="btn-menu" aria-label="Sommaire">☰ Sommaire</button>
+  <a class="titre-site" href="index.html">Calculabilité <span>·</span> un manuel à trois niveaux</a>
+  <span class="selecteur-legende">Niveau de lecture :</span>
+  <div class="selecteur" role="group" aria-label="Niveau de lecture">
+    <button type="button" data-niveau="philo" title="Sens et implications">Philosophique</button>
+    <button type="button" data-niveau="tech" title="Preuves mathématiques">Technique</button>
+    <button type="button" data-niveau="techno" title="Constructions complètes, machines de Turing">Technologique</button>
+    <button type="button" data-niveau="tout" title="Afficher les trois niveaux">Tout</button>
+  </div>
+  <button type="button" class="btn-theme" aria-label="Changer de thème" title="Clair / sombre">◐</button>
+</div></header>
+<div class="page">
+<nav class="sommaire" aria-label="Sommaire"><ul><li><a href="index.html">Accueil et mode d’emploi</a></li></ul><h2>Entrer dans le sujet</h2><ol><li><a href="motivations.html"><span class="num">1</span>Motivations</a></li><li><a href="trois-approches.html"><span class="num">2</span>Trois approches du calcul</a></li></ol><h2>Modèles de calcul</h2><ol><li><a href="machines-turing.html"><span class="num">3</span>Machines de Turing</a></li><li><a href="fonctions-recursives.html"><span class="num">4</span>Fonctions récursives</a></li><li><a href="lambda-calcul.html"><span class="num">5</span>λ-calcul</a></li><li><a href="equivalence.html"><span class="num">6</span>Équivalence des modèles</a></li><li><a href="these-church.html"><span class="num">7</span>Thèse de Church-Turing</a></li></ol><h2>Théorèmes fondamentaux</h2><ol><li><a href="universalite.html"><span class="num">8</span>Universalité</a></li><li><a href="smn-recursion.html"><span class="num">9</span>s-m-n et récursion</a></li></ol><h2>Limites du calcul</h2><ol><li><a href="indecidabilite.html"><span class="num">10</span>Indécidabilité</a></li><li><a href="semi-decidabilite.html"><span class="num">11</span>Semi-décidabilité</a></li><li><a href="hierarchie-arithmetique.html"><span class="num">12</span>Hiérarchie arithmétique</a></li><li><a href="incompletude.html"><span class="num">13</span>Incomplétude</a></li><li><a href="equations-diophantiennes.html"><span class="num">14</span>Équations diophantiennes</a></li><li><a href="logique-types.html"><span class="num">15</span>Logique et types</a></li><li><a href="theories-decidables.html" aria-current="page"><span class="num">16</span>Théories décidables</a></li><li><a href="mathematiques-indecidables.html"><span class="num">17</span>Mathématiques ordinaires</a></li><li><a href="kolmogorov-omega.html"><span class="num">18</span>Kolmogorov et Ω</a></li><li><a href="langages.html"><span class="num">19</span>Langages et grammaires</a></li></ol><h2>Complexité</h2><ol><li><a href="complexite.html"><span class="num">20</span>Complexité</a></li><li><a href="hasard-quantique.html"><span class="num">21</span>Hasard et quantique</a></li></ol><h2>Études de cas</h2><ol><li><a href="ackermann.html"><span class="num">22</span>Fonction d’Ackermann</a></li><li><a href="castors-affaires.html"><span class="num">23</span>Castors affairés</a></li><li><a href="calculabilite-ia.html"><span class="num">24</span>Calculabilité et IA</a></li><li><a href="autres-modeles.html"><span class="num">25</span>Autres modèles</a></li></ol><h2>Annexes</h2><ol><li><a href="parcours.html">Parcours de lecture</a></li><li><a href="cantor.html">Diagonale de Cantor</a></li><li><a href="bases.html">Notions de base</a></li><li><a href="leibniz.html">Leibniz et le binaire</a></li><li><a href="bibliographie.html">Bibliographie</a></li></ol></nav>
+<main class="contenu">
+<h1>Théories décidables</h1>
+<p class="chapo">L’arithmétique des entiers avec addition et multiplication est indécidable. Mais l’addition seule est décidable, et la théorie des nombres réels, multiplication comprise, l’est aussi. Ce chapitre explique ces résultats et ce qui les distingue : une théorie devient indécidable lorsqu’elle sait décrire un calcul.</p>
+<div class="prerequis"><strong>Pré-requis</strong><a href="incompletude.html#godel1">Incomplétude</a> · <a href="logique-types.html#binaire">Une relation binaire suffit</a> · <a href="langages.html#automates-finis">Automates finis</a> · <a href="equations-diophantiennes.html#mrdp">Théorème MRDP</a></div>
+<nav class="toc-locale" aria-label="Dans ce chapitre"><strong>Dans ce chapitre</strong><ol><li><a href="#methodes">Théories et méthodes</a></li><li><a href="#presburger-section">L’arithmétique de Presburger</a></li><li><a href="#reels">Les nombres réels et la géométrie</a></li><li><a href="#paysage">Le paysage</a></li><li><a href="#exercices">Exercices</a></li></ol></nav>
+
+
+<p>Le <a href="incompletude.html">théorème d’incomplétude</a> et le <a href="logique-types.html#binaire">problème de la décision</a> donnent l’impression que la logique est indécidable dès qu’elle devient intéressante. Ce n’est pas le cas. Des théories mathématiques riches sont décidables : une machine peut trancher n’importe lequel de leurs énoncés. Ce chapitre présente les plus importantes, avec deux méthodes de démonstration (l’élimination des quantificateurs et les automates), puis la ligne de partage entre théories décidables et indécidables.</p>
+
+<h2 id="methodes">Théories et méthodes</h2>
+
+<div class="resultat definition" id="def-theorie"><div class="entete-res"><div class="type">Définition</div><div class="nom">Théorie d’une structure, théorie décidable</div></div>
+<div class="enonce">
+<p>Fixons un langage du premier ordre (des symboles de constantes, de fonctions et de relations). La <strong>théorie</strong> d’une structure $\mathcal M$ est l’ensemble $\mathrm{Th}(\mathcal M)$ des énoncés vrais dans $\mathcal M$. Plus généralement, la théorie engendrée par un ensemble d’axiomes $\Gamma$ est l’ensemble des énoncés démontrables à partir de $\Gamma$, c’est-à-dire (par la <a href="incompletude.html#completude">complétude</a>) vrais dans tous les modèles de $\Gamma$. Une théorie est <strong>décidable</strong> si l’ensemble des codes de ses énoncés est décidable, <strong>complète</strong> si elle contient, pour tout énoncé $\phi$, $\phi$ ou $\neg\phi$.</p>
+<p>Notations : $\mathrm{Th}(\N,+,\times)$ est l’arithmétique vraie, $\mathrm{Th}(\N,+)$ (avec $0$, $1$ et $<$) l’<strong>arithmétique de Presburger</strong>, $\mathrm{Th}(\R,+,\times)$ (avec $0$, $1$ et $<$) la théorie des nombres réels.</p>
+</div>
+<div class="niveau" data-niveau="philo"><p>$\mathrm{Th}(\mathcal M)$ est toujours complète : un énoncé est vrai ou faux dans $\mathcal M$. Pour une telle théorie, être décidable, c’est disposer d’un oracle mécanique de la vérité dans $\mathcal M$. Le théorème d’incomplétude dit que c’est impossible pour $(\N,+,\times)$ : on ne peut même pas axiomatiser $\mathrm{Th}(\N,+,\times)$ par un ensemble décidable d’axiomes, car une théorie complète ainsi axiomatisée est décidable (<a href="incompletude.html#ex-inc-complete">exercice</a>).</p></div>
+</div>
+
+<div class="resultat theoreme" id="arithmetique-indecidable"><div class="entete-res"><div class="type">Théorème</div><div class="nom">L’arithmétique vraie est indécidable</div></div>
+<div class="enonce"><p>$\mathrm{Th}(\N,+,\times)$ n’est pas décidable ; elle n’est même pas semi-décidable.</p></div>
+<div class="niveau" data-niveau="tech"><p>Par le <a href="equations-diophantiennes.html#mrdp">théorème MRDP</a>, il existe un polynôme $P$ tel que $e\in K\iff\exists\vec y\ P(e,\vec y)=0$. L’énoncé $\exists\vec y\ (P^+(\underline e,\vec y)=P^-(\underline e,\vec y))$, où $P^+$ et $P^-$ regroupent les monômes de coefficients positifs et négatifs, se calcule à partir de $e$ et est vrai dans $\N$ si et seulement si $e\in K$. Une procédure de décision de $\mathrm{Th}(\N,+,\times)$ déciderait donc $K$. De même pour le complémentaire de $K$, avec la négation de cet énoncé : $\mathrm{Th}(\N,+,\times)$ n’est pas semi-décidable, car $\overline K$ ne l’est pas.</p></div>
+</div>
+
+<div class="resultat theoreme" id="elimination"><div class="entete-res"><div class="type">Proposition</div><div class="nom">La méthode d’élimination des quantificateurs</div></div>
+<div class="enonce"><p>Une théorie $\mathsf T$ <strong>élimine les quantificateurs</strong> si toute formule est équivalente, dans $\mathsf T$, à une formule sans quantificateur ayant les mêmes variables libres. Si cette formule se calcule à partir de la première, et si l’on sait décider les énoncés sans quantificateur de $\mathsf T$, alors $\mathsf T$ est décidable. Pour éliminer les quantificateurs, il suffit d’éliminer $\exists x$ devant une conjonction de formules atomiques et de négations de formules atomiques.</p></div>
+<div class="niveau" data-niveau="philo"><p>C’est la méthode du lycée pour résoudre des systèmes : on élimine les inconnues une à une. « Il existe $x$ tel que $ax+b=0$ » se remplace par une condition sur $a$ et $b$ seulement. Si l’on peut toujours faire disparaître la variable quantifiée, un énoncé se réduit à une combinaison de faits sans variable, que l’on vérifie par un calcul.</p></div>
+<div class="niveau" data-niveau="tech"><p>On élimine les quantificateurs de l’intérieur vers l’extérieur, en remplaçant $\forall x$ par $\neg\exists x\neg$. Devant une formule sans quantificateur, on met celle-ci sous forme normale disjonctive $\bigvee_i C_i$ (chaque $C_i$ conjonction de littéraux), on utilise $\exists x\bigvee_iC_i\equiv\bigvee_i\exists x\,C_i$, et l’on élimine $\exists x$ devant chaque $C_i$, en sortant d’abord les littéraux où $x$ ne figure pas. Pour un énoncé, on obtient un énoncé sans quantificateur, donc sans variable, que l’on décide par hypothèse.</p></div>
+</div>
+
+<div class="resultat theoreme" id="ordres-denses"><div class="entete-res"><div class="type">Théorème</div><div class="nom">Les ordres denses sans extrémités</div></div>
+<div class="enonce"><p>La théorie $\mathsf{DLO}$ des ordres totaux denses sans plus petit ni plus grand élément élimine les quantificateurs ; elle est complète et décidable. En particulier, $(\mathbb Q,<)$ et $(\R,<)$ satisfont les mêmes énoncés.</p></div>
+<div class="niveau" data-niveau="philo"><p>Un exemple instructif : la logique avec une relation binaire est <a href="logique-types.html#binaire">indécidable</a>, mais si l’on ajoute à la logique les axiomes de $\mathsf{DLO}$, elle devient décidable. Ajouter des axiomes peut rendre une théorie décidable : les axiomes fixent ce que la relation peut faire, et un ordre dense est trop homogène pour dessiner un calcul. Ce qui compte, ce n’est pas le langage seul, mais ce que les modèles permettent de décrire.</p></div>
+<div class="niveau" data-niveau="tech"><p>Les axiomes : $<$ est un ordre total strict ; $\forall x\forall y\,(x&lt;y\Rightarrow\exists z\,(x&lt;z\wedge z&lt;y))$ ; $\forall x\exists y\,(y&lt;x)$ et $\forall x\exists y\,(x&lt;y)$. Les littéraux négatifs se remplacent : $\neg(x&lt;a)\equiv(x=a\vee a&lt;x)$, $\neg(x=a)\equiv(x&lt;a\vee a&lt;x)$, puis on redistribue. Il reste à éliminer $\exists x$ devant une conjonction de formules $x=a$, $x&lt;u$, $l&lt;x$ (on remplace $x&lt;x$ par faux, $x=x$ par vrai). S’il y a un $x=a$, on remplace $x$ par $a$ partout. Sinon, $\exists x\,(\bigwedge_i l_i&lt;x\wedge\bigwedge_j x&lt;u_j)$ équivaut à $\bigwedge_{i,j}l_i&lt;u_j$ : si chaque $l_i$ est plus petit que chaque $u_j$, alors $\max_il_i<\min_ju_j$ et la densité donne un $x$ entre les deux ; si l’une des deux familles est vide, l’absence d’extrémités donne $x$, et la conjonction vide est vraie. Le langage n’a pas de constante : un énoncé sans quantificateur est une combinaison booléenne de « vrai » et de « faux ». Tout énoncé est donc équivalent, dans $\mathsf{DLO}$, à vrai ou à faux : la théorie est complète, et le calcul est une procédure de décision.</p></div>
+</div>
+
+<h2 id="presburger-section">L’arithmétique de Presburger</h2>
+
+<div class="resultat theoreme" id="presburger"><div class="entete-res"><div class="type">Théorème</div><div class="nom">L’addition des entiers est décidable (Presburger, 1929)</div></div>
+<div class="enonce"><p>La théorie $\mathrm{Th}(\N,0,1,+,<)$ est décidable.</p></div>
+<div class="niveau" data-niveau="philo">
+<p>Avec l’addition seule, on peut dire beaucoup de choses : « tout entier est pair ou impair », « tout montant d’au moins 8 euros se paie avec des pièces de 3 et de 5 », « $x\equiv y \pmod 7$ », et tout ce qui concerne des systèmes d’inégalités linéaires en nombres entiers. Mais on ne peut pas multiplier deux variables. Or c’est la multiplication qui permet de coder les suites finies (par le <a href="incompletude.html#beta">lemme β</a>), donc les calculs. Sans elle, l’arithmétique n’est plus assez riche pour parler d’elle-même.</p>
+<p>Presburger a démontré ce théorème en 1929 par élimination des quantificateurs, dans un langage enrichi des congruences $x\equiv y\pmod m$. On donne ici une démonstration par les automates, due à Büchi (1960), plus proche de l’informatique : un nombre est un mot binaire, et l’addition se fait de droite à gauche avec une retenue, ce qu’un automate fini sait faire.</p>
+</div>
+<div class="niveau" data-niveau="tech">
+<p><em>Codage.</em> Un $n$-uplet $(x_1,\dots,x_n)$ s’écrit comme un mot sur l’alphabet $\{0,1\}^n$ : la $k$-ième lettre est formée des $k$-ièmes bits des $x_i$, en commençant par les bits de poids faible. Un $n$-uplet a une infinité d’écritures, qui diffèrent par des lettres nulles $(0,\dots,0)$ ajoutées à la fin. On montre, par récurrence sur $\phi(x_1,\dots,x_n)$, qu’il existe un automate fini déterministe $\mathcal A_\phi$ qui accepte exactement les écritures des $n$-uplets satisfaisant $\phi$ (toutes ou aucune, pour chaque $n$-uplet), et qu’on le calcule à partir de $\phi$.</p>
+<p><em>Atomes.</em> Toute formule atomique se ramène à $\sum_ia_ix_i=c$ ou $\sum_ia_ix_i\le c$, avec $a_i,c\in\mathbb Z$ (on fait tout passer d’un côté, et $s&lt;t$ équivaut à $s+1\le t$). Écrivons $x_i=b_i+2x_i'$, où $b_i$ est le bit de poids faible. Alors $\sum a_ix_i=c$ équivaut à « $c-\sum a_ib_i$ est pair et $\sum a_ix'_i=(c-\sum a_ib_i)/2$ », et $\sum a_ix_i\le c$ équivaut à $\sum a_ix'_i\le\lfloor(c-\sum a_ib_i)/2\rfloor$. L’automate a donc pour états des entiers : partant de $c$, il lit la lettre $(b_1,\dots,b_n)$ et passe à $(q-\sum a_ib_i)/2$ (ou à un état puits si ce nombre n’est pas entier, pour l’égalité), ou à $\lfloor(q-\sum a_ib_i)/2\rfloor$ pour l’inégalité. À la fin du mot, il reste $\sum a_ix_i=q$ (resp. $\le q$) avec tous les $x_i$ nuls : on accepte si $q=0$ (resp. $q\ge0$). Les états restent bornés en valeur absolue par $M=\max(|c|,\sum|a_i|)$, car $|q|\le M$ entraîne $|q-\sum a_ib_i|\le2M$ : l’automate est fini.</p>
+<p><em>Connecteurs.</em> Pour $\neg\phi$, on échange états acceptants et non acceptants ; pour $\phi\wedge\psi$ et $\phi\vee\psi$, on prend l’automate produit (après avoir mis les deux automates sur les mêmes variables, une piste supplémentaire étant ignorée). La propriété « toutes les écritures ou aucune » est préservée.</p>
+<p><em>Quantificateur.</em> Pour $\exists x_n\,\phi$, on efface la piste de $x_n$ : on obtient un automate non déterministe qui devine les bits de $x_n$, et que l’on <a href="langages.html#automates-finis">déterminise</a>. Une difficulté : le témoin $x_n$ peut avoir plus de bits que $x_1,\dots,x_{n-1}$. On déclare donc acceptant tout état d’où une suite de lettres nulles mène à un état acceptant. L’automate obtenu accepte une écriture de $(x_1,\dots,x_{n-1})$ si et seulement s’il existe $x_n$ tel que $\phi(x_1,\dots,x_n)$, et il accepte alors toutes ses écritures.</p>
+<p><em>Conclusion.</em> Pour un énoncé ($n=0$), l’alphabet a une seule lettre, le $0$-uplet vide, et l’énoncé est vrai si et seulement si l’état initial de $\mathcal A_\phi$ est acceptant.</p>
+</div>
+<div class="niveau" data-niveau="techno"><p>Le programme <a href="assets/code/presburger.py">presburger.py</a> réalise cette démonstration en moins de 170 lignes. Il vérifie d’abord ses automates contre un calcul direct, puis décide les énoncés : « tout entier est pair ou impair » (vrai), « tout $n\ge8$ s’écrit $3a+5b$ » (vrai), la même chose pour $n\ge7$ (faux, à cause de $7$), « il existe $x$ avec $2x=5$ » (faux). La procédure est très coûteuse dans le pire cas : chaque alternance de quantificateurs peut faire exploser le nombre d’états. Résultat cité pour information : c’est inévitable, car toute procédure de décision de l’arithmétique de Presburger demande, pour certains énoncés de longueur $n$, au moins $2^{2^{cn}}$ étapes (Fischer et Rabin, 1974). Elle est pourtant utilisée tous les jours : les solveurs SMT (comme Z3) décident les formules d’arithmétique linéaire entière qui apparaissent dans la vérification de programmes et la compilation (indices de tableaux, bornes de boucles).</p></div>
+</div>
+
+<div class="resultat theoreme" id="multiplication-non-definissable"><div class="entete-res"><div class="type">Corollaire</div><div class="nom">La multiplication n’est pas définissable avec l’addition</div></div>
+<div class="enonce"><p>Il n’existe pas de formule $\mu(x,y,z)$ du langage $\{0,1,+,<\}$ telle que, pour tous $x,y,z\in\N$, $(\N,+)\models\mu(x,y,z)\iff z=xy$.</p></div>
+<div class="niveau" data-niveau="philo"><p>Le théorème de Presburger et l’indécidabilité de l’arithmétique, mis ensemble, montrent une propriété d’expressivité : l’addition ne permet pas de définir la multiplication. Une procédure de décision sert ici d’instrument de mesure.</p></div>
+<div class="niveau" data-niveau="tech"><p>Si une telle formule existait, on traduirait tout énoncé du langage $\{0,1,+,\times,<\}$ en un énoncé du langage $\{0,1,+,<\}$ vrai dans $\N$ si et seulement si le premier l’est : on remplace chaque produit par une nouvelle variable, quantifiée existentiellement et contrainte par $\mu$ (par exemple $P(s\times t)$ devient $\exists z\,(\mu(s,t,z)\wedge P(z))$, en commençant par les produits les plus intérieurs). On déciderait $\mathrm{Th}(\N,+,\times)$, ce qui est <a href="#arithmetique-indecidable">impossible</a>. Résultat cité pour information : les ensembles d’entiers définissables dans $(\N,+)$ sont exactement les ensembles <em>ultimement périodiques</em> (Ginsburg et Spanier, 1966, pour la version à plusieurs variables : les ensembles semi-linéaires), ce qui montre directement que l’ensemble des carrés n’est pas définissable.</p></div>
+</div>
+
+<h2 id="reels">Les nombres réels et la géométrie</h2>
+
+<div class="resultat theoreme" id="tarski"><div class="entete-res"><div class="type">Théorème</div><div class="nom">Les nombres réels sont décidables (Tarski, 1948)</div></div>
+<div class="enonce"><p>La théorie $\mathrm{Th}(\R,0,1,+,\times,<)$ élimine les quantificateurs et elle est décidable. (Résultat cité pour information, la démonstration générale étant longue ; on en démontre ci-dessous un cas et une conséquence.)</p></div>
+<div class="niveau" data-niveau="philo">
+<p>Le contraste est saisissant. Sur les entiers, l’addition et la multiplication rendent la théorie indécidable ; sur les réels, avec les mêmes opérations, tout énoncé est tranché par un calcul. La géométrie euclidienne élémentaire en hérite, puisque l’on peut la traduire en coordonnées : un énoncé sur des points, des droites et des cercles se décide mécaniquement. C’est ce que Tarski voulait démontrer.</p>
+<p>La raison profonde est que les réels sont trop « continus » pour contenir les entiers comme partie définissable : on ne peut pas dire « $x$ est un entier » avec $+$, $\times$ et $<$ sur $\R$. Sans les entiers, pas de suites finies, pas de calculs. Il suffit d’ajouter la fonction sinus, qui s’annule exactement aux multiples de $\pi$, pour que les entiers deviennent définissables et que la théorie devienne <a href="mathematiques-indecidables.html#zeros-sinus">indécidable</a>. Sur les rationnels, au contraire, on peut définir $\mathbb Z$ (Julia Robinson, 1949, cité pour information), et $\mathrm{Th}(\mathbb Q,+,\times)$ est indécidable.</p>
+</div>
+<div class="niveau" data-niveau="tech">
+<p><em>Un exemple d’élimination.</em> Pour tous réels $a,b,c$ :</p>
+$$\exists x\ (ax^2+bx+c=0)\iff(a\ne0\wedge b^2-4ac\ge0)\vee(a=0\wedge b\ne0)\vee(a=0\wedge b=0\wedge c=0).$$
+<p>Si $a\ne0$, c’est la résolution des équations du second degré ; si $a=0$ et $b\ne0$, $x=-c/b$ convient ; si $a=b=0$, l’équation est $c=0$. Le côté droit ne contient plus $x$. La méthode générale (Tarski) étend ce calcul à n’importe quel système d’équations et d’inéquations polynomiales, grâce à des généralisations du théorème de Sturm qui comptent les racines réelles d’un polynôme dans un intervalle.</p>
+<p><em>Conséquence : $\N$ n’est pas définissable dans $\R$.</em> Une formule sans quantificateur à une variable libre $x$ (et sans paramètre) est une combinaison booléenne de conditions $p(x)=0$ et $p(x)>0$, avec $p$ polynôme. Chacune définit une réunion finie de points et d’intervalles (un polynôme non nul a un nombre fini de racines, entre lesquelles il garde un signe constant), et ces réunions finies sont closes par les opérations booléennes. Par l’élimination des quantificateurs, toute partie de $\R$ définissable est donc une réunion finie de points et d’intervalles. $\N$ n’en est pas une : il est infini et ne contient aucun intervalle non réduit à un point.</p>
+</div>
+<div class="niveau" data-niveau="techno"><p>Résultats cités pour information. Les meilleures méthodes générales (décomposition cylindrique algébrique, Collins, 1975) ont un coût doublement exponentiel en le nombre de variables, et l’on sait que l’élimination des quantificateurs ne peut pas faire beaucoup mieux (Davenport et Heintz, 1988). Elles sont implantées dans les logiciels de calcul formel (Mathematica, QEPCAD, Redlog) et servent en robotique (planification de mouvement) et en vérification de systèmes hybrides. Question ouverte : la théorie des réels avec, en plus, la fonction exponentielle est-elle décidable ? Macintyre et Wilkie (1996) ont démontré que oui, si une conjecture de théorie des nombres (la conjecture de Schanuel) est vraie.</p></div>
+</div>
+
+<h2 id="paysage">Le paysage</h2>
+
+<div class="resultat theoreme" id="paysage-theories"><div class="entete-res"><div class="type">Remarque</div><div class="nom">Théories décidables et indécidables</div></div>
+<div class="enonce">
+<p>Résultats cités pour information, sauf ceux de ce chapitre.</p>
+<table>
+<tr><th>Décidables</th><th>Indécidables</th></tr>
+<tr><td>calcul propositionnel ; <a href="logique-types.html#monadique">logique monadique</a></td><td><a href="logique-types.html#binaire">logique avec une relation binaire</a></td></tr>
+<tr><td><a href="#ordres-denses">ordres denses</a> ; $\mathrm{Th}(\N,<)$ ; $\mathrm{Th}(\mathbb Z,<)$</td><td>théorie des ordres partiels ; théorie des graphes</td></tr>
+<tr><td><a href="#presburger">$\mathrm{Th}(\N,+)$</a> (Presburger) ; $\mathrm{Th}(\N,\times)$ (Skolem, 1930)</td><td><a href="#arithmetique-indecidable">$\mathrm{Th}(\N,+,\times)$</a> ; $\mathrm{Th}(\mathbb Z,+,\times)$ ; $\mathrm{Th}(\mathbb Q,+,\times)$ (J. Robinson)</td></tr>
+<tr><td>groupes abéliens (Szmielew, 1955)</td><td>groupes (Tarski, 1953)</td></tr>
+<tr><td><a href="#tarski">$\mathrm{Th}(\R,+,\times)$</a> (Tarski) ; $\mathrm{Th}(\mathbb C,+,\times)$ ; géométrie élémentaire</td><td>anneaux ; corps</td></tr>
+<tr><td>algèbres de Boole (Tarski, 1949)</td><td>théorie des ensembles $\mathsf{ZFC}$ (si elle est cohérente)</td></tr>
+<tr><td>logique monadique du second ordre de $(\N,S)$ (Büchi, 1962) et de l’arbre binaire infini (Rabin, 1969)</td><td>logique monadique du second ordre de la grille $\N\times\N$</td></tr>
+</table>
+</div>
+<div class="niveau" data-niveau="philo">
+<p>La colonne de droite a un point commun : chaque fois, on peut <em>coder un calcul</em>, en général en définissant (ou en interprétant) les entiers avec l’addition et la multiplication, ou un quadrillage. La logique du second ordre monadique, par exemple, est décidable sur une ligne ($\N$ avec le successeur) ou sur un arbre, mais pas sur une grille, où l’on retrouve les pavages et les diagrammes espace-temps des machines de Turing. La colonne de gauche contient des structures trop pauvres (les ordres denses, les entiers sans multiplication) ou trop homogènes (les réels, les complexes) pour cela. Tarski, Mostowski et Robinson ont fait de cette idée une méthode : une théorie qui permet d’interpréter une petite partie de l’arithmétique est indécidable, et toute extension cohérente de cette théorie l’est aussi.</p>
+<p>La ligne de partage ne sépare donc pas des domaines des mathématiques, mais des pouvoirs d’expression : dès qu’une théorie sait décrire ce que fait un ordinateur, un ordinateur ne peut plus la décider.</p>
+</div>
+</div>
+
+<!--EXERCICES-->
+<h2 id="exercices">Exercices</h2>
+
+<p class="legende-exo">Niveaux : ★ application directe du cours, ★★ exercice standard, ★★★ approfondissement. Les corrections sont masquées : cliquer sur « Correction » pour les afficher.</p><div class="exercice" id="ex-td-dlo"><div class="entete-exo"><span class="etoiles" title="niveau 1">★</span><span class="nom-exo">Exercice 1 — Éliminer un quantificateur dans un ordre dense</span></div><div class="corps-exo">
+<p>Dans $\mathsf{DLO}$, trouver une formule sans quantificateur équivalente à $\exists x\,(a&lt;x\wedge c&lt;x\wedge x&lt;b)$, puis à $\exists x\,(a&lt;x\wedge\neg(x&lt;b))$.</p>
+<details class="corrige"><summary>Correction</summary><div class="texte-corrige">
+<p>Par la <a href="#ordres-denses">méthode du texte</a> : la première équivaut à $a&lt;b\wedge c&lt;b$. Pour la seconde, $\neg(x&lt;b)\equiv x=b\vee b&lt;x$, d’où $\exists x\,(a&lt;x\wedge x=b)\vee\exists x\,(a&lt;x\wedge b&lt;x)$, soit $a&lt;b\vee\top$, c’est-à-dire vrai : il y a toujours un élément au-dessus de $a$ et de $b$, puisqu’il n’y a pas de plus grand élément.</p>
+</div></details>
+</div></div>
+
+<div class="exercice" id="ex-td-ecrire"><div class="entete-exo"><span class="etoiles" title="niveau 1">★</span><span class="nom-exo">Exercice 2 — Écrire en Presburger</span></div><div class="corps-exo">
+<p>Écrire dans le langage $\{0,1,+,<\}$ : (a) « $x$ est pair » ; (b) « $x\equiv y\pmod 3$ » ; (c) « $z=\max(x,y)$ » ; (d) « $x$ est divisible par 4 et $x\le 100$ ».</p>
+<details class="corrige"><summary>Correction</summary><div class="texte-corrige">
+<ul>
+<li>(a) $\exists y\,(x=y+y)$.</li>
+<li>(b) $\exists z\,(x=y+z+z+z)\vee\exists z\,(y=x+z+z+z)$.</li>
+<li>(c) $(x&lt;y\wedge z=y)\vee(\neg(x&lt;y)\wedge z=x)$.</li>
+<li>(d) $\exists y\,(x=y+y+y+y)\wedge x<\underline{101}$, où $\underline{101}$ abrège $1+1+\cdots+1$.</li>
+</ul>
+<p>La multiplication par une constante est une addition répétée : elle est permise. C’est la multiplication de deux variables qui est <a href="#multiplication-non-definissable">hors de portée</a>.</p>
+</div></details>
+</div></div>
+
+<div class="exercice" id="ex-td-automate"><div class="entete-exo"><span class="etoiles" title="niveau 2">★★</span><span class="nom-exo">Exercice 3 — L’automate de « x = 2y »</span></div><div class="corps-exo">
+<p>Construire, en suivant la <a href="#presburger">démonstration du théorème de Presburger</a> (bits de poids faible en tête), l’automate qui reconnaît les couples $(x,y)$ tels que $x=2y$. Combien a-t-il d’états ? Le décrire aussi directement.</p>
+<details class="corrige"><summary>Correction</summary><div class="texte-corrige">
+<p>L’atome est $x-2y=0$ : $a=(1,-2)$, $c=0$. Depuis l’état $q$, la lettre $(b_x,b_y)$ donne $s=q-b_x+2b_y$, et l’on passe à $s/2$ si $s$ est pair, au puits sinon. Depuis $0$ : $(0,0)\mapsto0$, $(0,1)\mapsto1$, $(1,\cdot)\mapsto$ puits. Depuis $1$ : $(1,0)\mapsto0$, $(1,1)\mapsto1$, $(0,\cdot)\mapsto$ puits. L’état acceptant est $0$. Trois états : $0$, $1$ et le puits.</p>
+<p>Lecture directe : multiplier par 2, c’est décaler les bits d’un cran. L’état retient le bit de $y$ lu au pas précédent (au départ, $0$), et le bit de $x$ doit lui être égal. À la fin, le dernier bit de $y$ doit avoir été recopié : on accepte si l’état est $0$. Le programme <a href="assets/code/presburger.py">presburger.py</a> construit le même automate avec <code>automate(('eq', {'x': 1, 'y': -2}, 0))</code>.</p>
+</div></details>
+</div></div>
+
+<div class="exercice" id="ex-td-monnaie"><div class="entete-exo"><span class="etoiles" title="niveau 2">★★</span><span class="nom-exo">Exercice 4 — Le problème de la monnaie</span></div><div class="corps-exo">
+<p>Montrer que tout entier $n\ge8$ s’écrit $3a+5b$ avec $a,b\in\N$, et que $7$ ne s’écrit pas ainsi. Plus généralement, pour $p,q$ premiers entre eux, l’énoncé « tout $n\ge s$ s’écrit $pa+qb$ » est un énoncé de Presburger : que peut-on en déduire sur le calcul de la plus petite valeur de $s$ qui convient ?</p>
+<details class="corrige"><summary>Correction</summary><div class="texte-corrige">
+<p>$8=3+5$, $9=3\cdot3$, $10=5\cdot2$, et si $n$ s’écrit, $n+3$ aussi : tout $n\ge8$ s’écrit. $7$ ne s’écrit pas : $b=0$ donne $7=3a$, $b=1$ donne $2=3a$, impossibles. Pour $p,q$ et $s$ donnés, l’énoncé se décide par la <a href="#presburger">procédure de Presburger</a> ; on trouve le plus petit $s$ en essayant $s=0,1,2,\dots$, ce qui termine car un tel $s$ existe (on sait d’ailleurs que c’est $pq-p-q+1$, résultat de Sylvester, 1884 ; ici $15-3-5+1=8$). Le programme <a href="assets/code/presburger.py">presburger.py</a> confirme les deux énoncés pour $3$ et $5$.</p>
+</div></details>
+</div></div>
+
+<div class="exercice" id="ex-td-z"><div class="entete-exo"><span class="etoiles" title="niveau 3">★★★</span><span class="nom-exo">Exercice 5 — Les entiers relatifs sont indécidables</span></div><div class="corps-exo">
+<p>Montrer que $\mathrm{Th}(\mathbb Z,0,1,+,\times)$ est indécidable. On admettra le théorème de Lagrange : tout entier naturel est somme de quatre carrés.</p>
+<details class="corrige"><summary>Correction</summary><div class="texte-corrige">
+<p>Par Lagrange, $\N$ est définissable dans $\mathbb Z$ par $\nu(x)=\exists a\,\exists b\,\exists c\,\exists d\ (x=a\times a+b\times b+c\times c+d\times d)$. À tout énoncé $\phi$ de l’arithmétique on associe l’énoncé $\phi^\nu$ obtenu en <em>relativisant</em> les quantificateurs : $\exists x\,\psi$ devient $\exists x\,(\nu(x)\wedge\psi^\nu)$, $\forall x\,\psi$ devient $\forall x\,(\nu(x)\Rightarrow\psi^\nu)$. Par récurrence sur $\phi$, $\phi$ est vrai dans $\N$ si et seulement si $\phi^\nu$ est vrai dans $\mathbb Z$ (les opérations de $\mathbb Z$ prolongent celles de $\N$, et $0,1\in\N$). La traduction est calculable, donc une procédure de décision pour $\mathrm{Th}(\mathbb Z,+,\times)$ en donnerait une pour $\mathrm{Th}(\N,+,\times)$, qui n’existe pas (<a href="#arithmetique-indecidable">théorème</a>). Pour $\R$, cette méthode échoue : $\N$ n’y est pas définissable (<a href="#tarski">théorème de Tarski</a>). Pour $\mathbb Q$, elle réussit, mais la définition de $\mathbb Z$ dans $\mathbb Q$ (Julia Robinson) est bien plus difficile.</p>
+</div></details>
+</div></div>
+
+<nav class="nav-chap"><a href="logique-types.html"><small>← Précédent</small>Logique et calcul : décidabilité, types et preuves</a><a href="mathematiques-indecidables.html" style="text-align:right"><small>Suivant →</small>L’indécidable dans les mathématiques ordinaires</a></nav>
+<footer class="pied">Calculabilité — manuel à trois niveaux de lecture. Auteurs : Frédéric Prost et Claude. Texte sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" rel="license">CC BY-SA 4.0</a>, code sous licence MIT. Les mathématiques sont rendues par KaTeX (licence MIT), embarqué localement : le site se lit sans connexion.</footer>
+</main>
+</div>
+<script src="assets/katex/katex.min.js"></script>
+<script src="assets/katex/contrib/auto-render.min.js"></script>
+<script src="assets/turing.js"></script>
+<script src="assets/lambda.js"></script>
+<script src="assets/pcp.js"></script>
+<script src="assets/automates.js"></script>
+<script src="assets/niveaux.js"></script>
+<script src="assets/widgets.js"></script>
+</body>
+</html>

@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Frédéric Prost et Claude">
+<title>Bibliographie · Calculabilité</title>
+<link rel="stylesheet" href="assets/katex/katex.min.css">
+<link rel="stylesheet" href="assets/style.css">
+<script>try{var t=localStorage.getItem('calc-theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}document.documentElement.classList.add('js');</script>
+</head>
+<body>
+<header class="entete"><div class="entete-int">
+  <button type="button" class="btn-menu" aria-label="Sommaire">☰ Sommaire</button>
+  <a class="titre-site" href="index.html">Calculabilité <span>·</span> un manuel à trois niveaux</a>
+  <span class="selecteur-legende">Niveau de lecture :</span>
+  <div class="selecteur" role="group" aria-label="Niveau de lecture">
+    <button type="button" data-niveau="philo" title="Sens et implications">Philosophique</button>
+    <button type="button" data-niveau="tech" title="Preuves mathématiques">Technique</button>
+    <button type="button" data-niveau="techno" title="Constructions complètes, machines de Turing">Technologique</button>
+    <button type="button" data-niveau="tout" title="Afficher les trois niveaux">Tout</button>
+  </div>
+  <button type="button" class="btn-theme" aria-label="Changer de thème" title="Clair / sombre">◐</button>
+</div></header>
+<div class="page">
+<nav class="sommaire" aria-label="Sommaire"><ul><li><a href="index.html">Accueil et mode d’emploi</a></li></ul><h2>Entrer dans le sujet</h2><ol><li><a href="motivations.html"><span class="num">1</span>Motivations</a></li><li><a href="trois-approches.html"><span class="num">2</span>Trois approches du calcul</a></li></ol><h2>Modèles de calcul</h2><ol><li><a href="machines-turing.html"><span class="num">3</span>Machines de Turing</a></li><li><a href="fonctions-recursives.html"><span class="num">4</span>Fonctions récursives</a></li><li><a href="lambda-calcul.html"><span class="num">5</span>λ-calcul</a></li><li><a href="equivalence.html"><span class="num">6</span>Équivalence des modèles</a></li><li><a href="these-church.html"><span class="num">7</span>Thèse de Church-Turing</a></li></ol><h2>Théorèmes fondamentaux</h2><ol><li><a href="universalite.html"><span class="num">8</span>Universalité</a></li><li><a href="smn-recursion.html"><span class="num">9</span>s-m-n et récursion</a></li></ol><h2>Limites du calcul</h2><ol><li><a href="indecidabilite.html"><span class="num">10</span>Indécidabilité</a></li><li><a href="semi-decidabilite.html"><span class="num">11</span>Semi-décidabilité</a></li><li><a href="hierarchie-arithmetique.html"><span class="num">12</span>Hiérarchie arithmétique</a></li><li><a href="incompletude.html"><span class="num">13</span>Incomplétude</a></li><li><a href="equations-diophantiennes.html"><span class="num">14</span>Équations diophantiennes</a></li><li><a href="logique-types.html"><span class="num">15</span>Logique et types</a></li><li><a href="theories-decidables.html"><span class="num">16</span>Théories décidables</a></li><li><a href="mathematiques-indecidables.html"><span class="num">17</span>Mathématiques ordinaires</a></li><li><a href="kolmogorov-omega.html"><span class="num">18</span>Kolmogorov et Ω</a></li><li><a href="langages.html"><span class="num">19</span>Langages et grammaires</a></li></ol><h2>Complexité</h2><ol><li><a href="complexite.html"><span class="num">20</span>Complexité</a></li><li><a href="hasard-quantique.html"><span class="num">21</span>Hasard et quantique</a></li></ol><h2>Études de cas</h2><ol><li><a href="ackermann.html"><span class="num">22</span>Fonction d’Ackermann</a></li><li><a href="castors-affaires.html"><span class="num">23</span>Castors affairés</a></li><li><a href="calculabilite-ia.html"><span class="num">24</span>Calculabilité et IA</a></li><li><a href="autres-modeles.html"><span class="num">25</span>Autres modèles</a></li></ol><h2>Annexes</h2><ol><li><a href="parcours.html">Parcours de lecture</a></li><li><a href="cantor.html">Diagonale de Cantor</a></li><li><a href="bases.html">Notions de base</a></li><li><a href="leibniz.html">Leibniz et le binaire</a></li><li><a href="bibliographie.html" aria-current="page">Bibliographie</a></li></ol></nav>
+<main class="contenu">
+<h1>Bibliographie</h1>
+<p class="chapo">Les ouvrages et articles cités dans le manuel, et les références classiques qui ont servi à vérifier les résultats.</p>
+
+
+
+
+<h2 id="references-citees">Ouvrages et articles cités</h2>
+<ol class="biblio">
+<li>A. V. Aho, J. E. Hopcroft, J. D. Ullman. <em>The Design and Analysis of Computer Algorithms</em>. Addison-Wesley, 1974.</li>
+<li>H. P. Babbage (éd.). <em>Babbage’s Calculating Engines: Being a Collection of Papers Relating to Them; Their History and Construction</em>. 1889 ; réédition Cambridge University Press, 2010.</li>
+<li>H. P. Barendregt. <em>The Lambda Calculus: Its Syntax and Semantics</em>. Studies in Logic and the Foundations of Mathematics 103, North-Holland, 1984 (édition révisée 1985).</li>
+<li>T. Burge, H. B. Enderton (éd.). <em>The Collected Works of Alonzo Church</em>. MIT Press, 2019.</li>
+<li>R. K. Dybvig. <em>The Scheme Programming Language</em>. Prentice-Hall, 1987.</li>
+<li>P. Graham. <em>ANSI Common Lisp</em>. Prentice Hall, 1995.</li>
+<li>M. W. Green. « A lower bound on Rado’s sigma function for binary Turing machines ». <em>Proceedings of the Fifth Annual Symposium on Switching Circuit Theory and Logical Design</em>, IEEE, 1964, p. 91–94.</li>
+<li>G. W. Leibniz. « Explication de l’arithmétique binaire, qui se sert des seuls caractères 0 et 1, avec des remarques sur son utilité, et sur ce qu’elle donne le sens des anciennes figures chinoises de Fohy ». <em>Mémoires de mathématique et de physique de l’Académie royale des sciences</em>, 1703.</li>
+<li>X. Leroy, D. Doligez, A. Frisch, J. Garrigue, D. Rémy, J. Vouillon. <em>The OCaml System, Release 4.07: Documentation and User’s Manual</em>. Inria, 2018.</li>
+<li>S. Lin, T. Radó. « Computer studies of Turing machine problems ». <em>Journal of the ACM</em> 12(2), 1965, p. 196–212.</li>
+<li>T. Radó. « On non-computable functions ». <em>Bell System Technical Journal</em> 41(3), 1962, p. 877–884.</li>
+<li>Voltaire. <em>Candide, ou l’Optimisme</em>. 1759.</li>
+<li>L. Wachowski, L. Wachowski (réal.). <em>The Matrix</em>. Warner Bros., 1999 ; production Joel Silver.</li>
+</ol>
+<h2 id="references-ajoutees">Références ajoutées</h2>
+<h3 id="textes-fondateurs">Textes fondateurs</h3>
+<ol class="biblio">
+<li>K. Gödel. « Über formal unentscheidbare Sätze der Principia Mathematica und verwandter Systeme I ». <em>Monatshefte für Mathematik und Physik</em> 38, 1931, p. 173–198.</li>
+<li>A. Church. « An unsolvable problem of elementary number theory ». <em>American Journal of Mathematics</em> 58(2), 1936, p. 345–363.</li>
+<li>A. M. Turing. « On computable numbers, with an application to the Entscheidungsproblem ». <em>Proceedings of the London Mathematical Society</em> (2) 42, 1936–1937, p. 230–265.</li>
+<li>S. C. Kleene. « General recursive functions of natural numbers ». <em>Mathematische Annalen</em> 112, 1936, p. 727–742.</li>
+<li>E. L. Post. « A variant of a recursively unsolvable problem ». <em>Bulletin of the AMS</em> 52, 1946, p. 264–268.</li>
+<li>H. G. Rice. « Classes of recursively enumerable sets and their decision problems ». <em>Transactions of the AMS</em> 74, 1953, p. 358–366.</li>
+<li>D. Deutsch. « Quantum theory, the Church–Turing principle and the universal quantum computer ». <em>Proceedings of the Royal Society of London A</em> 400, 1985, p. 97–117.</li>
+<li>F. Prost (sous le nom Spear of Lugh). « <a href="https://spearoflugh.substack.com/p/mathematical-necessity-nature-and">Mathematical Necessity, Nature and the bed of Procrustes</a> ». Billet de blog, 2023. Repris dans <a href="these-church.html#physique-vivant">Thèse de Church-Turing</a>.</li>
+<li>B. Hall. « It’s been proved ». Billet de blog (bretthall.org), auquel répond le billet précédent.</li>
+</ol>
+<h3 id="manuels">Manuels</h3>
+<ol class="biblio">
+<li>M. Davis. <em>Computability and Unsolvability</em>. McGraw-Hill, 1958 ; réédition Dover, 1982. (Source de la présentation par quadruplets.)</li>
+<li>S. C. Kleene. <em>Introduction to Metamathematics</em>. North-Holland, 1952.</li>
+<li>H. Rogers Jr. <em>Theory of Recursive Functions and Effective Computability</em>. McGraw-Hill, 1967 ; MIT Press, 1987.</li>
+<li>M. L. Minsky. <em>Computation: Finite and Infinite Machines</em>. Prentice-Hall, 1967.</li>
+<li>R. I. Soare. <em>Recursively Enumerable Sets and Degrees</em>. Springer, 1987.</li>
+<li>J.-L. Krivine. <em>Lambda-calcul : types et modèles</em>. Masson, 1990.</li>
+<li>C. H. Papadimitriou. <em>Computational Complexity</em>. Addison-Wesley, 1994.</li>
+<li>M. Sipser. <em>Introduction to the Theory of Computation</em>. Cengage, 3<sup>e</sup> éd. 2012.</li>
+</ol>
+<h3 id="castors-affaires-et-autres-modeles">Castors affairés et autres modèles</h3>
+<ol class="biblio">
+<li>A. H. Brady. « The determination of the value of Rado’s noncomputable function Σ(k) for four-state Turing machines ». <em>Mathematics of Computation</em> 40, 1983, p. 647–665.</li>
+<li>H. Marxen, J. Buntrock. « Attacking the Busy Beaver 5 ». <em>Bulletin of the EATCS</em> 40, 1990, p. 247–251.</li>
+<li>The bbchallenge Collaboration. « Determination of the fifth Busy Beaver value ». 2024 (preuve formalisée en Coq, <a href="https://bbchallenge.org">bbchallenge.org</a>).</li>
+<li>A. Yedidia, S. Aaronson. « A relatively small Turing machine whose behavior is independent of set theory ». <em>Complex Systems</em> 25(4), 2016.</li>
+<li>Y. Matiyasevich. « Enumerable sets are Diophantine ». <em>Soviet Mathematics Doklady</em> 11, 1970, p. 354–358.</li>
+<li>J. H. Conway. « FRACTRAN: a simple universal programming language for arithmetic ». In <em>Open Problems in Communication and Computation</em>, Springer, 1987, p. 4–26.</li>
+<li>T. S. Cubitt, D. Pérez-García, M. M. Wolf. « Undecidability of the spectral gap ». <em>Nature</em> 528, 2015, p. 207–211.</li>
+</ol>
+<h3 id="complexite-en-temps-et-en-espace">Complexité en temps et en espace</h3>
+<ol class="biblio">
+<li>J. Hartmanis, R. E. Stearns. « On the computational complexity of algorithms ». <em>Transactions of the American Mathematical Society</em> 117, 1965, p. 285–306.</li>
+<li>R. E. Stearns, J. Hartmanis, P. M. Lewis II. « Hierarchies of memory limited computations ». <em>6th Annual Symposium on Switching Circuit Theory and Logical Design</em>, IEEE, 1965, p. 179–190.</li>
+<li>F. C. Hennie, R. E. Stearns. « Two-tape simulation of multitape Turing machines ». <em>Journal of the ACM</em> 13(4), 1966, p. 533–546.</li>
+<li>M. Blum. « A machine-independent theory of the complexity of recursive functions ». <em>Journal of the ACM</em> 14(2), 1967, p. 322–336.</li>
+<li>W. J. Savitch. « Relationships between nondeterministic and deterministic tape complexities ». <em>Journal of Computer and System Sciences</em> 4(2), 1970, p. 177–192.</li>
+<li>S. A. Cook. « The complexity of theorem-proving procedures ». <em>Proceedings of the 3rd ACM Symposium on Theory of Computing</em>, 1971, p. 151–158.</li>
+<li>R. M. Karp. « Reducibility among combinatorial problems ». In <em>Complexity of Computer Computations</em>, Plenum, 1972, p. 85–103.</li>
+<li>L. A. Levin. « Problèmes de recherche universels » (en russe). <em>Problemy Peredachi Informatsii</em> 9(3), 1973, p. 115–116.</li>
+<li>L. J. Stockmeyer, A. R. Meyer. « Word problems requiring exponential time ». <em>Proceedings of the 5th ACM Symposium on Theory of Computing</em>, 1973, p. 1–9.</li>
+<li>A. S. Fraenkel, D. Lichtenstein. « Computing a perfect strategy for n×n chess requires time exponential in n ». <em>Journal of Combinatorial Theory, Series A</em> 31(2), 1981, p. 199–214.</li>
+<li>S. Reisch. « Hex ist PSPACE-vollständig ». <em>Acta Informatica</em> 15, 1981, p. 167–191.</li>
+<li>N. Immerman. « Nondeterministic space is closed under complementation ». <em>SIAM Journal on Computing</em> 17(5), 1988, p. 935–938.</li>
+<li>R. Szelepcsényi. « The method of forced enumeration for nondeterministic automata ». <em>Acta Informatica</em> 26(3), 1988, p. 279–284.</li>
+</ol>
+
+<h3 id="limites-physiques-et-pratique-de-sat">Limites physiques et pratique de SAT</h3>
+<ol class="biblio">
+<li>R. Landauer. « Irreversibility and heat generation in the computing process ». <em>IBM Journal of Research and Development</em> 5(3), 1961, p. 183–191.</li>
+<li>C. H. Bennett. « Logical reversibility of computation ». <em>IBM Journal of Research and Development</em> 17(6), 1973, p. 525–532.</li>
+<li>A. Haken. « The intractability of resolution ». <em>Theoretical Computer Science</em> 39, 1985, p. 297–308.</li>
+<li>L. K. Grover. « A fast quantum mechanical algorithm for database search ». <em>Proceedings of the 28th ACM Symposium on Theory of Computing</em>, 1996, p. 212–219.</li>
+<li>B. Selman, D. G. Mitchell, H. J. Levesque. « Generating hard satisfiability problems ». <em>Artificial Intelligence</em> 81(1–2), 1996, p. 17–29.</li>
+<li>N. Margolus, L. B. Levitin. « The maximum speed of dynamical evolution ». <em>Physica D</em> 120(1–2), 1998, p. 188–195.</li>
+<li>S. Lloyd. « Computational capacity of the universe ». <em>Physical Review Letters</em> 88(23), 2002, 237901.</li>
+<li>A. Bérut, A. Arakelyan, A. Petrosyan, S. Ciliberto, R. Dillenschneider, E. Lutz. « Experimental verification of Landauer’s principle linking information and thermodynamics ». <em>Nature</em> 483, 2012, p. 187–189.</li>
+</ol>
+
+<h3 id="complexite-de-kolmogorov-et-nombre">Complexité de Kolmogorov et nombre Ω</h3>
+<ol class="biblio">
+<li>R. J. Solomonoff. « A formal theory of inductive inference, Part I ». <em>Information and Control</em> 7(1), 1964, p. 1–22.</li>
+<li>A. N. Kolmogorov. « Three approaches to the quantitative definition of information ». <em>Problems of Information Transmission</em> 1(1), 1965, p. 1–7.</li>
+<li>G. J. Chaitin. « Information-theoretic limitations of formal systems ». <em>Journal of the ACM</em> 21(3), 1974, p. 403–424.</li>
+<li>G. J. Chaitin. « A theory of program size formally identical to information theory ». <em>Journal of the ACM</em> 22(3), 1975, p. 329–340.</li>
+<li>M. Li, P. Vitányi. <em>An Introduction to Kolmogorov Complexity and Its Applications</em>. Springer, 4<sup>e</sup> édition, 2019.</li>
+</ol>
+
+<h3 id="calculabilite-et-intelligence-artificielle">Calculabilité et intelligence artificielle</h3>
+<ol class="biblio">
+<li>M. H. Löb. « Solution of a problem of Leon Henkin ». <em>Journal of Symbolic Logic</em> 20(2), 1955, p. 115–118.</li>
+<li>E. M. Gold. « Language identification in the limit ». <em>Information and Control</em> 10(5), 1967, p. 447–474.</li>
+<li>A. L. Blum, R. L. Rivest. « Training a 3-node neural network is NP-complete ». <em>Neural Networks</em> 5(1), 1992, p. 117–127.</li>
+<li>H. T. Siegelmann, E. D. Sontag. « On the computational power of neural nets ». <em>Journal of Computer and System Sciences</em> 50(1), 1995, p. 132–150.</li>
+<li>E. Yudkowsky, M. Herreshoff. « Tiling agents for self-modifying AI, and the Löbian obstacle ». Rapport technique, Machine Intelligence Research Institute, 2013.</li>
+<li>G. Katz, C. Barrett, D. L. Dill, K. Julian, M. J. Kochenderfer. « Reluplex: an efficient SMT solver for verifying deep neural networks ». <em>Computer Aided Verification (CAV 2017)</em>, LNCS 10426, Springer, 2017, p. 97–117.</li>
+<li>S. Ben-David, P. Hrubeš, S. Moran, A. Shpilka, A. Yehudayoff. « Learnability can be undecidable ». <em>Nature Machine Intelligence</em> 1, 2019, p. 44–48.</li>
+<li>M. Alfonseca, M. Cebrian, A. Fernández Anta, L. Coviello, A. Abeliuk, I. Rahwan. « Superintelligence cannot be contained: lessons from computability theory ». <em>Journal of Artificial Intelligence Research</em> 70, 2021, p. 65–76.</li>
+<li>J. Pérez, P. Barceló, J. Marinković. « Attention is Turing-complete ». <em>Journal of Machine Learning Research</em> 22(75), 2021, p. 1–35.</li>
+<li>J. Kleinberg, S. Mullainathan. « Language generation in the limit ». <em>Advances in Neural Information Processing Systems</em> 37 (NeurIPS 2024), 2024.</li>
+<li>T. Hubert et al. « Olympiad-level formal mathematical reasoning with reinforcement learning ». <em>Nature</em>, 2025 (système AlphaProof).</li>
+</ol>
+
+<h3 id="cours-dont-ce-manuel-sinspire">Cours dont ce manuel s’inspire</h3>
+<ol class="biblio">
+<li>Ch. Boitet. <em>Calculabilité</em>, polycopié de cours, Université Joseph Fourier (Grenoble), 1983, révisé en 1985 et 1987 (ancienne version). Source des exemples de machines, de la bibliothèque de fonctions récursives primitives, de la fonction d’Ackermann à trois arguments et du chapitre <a href="langages.html">Limites du calcul</a>.</li>
+<li>F. Prost. <em>Introduction à la calculabilité</em>, transparents de cours, 2026. Source de la convention de codage de Gödel ($\gamma(q_i)=4i+7$, $\gamma(S_i)=4i+9$), de l’indexation $\eta$ et des réflexions sur la thèse de Church-Turing en physique et en biologie.</li>
+<li>F. Prost. <em>Notes de cours de calculabilité</em>, état courant, 2021. Source des trois universalités, des justifications de la thèse de Church et de la présentation par ensembles, prédicats et langages.</li>
+</ol>
+<h3 id="fonctions-recursives-systemes-de-post-probleme-du-mot">Fonctions récursives, systèmes de Post, problème du mot</h3>
+<ol class="biblio">
+<li>W. Ackermann. « Zum Hilbertschen Aufbau der reellen Zahlen ». <em>Mathematische Annalen</em> 99, 1928, p. 118–133.</li>
+<li>R. Péter. « Konstruktion nichtrekursiver Funktionen ». <em>Mathematische Annalen</em> 111, 1935, p. 42–60.</li>
+<li>R. M. Robinson. « Primitive recursive functions ». <em>Bulletin of the AMS</em> 53, 1947, p. 925–942.</li>
+<li>J. Robinson. « General recursive functions ». <em>Proceedings of the AMS</em> 1, 1950, p. 703–718.</li>
+<li>A. Thue. « Probleme über Veränderungen von Zeichenreihen nach gegebenen Regeln ». <em>Skrifter utgit av Videnskapsselskapet i Kristiania</em>, I. Mat.-naturv. Klasse, 10, 1914.</li>
+<li>E. L. Post. « Recursively enumerable sets of positive integers and their decision problems ». <em>Bulletin of the AMS</em> 50, 1944, p. 284–316.</li>
+<li>E. L. Post. « Recursive unsolvability of a problem of Thue ». <em>Journal of Symbolic Logic</em> 12, 1947, p. 1–11.</li>
+<li>A. A. Markov. « Sur l’impossibilité de certains algorithmes dans la théorie des systèmes associatifs » (en russe). <em>Doklady Akademii Nauk SSSR</em> 55, 1947.</li>
+<li>G. S. Tseitin. « Un calcul associatif dont le problème d’équivalence est insoluble » (en russe). <em>Trudy Matematicheskogo Instituta imeni V. A. Steklova</em> 52, 1958, p. 172–189.</li>
+<li>A. A. Muchnik. « Sur l’insolubilité du problème de réductibilité dans la théorie des algorithmes » (en russe). <em>Doklady Akademii Nauk SSSR</em> 108, 1956, p. 194–197.</li>
+<li>R. M. Friedberg. « Two recursively enumerable sets of incomparable degrees of unsolvability ». <em>Proceedings of the National Academy of Sciences USA</em> 43, 1957, p. 236–238.</li>
+<li>A. Ehrenfeucht, J. Karhumäki, G. Rozenberg. « The (generalized) Post correspondence problem with lists consisting of two words is decidable ». <em>Theoretical Computer Science</em> 21, 1982, p. 119–144.</li>
+<li>T. Neary. « Undecidability in binary tag systems and the Post correspondence problem for five pairs of words ». <em>STACS 2015</em>, LIPIcs 30, p. 649–661.</li>
+<li>G. Sénizergues. « The equivalence problem for deterministic pushdown automata is decidable ». <em>ICALP 1997</em>, LNCS 1256, p. 671–681.</li>
+</ol>
+<h3 id="equations-diophantiennes">Équations diophantiennes</h3>
+<ol class="biblio">
+<li>F. Prost. « De Diophante à l’ordinateur : 10<sup>e</sup> problème de Hilbert et dépendances ». Exposé, 2009. Le chapitre <a href="equations-diophantiennes.html">Équations diophantiennes</a> en suit le plan.</li>
+<li>M. Davis. « Hilbert’s tenth problem is unsolvable ». <em>American Mathematical Monthly</em> 80, 1973, p. 233–269.</li>
+<li>J. Robinson. « Existential definability in arithmetic ». <em>Transactions of the American Mathematical Society</em> 72, 1952, p. 437–449.</li>
+<li>H. Putnam. « An unsolvable problem in number theory ». <em>Journal of Symbolic Logic</em> 25, 1960, p. 220–232.</li>
+<li>M. Davis, H. Putnam, J. Robinson. « The decision problem for exponential Diophantine equations ». <em>Annals of Mathematics</em> 74, 1961, p. 425–436.</li>
+<li>M. Davis, Y. Matiyasevich, J. Robinson. « Hilbert’s tenth problem: Diophantine equations: positive aspects of a negative solution ». <em>Proceedings of Symposia in Pure Mathematics</em> 28, AMS, 1976, p. 323–378.</li>
+<li>J. P. Jones, D. Sato, H. Wada, D. Wiens. « Diophantine representation of the set of prime numbers ». <em>American Mathematical Monthly</em> 83, 1976, p. 449–464.</li>
+<li>J. P. Jones. « Universal Diophantine equation ». <em>Journal of Symbolic Logic</em> 47, 1982, p. 549–571.</li>
+<li>C. L. Siegel. « Zur Theorie der quadratischen Formen ». <em>Nachrichten der Akademie der Wissenschaften in Göttingen</em>, 1972, p. 21–46.</li>
+<li>K. L. Manders, L. Adleman. « NP-complete decision problems for binary quadratics ». <em>Journal of Computer and System Sciences</em> 16, 1978, p. 168–184.</li>
+<li>Y. Matiyasevich. <em>Hilbert’s Tenth Problem</em>. MIT Press, 1993.</li>
+</ol>
+<h3 id="oracles-jeux-hasard-approximation-et-calcul-quantique">Oracles, jeux, hasard, approximation et calcul quantique</h3>
+<ol class="biblio">
+<li>T. Baker, J. Gill, R. Solovay. « Relativizations of the P =? NP question ». <em>SIAM Journal on Computing</em> 4, 1975, p. 431–442.</li>
+<li>T. J. Schaefer. « On the complexity of some two-person perfect-information games ». <em>Journal of Computer and System Sciences</em> 16, 1978, p. 185–225.</li>
+<li>K. de Leeuw, E. F. Moore, C. E. Shannon, N. Shapiro. « Computability by probabilistic machines ». Dans <em>Automata Studies</em>, Princeton University Press, 1956, p. 183–212.</li>
+<li>M. O. Rabin. « Probabilistic algorithm for testing primality ». <em>Journal of Number Theory</em> 12, 1980, p. 128–138.</li>
+<li>M. Agrawal, N. Kayal, N. Saxena. « PRIMES is in P ». <em>Annals of Mathematics</em> 160, 2004, p. 781–793.</li>
+<li>J. T. Schwartz. « Fast probabilistic algorithms for verification of polynomial identities ». <em>Journal of the ACM</em> 27, 1980, p. 701–717.</li>
+<li>R. Impagliazzo, A. Wigderson. « P = BPP if E requires exponential circuits: derandomizing the XOR lemma ». <em>STOC</em>, 1997, p. 220–229.</li>
+<li>J. Håstad. « Some optimal inapproximability results ». <em>Journal of the ACM</em> 48, 2001, p. 798–859.</li>
+<li>S. Arora, C. Lund, R. Motwani, M. Sudan, M. Szegedy. « Proof verification and the hardness of approximation problems ». <em>Journal of the ACM</em> 45, 1998, p. 501–555.</li>
+<li>D. Deutsch. « Quantum theory, the Church-Turing principle and the universal quantum computer ». <em>Proceedings of the Royal Society of London A</em> 400, 1985, p. 97–117.</li>
+<li>E. Bernstein, U. Vazirani. « Quantum complexity theory ». <em>SIAM Journal on Computing</em> 26, 1997, p. 1411–1473.</li>
+<li>P. W. Shor. « Polynomial-time algorithms for prime factorization and discrete logarithms on a quantum computer ». <em>SIAM Journal on Computing</em> 26, 1997, p. 1484–1509 (version de conférence en 1994).</li>
+<li>L. K. Grover. « A fast quantum mechanical algorithm for database search ». <em>STOC</em>, 1996, p. 212–219.</li>
+<li>C. H. Bennett, E. Bernstein, G. Brassard, U. Vazirani. « Strengths and weaknesses of quantum computing ». <em>SIAM Journal on Computing</em> 26, 1997, p. 1510–1523.</li>
+<li>R. Raz, A. Tal. « Oracle separation of BQP and PH ». <em>STOC</em>, 2019, p. 13–23.</li>
+<li>M. A. Nielsen, I. L. Chuang. <em>Quantum Computation and Quantum Information</em>. Cambridge University Press, 2000.</li>
+<li>S. Arora, B. Barak. <em>Computational Complexity: A Modern Approach</em>. Cambridge University Press, 2009.</li>
+</ol>
+<h3 id="logique-types-et-preuves">Logique, types et preuves</h3>
+<ol class="biblio">
+<li>L. Löwenheim. « Über Möglichkeiten im Relativkalkül ». <em>Mathematische Annalen</em> 76, 1915, p. 447–470.</li>
+<li>L. Kalmár. « Zurückführung des Entscheidungsproblems auf den Fall von Formeln mit einer einzigen, binären, Funktionsvariablen ». <em>Compositio Mathematica</em> 4, 1936, p. 137–144.</li>
+<li>E. Börger, E. Grädel, Y. Gurevich. <em>The Classical Decision Problem</em>. Springer, 1997.</li>
+<li>K. Gödel. « Über eine bisher noch nicht benützte Erweiterung des finiten Standpunktes ». <em>Dialectica</em> 12, 1958, p. 280–287.</li>
+<li>W. W. Tait. « Intensional interpretations of functionals of finite type I ». <em>Journal of Symbolic Logic</em> 32, 1967, p. 198–212.</li>
+<li>R. O. Gandy. « An early proof of normalization by A. M. Turing ». Dans <em>To H. B. Curry: Essays on Combinatory Logic, Lambda Calculus and Formalism</em>, Academic Press, 1980, p. 453–455.</li>
+<li>W. A. Howard. « The formulae-as-types notion of construction ». Même volume, p. 479–490.</li>
+<li>R. Statman. « Intuitionistic propositional logic is polynomial-space complete ». <em>Theoretical Computer Science</em> 9, 1979, p. 67–72.</li>
+<li>T. Griffin. « A formulae-as-types notion of control ». <em>POPL</em>, 1990, p. 47–58.</li>
+<li>J.-Y. Girard, Y. Lafont, P. Taylor. <em>Proofs and Types</em>. Cambridge University Press, 1989.</li>
+<li>M. H. Sørensen, P. Urzyczyn. <em>Lectures on the Curry-Howard Isomorphism</em>. Elsevier, 2006.</li>
+<li>J.-Y. Girard. <em>Interprétation fonctionnelle et élimination des coupures de l’arithmétique d’ordre supérieur</em>. Thèse de doctorat d’État, Université Paris 7, 1972.</li>
+<li>J. C. Reynolds. « Towards a theory of type structure ». <em>Colloque sur la programmation</em>, LNCS 19, 1974, p. 408–425.</li>
+<li>J. B. Wells. « Typability and type checking in System F are equivalent and undecidable ». <em>Annals of Pure and Applied Logic</em> 98, 1999, p. 111–156.</li>
+<li>P. Martin-Löf. <em>Intuitionistic Type Theory</em>. Bibliopolis, 1984.</li>
+<li>T. Coquand, G. Huet. « The calculus of constructions ». <em>Information and Computation</em> 76, 1988, p. 95–120.</li>
+<li>H. Barendregt. « Introduction to generalized type systems ». <em>Journal of Functional Programming</em> 1, 1991, p. 125–154.</li>
+<li>Y. Bertot, P. Castéran. <em>Interactive Theorem Proving and Program Development. Coq’Art: The Calculus of Inductive Constructions</em>. Springer, 2004.</li>
+<li>L. de Moura, S. Ullrich. « The Lean 4 theorem prover and programming language ». <em>CADE-28</em>, LNCS 12699, 2021, p. 625–635.</li>
+<li>G. Gonthier. « Formal proof — the four-color theorem ». <em>Notices of the American Mathematical Society</em> 55, 2008, p. 1382–1393.</li>
+<li>X. Leroy. « Formal verification of a realistic compiler ». <em>Communications of the ACM</em> 52, 2009, p. 107–115.</li>
+<li>Google DeepMind. « AI achieves silver-medal standard solving International Mathematical Olympiad problems ». Billet de blog, juillet 2024.</li>
+</ol>
+<h3 id="theories-decidables">Théories décidables</h3>
+<ol class="biblio">
+<li>M. Presburger. « Über die Vollständigkeit eines gewissen Systems der Arithmetik ganzer Zahlen, in welchem die Addition als einzige Operation hervortritt ». <em>Comptes rendus du premier congrès des mathématiciens des pays slaves</em>, Varsovie, 1929, p. 92–101.</li>
+<li>J. R. Büchi. « Weak second-order arithmetic and finite automata ». <em>Zeitschrift für mathematische Logik und Grundlagen der Mathematik</em> 6, 1960, p. 66–92.</li>
+<li>S. Ginsburg, E. Spanier. « Semigroups, Presburger formulas, and languages ». <em>Pacific Journal of Mathematics</em> 16, 1966, p. 285–296.</li>
+<li>M. J. Fischer, M. O. Rabin. « Super-exponential complexity of Presburger arithmetic ». <em>SIAM-AMS Proceedings</em> 7, 1974, p. 27–41.</li>
+<li>A. Tarski. <em>A Decision Method for Elementary Algebra and Geometry</em>. RAND, 1948 ; University of California Press, 1951.</li>
+<li>J. Robinson. « Definability and decision problems in arithmetic ». <em>Journal of Symbolic Logic</em> 14, 1949, p. 98–114.</li>
+<li>A. Tarski, A. Mostowski, R. M. Robinson. <em>Undecidable Theories</em>. North-Holland, 1953.</li>
+<li>G. E. Collins. « Quantifier elimination for real closed fields by cylindrical algebraic decomposition ». <em>Lecture Notes in Computer Science</em> 33, 1975, p. 134–183.</li>
+<li>J. H. Davenport, J. Heintz. « Real quantifier elimination is doubly exponential ». <em>Journal of Symbolic Computation</em> 5, 1988, p. 29–35.</li>
+<li>A. Macintyre, A. Wilkie. « On the decidability of the real exponential field ». Dans <em>Kreiseliana</em>, A K Peters, 1996, p. 441–467.</li>
+</ol>
+<h3 id="lindecidable-dans-les-mathematiques-ordinaires">L’indécidable dans les mathématiques ordinaires</h3>
+<ol class="biblio">
+<li>J. H. Conway. « Unpredictable iterations ». <em>Proceedings of the 1972 Number Theory Conference</em>, University of Colorado, Boulder, 1972, p. 49–52.</li>
+<li>S. A. Kurtz, J. Simon. « The undecidability of the generalized Collatz problem ». <em>TAMC 2007</em>, LNCS 4484, p. 542–553.</li>
+<li>M. S. Paterson. « Unsolvability in 3 × 3 matrices ». <em>Studies in Applied Mathematics</em> 49, 1970, p. 105–107.</li>
+<li>H. Wang. « Proving theorems by pattern recognition II ». <em>Bell System Technical Journal</em> 40, 1961, p. 1–41.</li>
+<li>R. Berger. « The undecidability of the domino problem ». <em>Memoirs of the American Mathematical Society</em> 66, 1966.</li>
+<li>R. M. Robinson. « Undecidability and nonperiodicity for tilings of the plane ». <em>Inventiones Mathematicae</em> 12, 1971, p. 177–209.</li>
+<li>E. Jeandel, M. Rao. « An aperiodic set of 11 Wang tiles ». <em>Advances in Combinatorics</em>, 2021.</li>
+<li>D. Smith, J. S. Myers, C. S. Kaplan, C. Goodman-Strauss. « An aperiodic monotile ». <em>Combinatorial Theory</em> 4, 2024.</li>
+<li>D. Richardson. « Some undecidable problems involving elementary functions of a real variable ». <em>Journal of Symbolic Logic</em> 33, 1968, p. 514–520.</li>
+<li>M. B. Pour-El, I. Richards. « The wave equation with computable initial data such that its unique solution is not computable ». <em>Advances in Mathematics</em> 39, 1981, p. 215–239.</li>
+<li>C. F. Miller III. « Decision problems for groups: survey and reflections ». Dans <em>Algorithms and Classification in Combinatorial Group Theory</em>, Springer, 1992, p. 1–59.</li>
+<li>E. R. Berlekamp, J. H. Conway, R. K. Guy. <em>Winning Ways for your Mathematical Plays</em>, vol. 2. Academic Press, 1982.</li>
+<li>M. Cook. « Universality in elementary cellular automata ». <em>Complex Systems</em> 15, 2004, p. 1–40.</li>
+<li>T. S. Cubitt, D. Pérez-García, M. M. Wolf. « Undecidability of the spectral gap ». <em>Nature</em> 528, 2015, p. 207–211.</li>
+<li>B. Poonen. « Undecidable problems: a sampler ». Dans <em>Interpreting Gödel</em>, Cambridge University Press, 2014, p. 211–241.</li>
+</ol>
+<h3 id="automates-cellulaires-biblio">Automates cellulaires</h3>
+<ol class="biblio">
+<li>J. von Neumann. <em>Theory of Self-Reproducing Automata</em>, édité et complété par A. W. Burks. University of Illinois Press, 1966.</li>
+<li>S. Wolfram. « Universality and complexity in cellular automata ». <em>Physica D</em> 10, 1984, p. 1–35. La classification en quatre classes.</li>
+<li>S. Wolfram. <em>A New Kind of Science</em>. Wolfram Media, 2002. Un vaste catalogue d’expériences sur les automates élémentaires ; les affirmations générales du livre sont discutées.</li>
+<li>K. Culik II, S. Yu. « Undecidability of CA classification schemes ». <em>Complex Systems</em> 2, 1988, p. 177–190.</li>
+<li>M. Cook. « Universality in elementary cellular automata ». <em>Complex Systems</em> 15, 2004, p. 1–40.</li>
+<li>T. Neary, D. Woods. « P-completeness of cellular automaton Rule 110 ». <em>ICALP 2006</em>, LNCS 4051, p. 132–143.</li>
+<li>J. Kari. « Theory of cellular automata: a survey ». <em>Theoretical Computer Science</em> 334, 2005, p. 3–33.</li>
+<li>E. F. Moore. « Machine models of self-reproduction ». <em>Proceedings of Symposia in Applied Mathematics</em> 14, AMS, 1962, p. 17–33.</li>
+<li>J. Myhill. « The converse of Moore’s Garden-of-Eden theorem ». <em>Proceedings of the American Mathematical Society</em> 14, 1963, p. 685–686.</li>
+</ol>
+<h3 id="leibniz">Leibniz</h3>
+<ol class="biblio">
+<li>G. W. Leibniz. <em>Essais de théodicée sur la bonté de Dieu, la liberté de l’homme et l’origine du mal</em>. Amsterdam, 1710.</li>
+<li>G. W. Leibniz. <em>De progressione dyadica</em>, manuscrit, 1679.</li>
+</ol>
+
+<nav class="nav-chap"><a href="leibniz.html"><small>← Précédent</small>Leibniz et l’arithmétique binaire</a></nav>
+<footer class="pied">Calculabilité — manuel à trois niveaux de lecture. Auteurs : Frédéric Prost et Claude. Texte sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" rel="license">CC BY-SA 4.0</a>, code sous licence MIT. Les mathématiques sont rendues par KaTeX (licence MIT), embarqué localement : le site se lit sans connexion.</footer>
+</main>
+</div>
+<script src="assets/katex/katex.min.js"></script>
+<script src="assets/katex/contrib/auto-render.min.js"></script>
+<script src="assets/turing.js"></script>
+<script src="assets/lambda.js"></script>
+<script src="assets/pcp.js"></script>
+<script src="assets/automates.js"></script>
+<script src="assets/niveaux.js"></script>
+<script src="assets/widgets.js"></script>
+</body>
+</html>

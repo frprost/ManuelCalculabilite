@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Frédéric Prost et Claude">
+<title>Leibniz et l’arithmétique binaire · Calculabilité</title>
+<link rel="stylesheet" href="assets/katex/katex.min.css">
+<link rel="stylesheet" href="assets/style.css">
+<script>try{var t=localStorage.getItem('calc-theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}document.documentElement.classList.add('js');</script>
+</head>
+<body>
+<header class="entete"><div class="entete-int">
+  <button type="button" class="btn-menu" aria-label="Sommaire">☰ Sommaire</button>
+  <a class="titre-site" href="index.html">Calculabilité <span>·</span> un manuel à trois niveaux</a>
+  <span class="selecteur-legende">Niveau de lecture :</span>
+  <div class="selecteur" role="group" aria-label="Niveau de lecture">
+    <button type="button" data-niveau="philo" title="Sens et implications">Philosophique</button>
+    <button type="button" data-niveau="tech" title="Preuves mathématiques">Technique</button>
+    <button type="button" data-niveau="techno" title="Constructions complètes, machines de Turing">Technologique</button>
+    <button type="button" data-niveau="tout" title="Afficher les trois niveaux">Tout</button>
+  </div>
+  <button type="button" class="btn-theme" aria-label="Changer de thème" title="Clair / sombre">◐</button>
+</div></header>
+<div class="page">
+<nav class="sommaire" aria-label="Sommaire"><ul><li><a href="index.html">Accueil et mode d’emploi</a></li></ul><h2>Entrer dans le sujet</h2><ol><li><a href="motivations.html"><span class="num">1</span>Motivations</a></li><li><a href="trois-approches.html"><span class="num">2</span>Trois approches du calcul</a></li></ol><h2>Modèles de calcul</h2><ol><li><a href="machines-turing.html"><span class="num">3</span>Machines de Turing</a></li><li><a href="fonctions-recursives.html"><span class="num">4</span>Fonctions récursives</a></li><li><a href="lambda-calcul.html"><span class="num">5</span>λ-calcul</a></li><li><a href="equivalence.html"><span class="num">6</span>Équivalence des modèles</a></li><li><a href="these-church.html"><span class="num">7</span>Thèse de Church-Turing</a></li></ol><h2>Théorèmes fondamentaux</h2><ol><li><a href="universalite.html"><span class="num">8</span>Universalité</a></li><li><a href="smn-recursion.html"><span class="num">9</span>s-m-n et récursion</a></li></ol><h2>Limites du calcul</h2><ol><li><a href="indecidabilite.html"><span class="num">10</span>Indécidabilité</a></li><li><a href="semi-decidabilite.html"><span class="num">11</span>Semi-décidabilité</a></li><li><a href="hierarchie-arithmetique.html"><span class="num">12</span>Hiérarchie arithmétique</a></li><li><a href="incompletude.html"><span class="num">13</span>Incomplétude</a></li><li><a href="equations-diophantiennes.html"><span class="num">14</span>Équations diophantiennes</a></li><li><a href="logique-types.html"><span class="num">15</span>Logique et types</a></li><li><a href="theories-decidables.html"><span class="num">16</span>Théories décidables</a></li><li><a href="mathematiques-indecidables.html"><span class="num">17</span>Mathématiques ordinaires</a></li><li><a href="kolmogorov-omega.html"><span class="num">18</span>Kolmogorov et Ω</a></li><li><a href="langages.html"><span class="num">19</span>Langages et grammaires</a></li></ol><h2>Complexité</h2><ol><li><a href="complexite.html"><span class="num">20</span>Complexité</a></li><li><a href="hasard-quantique.html"><span class="num">21</span>Hasard et quantique</a></li></ol><h2>Études de cas</h2><ol><li><a href="ackermann.html"><span class="num">22</span>Fonction d’Ackermann</a></li><li><a href="castors-affaires.html"><span class="num">23</span>Castors affairés</a></li><li><a href="calculabilite-ia.html"><span class="num">24</span>Calculabilité et IA</a></li><li><a href="autres-modeles.html"><span class="num">25</span>Autres modèles</a></li></ol><h2>Annexes</h2><ol><li><a href="parcours.html">Parcours de lecture</a></li><li><a href="cantor.html">Diagonale de Cantor</a></li><li><a href="bases.html">Notions de base</a></li><li><a href="leibniz.html" aria-current="page">Leibniz et le binaire</a></li><li><a href="bibliographie.html">Bibliographie</a></li></ol></nav>
+<main class="contenu">
+<h1>Leibniz et l’arithmétique binaire</h1>
+<p class="chapo">Deux symboles suffisent à écrire tous les nombres. Leibniz y voyait une image de la Création ; nous y voyons le langage des ordinateurs.</p>
+
+<nav class="toc-locale" aria-label="Dans ce chapitre"><strong>Dans ce chapitre</strong><ol><li><a href="#le-memoire-de-1703">Le mémoire de 1703</a></li><li><a href="#le-binaire-comme-image-de-la-creation">Le binaire comme image de la Création</a></li><li><a href="#le-reve-dune-langue-de-calcul">Le rêve d’une langue de calcul</a></li></ol></nav>
+
+
+<h2 id="le-memoire-de-1703">Le mémoire de 1703</h2>
+
+<p>En 1703, Gottfried Wilhelm Leibniz publie dans les <em>Mémoires de l’Académie royale des sciences</em> un texte au long titre : <em>Explication de l’arithmétique binaire, qui se sert des seuls caractères 0 et 1, avec des remarques sur son utilité, et sur ce qu’elle donne le sens des anciennes figures chinoises de Fohy</em>. Il y montre que tout nombre s’écrit avec deux symboles seulement, et que les opérations y deviennent d’une simplicité extrême : la table de multiplication se réduit à $1\times1=1$. Cette idée nous est si familière qu’elle est devenue le symbole même de l’informatique.</p>
+
+<p>Leibniz n’en publie pas la première idée : il avait rédigé dès 1679 un manuscrit, <em>De progressione dyadica</em>, où il décrit même une machine à calculer en binaire utilisant des billes qui tombent par des trous. Et il n’est pas le premier : Thomas Harriot l’utilisait dans ses manuscrits vers 1600, et Juan Caramuel y Lobkowitz l’a publiée en 1670. La publication de 1703 fut déclenchée par la correspondance avec le jésuite Joachim Bouvet, missionnaire en Chine, qui lui fit remarquer en 1701 que les hexagrammes du <em>Yi King</em>, attribués à Fuxi (« Fohy »), se lisent comme les nombres de 0 à 63 écrits en binaire.</p>
+
+<h2 id="le-binaire-comme-image-de-la-creation">Le binaire comme image de la Création</h2>
+
+<p>Leibniz donnait à sa découverte une portée métaphysique. Dans une lettre au duc Rodolphe-Auguste de Brunswick (2 janvier 1697), il propose de frapper une médaille portant l’inscription <em>Omnibus ex nihilo ducendis sufficit unum</em> (« pour tirer toutes choses du néant, l’unité suffit ») : le 1 figure Dieu, le 0 le néant, et l’écriture de tous les nombres à partir de 0 et de 1 est une image de la création <em>ex nihilo</em>. On reconnaît l’influence pythagoricienne, pour laquelle les nombres sont l’essence des choses.</p>
+
+<p>Cette métaphysique rejoint sa réflexion sur le mal. Dans les <em>Essais de théodicée</em> (1710), Leibniz reprend la tradition augustinienne selon laquelle le mal n’est pas une chose positive mais une <em>privation</em>, un manque de perfection : les créatures sont limitées parce qu’elles ne sont pas Dieu (une création parfaite en tout point serait Dieu lui-même, donc pas une création). Il en conclut que Dieu a choisi, parmi tous les mondes possibles, le meilleur, conclusion que Voltaire caricature dans <em>Candide</em> (1759). Le 0, absence, et le 1, présence, servent d’image à cette conception.</p>
+
+<h2 id="le-reve-dune-langue-de-calcul">Le rêve d’une langue de calcul</h2>
+
+<p>Le binaire n’est qu’une partie d’un projet plus vaste de Leibniz : une <em>caractéristique universelle</em>, langue symbolique dans laquelle tout raisonnement deviendrait un calcul, et un <em>calculus ratiocinator</em> qui permettrait de trancher les controverses en disant : « Calculons ! ». Les travaux de Gödel, Church et Turing ont montré à la fois la fécondité de ce rêve (le calcul symbolique, l’ordinateur) et ses limites précises : aucun calcul ne décide toutes les questions mathématiques (<a href="incompletude.html#entscheidung">problème de la décision</a>). On peut y voir, avec un peu d’imagination, l’ancêtre lointain de l’idée qu’un monde entier pourrait être décrit, et simulé, par des suites de 0 et de 1, idée que le cinéma a popularisée.</p>
+
+<nav class="nav-chap"><a href="bases.html"><small>← Précédent</small>Notions de base</a><a href="bibliographie.html" style="text-align:right"><small>Suivant →</small>Bibliographie</a></nav>
+<footer class="pied">Calculabilité — manuel à trois niveaux de lecture. Auteurs : Frédéric Prost et Claude. Texte sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" rel="license">CC BY-SA 4.0</a>, code sous licence MIT. Les mathématiques sont rendues par KaTeX (licence MIT), embarqué localement : le site se lit sans connexion.</footer>
+</main>
+</div>
+<script src="assets/katex/katex.min.js"></script>
+<script src="assets/katex/contrib/auto-render.min.js"></script>
+<script src="assets/turing.js"></script>
+<script src="assets/lambda.js"></script>
+<script src="assets/pcp.js"></script>
+<script src="assets/automates.js"></script>
+<script src="assets/niveaux.js"></script>
+<script src="assets/widgets.js"></script>
+</body>
+</html>

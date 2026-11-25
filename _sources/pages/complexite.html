@@ -1,0 +1,296 @@
+<!--
+titre: Complexité : temps et espace de calcul
+court: Complexité
+chapo: Savoir qu’un problème est décidable ne dit pas s’il est faisable. On mesure ici le temps et la mémoire d’un calcul : classes de complexité, constantes que l’on peut toujours gagner, mémoire que le non-déterminisme ne fait gagner qu’au carré, et problèmes NP-complets.
+prerequis: trois-approches.html#cout-simulation|Machines à plusieurs bandes ; machines-turing.html#temps-p-np|Temps, P et NP ; indecidabilite.html#arret|Diagonalisation ; bases.html#logique|Formules propositionnelles
+-->
+
+<p>Les chapitres précédents ont séparé le décidable de l’indécidable. À l’intérieur du décidable, tout n’est pas accessible : un algorithme qui demande $2^n$ pas sur une donnée de taille $n$ est inutilisable dès $n=100$. La théorie de la complexité classe les problèmes décidables selon les ressources qu’ils exigent, le <strong>temps</strong> et l’<strong>espace</strong> (la mémoire). Elle reprend les outils de la calculabilité : simulation, diagonalisation, réduction, complétude.</p>
+
+<h2 id="classes">Mesurer le temps et l’espace</h2>
+
+<res type="Définition" nom="Machines, temps et espace" id="def-ressources">
+<enonce>
+<p>On utilise les machines de Turing à $k$ bandes du <a href="trois-approches.html#cout-simulation">chapitre 2</a> : à chaque pas, la machine lit les $k$ symboles sous ses têtes et, selon son état, écrit $k$ symboles, déplace chaque tête d’une case (ou la laisse en place) et change d’état. Elle a un état acceptant et un état refusant, dans lesquels elle s’arrête. Une machine <strong>non déterministe</strong> peut avoir plusieurs transitions possibles ; elle <em>accepte</em> si l’un au moins de ses calculs atteint l’état acceptant (<a href="machines-turing.html#temps-p-np">chapitre 3</a>).</p>
+<ul>
+<li>La machine travaille <strong>en temps $t(n)$</strong> si, sur toute entrée de longueur $n$, tous ses calculs s’arrêtent en au plus $t(n)$ pas.</li>
+<li>Pour l’espace, l’entrée est sur une bande en <em>lecture seule</em>, entre deux marques de fin que la tête ne franchit pas, et l’on ne compte que les cases visitées sur les autres bandes, dites de travail. La machine travaille <strong>en espace $s(n)$</strong> si, sur toute entrée de longueur $n$, aucun de ses calculs ne visite plus de $s(n)$ cases de travail. Une machine déterministe en espace $s(n)$ qui <em>décide</em> un langage doit de plus s’arrêter sur toute entrée.</li>
+</ul>
+<p>On note $\mathrm{DTIME}(t)$, $\mathrm{NTIME}(t)$ les classes des langages décidés (acceptés, dans le cas non déterministe) par une machine déterministe (non déterministe) en temps $O(t(n))$, et $\mathrm{DSPACE}(s)$, $\mathrm{NSPACE}(s)$ leurs analogues pour l’espace.</p>
+<p>Une fonction $s(n)\ge\log_2n$ est <strong>constructible en espace</strong> si une machine déterministe calcule l’écriture binaire de $s(n)$ à partir d’une entrée de longueur $n$, en espace $O(s(n))$. Une fonction $t(n)\ge n$ est <strong>constructible en temps</strong> si une machine déterministe calcule l’écriture binaire de $t(n)$ en temps $O(t(n))$. Les fonctions usuelles ($\log_2n$ arrondi, $n^k$, $2^n$, $n\log_2n$…) le sont.</p>
+</enonce>
+<philo><p>Le temps est le nombre d’opérations élémentaires, l’espace la quantité de mémoire de travail utilisée. On ne compte pas l’entrée dans l’espace, pour pouvoir parler de calculs qui utilisent beaucoup moins de mémoire que la donnée elle-même : un logarithme de sa taille, juste de quoi tenir quelques compteurs. Les fonctions constructibles sont des « horloges » et des « règles graduées » que la machine peut se fabriquer : la plupart des théorèmes en ont besoin pour savoir quand s’arrêter.</p></philo>
+<tech><p>Le nombre de bandes ne change le temps que d’un facteur polynomial (<a href="trois-approches.html#cout-simulation">simulation à une bande</a>, en $O((n+t)^2)$), et l’espace que d’un facteur constant (on range les $k$ bandes de travail sur $k$ pistes d’une seule, comme dans la même simulation). La convention « tous les calculs s’arrêtent en au plus $t(n)$ pas » est celle du chapitre 3 ; pour l’espace, on n’exige pas l’arrêt des calculs non déterministes, seulement qu’aucun ne sorte de l’espace alloué.</p></tech>
+<techno><p>Pour l’espace logarithmique, il faut se représenter un programme qui lit un fichier immense sans pouvoir le recopier, et qui ne dispose que de quelques variables entières, chacune de la taille d’un pointeur dans le fichier : compter des parenthèses, comparer deux positions, suivre un chemin dans un graphe en ne retenant que le sommet courant.</p></techno>
+</res>
+
+<res type="Définition" nom="Les principales classes de complexité" id="classes-usuelles">
+<enonce>
+$$\begin{aligned}
+\mathsf L&=\mathrm{DSPACE}(\log n), & \mathsf{NL}&=\mathrm{NSPACE}(\log n),\\
+\mathsf P&=\textstyle\bigcup_k\mathrm{DTIME}(n^k), & \mathsf{NP}&=\textstyle\bigcup_k\mathrm{NTIME}(n^k),\\
+\mathsf{PSPACE}&=\textstyle\bigcup_k\mathrm{DSPACE}(n^k), & \mathsf{NPSPACE}&=\textstyle\bigcup_k\mathrm{NSPACE}(n^k),\\
+\mathsf{EXP}&=\textstyle\bigcup_k\mathrm{DTIME}(2^{n^k}). &&
+\end{aligned}$$
+<p>Pour une classe $\mathcal C$, $\mathrm{co}\mathcal C$ désigne la classe des complémentaires des langages de $\mathcal C$.</p>
+</enonce>
+<philo><p>$\mathsf P$ est la classe des problèmes que l’on considère comme faisables, $\mathsf{NP}$ celle des problèmes dont les solutions se vérifient rapidement. $\mathsf L$ et $\mathsf{NL}$ sont les problèmes solubles avec une mémoire minuscule, $\mathsf{PSPACE}$ ceux qui demandent une mémoire raisonnable mais peut-être un temps énorme : beaucoup de jeux à deux joueurs généralisés à des plateaux $n\times n$, dont les parties ont une durée polynomiale, sont de ce type (le jeu de Hex, par exemple, est PSPACE-complet ; résultat cité). Ces classes ne dépendent pas du modèle raisonnable choisi, grâce aux simulations polynomiales.</p></philo>
+<tech><p>Ces définitions coïncident avec celles du <a href="machines-turing.html#temps-p-np">chapitre 3</a> pour $\mathsf P$ et $\mathsf{NP}$ : une machine à $k$ bandes en temps $n^j$ se simule par une machine à une bande en temps $O(n^{2j})$, et la simulation vaut aussi pour les machines non déterministes (on simule chaque choix de la même façon). Exemples : le langage des palindromes est dans $\mathsf L$ (deux compteurs indiquent les positions à comparer) ; l’accessibilité dans un graphe orienté (y a-t-il un chemin de $u$ à $v$ ?) est dans $\mathsf{NL}$ (on devine le chemin sommet par sommet, en ne retenant que le sommet courant et un compteur de longueur) ; la satisfaisabilité des formules propositionnelles est dans $\mathsf{NP}$ (on devine une valuation, on évalue la formule).</p></tech>
+<techno><p>Le fichier <a href="assets/code/complexite.py">complexite.py</a> contient deux algorithmes d’accessibilité dans un graphe : le parcours en largeur, qui retient tous les sommets déjà vus, et l’algorithme de Savitch démontré plus bas, qui n’en retient que trois par niveau de récursion.</p></techno>
+</res>
+
+<res type="Lemme" nom="Compter les configurations" id="configurations">
+<enonce><p>Soit $M$ une machine (déterministe ou non) à $k$ bandes de travail, en espace $s(n)\ge\log_2n$. Il existe une constante $c_M$ telle que, pour $n\ge2$, le nombre de configurations de $M$ sur une entrée de longueur $n$ (état, position de la tête d’entrée, contenu et position des têtes des bandes de travail) est au plus $2^{c_Ms(n)}$. En particulier, une machine déterministe en espace $s(n)$ qui s’arrête le fait en au plus $2^{c_Ms(n)}$ pas.</p></enonce>
+<philo><p>Une mémoire de $s$ bits ne peut prendre que $2^s$ états différents. Un calcul qui dure plus longtemps repasse forcément par un état déjà vu, et, s’il est déterministe, il recommencera alors indéfiniment. L’espace borne donc le temps, exponentiellement.</p></philo>
+<tech><p>Avec $E$ l’ensemble des états et $A$ l’alphabet, il y a au plus $|E|\cdot(n+2)\cdot\big(s(n)\,|A|^{s(n)}\big)^k$ configurations. Pour $n\ge2$, $n+2\le n^2\le2^{2s(n)}$ et $s(n)\le2^{s(n)}$, d’où la borne $2^{c_Ms(n)}$ avec $c_M=\log_2|E|+2+k(1+\log_2|A|)$. Si un calcul déterministe dure plus que ce nombre de pas, deux configurations se répètent ; le calcul est alors périodique et ne s’arrête pas.</p></tech>
+<techno><p>C’est l’argument du chapitre 3 pour les <a href="machines-turing.html#restrictions">machines à bande bornée</a>, rendu quantitatif. Un ordinateur dont la mémoire fait un mégaoctet a au plus $2^{8\,388\,608}$ états : il est en principe un automate fini, mais le nombre est tel que la remarque n’a aucune portée pratique.</p></techno>
+</res>
+
+<res type="Théorème" nom="Inclusions entre les classes" id="inclusions">
+<enonce>
+<p>Pour $t(n)\ge n$ constructible en temps et $s(n)\ge\log_2n$ constructible en espace :</p>
+$$\mathrm{DTIME}(t)\subseteq\mathrm{NTIME}(t)\subseteq\mathrm{DSPACE}(t),\qquad \mathrm{DSPACE}(s)\subseteq\mathrm{NSPACE}(s)\subseteq\textstyle\bigcup_c\mathrm{DTIME}(2^{cs}).$$
+<p>Par conséquent $\mathsf L\subseteq\mathsf{NL}\subseteq\mathsf P\subseteq\mathsf{NP}\subseteq\mathsf{PSPACE}\subseteq\mathsf{EXP}$.</p>
+</enonce>
+<philo><p>On sait que la première classe de la chaîne est strictement plus petite que l’avant-dernière ($\mathsf{NL}\ne\mathsf{PSPACE}$), et $\mathsf P$ strictement plus petite que la dernière ($\mathsf P\ne\mathsf{EXP}$) : ce sont les <a href="#hierarchie-espace">théorèmes de hiérarchie</a> ci-dessous. Il y a donc au moins une inclusion stricte entre $\mathsf{NL}$ et $\mathsf{PSPACE}$, et au moins une entre $\mathsf P$ et $\mathsf{EXP}$. Mais on ne sait pour <em>aucune</em> des inclusions intermédiaires si elle est stricte. La question $\mathsf P=\mathsf{NP}$ n’est que la plus célèbre de ces ignorances.</p></philo>
+<tech>
+<p><strong>$\mathrm{NTIME}(t)\subseteq\mathrm{DSPACE}(t)$.</strong> Soit $N$ non déterministe en temps $c\,t(n)$, avec au plus $d$ transitions possibles à chaque pas. Un calcul est déterminé par la suite de ses choix, un mot de longueur $c\,t(n)$ sur $\{1,\dots,d\}$. La machine déterministe calcule $t(n)$, puis énumère ces mots dans l’ordre sur une bande, et, pour chacun, simule $N$ en suivant ces choix, en effaçant les bandes de travail entre deux simulations. Elle accepte si l’une des simulations accepte. Espace : le mot de choix, plus l’espace d’une simulation, qui en $c\,t(n)$ pas visite au plus $c\,t(n)$ cases par bande ; donc $O(t(n))$. Pour simuler la bande d’entrée de $N$, qui n’est pas en lecture seule, on la recopie d’abord sur une bande de travail ($n\le t(n)$ cases).</p>
+<p><strong>$\mathrm{NSPACE}(s)\subseteq\bigcup_c\mathrm{DTIME}(2^{cs})$.</strong> Soit $N$ non déterministe en espace $s(n)$. Par le <a href="#configurations">lemme</a>, son <em>graphe des configurations</em> sur une entrée $x$ (sommets : les configurations ; arcs : les pas possibles) a au plus $2^{c_Ms(n)}$ sommets, chacun décrit par un mot de longueur $O(s(n))$. $N$ accepte $x$ si et seulement si une configuration acceptante est accessible depuis la configuration initiale. Une machine déterministe calcule $s(n)$, puis fait un parcours en largeur de ce graphe, en écrivant les configurations déjà atteintes sur une bande. Chacune des au plus $2^{c_Ms(n)}$ étapes du parcours examine une configuration, engendre ses successeurs (un nombre borné), et compare chacun à la liste ; tout cela coûte un temps polynomial en $2^{c_Ms(n)}$ et en $n\le2^{s(n)}$, donc $2^{O(s(n))}$.</p>
+<p><strong>Conséquences.</strong> $\mathsf{NL}\subseteq\mathrm{DTIME}(2^{O(\log n)})=\bigcup_k\mathrm{DTIME}(n^k)=\mathsf P$ ; $\mathsf{NP}\subseteq\bigcup_k\mathrm{DSPACE}(n^k)=\mathsf{PSPACE}$ ; $\mathsf{PSPACE}\subseteq\bigcup_k\mathrm{DTIME}(2^{O(n^k)})=\mathsf{EXP}$. Les autres inclusions sont immédiates (une machine déterministe est un cas particulier de machine non déterministe).</p>
+</tech>
+<techno><p>Les deux simulations de la preuve sont celles qu’emploient les programmes réels quand ils doivent explorer toutes les possibilités : le retour sur trace (essayer chaque suite de choix en réutilisant la même mémoire, comme les solveurs SAT) économise l’espace ; le parcours en largeur avec mémorisation des états visités (comme les vérificateurs de modèles) économise le temps. On ne connaît pas, en général, de méthode qui économise les deux.</p></techno>
+</res>
+
+<h2 id="acceleration">Gagner des constantes</h2>
+
+<res type="Théorème" nom="Théorème d’accélération linéaire (Hartmanis et Stearns, 1965)" id="acceleration-lineaire">
+<enonce>
+<p>Soit $L$ un langage décidé par une machine $M$ à $k$ bandes en temps $t(n)\ge n$. Pour tout $\varepsilon>0$, $L$ est décidé par une machine à $k+1$ bandes en temps au plus $\varepsilon\,t(n)+n+9$.</p>
+<p>De même, si $L$ est décidé en espace $s(n)$, il l’est en espace $\lceil\varepsilon\,s(n)\rceil$ pour tout $\varepsilon>0$ (<strong>compression linéaire de l’espace</strong>).</p>
+</enonce>
+<philo>
+<p>Les constantes multiplicatives n’ont pas de sens intrinsèque dans ce modèle : on peut toujours les réduire en agrandissant l’alphabet, c’est-à-dire en traitant plusieurs symboles à la fois, comme un processeur 64 bits traite 64 bits par opération. C’est ce qui justifie la notation $O(\cdot)$ dans la définition des classes : $\mathrm{DTIME}(t)$ ne dépend que de l’ordre de grandeur de $t$.</p>
+<p>Le terme $n$ ne disparaît pas : il faut au moins lire l’entrée, symbole par symbole, pour la recompacter. L’accélération est donc sans intérêt pour les calculs en temps linéaire.</p>
+</philo>
+<tech>
+<p>Fixons un entier $m$, choisi plus bas. La nouvelle machine $M'$ code un bloc de $m$ cases consécutives de $M$ par un seul symbole (un $m$-uplet de symboles de $M$). Son état retient l’état de $M$ et, pour chaque bande, la position de la tête de $M$ dans le bloc courant (un nombre entre $0$ et $m-1$).</p>
+<p><strong>Préparation.</strong> $M'$ lit l’entrée sur sa bande 1 et l’écrit, comprimée par blocs de $m$, sur sa bande 2 ($n+1$ pas), puis ramène la tête de la bande 2 au début ($\lceil n/m\rceil+1$ pas). Désormais la bande 2 joue le rôle de la bande d’entrée de $M$, et les bandes $3,\dots,k+1$ celui de ses autres bandes (vides, donc déjà « comprimées »).</p>
+<p><strong>Simulation de $m$ pas de $M$ en 6 pas de $M'$.</strong> (a) En 4 pas (gauche, droite, droite, gauche), $M'$ lit sur chaque bande le bloc courant et ses deux voisins, et les retient dans son état : elle connaît $3m$ cases autour de chaque tête. (b) En $m$ pas, une tête de $M$ se déplace d’au plus $m$ cases ; elle reste donc dans ces trois blocs. $M'$ connaît ainsi, par sa table de transitions, le résultat de $m$ pas de $M$ (ou l’arrêt de $M$ avant). (c) Seuls le bloc courant et un seul de ses voisins peuvent avoir changé : pour atteindre le bloc de gauche puis celui de droite, une tête devrait parcourir plus de $m$ cases. En 2 pas, $M'$ réécrit le bloc courant, se déplace si nécessaire vers le voisin modifié et le réécrit, et termine sur le bloc où se trouve la tête de $M$.</p>
+<p><strong>Total.</strong> $n+2+\lceil n/m\rceil+1+6\lceil t(n)/m\rceil\le n+9+(n+6t(n))/m\le n+9+7t(n)/m$, puisque $n\le t(n)$. Avec $m\ge7/\varepsilon$, on obtient $\varepsilon\,t(n)+n+9$.</p>
+<p><strong>Espace.</strong> Même codage par blocs de $m\ge1/\varepsilon$ cases sur les bandes de travail, sans changer le nombre de pas : $s(n)$ cases visitées de $M$ occupent au plus $\lceil s(n)/m\rceil+1$ blocs. (Le $+1$ disparaît en retenant dans l’état le contenu du dernier bloc entamé, ou en choisissant $m$ un peu plus grand.)</p>
+</tech>
+<techno><p>Le prix de l’accélération est la taille de la machine : l’alphabet passe de $|A|$ à $|A|^m$ symboles, et la table de transitions grossit en proportion. C’est l’arbitrage entre largeur des mots machine et vitesse des processeurs. Blum (1967) a montré bien pire : il existe des problèmes décidables sans algorithme le plus rapide, pour lesquels tout algorithme peut être accéléré, non d’une constante, mais par exemple d’un logarithme, indéfiniment (théorème d’accélération de Blum, cité pour information).</p></techno>
+</res>
+
+<h2 id="savitch-section">Le non-déterminisme et l’espace</h2>
+
+<res type="Théorème" nom="Théorème de Savitch (1970)" id="savitch">
+<enonce>
+<p>Pour toute fonction $s(n)\ge\log_2n$ constructible en espace,</p>
+$$\mathrm{NSPACE}(s)\subseteq\mathrm{DSPACE}(s^2).$$
+<p>En particulier, $\mathsf{PSPACE}=\mathsf{NPSPACE}$, et $\mathsf{NL}\subseteq\mathrm{DSPACE}(\log^2n)$ : l’accessibilité dans un graphe à $N$ sommets se décide en espace $O(\log^2N)$.</p>
+</enonce>
+<philo>
+<p>Pour le temps, on ne sait pas éliminer le non-déterminisme sans un coût exponentiel, et c’est la question $\mathsf P=\mathsf{NP}$. Pour l’espace, Savitch montre que le coût est au plus un carré. La raison est que l’espace se <em>réutilise</em> : pour savoir si l’on peut aller de $A$ à $B$ en $2^i$ étapes, on cherche un point milieu $C$, on vérifie le premier demi-trajet, on efface, on vérifie le second avec la même mémoire. Le temps, lui, ne se réutilise pas.</p>
+<p>L’algorithme est très lent (il refait sans cesse les mêmes calculs), mais il est économe : c’est un exemple pur de l’échange entre temps et espace.</p>
+</philo>
+<tech>
+<p>Soit $N$ non déterministe en espace $s(n)$ qui accepte $L$. Quitte à modifier $N$, on suppose qu’avant d’accepter elle efface ses bandes de travail et ramène ses têtes au début : il y a alors une seule configuration acceptante $c_{\mathrm{acc}}$. Par le <a href="#configurations">lemme</a>, une configuration s’écrit sur $O(s(n))$ cases, et il y en a au plus $2^{c\,s(n)}$, avec $c=c_N$.</p>
+<p>Pour deux configurations $u,v$ et un entier $i$, notons $\mathrm{ACC}(u,v,i)$ : « $v$ est accessible depuis $u$ en au plus $2^i$ pas ». Alors $\mathrm{ACC}(u,v,0)$ équivaut à « $u=v$ ou $v$ suit $u$ en un pas », qui se vérifie directement, et, pour $i\ge1$,</p>
+$$\mathrm{ACC}(u,v,i)\iff\exists w\ \big[\mathrm{ACC}(u,w,i-1)\wedge\mathrm{ACC}(w,v,i-1)\big],$$
+<p>où $w$ parcourt les configurations (un chemin de longueur au plus $2^i$ se coupe en deux chemins de longueur au plus $2^{i-1}$). La machine déterministe calcule $s(n)$, puis évalue $\mathrm{ACC}(c_{\mathrm{init}},c_{\mathrm{acc}},c\,s(n))$ : comme il y a au plus $2^{c\,s(n)}$ configurations, un chemin sans répétition a au plus ce nombre de pas, et $N$ accepte $x$ si et seulement si cet énoncé est vrai.</p>
+<p>L’évaluation récursive se fait avec une pile écrite sur une bande de travail. Chaque niveau de la pile contient $u$, $v$, $i$, la configuration $w$ en cours d’essai et l’indication du sous-appel en cours (premier ou second) : $O(s(n))$ cases. Pour essayer les $w$, on les énumère comme des mots de longueur $O(s(n))$, en ignorant ceux qui ne sont pas des configurations. La profondeur de la pile est $c\,s(n)+1$. L’espace total est donc $O(s(n)^2)$, et la compression linéaire de l’espace donne $s(n)^2$.</p>
+<p><strong>Conséquences.</strong> $\mathsf{NPSPACE}=\bigcup_k\mathrm{NSPACE}(n^k)\subseteq\bigcup_k\mathrm{DSPACE}(n^{2k})=\mathsf{PSPACE}$. Pour l’accessibilité : un graphe à $N$ sommets, donné par sa matrice d’adjacence, est une entrée de longueur $n=N^2$ ; l’algorithme de recherche non déterministe utilise un espace $O(\log n)$, d’où un espace déterministe $O(\log^2n)=O(\log^2N)$.</p>
+</tech>
+<techno><p>Dans <a href="assets/code/complexite.py">complexite.py</a>, la fonction <code>savitch</code> décide l’accessibilité dans un graphe à 16 sommets avec une pile de profondeur $4=\log_216$, chaque niveau retenant trois sommets, au prix de 40 319 appels récursifs ; le parcours en largeur fait le même travail en visitant chaque arc une fois, mais retient jusqu’à tous les sommets. On sait aussi (résultat cité) que $\mathsf{NL}=\mathrm{co}\mathsf{NL}$ : un algorithme non déterministe en espace logarithmique peut certifier qu’il n’y a <em>pas</em> de chemin (Immerman et Szelepcsényi, indépendamment, 1987-1988).</p></techno>
+</res>
+
+<h2 id="hierarchies">Plus de ressources, plus de problèmes</h2>
+
+<res type="Théorème" nom="Théorème de hiérarchie en espace (Stearns, Hartmanis, Lewis, 1965)" id="hierarchie-espace">
+<enonce>
+<p>Soient $s_1,s_2\ge\log_2n$, avec $s_2$ constructible en espace et $s_1(n)/s_2(n)\to0$. Alors $\mathrm{DSPACE}(s_1)\subsetneq\mathrm{DSPACE}(s_2)$.</p>
+<p>En particulier $\mathsf L\subsetneq\mathsf{PSPACE}$, et, avec le théorème de Savitch, $\mathsf{NL}\subsetneq\mathsf{PSPACE}$.</p>
+</enonce>
+<philo><p>Avec plus de mémoire, on résout strictement plus de problèmes. La preuve est la diagonale de Cantor et de Turing, avec un compteur de ressources : une machine qui dispose d’un peu plus d’espace que toutes les machines d’une classe peut les simuler toutes et faire, sur une entrée bien choisie, le contraire de chacune.</p></philo>
+<tech>
+<p>On code chaque machine déterministe $M$ (à une bande de travail, ce qui ne change l’espace que d’une constante) par un mot $\langle M\rangle$, de façon qu’un mot de la forme $\langle M\rangle10^j$ se décompose sans ambiguïté. La machine $D$, sur une entrée $w$ de longueur $n$ :</p>
+<ol>
+<li>calcule $s_2(n)$ et délimite $s_2(n)$ cases sur ses bandes de travail ;</li>
+<li>si $w$ n’est pas de la forme $\langle M\rangle10^j$, refuse ;</li>
+<li>simule $M$ sur $w$, en codant chaque symbole de $M$ par un bloc de longueur fixe $\ell_M$ et en tenant un compteur binaire de pas ; si la simulation sort des cases délimitées, ou si le compteur dépasse $2^{s_2(n)}$, $D$ refuse ;</li>
+<li>si $M$ accepte, $D$ refuse ; si $M$ refuse, $D$ accepte.</li>
+</ol>
+<p>$D$ s’arrête toujours et utilise un espace $O(s_2(n))$ : elle décide un langage $L_D\in\mathrm{DSPACE}(s_2)$, par la compression linéaire. Supposons $L_D$ décidé par une machine $M$ en espace $a\,s_1(n)$. Comme $s_1/s_2\to0$, il existe $j$ tel que, pour $w=\langle M\rangle10^j$ et $n=|w|$, on ait $\ell_M\,a\,s_1(n)\le s_2(n)$ et $2^{c_M a s_1(n)}\le2^{s_2(n)}$, où $c_M$ est la constante du <a href="#configurations">lemme des configurations</a>. Alors la simulation tient dans l’espace délimité, et $M$, qui s’arrête, le fait avant que le compteur ne déborde. Donc $D$ fait le contraire de $M$ sur $w$ : $w\in L_D\iff w\notin L(M)=L_D$. Contradiction.</p>
+<p><strong>Conséquences.</strong> $\mathsf L=\mathrm{DSPACE}(\log n)\subsetneq\mathrm{DSPACE}(n)\subseteq\mathsf{PSPACE}$. Par Savitch, $\mathsf{NL}\subseteq\mathrm{DSPACE}(\log^2n)\subsetneq\mathrm{DSPACE}(n)\subseteq\mathsf{PSPACE}$.</p>
+</tech>
+<techno><p>Le compteur de pas de l’étape 3 est indispensable : sans lui, $D$ pourrait boucler indéfiniment en simulant une machine qui boucle dans un espace borné, et ne déciderait rien. C’est la version quantitative du problème de l’arrêt : en espace borné, l’arrêt devient décidable, parce que le nombre de configurations est fini.</p></techno>
+</res>
+
+<res type="Théorème" nom="Théorème de hiérarchie en temps (Hartmanis et Stearns, 1965)" id="hierarchie-temps">
+<enonce>
+<p>Soient $t_1(n)\ge n$ et $t_2$ constructible en temps, avec $t_1(n)^2/t_2(n)\to0$. Alors $\mathrm{DTIME}(t_1)\subsetneq\mathrm{DTIME}(t_2)$. En particulier $\mathsf P\subsetneq\mathsf{EXP}$.</p>
+<p>(Hennie et Stearns, 1966 : l’hypothèse $t_1(n)\log t_1(n)/t_2(n)\to0$ suffit ; résultat cité.)</p>
+</enonce>
+<philo><p>Il existe des problèmes décidables en temps exponentiel et pas en temps polynomial : la frontière de la faisabilité n’est pas vide de sens. On en connaît de naturels, par exemple décider qui gagne aux échecs généralisés sur un échiquier $n\times n$ (Fraenkel et Lichtenstein, 1981 ; résultat cité). Mais pour les problèmes de $\mathsf{NP}$, aucune preuve de ce type n’a abouti.</p></philo>
+<tech>
+<p>On diagonalise contre les machines à <em>une</em> bande : si $L\in\mathrm{DTIME}(t_1)$, une machine à une bande le décide en temps $O((n+t_1(n))^2)=O(t_1(n)^2)$ (<a href="trois-approches.html#cout-simulation">simulation à une bande</a>). Une machine à trois bandes $U$ simule une machine à une bande $M$, dont la description est écrite sur une bande, en $d_M$ pas par pas de $M$ : la bande 1 contient la bande de $M$ (chaque symbole codé par un bloc de longueur fixe), la bande 2 la description de $M$, la bande 3 son état courant ; un pas de $M$ consiste à parcourir la description pour trouver la transition, puis à l’appliquer. La constante $d_M$ ne dépend que de la longueur de la description.</p>
+<p>La machine $D$, sur $w$ de longueur $n$, calcule $t_2(n)$ en binaire et l’écrit sur une bande « budget ». Si $w$ est de la forme $\langle M\rangle10^j$, elle simule $M$ sur $w$ avec $U$, en décrémentant le budget à chacun de ses <em>propres</em> pas. Elle refuse si $M$ accepte, et accepte si $M$ refuse ou si le budget s’épuise. Décrémenter un compteur binaire coûte en moyenne un nombre constant d’opérations (sur $N$ décréments, les retenues font en tout moins de $2N$ pas), donc $D$ travaille en temps $O(t_2(n))$ : $L_D\in\mathrm{DTIME}(t_2)$ (les classes sont définies à une constante près, ce que justifie l’<a href="#acceleration-lineaire">accélération linéaire</a>).</p>
+<p>Si $L_D$ était dans $\mathrm{DTIME}(t_1)$, il serait décidé par une machine à une bande $M$ en temps $T(n)=O(t_1(n)^2)$. Pour $w=\langle M\rangle10^j$ avec $j$ assez grand, le nombre de pas dont $D$ a besoin pour mener la simulation à son terme, $O(d_M\,T(n)+n)$ décréments du budget compris, serait inférieur à $t_2(n)$, puisque $t_1^2/t_2\to0$ : la simulation irait à son terme, et $D$ ferait le contraire de $M$ sur $w$. Contradiction.</p>
+<p><strong>$\mathsf P\subsetneq\mathsf{EXP}$.</strong> On a $\mathsf P\subseteq\mathrm{DTIME}(2^n)$, puisque $n^k=O(2^n)$ pour tout $k$, et $\mathrm{DTIME}(2^n)\subsetneq\mathrm{DTIME}(2^{3n})\subseteq\mathsf{EXP}$ par le théorème, avec $t_1(n)=2^n$, $t_2(n)=2^{3n}$ et $t_1(n)^2/t_2(n)=2^{-n}\to0$.</p>
+</tech>
+<techno><p>Le facteur entre $t_1$ et $t_2$ (ici un carré, ou un logarithme avec la simulation de Hennie et Stearns) est le coût de la simulation universelle : une machine fixe doit pouvoir imiter toutes les autres. Pour les machines à accès direct, dont la simulation universelle a un surcoût constant, la hiérarchie est plus fine encore.</p></techno>
+</res>
+
+<h2 id="np-completude">Réductions et NP-complétude</h2>
+
+<res type="Théorème" nom="Les oracles ne tranchent pas P contre NP (Baker, Gill, Solovay, 1975)" id="baker-gill-solovay">
+<enonce><p>Il existe un oracle $A$ tel que $\mathsf P^A=\mathsf{NP}^A$, et un oracle $B$ tel que $\mathsf P^B\ne\mathsf{NP}^B$. (Les classes relatives sont définies avec les <a href="machines-turing.html#def-oracle">machines à oracle</a>, chaque question coûtant un pas.)</p></enonce>
+<philo><p>Les deux grandes méthodes de ce chapitre, la simulation et la diagonalisation, « passent aux oracles » : leurs preuves restent valables quand toutes les machines ont accès au même oracle. Une démonstration de $\mathsf P\ne\mathsf{NP}$ par ces seules méthodes démontrerait donc aussi $\mathsf P^A\ne\mathsf{NP}^A$, ce qui est faux ; une démonstration de $\mathsf P=\mathsf{NP}$ démontrerait $\mathsf P^B=\mathsf{NP}^B$. C’est la première des « barrières » connues : la question demande des idées qui ne se relativisent pas, et c’est une raison de sa difficulté. La calculabilité ne connaît pas ce phénomène : la diagonale de Turing tranche le problème de l’arrêt, et elle tranche aussi sa version relative (<a href="equivalence.html#enumeration-relative">arrêt relatif</a>).</p></philo>
+<tech>
+<p><em>L’oracle $A$.</em> Prenons pour $A$ le langage des formules booléennes quantifiées vraies, qui est PSPACE-complet (<a href="#autres-complets">ci-dessous</a>). On a $\mathsf{NP}^A\subseteq\mathsf{NPSPACE}=\mathsf{PSPACE}$ : une machine non déterministe en temps polynomial pose des questions de longueur polynomiale, et l’on répond à chacune en espace polynomial ; la dernière égalité est le <a href="#savitch">théorème de Savitch</a>. Et $\mathsf{PSPACE}\subseteq\mathsf P^A$, puisque tout langage de $\mathsf{PSPACE}$ se réduit à $A$ en temps polynomial. Donc $\mathsf{NP}^A\subseteq\mathsf P^A$.</p>
+<p><em>L’oracle $B$.</em> Pour tout ensemble $B$ de mots sur $\{0,1\}$, soit $L_B=\{1^n:B\text{ contient un mot de longueur }n\}$. On a $L_B\in\mathsf{NP}^B$ : on devine un mot $w$ de longueur $n$ et l’on demande à l’oracle si $w\in B$. On construit $B$ par étapes pour que $L_B\notin\mathsf P^B$. Soit $M_0,M_1,\dots$ une énumération des machines à oracle munies d’une horloge, la machine $M_i$ s’arrêtant en au plus $n^i$ pas ; toute machine à oracle en temps polynomial est équivalente à l’une d’elles. À l’étape $i$, on choisit $n$ plus grand que les longueurs choisies et que toutes les longueurs des questions posées aux étapes précédentes, et tel que $n^i<2^n$, et l’on fait tourner $M_i$ sur $1^n$ avec l’oracle construit jusque-là (qui ne contient aucun mot de longueur $\ge n$). Si $M_i$ accepte, on n’ajoute aucun mot de longueur $n$ à $B$, donc $1^n\notin L_B$. Si $M_i$ refuse, on ajoute à $B$ un mot de longueur $n$ que $M_i$ n’a pas demandé ; il en existe, car $M_i$ a posé au plus $n^i<2^n$ questions. Alors $1^n\in L_B$. Dans les deux cas, les réponses de l’oracle aux questions de $M_i$ ne changent pas (les étapes suivantes n’ajoutent que des mots plus longs), et $M_i^B$ se trompe sur $1^n$. Aucune $M_i$ ne décide $L_B$ avec l’oracle $B$ : $L_B\in\mathsf{NP}^B\setminus\mathsf P^B$.</p>
+</tech>
+</res>
+
+<res type="Définition" nom="Réduction polynomiale, problèmes complets" id="reduction-polynomiale">
+<enonce><p>$A\le_pB$ s’il existe une fonction $f$ calculable en temps polynomial telle que $x\in A\iff f(x)\in B$. Pour une classe $\mathcal C$, $B$ est <strong>$\mathcal C$-difficile</strong> si $A\le_pB$ pour tout $A\in\mathcal C$, et <strong>$\mathcal C$-complet</strong> si de plus $B\in\mathcal C$.</p></enonce>
+<philo><p>C’est la <a href="indecidabilite.html#reduction">réduction many-one</a> de la calculabilité, avec une contrainte de temps. Un problème NP-complet est l’un des plus difficiles de $\mathsf{NP}$ : un algorithme polynomial pour lui en donnerait un pour tous, exactement comme un décideur de l’arrêt déciderait tous les ensembles semi-décidables (<a href="semi-decidabilite.html#k-complet">complétude de l’arrêt</a>).</p></philo>
+<tech><p>$\le_p$ est transitive : si $f$ et $g$ sont calculables en temps $p$ et $q$, alors $|f(x)|\le p(|x|)$ (on n’écrit pas plus d’un symbole par pas), et $g\circ f$ se calcule en temps $p(n)+q(p(n))$. Si $B\in\mathsf P$ et $A\le_pB$, alors $A\in\mathsf P$. Donc, si un seul problème NP-complet est dans $\mathsf P$, alors $\mathsf P=\mathsf{NP}$.</p></tech>
+<techno><p>Les réductions sont au cœur de la pratique : un problème d’emploi du temps, de tournées ou de placement est traduit en une instance de SAT ou de programmation linéaire en nombres entiers, que des solveurs très optimisés traitent. Ces solveurs sont exponentiels dans le pire cas, mais résolvent couramment des instances industrielles à des millions de variables.</p></techno>
+</res>
+
+<res type="Théorème" nom="Théorème de Cook et Levin (1971, 1973)" id="cook-levin">
+<enonce><p>Le problème $\mathrm{SAT}$ (une formule propositionnelle donnée est-elle satisfaisable ?) est NP-complet. Il le reste quand on se limite aux formules en forme normale conjonctive (conjonctions de disjonctions de littéraux).</p></enonce>
+<philo>
+<p>Toute vérification rapide se traduit en une formule logique : « il existe une solution » devient « il existe une valuation qui rend vraie cette formule ». C’est l’analogue, en temps polynomial, de la <a href="incompletude.html#representabilite">définissabilité arithmétique</a> des ensembles semi-décidables : là, un calcul quelconque s’écrivait comme une formule de l’arithmétique ; ici, un calcul de durée polynomiale s’écrit comme une formule propositionnelle de taille polynomiale.</p>
+<p>Depuis, des milliers de problèmes ont été montrés NP-complets par réduction à partir de SAT (Karp, 1972, en donna vingt et un) : coloriage de graphes, voyageur de commerce, sac à dos, emplois du temps, Sudoku généralisé. Tous tiennent ou tombent ensemble.</p>
+</philo>
+<tech>
+<p>$\mathrm{SAT}\in\mathsf{NP}$ : on devine une valuation et l’on évalue la formule. Soit $L\in\mathsf{NP}$, accepté par une machine non déterministe à une bande $N$ en temps $p(n)$ (on se ramène à une bande par la <a href="trois-approches.html#cout-simulation">simulation</a>, qui vaut pour les machines non déterministes, en restant polynomial ; on prend $p(n)\ge n$). On suppose que $N$, une fois dans l’état acceptant $q_a$, y reste sans rien changer. Soit $x$ de longueur $n$, $p=p(n)$. Un calcul de $p$ pas ne visite que les cases $-p,\dots,p$. On introduit des variables propositionnelles :</p>
+<ul>
+<li>$X_{i,j,a}$ : « au pas $i$, la case $j$ contient $a$ » ($0\le i\le p$, $|j|\le p$, $a\in A$) ;</li>
+<li>$H_{i,j}$ : « au pas $i$, la tête est sur la case $j$ » ; $Q_{i,q}$ : « au pas $i$, l’état est $q$ ».</li>
+</ul>
+<p>La formule $\Phi_x$ est la conjonction de :</p>
+<ol>
+<li>pour chaque $i$ : exactement un $Q_{i,q}$, exactement un $H_{i,j}$ et, pour chaque $j$, exactement un $X_{i,j,a}$ vrais (« au moins un » est une disjonction, « au plus un » la conjonction des $\neg(u\wedge v)$) ;</li>
+<li>la ligne initiale : $Q_{0,q_0}$, $H_{0,0}$, $X_{0,j,x_j}$ pour $0\le j<n$, et $X_{0,j,B}$ pour les autres $j$ ;</li>
+<li>pour chaque $i<p$, $j$, $a$ : $(\neg H_{i,j}\wedge X_{i,j,a})\Rightarrow X_{i+1,j,a}$ (une case loin de la tête ne change pas) ;</li>
+<li>pour chaque $i<p$, $j$, $q$, $a$ : $(H_{i,j}\wedge Q_{i,q}\wedge X_{i,j,a})\Rightarrow\bigvee\big(Q_{i+1,q'}\wedge X_{i+1,j,b}\wedge H_{i+1,j+d}\big)$, la disjonction portant sur les transitions $(q,a)\to(q',b,d)$ de $N$ qui ne font pas sortir la tête des cases $-p,\dots,p$ (une disjonction vide est fausse) ;</li>
+<li>$Q_{p,q_a}$.</li>
+</ol>
+<p>Une valuation qui satisfait 1 décrit une suite de $p+1$ configurations ; 2 impose la configuration initiale sur $x$ ; 3 et 4 imposent que chaque configuration suive la précédente par une transition de $N$ ; 5 impose l’acceptation. Donc $\Phi_x$ est satisfaisable si et seulement si $N$ a un calcul acceptant sur $x$ (un calcul qui accepte avant le pas $p$ se prolonge en restant dans $q_a$). $\Phi_x$ a $O(p^2)$ variables et $O(p^3)$ conditions élémentaires (les plus nombreuses sont les « au plus un » sur les positions de la tête), chacune de taille bornée ou $O(p)$ : elle s’écrit en temps polynomial en $n$. Donc $L\le_p\mathrm{SAT}$.</p>
+<p><strong>Forme normale conjonctive.</strong> Les contraintes 1, 2, 3 et 5 sont déjà des clauses. Pour 4, on introduit une variable nouvelle $C_\tau$ par transition $\tau$ possible, et l’on écrit les clauses $\neg H_{i,j}\vee\neg Q_{i,q}\vee\neg X_{i,j,a}\vee\bigvee_\tau C_\tau$, puis, pour chaque $\tau=(q',b,d)$, les trois clauses $\neg H_{i,j}\vee\neg Q_{i,q}\vee\neg X_{i,j,a}\vee\neg C_\tau\vee\ell$ avec $\ell\in\{Q_{i+1,q'},X_{i+1,j,b},H_{i+1,j+d}\}$. Toute valuation qui satisfait la formule d’origine se prolonge (on rend vraie la $C_\tau$ de la transition employée), et inversement.</p>
+</tech>
+<techno><p>La fonction <code>formule_cook_levin</code> de <a href="assets/code/complexite.py">complexite.py</a> écrit ces clauses pour une petite machine non déterministe (qui « devine » une case contenant 1). Sur l’entrée $0010$ et 5 pas, la formule a 326 variables et 1 041 clauses. Un petit solveur SAT, joint au fichier, vérifie que la formule est satisfaisable exactement quand la machine accepte, sur les 127 mots de longueur au plus 6.</p></techno>
+</res>
+
+<res type="Proposition" nom="Problèmes complets pour les autres classes" id="autres-complets">
+<enonce><p>(Résultats cités.) L’accessibilité dans un graphe orienté est NL-complète pour les réductions en espace logarithmique. La validité des formules booléennes quantifiées ($\forall x_1\exists x_2\cdots\,\phi$) est PSPACE-complète (Stockmeyer et Meyer, 1973). La satisfaisabilité de la formule $\exists y_1\forall y_2\cdots$ à $k$ alternances est complète pour le niveau $\Sigma^p_k$ de la <a href="hierarchie-arithmetique.html#hierarchie-polynomiale">hiérarchie polynomiale</a>.</p></enonce>
+<philo><p>À chaque classe correspond un problème logique typique, et l’alternance des quantificateurs mesure la difficulté, comme dans la hiérarchie arithmétique. $\mathsf{NP}$, c’est « il existe » ; $\mathsf{PSPACE}$, c’est un nombre non borné d’alternances « il existe un coup pour moi tel que pour tout coup de l’adversaire… », ce qui explique la place des jeux dans cette classe.</p></philo>
+<tech><p>L’appartenance de ces problèmes à leur classe est facile. L’accessibilité est dans $\mathsf{NL}$ (<a href="#classes-usuelles">ci-dessus</a>). Pour les formules quantifiées, on évalue récursivement $\forall x\,\phi$ et $\exists x\,\phi$ en essayant $x=0$ puis $x=1$ avec le même espace, d’où un espace proportionnel à la taille de la formule. La difficulté se démontre comme dans le théorème de Savitch : la formule $\mathrm{ACC}(u,v,i)$ s’écrit avec un seul appel récursif, grâce à un quantificateur universel sur les deux moitiés du trajet, ce qui donne une formule de taille polynomiale.</p></tech>
+<techno><p>Le chapitre suivant étudie d’autres ressources : le <a href="hasard-quantique.html#hasard">hasard</a>, l’<a href="hasard-quantique.html#approximation">approximation</a> et le <a href="hasard-quantique.html#quantique">calcul quantique</a>. Les solveurs de formules booléennes quantifiées (QBF) existent, mais restent bien moins efficaces que les solveurs SAT : l’écart entre $\mathsf{NP}$ et $\mathsf{PSPACE}$, s’il existe, se voit déjà en pratique.</p></techno>
+</res>
+
+<h2 id="physique">Ce que coûte une recherche exhaustive</h2>
+
+<p>Un problème de $\mathsf{NP}$ se résout toujours par recherche exhaustive : pour une formule à $n$ variables, on essaie les $2^n$ valuations. La théorie dit que c’est « exponentiel » ; la physique dit ce que cela coûte. Les deux résultats qui suivent sont des lois physiques, citées et non démontrées ici ; les calculs, eux, sont refaits.</p>
+
+<res type="Proposition" nom="Jeux et espace polynomial" id="jeux-pspace">
+<enonce><p>Dans le jeu de <strong>géographie généralisée</strong>, on se donne un graphe orienté et un sommet de départ ; deux joueurs déplacent à tour de rôle un pion le long d’un arc vers un sommet jamais visité, et le joueur qui ne peut plus jouer a perdu. Décider si le premier joueur a une stratégie gagnante est dans $\mathsf{PSPACE}$ ; c’est même PSPACE-complet (Schaefer, 1978, résultat cité). Les jeux de plateau généralisés à $n\times n$ dont les parties peuvent être exponentiellement longues sortent de $\mathsf{PSPACE}$ : les échecs (Fraenkel et Lichtenstein, 1981) et le go avec la règle japonaise du ko (Robson, 1983) sont EXP-complets (résultats cités).</p></enonce>
+<philo><p>« J’ai un coup tel que, pour toute réponse, j’ai un coup tel que… » : une stratégie gagnante est une formule à quantificateurs alternés, comme les énoncés de la <a href="hierarchie-arithmetique.html">hiérarchie arithmétique</a>. La différence est que les quantificateurs portent ici sur des coups, en nombre fini, et que la partie dure un temps polynomial : l’alternance non bornée des quantificateurs, qui mène en calculabilité au-delà de toute la hiérarchie arithmétique, reste ici dans l’espace polynomial. $\mathsf{PSPACE}$ contient toute la <a href="hierarchie-arithmetique.html#hierarchie-polynomiale">hiérarchie polynomiale</a>, un peu comme l’ensemble des énoncés arithmétiques contient tous les niveaux de la hiérarchie arithmétique.</p></philo>
+<tech><p>Une partie dure au plus autant de coups que le graphe a de sommets, $m$. On évalue la position récursivement : le joueur qui doit jouer gagne si l’un de ses coups mène à une position perdante pour l’adversaire. La pile de récursion a une profondeur au plus $m$, et chaque niveau retient la position (le sommet courant et l’ensemble des sommets visités, $O(m)$ bits) et le coup en cours d’essai : l’espace est $O(m^2)$, polynomial. Le temps, lui, peut être exponentiel, comme pour les formules quantifiées.</p></tech>
+</res>
+
+<res type="Proposition" nom="Le principe de Landauer et le prix d’une énumération" id="landauer">
+<enonce>
+<p><strong>Principe de Landauer (1961).</strong> Effacer un bit d’information dans un système en contact avec un milieu à la température $T$ dissipe au moins l’énergie $k_BT\ln2$, où $k_B=1{,}380\,649\times10^{-23}$ J/K est la constante de Boltzmann. (Loi physique, vérifiée expérimentalement par Bérut et al., 2012.)</p>
+<p>À la température du fond cosmologique, $T=2{,}725$ K, la plus basse dont on dispose sans dépenser d’énergie pour refroidir, cela fait $2{,}61\times10^{-23}$ J par bit. Un calcul irréversible qui passe en revue $2^n$ candidats en effaçant au moins un bit par candidat dépense donc au moins $2^n\times2{,}61\times10^{-23}$ J :</p>
+<table>
+<tr><th>Source d’énergie</th><th>Énergie</th><th>$n$ maximal</th></tr>
+<tr><td>Consommation mondiale d’énergie pendant un an (environ $6\times10^{20}$ J)</td><td>$6\times10^{20}$ J</td><td>144</td></tr>
+<tr><td>Rayonnement total du Soleil pendant un an</td><td>$1{,}2\times10^{34}$ J</td><td>188</td></tr>
+<tr><td>Masse du Soleil entièrement convertie en énergie ($E=mc^2$)</td><td>$1{,}8\times10^{47}$ J</td><td>232</td></tr>
+<tr><td>Masse des étoiles de la Voie lactée (environ $6\times10^{10}$ masses solaires)</td><td>$1{,}1\times10^{58}$ J</td><td>267</td></tr>
+<tr><td>Matière ordinaire de l’univers observable (environ $1{,}5\times10^{53}$ kg)</td><td>$1{,}3\times10^{70}$ J</td><td>308</td></tr>
+</table>
+<p>Ainsi, énumérer les $2^{200}$ mots de 200 bits coûte au moins $4{,}2\times10^{37}$ J, soit environ 3 500 ans de tout le rayonnement du Soleil ; énumérer les mots de 256 bits demande plus que la masse du Soleil ; au-delà d’environ 310 bits, toute la matière visible de l’univers n’y suffirait pas.</p>
+<p><strong>Limite de Margolus et Levitin (1998).</strong> Même un calcul réversible, qui échappe au principe de Landauer, ne peut pas aller arbitrairement vite : un système d’énergie moyenne $E$ passe par au plus $4E/h$ états distincts par seconde ($h=6{,}626\times10^{-34}$ J·s, constante de Planck). Toute la matière ordinaire de l’univers observable, pendant les 13,8 milliards d’années de son histoire, ne parcourrait pas plus de $3,5\times10^{121}\approx2^{403}$ états.</p>
+</enonce>
+<philo>
+<p>La distinction entre polynomial et exponentiel n’est pas une subtilité de mathématicien. Un algorithme en $2^n$ n’est pas « lent » : au-delà de quelques centaines de bits, il est physiquement impossible, quelle que soit la technologie, si les lois physiques connues sont correctes. Aucun progrès des ordinateurs ne compensera une croissance exponentielle : doubler la puissance de calcul ne fait gagner qu’un bit.</p>
+<p>La sécurité de la cryptographie moderne repose sur ce constat. Une clé de 128 bits est hors d’atteinte en pratique, mais pas pour des raisons énergétiques : parcourir $2^{128}$ clés en effaçant un bit par clé ne coûterait que $9\times10^{15}$ J, l’énergie d’environ deux mégatonnes de TNT ; c’est le temps qui manque. Une clé de 256 bits, elle, est protégée par la thermodynamique.</p>
+</philo>
+<tech>
+<p><strong>Les calculs.</strong> $k_BT\ln2=1{,}380\,649\times10^{-23}\times2{,}725\times0{,}693\,1=2{,}608\times10^{-23}$ J. Le $n$ maximal de chaque ligne est la partie entière de $\log_2(E/2{,}608\times10^{-23})$. Par exemple, pour la matière visible, $E=1{,}5\times10^{53}\times(2{,}998\times10^8)^2=1{,}35\times10^{70}$ J, et $\log_2(1{,}35\times10^{70}/2{,}608\times10^{-23})=308{,}0$. Pour $2^{200}$ : $2^{200}=1{,}61\times10^{60}$, d’où $4{,}19\times10^{37}$ J ; le Soleil rayonne $3{,}83\times10^{26}$ W, soit $1{,}21\times10^{34}$ J par an. Pour Margolus et Levitin : $4\times1{,}35\times10^{70}\times4{,}35\times10^{17}/6{,}626\times10^{-34}=3{,}5\times10^{121}$, et $\log_2$ de ce nombre vaut $403{,}8$. Seth Lloyd (2002) a obtenu par un calcul voisin environ $10^{120}$ opérations pour la capacité de calcul de l’univers observable.</p>
+<p><strong>Ce que ces bornes supposent.</strong> (1) Le principe de Landauer ne concerne que l’effacement : Bennett (1973) a montré que tout calcul peut être rendu réversible, au prix d’un espace supplémentaire, et un calcul réversible n’a pas de coût énergétique minimal connu. C’est pourquoi la seconde borne, qui porte sur le nombre d’états et non sur l’effacement, est nécessaire. (2) Ces bornes s’appliquent à la recherche <em>exhaustive</em>. Elles ne disent rien d’un algorithme plus malin : si $\mathsf P=\mathsf{NP}$, une formule à 1 000 variables pourrait être résolue sans parcourir les $2^{1000}$ valuations. (3) Un ordinateur quantique peut, par l’algorithme de Grover (1996), chercher parmi $2^n$ candidats en environ $2^{n/2}$ étapes, ce qui revient à diviser $n$ par deux dans le tableau (résultat cité).</p>
+<p><strong>Lien avec la théorie.</strong> L’<a href="#acceleration-lineaire">accélération linéaire</a> ne gagne que des constantes, et la <a href="#hierarchie-temps">hiérarchie en temps</a> garantit qu’il existe des problèmes décidables qui demandent un temps exponentiel : pour eux, aucun algorithme n’échappe au tableau ci-dessus. Pour SAT, la question est ouverte : c’est exactement $\mathsf P$ contre $\mathsf{NP}$.</p>
+</tech>
+<techno><p>Un compteur binaire qui passe de $0$ à $2^n-1$ change en moyenne deux bits par incrément ($2^{n+1}-n-2$ changements en tout) ; un processeur actuel dépense de l’ordre de $10^{-10}$ J par instruction (une centaine de watts pour environ $10^{12}$ instructions par seconde), soit quelques milliers de milliards de fois la borne de Landauer. Avec une instruction par candidat, la barrière de la consommation mondiale annuelle est atteinte vers $n=102$, et non 144.</p></techno>
+</res>
+
+<res type="Proposition" nom="Les solveurs SAT : rapides en pratique, exponentiels dans le pire cas" id="solveurs-sat">
+<enonce>
+<p>Mesures faites pour ce manuel avec le solveur CaDiCaL 1.5 (sur un cœur d’un processeur Xeon à 2,1 GHz ; programme <a href="assets/code/sat_experiences.py">sat_experiences.py</a>) :</p>
+<table>
+<tr><th>Formule</th><th>Variables</th><th>Résultat</th><th>Temps</th></tr>
+<tr><td>100 reines sur un échiquier $100\times100$ (1 646 800 clauses)</td><td>10 000</td><td>satisfaisable</td><td>1,4 s</td></tr>
+<tr><td>3-SAT aléatoire, 4,26 clauses par variable (médiane de 5)</td><td>100 / 150 / 200 / 250 / 300</td><td>l’un ou l’autre</td><td>0,005 / 0,026 / 0,25 / 1,3 / 12 s</td></tr>
+<tr><td>Principe des tiroirs : 8, 9, 10, 11 pigeons dans un trou de moins</td><td>56 / 72 / 90 / 110</td><td>insatisfaisable</td><td>0,04 / 0,36 / 4,2 / 48 s</td></tr>
+<tr><td>12 pigeons, 11 trous</td><td>132</td><td>insatisfaisable</td><td>non terminé en 9 minutes</td></tr>
+</table>
+<p>(Résultats cités.) Toute réfutation par résolution du principe des tiroirs à $n+1$ pigeons et $n$ trous a une taille exponentielle en $n$ (Haken, 1985) ; les formules 3-SAT aléatoires sont les plus difficiles au voisinage de 4,26 clauses par variable (Selman, Mitchell et Levesque, 1996).</p>
+</enonce>
+<philo>
+<p>Le contraste avec la <a href="#landauer">table précédente</a> est saisissant. Parcourir les $2^{200}$ valuations d’une formule à 200 variables demanderait des millénaires du rayonnement solaire ; un solveur moderne règle une telle formule aléatoire en un quart de seconde, et une formule structurée à dix mille variables en une seconde. Il ne parcourt pas les valuations : il raisonne, apprend de ses échecs, et élimine d’un coup d’immenses régions de l’espace de recherche. C’est ce qui permet d’utiliser SAT tous les jours, pour vérifier des circuits, planifier, ou démontrer des théorèmes.</p>
+<p>Mais la difficulté exponentielle ne disparaît pas, elle se déplace. Sur les formules aléatoires, le temps croît encore exponentiellement, seulement beaucoup plus lentement que $2^n$. Et une formule de 132 variables, qui dit qu’on ne peut pas loger 12 pigeons dans 11 trous, résiste au solveur, alors qu’un enfant la résout en comptant. Le solveur ne sait pas compter : il raisonne par résolution, et Haken a démontré qu’aucun raisonnement par résolution ne prouve ce principe en temps raisonnable. Que tout algorithme ait un tel point faible, c’est la conjecture $\mathsf P\ne\mathsf{NP}$.</p>
+</philo>
+<tech>
+<p><strong>Ce que fait le solveur.</strong> Les solveurs modernes (dits CDCL, pour <em>conflict-driven clause learning</em>) étendent l’algorithme de recherche avec propagation unitaire du fichier <a href="assets/code/complexite.py">complexite.py</a> : quand une affectation partielle rend une clause fausse (un <em>conflit</em>), ils en déduisent par résolution une nouvelle clause, qui interdit la cause du conflit, et l’ajoutent à la formule ; ils reviennent alors en arrière de plusieurs niveaux d’un coup. Quand la formule est insatisfaisable, la suite des clauses apprises forme une réfutation par résolution, dont la taille est de l’ordre du nombre de conflits. Le théorème de Haken minore donc le nombre de conflits sur les formules des tiroirs : c’est ce qu’on observe, avec un facteur d’environ 8 à 10 à chaque pigeon ajouté (6 383, 37 288, 319 668, 2 657 952 conflits).</p>
+<p><strong>Croissance sur les formules aléatoires.</strong> De 100 à 300 variables, le temps médian est multiplié par environ 2 400, soit $2^{11,2}$ pour 200 variables de plus : une croissance de l’ordre de $2^{n/18}$ sur cette plage. Si elle se prolongeait, une formule aléatoire de 1 000 variables au seuil demanderait quelques millions d’années ; c’est une extrapolation, non un théorème.</p>
+<p><strong>Pourquoi les reines sont faciles.</strong> La formule des $n$ reines a énormément de solutions et une structure locale que la propagation unitaire exploite : chaque reine placée élimine aussitôt des centaines de cases. Les formules industrielles (vérification de circuits, planification) ont des structures semblables, et des solveurs comme CaDiCaL ou Kissat en traitent couramment à des millions de variables (résultat d’expérience des compétitions SAT, cité).</p>
+</tech>
+<techno><p>Le programme <a href="assets/code/sat_experiences.py">sat_experiences.py</a> demande le paquet Python <code>python-sat</code>, qui contient plusieurs solveurs ; <code>python3 sat_experiences.py 1</code>, <code>2</code> ou <code>3</code> lance une seule des trois expériences (la troisième prend environ une minute). Les temps varient d’une machine à l’autre, mais les rapports entre les lignes, eux, sont stables. Pour le principe des tiroirs, des solveurs dotés de raisonnements plus forts que la résolution (comptage, symétries, « cutting planes ») le règlent en temps polynomial : un système de preuve plus puissant déplace la frontière, sans la supprimer.</p></techno>
+</res>
+
+<!--EXERCICES-->
+<h2 id="exercices">Exercices</h2>
+
+<exo niveau="1" titre="Clique et ensemble indépendant" id="ex-cx-clique">
+<p>Une <em>clique</em> d’un graphe est un ensemble de sommets deux à deux reliés, un <em>ensemble indépendant</em> un ensemble de sommets deux à deux non reliés. Montrer que CLIQUE $=\{(G,k):G$ a une clique de taille $k\}$ se réduit polynomialement à INDÉPENDANT $=\{(G,k):G$ a un ensemble indépendant de taille $k\}$, et inversement.</p>
+<corrige>
+<p>Soit $\overline G$ le graphe complémentaire (mêmes sommets, une arête entre $u\ne v$ si et seulement s’il n’y en a pas dans $G$). Un ensemble est une clique de $G$ si et seulement s’il est indépendant dans $\overline G$. La fonction $(G,k)\mapsto(\overline G,k)$ se calcule en temps $O(n^2)$ sur la matrice d’adjacence, et réalise les deux réductions. Les deux problèmes sont dans NP (un certificat est l’ensemble de sommets) ; ils sont NP-complets (résultat classique de Karp, 1972, cité ici pour information).</p>
+</corrige>
+</exo>
+
+<exo niveau="1" titre="Le prix d’une clé, au tarif de Landauer" id="ex-cx-landauer">
+<p>À température ambiante ($T=300$ K), quelle est l’énergie minimale, selon le <a href="#landauer">principe de Landauer</a>, pour passer en revue les $2^{64}$, $2^{128}$ et $2^{256}$ clés d’un chiffrement, en effaçant un bit par clé essayée ? Comparer à la consommation mondiale annuelle (environ $6\times10^{20}$ J) et à l’énergie de masse du Soleil (environ $1{,}8\times10^{47}$ J).</p>
+<corrige>
+<p>$k_BT\ln2=1{,}380\,649\times10^{-23}\times300\times0{,}693\approx2{,}87\times10^{-21}$ J par bit. Pour $2^{64}\approx1{,}8\times10^{19}$ clés : environ $0{,}053$ J, une broutille. Pour $2^{128}\approx3{,}4\times10^{38}$ : environ $9{,}8\times10^{17}$ J, soit le six-centième de la consommation mondiale d’une année, au rendement thermodynamique parfait, que l’on est très loin d’atteindre (les processeurs actuels dissipent des milliards de fois plus par opération). Pour $2^{256}$ : environ $3{,}3\times10^{56}$ J, environ deux milliards de fois l’énergie de masse du Soleil. Doubler la longueur d’une clé ne double pas l’effort : elle l’élève au carré.</p>
+</corrige>
+</exo>
+
+<exo niveau="2" titre="De SAT à 3-SAT" id="ex-cx-3sat">
+<p>Montrer que SAT (en forme normale conjonctive) se réduit polynomialement à 3-SAT, où chaque clause a au plus trois littéraux.</p>
+<corrige>
+<p>On remplace chaque clause $C=(\ell_1\vee\cdots\vee\ell_k)$ avec $k\ge4$ par les $k-2$ clauses</p>
+$$(\ell_1\vee\ell_2\vee z_1)\wedge(\neg z_1\vee\ell_3\vee z_2)\wedge\cdots\wedge(\neg z_{k-4}\vee\ell_{k-2}\vee z_{k-3})\wedge(\neg z_{k-3}\vee\ell_{k-1}\vee\ell_k),$$
+<p>avec des variables nouvelles $z_1,\dots,z_{k-3}$ propres à $C$. Si une affectation satisfait $C$, disons par $\ell_j$, on met $z_i$ à vrai pour les clauses situées avant celle qui contient $\ell_j$ et à faux après : toutes les nouvelles clauses sont satisfaites. Inversement, si les nouvelles clauses sont satisfaites mais qu’aucun $\ell_j$ n’est vrai, la première impose $z_1$, la deuxième $z_2$, …, et la dernière $\neg z_{k-3}$ : contradiction. La formule obtenue est donc satisfaisable si et seulement si la formule de départ l’est, et sa taille est linéaire. Avec le <a href="#cook-levin">théorème de Cook et Levin</a>, 3-SAT est NP-complet. (2-SAT, lui, est dans P.)</p>
+</corrige>
+</exo>
+
+<exo niveau="2" titre="Si P = NP" id="ex-cx-conp">
+<p>Montrer que si $\mathsf P=\mathsf{NP}$, alors $\mathsf{NP}=\mathrm{co}\mathsf{NP}$.</p>
+<corrige>
+<p>$\mathsf P$ est clos par complémentaire : on échange les états acceptant et refusant d’une machine déterministe qui s’arrête toujours en temps polynomial. Donc $\mathrm{co}\mathsf P=\mathsf P$. Si $\mathsf P=\mathsf{NP}$, alors $\mathrm{co}\mathsf{NP}=\mathrm{co}\mathsf P=\mathsf P=\mathsf{NP}$. L’argument d’échange ne marche pas pour une machine non déterministe : « il existe un calcul qui refuse » n’est pas la négation de « il existe un calcul qui accepte ».</p>
+</corrige>
+</exo>
+
+<exo niveau="3" titre="Un problème NP-complet dans coNP" id="ex-cx-np-conp">
+<p>Montrer que si un problème NP-complet $L$ appartient à $\mathrm{co}\mathsf{NP}$, alors $\mathsf{NP}=\mathrm{co}\mathsf{NP}$.</p>
+<corrige>
+<p>D’abord, $\mathsf{NP}$ est clos par réduction polynomiale : si $A\le_pB$ par $f$ et $B\in\mathsf{NP}$, une machine pour $A$ calcule $f(x)$ (en temps polynomial, donc $|f(x)|$ est polynomial en $|x|$) puis lance la machine de $B$. Comme $x\in\overline A\iff f(x)\in\overline B$, $\mathrm{co}\mathsf{NP}$ est aussi clos par réduction.</p>
+<p>Soit $A\in\mathsf{NP}$. Comme $L$ est NP-complet, $A\le_pL$, et $L\in\mathrm{co}\mathsf{NP}$ donne $A\in\mathrm{co}\mathsf{NP}$ : $\mathsf{NP}\subseteq\mathrm{co}\mathsf{NP}$. Inversement, si $B\in\mathrm{co}\mathsf{NP}$, alors $\overline B\in\mathsf{NP}\subseteq\mathrm{co}\mathsf{NP}$, donc $B\in\mathsf{NP}$. C’est pourquoi l’on ne connaît aucun problème qui soit à la fois NP-complet et dans $\mathrm{co}\mathsf{NP}$ : en trouver un serait une percée. La factorisation est dans $\mathsf{NP}\cap\mathrm{co}\mathsf{NP}$, et c’est un argument (non démontré) pour penser qu’elle n’est pas NP-complète.</p>
+</corrige>
+</exo>

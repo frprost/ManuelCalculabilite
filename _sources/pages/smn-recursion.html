@@ -1,0 +1,157 @@
+<!--
+titre: Théorème s-m-n et théorème de récursion
+court: s-m-n et récursion
+chapo: Spécialiser un programme, composer des programmes, et surtout : écrire des programmes qui connaissent leur propre texte. Le théorème de récursion de Kleene donne une forme mathématique à l’auto-référence.
+prerequis: universalite.html|Universalité et notation φ
+-->
+
+<h2>Le théorème s-m-n</h2>
+
+<res type="Théorème" nom="Théorème s-m-n (Kleene)" id="smn">
+<enonce>
+<p>Pour tous $m,n\ge1$ il existe une fonction récursive primitive $s^m_n:\N^{m+1}\to\N$ telle que, pour tous $e,y_1,\dots,y_m,z_1,\dots,z_n$ :</p>
+$$\varphi^{(m+n)}_e(y_1,\dots,y_m,z_1,\dots,z_n)\simeq\varphi^{(n)}_{s^m_n(e,y_1,\dots,y_m)}(z_1,\dots,z_n).$$
+</enonce>
+<philo>
+<p>Si un programme $P$ dépend de cinq entrées et que l’on connaît la valeur de deux d’entre elles, on peut fabriquer <em>mécaniquement</em> un programme $Q$ qui ne dépend plus que des trois autres : une version spécialisée de $P$. C’est l’<em>évaluation partielle</em> ; les compilateurs l’utilisent pour propager les constantes et calculer d’avance tout ce qui peut l’être. Le théorème dit que cette spécialisation est toujours possible, et qu’elle est elle-même un calcul simple, qui ne demande pas d’exécuter $P$.</p>
+</philo>
+<tech>
+<p>À partir de $e$ et $\vec y$, on construit la machine qui, partant de $\overline{z_1}B\cdots B\overline{z_n}$, écrit $\overline{y_1}B\cdots B\overline{y_m}B$ à gauche de son entrée, replace la tête au début, puis exécute la machine d’indice $e$ (états renommés). Le code de cette machine s’obtient à partir de $\eta(e)$ et de $\vec y$ par des opérations récursives primitives sur les nombres de Gödel (concaténation, renommage d’états, construction d’une suite de $y_i+1$ quadruplets d’écriture), et l’on revient à un indice par $\eta^{-1}$.</p>
+<p>On peut aussi en donner une preuve courte « par la thèse de Church » : la fonction $(e,\vec y)\mapsto$ « un indice du programme qui fixe les $m$ premiers arguments » est manifestement calculable. Mais cet argument ne dit pas que $s^m_n$ est récursive primitive ni même totale ; c’est la construction explicite qui le garantit.</p>
+</tech>
+<techno>
+<p>Exemple concret avec $m=n=1$ : la machine d’<a href="machines-turing.html#ex-add">addition</a> (états renommés $r_0,\dots,r_4$), spécialisée en $y=2$. Le préfixe ($q_0$ à $s_7$) recule de deux cases, écrit $\overline{2}=111$ vers la gauche, puis passe la main à l’addition par un quadruplet sans effet. Le résultat calcule $z\mapsto 2+z$.</p>
+<div class="tm-widget" data-titre="s¹₁(addition, 2)" data-args="3"><pre class="src">q0 1 L s1
+s1 B L s2
+s2 B 1 s3
+s3 1 L s4
+s4 B 1 s5
+s5 1 L s6
+s6 B 1 s7
+s7 1 1 r0
+r0 1 B r1
+r1 B R r2
+r2 1 R r2
+r2 B R r3
+r3 1 B r4</pre></div>
+<p>Pour une valeur $y$ quelconque, le préfixe compte $2y+4$ quadruplets : <code>q0 1 L s1</code>, <code>s1 B L s2</code>, puis pour $t=1,\dots,y+1$ : <code>s(2t) B 1 s(2t+1)</code> et, sauf pour le dernier, <code>s(2t+1) 1 L s(2t+2)</code> ; enfin <code>s(2y+3) 1 1 r0</code>. La longueur du code croît linéairement avec $y$, ce qui rend la fonction $s^1_1$ récursive primitive.</p>
+</techno>
+</res>
+
+<res type="Corollaire" nom="Indice d’une composée" id="composee">
+<enonce><p>Il existe une fonction récursive primitive $c$ telle que $\varphi_{c(x,y)}=\varphi_x\circ\varphi_y$ pour tous $x,y$.</p></enonce>
+<tech><p>La fonction $\theta(x,y,z)\simeq\varphi_x(\varphi_y(z))\simeq u(x,u(y,z))$, où $u$ est la fonction universelle, est calculable ; soit $k$ un de ses indices. Par s-m-n, $\theta(x,y,z)\simeq\varphi^{(3)}_k(x,y,z)\simeq\varphi_{s^2_1(k,x,y)}(z)$. On pose $c(x,y)=s^2_1(k,x,y)$.</p>
+</tech>
+<philo><p>On peut « brancher » deux programmes l’un derrière l’autre sans les exécuter, par une simple manipulation de leur texte, comme le fait un éditeur de liens. C’est banal pour un programmeur ; l’intérêt est que la construction est uniforme et calculable.</p></philo>
+</res>
+
+<h2 id="recursion">Le théorème de récursion</h2>
+
+<res type="Théorème" nom="Théorème de récursion de Kleene (forme du point fixe)" id="kleene">
+<enonce><p>Pour toute fonction calculable totale $f:\N\to\N$, il existe un indice $n$ tel que $\varphi_{f(n)}=\varphi_n$.</p></enonce>
+<philo>
+<p>Interprétons $f$ comme une transformation de programmes qui s’arrête toujours : un compilateur, un optimiseur, un « virus » qui modifie le code, ou n’importe quelle réécriture. Le théorème affirme qu’il existe toujours un programme dont la transformation <em>ne change pas le comportement</em>. Aucune transformation calculable ne peut modifier le sens de tous les programmes.</p>
+<p>Sa conséquence la plus étonnante : un programme peut <em>utiliser son propre texte</em>. Il existe des programmes qui affichent leur propre code source (des « quines »), des programmes qui calculent leur propre numéro, et plus généralement, pour toute tâche qui utilise « le texte du programme qui l’exécute », un programme qui l’accomplit. C’est la version calculatoire de la réflexivité : le λ-calcul la réalise avec le combinateur $\mathsf Y$, la biologie avec l’ADN, qui contient la description de la machinerie qui le copie (von Neumann a étudié dès les années 1940 des automates auto-reproducteurs fondés sur ce principe).</p>
+</philo>
+<tech>
+<p>Soit $\Psi(u,x)\simeq\varphi_{\varphi_u(u)}(x)$ (indéfinie si $\varphi_u(u)\ind$). Elle est calculable : on calcule $t=\varphi_u(u)$, puis $\varphi_t(x)$, par la fonction universelle. Par s-m-n, il existe $g$ récursive primitive, donc totale, telle que $\varphi_{g(u)}(x)\simeq\Psi(u,x)$, c’est-à-dire
+$$\varphi_{g(u)}=\varphi_{\varphi_u(u)}\quad\text{si }\varphi_u(u)\conv.$$
+La fonction $f\circ g$ est calculable et totale ; soit $w$ un de ses indices. Alors $\varphi_w(w)=f(g(w))$ est défini, et
+$$\varphi_{g(w)}=\varphi_{\varphi_w(w)}=\varphi_{f(g(w))}.$$
+Il suffit de poser $n=g(w)$.</p>
+<p><strong>Lecture diagonale.</strong> Rangeons les fonctions $\varphi_{\varphi_i(j)}$ dans un tableau infini (ligne $i$, colonne $j$ ; on convient que c’est la fonction partout indéfinie si $\varphi_i(j)\ind$). La diagonale $j\mapsto\varphi_{\varphi_j(j)}=\varphi_{g(j)}$ est elle-même une ligne du tableau, celle de l’indice $d_0$ de $g$. Transformer la diagonale par $f$ donne la suite $j\mapsto\varphi_{f(g(j))}$, qui est encore une ligne, celle de l’indice $w$ de $f\circ g$. Cette ligne croise la diagonale en la colonne $w$ : à cet endroit, l’élément diagonal $\varphi_{g(w)}$ et l’élément transformé $\varphi_{f(g(w))}$ coïncident. C’est la même diagonale que dans l’argument de Cantor, mais ici elle produit un point fixe au lieu d’une contradiction, parce que la diagonale est <em>dans</em> le tableau.</p>
+</tech>
+<techno>
+<p>Le point fixe est explicite : $n=g(w)$ où $w$ est un indice de $f\circ g$. Un programme est un point fixe quand il se compose de deux parties : un <em>modèle</em> (une donnée qui décrit le programme) et un <em>interprète</em> qui reconstruit le programme à partir du modèle. C’est la structure de toutes les quines. En Python :</p>
+<pre><code>s = 's = %r\nprint(s %% s)'
+print(s % s)</code></pre>
+<p>La chaîne <code>s</code> est le modèle ; <code>print(s % s)</code> l’applique à elle-même, exactement comme $\varphi_u(u)$ dans la preuve. Le même schéma, en λ-calcul, est le combinateur de point fixe $\mathsf Y=\lambda f.(\lambda x.f(xx))(\lambda x.f(xx))$ : le terme $\lambda x.f(xx)$ est appliqué à lui-même.</p>
+<p>Une quine en JavaScript, qui affiche exactement son propre texte :</p>
+<pre><code>(function q(){console.log('('+q+')()')})()</code></pre>
+</techno>
+</res>
+
+<res type="Théorème" nom="Récursion avec paramètres et forme uniforme" id="kleene-parametres">
+<enonce>
+<p>(1) Pour toute fonction calculable $\psi(e,x)$, il existe $n$ tel que $\varphi_n(x)\simeq\psi(n,x)$ pour tout $x$.<br>
+(2) Il existe une fonction récursive primitive $h$ telle que, pour tout $z$ tel que $\varphi_z$ soit totale, $\varphi_{h(z)}=\varphi_{\varphi_z(h(z))}$.</p>
+</enonce>
+<philo><p>La forme (1) est la plus utilisée : « pour écrire le programme $n$, on peut supposer qu’on connaît déjà $n$ ». Elle justifie après coup toutes les définitions récursives : un programme peut s’appeler lui-même par son numéro.</p></philo>
+<tech>
+<p>(1) Par s-m-n, $\psi(e,x)\simeq\varphi_{s(e)}(x)$ pour une $s$ récursive primitive. Le théorème de Kleene appliqué à $s$ donne $n$ avec $\varphi_n=\varphi_{s(n)}$, d’où $\varphi_n(x)\simeq\psi(n,x)$.</p>
+<p>(2) Dans la preuve précédente, l’indice $w$ de $f\circ g$ s’obtient à partir d’un indice $z$ de $f$ par l’indice de la composée : $w=c(z,d_0)$ où $d_0$ est un indice fixe de $g$. Le point fixe $h(z)=g(c(z,d_0))$ est donc une fonction récursive primitive de $z$. </p>
+</tech>
+</res>
+
+<res type="Théorème" nom="Troisième forme : point fixe uniforme en des paramètres" id="kleene-uniforme">
+<enonce><p>Pour toute fonction calculable totale $f:\N^{k+1}\to\N$, il existe une fonction récursive primitive $n_f:\N^k\to\N$ telle que, pour tout $\vec x\in\N^k$,
+$$\varphi_{n_f(\vec x)}=\varphi_{f(n_f(\vec x),\,\vec x)}.$$</p></enonce>
+<philo>
+<p>Le théorème de Kleene donne un point fixe pour <em>une</em> transformation. Ici la transformation dépend de paramètres $\vec x$, et le point fixe se calcule à partir des paramètres, par une simple manipulation de textes. Un seul « générateur » fabrique, pour chaque valeur des paramètres, un programme qui se connaît lui-même : par exemple, pour chaque $x$, un programme qui affiche son propre texte suivi de $x$, ou un programme qui contient son numéro et la valeur de $x$ à laquelle il a été fabriqué.</p>
+<p>C’est cette uniformité qui permet d’enchaîner les points fixes : on fixe d’abord un programme en fonction d’un second encore inconnu, puis on fixe le second. C’est ainsi qu’on obtient la <a href="#double-recursion">double récursion</a>.</p>
+</philo>
+<tech>
+<p>La fonction $\Psi(u,\vec x,y)\simeq\varphi_{\varphi^{(k+1)}_u(u,\vec x)}(y)$ (indéfinie si $\varphi^{(k+1)}_u(u,\vec x)\ind$) est calculable par la fonction universelle ; soit $d$ un de ses indices. Par <a href="#smn">s-m-n</a>, la fonction $\tilde g(u,\vec x)=s^{k+1}_1(d,u,\vec x)$ est récursive primitive et vérifie
+$$\varphi_{\tilde g(u,\vec x)}(y)\simeq\Psi(u,\vec x,y),\qquad\text{donc}\qquad\varphi_{\tilde g(u,\vec x)}=\varphi_{\varphi^{(k+1)}_u(u,\vec x)}\ \text{ si }\varphi^{(k+1)}_u(u,\vec x)\conv.$$
+La fonction $(u,\vec x)\mapsto f(\tilde g(u,\vec x),\vec x)$ est calculable et totale ; soit $v$ un de ses indices (d’arité $k+1$). Alors $\varphi^{(k+1)}_v(v,\vec x)=f(\tilde g(v,\vec x),\vec x)$ est défini pour tout $\vec x$, et
+$$\varphi_{\tilde g(v,\vec x)}=\varphi_{\varphi^{(k+1)}_v(v,\vec x)}=\varphi_{f(\tilde g(v,\vec x),\,\vec x)}.$$
+On pose $n_f(\vec x)=\tilde g(v,\vec x)=s^{k+1}_1(d,v,\vec x)$ : c’est une fonction récursive primitive de $\vec x$, puisque $d$ et $v$ sont des constantes et que $s^{k+1}_1$ est récursive primitive.</p>
+<p>Pour $k=0$ on retrouve le <a href="#kleene">théorème de Kleene</a>, avec la même preuve. La forme (1) de la <a href="#kleene-parametres">récursion avec paramètres</a> est le cas particulier $f(e,x)=s(e)$ (sans paramètre) ; la forme (2) rend en outre le point fixe uniforme en un indice de $f$. Les deux uniformités se combinent : $v$ s’obtient à partir d’un indice $z$ de $f$ par une fonction récursive primitive (indice d’une composée, s-m-n), et donc $n_f(\vec x)$ est une fonction récursive primitive de $(z,\vec x)$.</p>
+
+</tech>
+<techno>
+<p>Le point fixe s’écrit explicitement : $n_f(\vec x)=s^{k+1}_1(d,v,\vec x)$. Concrètement, la machine d’indice $n_f(\vec x)$ écrit $\overline{v}\,B\,\overline{x_1}\,B\cdots B\,\overline{x_k}\,B$ devant son entrée $\overline y$, puis exécute la machine d’indice $d$, qui calcule $t=\varphi_v(v,\vec x)=f(n_f(\vec x),\vec x)$ et simule enfin la machine d’indice $t$ sur $y$. Le texte du programme, c’est-à-dire la valeur de $v$, est inscrit dans le programme lui-même ; les paramètres $\vec x$ y sont recopiés.</p>
+<p>Le même schéma en Python : la fonction <code>fabrique</code> calcule, pour chaque $x$, un programme qui affiche exactement son propre texte, et dont le texte contient $x$.</p>
+<pre><code>def fabrique(x):
+    s = 'x = %d\ns = %r\nprint(s %% (x, s))'
+    return s % (x, s)</code></pre>
+<p>Par exemple <code>fabrique(7)</code> renvoie le programme</p>
+<pre><code>x = 7
+s = 'x = %d\ns = %r\nprint(s %% (x, s))'
+print(s % (x, s))</code></pre>
+<p>qui affiche ces trois lignes. Nous l’avons vérifié en exécutant les programmes produits pour $x=0$, $7$ et $42$ : chacun affiche exactement son propre texte. La chaîne <code>s</code> joue le rôle de $v$ (le modèle), et la fonction <code>fabrique</code> celui de $n_f$ : elle ne fait que recopier, sans rien exécuter.</p>
+</techno>
+</res>
+
+<res type="Théorème" nom="Double récursion (Smullyan)" id="double-recursion">
+<enonce><p>Pour toutes fonctions calculables totales $f,g:\N^2\to\N$, il existe $a,b$ tels que $\varphi_a=\varphi_{f(a,b)}$ et $\varphi_b=\varphi_{g(a,b)}$.</p></enonce>
+<tech><p>Par la <a href="#kleene-uniforme">troisième forme</a> (avec un paramètre), on trouve d’abord, pour tout $b$, un point fixe $a(b)$ de $x\mapsto f(x,b)$, avec $a$ récursive primitive : $\varphi_{a(b)}=\varphi_{f(a(b),b)}$. On applique ensuite le théorème de Kleene à $y\mapsto g(a(y),y)$ : il existe $b$ avec $\varphi_b=\varphi_{g(a(b),b)}$, et l’on pose $a=a(b)$. </p></tech>
+<philo><p>Deux programmes peuvent se connaître mutuellement : chacun peut utiliser le texte de l’autre. C’est le principe des paires de virus qui se réinstallent l’un l’autre, ou de deux quines qui s’affichent mutuellement.</p></philo>
+</res>
+
+<!--EXERCICES-->
+<h2 id="exercices">Exercices</h2>
+
+<exo niveau="1" titre="Programmer avec s-m-n" id="ex-smn-double">
+<p>Montrer qu’il existe une fonction récursive primitive $g$ telle que $\varphi_{g(e)}(x)\simeq2\,\varphi_e(x)$ pour tous $e,x$.</p>
+<corrige>
+<p>La fonction $\psi(e,x)\simeq2\,\varphi_e(x)$ est calculable (on calcule $\varphi_e(x)$ par la <a href="universalite.html#universelle">fonction universelle</a>, puis on double). Elle a un indice $a$ : $\varphi^{(2)}_a(e,x)\simeq\psi(e,x)$. Par le <a href="#smn">théorème s-m-n</a>, $g(e)=s^1_1(a,e)$ convient : $\varphi_{g(e)}(x)\simeq\varphi^{(2)}_a(e,x)\simeq2\,\varphi_e(x)$. On peut aussi utiliser le <a href="#composee">corollaire sur les composées</a> avec un indice de $x\mapsto2x$.</p>
+</corrige>
+</exo>
+
+<exo niveau="1" titre="Deux programmes voisins équivalents" id="ex-smn-voisins">
+<p>Montrer qu’il existe $e$ tel que $\varphi_e=\varphi_{e+1}$.</p>
+<corrige>
+<p>On applique le <a href="#kleene">théorème de récursion</a> à la fonction totale calculable $f(n)=n+1$ : il existe $n$ tel que $\varphi_{f(n)}=\varphi_n$, c’est-à-dire $\varphi_{n+1}=\varphi_n$.</p>
+</corrige>
+</exo>
+
+<exo niveau="2" titre="Programmes qui parlent d’eux-mêmes" id="ex-smn-quines">
+<p>Montrer qu’il existe des indices $a$, $b$ et $c$ tels que, pour tout $x$ : $\varphi_a(x)=a$ ; $\varphi_b(x)=b+x$ ; $W_c=\{c\}$.</p>
+<corrige>
+<p>On applique chaque fois la <a href="#kleene-parametres">forme (1) du théorème de récursion</a> : pour toute fonction calculable $\psi(e,x)$, il existe $n$ tel que $\varphi_n(x)\simeq\psi(n,x)$.</p>
+<ul>
+<li>$\psi(e,x)=e$ donne $a$ avec $\varphi_a(x)=a$ : un programme qui affiche son propre indice, quelle que soit l’entrée (un <em>quine</em>).</li>
+<li>$\psi(e,x)=e+x$ donne $b$.</li>
+<li>$\psi(e,x)=0$ si $x=e$, indéfinie sinon, est calculable (on teste l’égalité, et l’on boucle si elle est fausse) ; elle donne $c$ avec $\varphi_c(x)\conv\iff x=c$, soit $W_c=\{c\}$.</li>
+</ul>
+</corrige>
+</exo>
+
+<exo niveau="3" titre="Deux programmes qui s’affichent l’un l’autre" id="ex-smn-mutuels">
+<p>Montrer qu’il existe deux indices <em>distincts</em> $a\ne b$ tels que $\varphi_a$ est la fonction constante égale à $b$, et $\varphi_b$ la fonction constante égale à $a$.</p>
+<corrige>
+<p>Soit $i\ge1$ un indice de $(n,x)\mapsto n$ (il en existe une infinité, donc un non nul : <a href="universalite.html#ex-un-indices">exercice</a>), et $k(n)=s^1_1(i,n)$ : $\varphi_{k(n)}$ est la constante $n$. Par le <a href="hierarchie-arithmetique.html#smn-injectif">lemme de bourrage</a>, on peut choisir $s^1_1$ strictement croissante en $\langle i,n\rangle$ ; une fonction strictement croissante $h$ vérifie $h(m)\ge m$, d’où $k(n)\ge\langle i,n\rangle=\frac{(i+n)(i+n+1)}2+i>n$ puisque $i\ge1$.</p>
+<p>On applique alors le théorème de récursion à $\psi(e,x)=k(e)$ : il existe $a$ tel que $\varphi_a(x)=k(a)$ pour tout $x$. Posons $b=k(a)$. Alors $\varphi_a$ est la constante $b$, $\varphi_b=\varphi_{k(a)}$ est la constante $a$, et $b>a$. La <a href="#double-recursion">double récursion de Smullyan</a> donne une autre preuve, plus symétrique.</p>
+</corrige>
+</exo>

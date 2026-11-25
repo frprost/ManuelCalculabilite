@@ -1,0 +1,20 @@
+Calculabilité — manuel à trois niveaux de lecture
+Frédéric Prost et Claude, 2026
+
+Ce dépôt est distribué sous deux licences.
+
+1. Le texte du manuel, ses figures et ses exercices (les pages *.html et
+   leurs sources _sources/pages/*.html) sont placés sous la licence
+   Creative Commons Attribution - Partage dans les mêmes conditions 4.0
+   International (CC BY-SA 4.0).
+   Résumé : https://creativecommons.org/licenses/by-sa/4.0/deed.fr
+   Texte juridique : https://creativecommons.org/licenses/by-sa/4.0/legalcode.fr
+
+2. Le code (assets/code/, assets/*.js, assets/style.css, _sources/build.py)
+   est placé sous la licence MIT, dont le texte figure dans LICENSE-CODE.
+
+3. KaTeX (assets/katex/) est un logiciel tiers, distribué sous sa propre
+   licence MIT : voir assets/katex/LICENSE.
+
+Pour réutiliser le texte, citer : « Frédéric Prost et Claude, Calculabilité —
+manuel à trois niveaux de lecture, CC BY-SA 4.0 ».

@@ -1,0 +1,205 @@
+<!--
+titre: Autres modèles de calcul
+court: Autres modèles
+chapo: Deux compteurs, des dominos, des fractions, une règle locale à deux états : l’universalité surgit dans des systèmes d’une simplicité déconcertante. Et une pile ne suffit pas.
+prerequis: equivalence.html|Équivalence des modèles ; indecidabilite.html|Indécidabilité ; langages.html|Langages et grammaires
+-->
+
+
+
+<h2>Machines à compteurs</h2>
+
+<res type="Théorème" nom="Universalité des machines à deux compteurs (Minsky, 1961)" id="compteurs">
+<enonce>
+<p>Une <strong>machine à compteurs</strong> possède un nombre fini de registres contenant des entiers naturels et un programme fait d’instructions numérotées de deux sortes : $\mathrm{INC}(r,j)$ (ajouter 1 au registre $r$, aller à l’instruction $j$) et $\mathrm{DEC}(r,j,k)$ (si $r>0$, retirer 1 et aller en $j$ ; sinon aller en $k$). Toute fonction calculable est calculable par une machine à compteurs, et même par une machine à <em>deux</em> compteurs, à condition de coder l’entrée $x$ par $2^x$ et la sortie $y$ par $2^y$.</p>
+</enonce>
+<philo><p>Deux boîtes de cailloux, et l’on ne sait qu’ajouter ou retirer un caillou et tester si une boîte est vide : cela suffit à tout calculer. La mémoire n’a pas besoin d’être structurée ; il suffit qu’elle soit non bornée.</p></philo>
+<tech>
+<p><strong>Étape 1 : un nombre quelconque de compteurs.</strong> Une machine à compteurs $M$ <em>calcule</em> $f:\N^n\rightharpoonup\N$ si, lancée sur l’instruction $1$ avec $x_1,\dots,x_n$ dans les compteurs $r_1,\dots,r_n$ et $0$ dans les autres, elle atteint l’instruction d’arrêt si et seulement si $f(\vec x)$ est défini, et alors $r_0$ contient $f(\vec x)$ (les autres compteurs contiennent n’importe quoi). On programme d’abord quelques fragments, qui s’enchaînent en remplaçant leur « fin » par l’instruction suivante :</p>
+<ul>
+<li>$\mathrm{CLR}(r)$, qui met $r$ à zéro : l’instruction $\mathrm{DEC}(r,\text{elle-même},\text{fin})$ ;</li>
+<li>$\mathrm{COPY}(r,s;t)$, qui copie $r$ dans $s$ sans détruire $r$, à l’aide d’un compteur auxiliaire $t$ : $\mathrm{CLR}(s)$, $\mathrm{CLR}(t)$, puis tant que $\mathrm{DEC}(r)$ réussit, $\mathrm{INC}(s)$ et $\mathrm{INC}(t)$ ; puis tant que $\mathrm{DEC}(t)$ réussit, $\mathrm{INC}(r)$.</li>
+</ul>
+<p>Une machine n’utilise qu’un nombre fini de compteurs ; on peut renommer ceux d’une machine $G$ pour qu’ils soient distincts de tous ceux d’un programme donné, et l’on note « lancer $G$ sur $u_1,\dots,u_p$ » le fragment qui met à zéro tous les compteurs de $G$, copie $u_1,\dots,u_p$ dans ses compteurs d’entrée, puis exécute $G$ en remplaçant son arrêt par un saut vers la suite ; il se termine si et seulement si $G$ s’arrête, et le compteur de sortie de $G$ contient alors le résultat. On montre alors, par induction sur la <a href="fonctions-recursives.html#def-mu">définition des fonctions récursives</a>, que toute fonction récursive est calculée par une machine à compteurs :</p>
+<ul>
+<li>fonctions de base : $\mathrm{CLR}(r_0)$ suivi de $m$ fois $\mathrm{INC}(r_0)$ pour la constante $m$ ; $\mathrm{COPY}(r_1,r_0;t)$ puis $\mathrm{INC}(r_0)$ pour le successeur ; $\mathrm{COPY}(r_i,r_0;t)$ pour la projection ;</li>
+<li>substitution $\sigma[g,h_1,\dots,h_k]$ : lancer successivement $H_1,\dots,H_k$ sur $\vec x$, puis $G$ sur leurs $k$ sorties, et copier la sortie de $G$ dans $r_0$. Si un $h_i(\vec x)$ n’est pas défini, $H_i$ ne s’arrête pas, et la machine non plus ;</li>
+<li>récursion $\rho[g,h]$, l’argument de récurrence étant dans $r_1$ et les autres dans $r_2,\dots$ : lancer $G$ sur $r_2,\dots$ et copier sa sortie dans un compteur $a$ ; mettre $i$ à zéro et copier $r_1$ dans $c$ ; puis tant que $\mathrm{DEC}(c)$ réussit : lancer $H$ sur $(i,a,r_2,\dots)$, copier sa sortie dans $a$, $\mathrm{INC}(i)$. À la fin, $a$ contient $f(r_1,\dots)$ par récurrence sur le nombre de tours ;</li>
+<li>minimisation $\mu[g]$ : mettre $y$ à zéro ; répéter : lancer $G$ sur $(\vec x,y)$ ; si $\mathrm{DEC}$ du compteur de sortie échoue (la valeur est $0$), copier $y$ dans $r_0$ et s’arrêter, sinon $\mathrm{INC}(y)$ et recommencer. La machine essaie $y=0,1,2,\dots$ dans l’ordre, et ne s’arrête que si toutes les valeurs $g(\vec x,z)$, $z<y$, sont définies et non nulles et $g(\vec x,y)=0$ : c’est la définition de $\mu$.</li>
+</ul>
+<p>Comme les fonctions calculables sont les fonctions récursives (<a href="equivalence.html#classe-calculable">équivalence des modèles</a>), toute fonction calculable est calculée par une machine à compteurs. Quitte à ajouter un fragment final, on suppose aussi qu’à l’arrêt, le résultat est dans $r_1$ et tous les autres compteurs sont nuls (copier $r_0$ dans $r_1$, puis vider les autres).</p>
+<p><strong>Étape 2 : deux compteurs.</strong> Soit $M$ une telle machine, à compteurs $r_1,\dots,r_k$, et $p_1=2,p_2=3,\dots,p_k$ les $k$ premiers nombres premiers. On code le contenu $(c_1,\dots,c_k)$ de ses compteurs par le seul nombre $N=p_1^{c_1}\cdots p_k^{c_k}$, rangé dans un compteur $A$, l’autre compteur $B$ valant $0$. Chaque instruction de $M$ est remplacée par un fragment qui part et arrive avec $B=0$ :</p>
+<ul>
+<li>$\mathrm{INC}(r,j)$, avec $p=p_r$ : tant que $\mathrm{DEC}(A)$ réussit, faire $p$ fois $\mathrm{INC}(B)$ ; puis tant que $\mathrm{DEC}(B)$ réussit, $\mathrm{INC}(A)$ ; aller au fragment $j$. On obtient $A=pN$, c’est-à-dire $c_r+1$.</li>
+<li>$\mathrm{DEC}(r,j,k)$, avec $p=p_r$ : on divise $A$ par $p$ avec $p$ instructions $d_1,\dots,d_p$ ; $d_i$ est $\mathrm{DEC}(A,d_{i+1},R_{i-1})$, et après le succès de $d_p$ on fait $\mathrm{INC}(B)$ et l’on retourne en $d_1$. Quand un $\mathrm{DEC}$ échoue en $d_i$, $B$ contient le quotient $\lfloor N/p\rfloor$ et l’état $R_{i-1}$ connaît le reste $\rho=i-1$. Si $\rho=0$, $p$ divise $N$, donc $c_r>0$ : on transfère $B$ dans $A$, ce qui donne $A=N/p$ ($c_r-1$), et l’on va au fragment $j$. Si $\rho>0$, alors $c_r=0$ : on refait $A=pB+\rho$ ($\rho$ fois $\mathrm{INC}(A)$, puis tant que $\mathrm{DEC}(B)$ réussit, $p$ fois $\mathrm{INC}(A)$), c’est-à-dire $A=N$, et l’on va au fragment $k$.</li>
+<li>l’arrêt reste l’arrêt.</li>
+</ul>
+<p>Chaque fragment transforme donc le code de la configuration de $M$ avant l’instruction en le code de la configuration après. La machine à deux compteurs obtenue, lancée sur $(2^x,0)$, c’est-à-dire sur le code de $(x,0,\dots,0)$, s’arrête si et seulement si $M$ s’arrête, et alors sur $(2^{f(x)},0)$. Le codage exponentiel des entrées et des sorties est indispensable : c’est le <a href="#schroeppel">théorème de Schroeppel</a> ci-dessous.</p>
+</tech>
+<techno>
+<p>Addition $r_0:=r_0+r_1$ avec deux instructions :</p>
+<pre><code>0 : DEC(r1, 1, 2)     // si r1 > 0 : r1--, aller en 1 ; sinon fin
+1 : INC(r0, 0)        // r0++, retour en 0
+2 : (arrêt)</code></pre>
+</techno>
+</res>
+
+<res type="Théorème" nom="Deux compteurs ne calculent pas 2^x (Schroeppel, 1972)" id="schroeppel">
+<enonce><p>Soit une machine à deux compteurs qui, lancée sur $(x,0)$, s’arrête pour tout $x$, avec $f(x)$ dans son premier compteur, où $f$ est injective. Alors il existe des entiers $x_0\ge0$, $L\ge1$ et $G\ge0$ tels que $f(x_0+kL)=f(x_0)+kG$ pour tout $k\ge0$. En particulier, aucune machine à deux compteurs ne calcule $x\mapsto2^x$, ni $x\mapsto x^2$, sur l’entrée $x$ codée directement.</p></enonce>
+<philo><p>Avec deux compteurs, l’un des deux est presque toujours vide quand l’autre est grand : la machine ne garde alors en mémoire qu’un seul nombre et son état. Sur des entrées assez grandes et bien choisies, tout ce qu’elle peut faire avec ce nombre est le multiplier par une fraction fixe et lui ajouter une constante ; son comportement est « affine par morceaux ». Elle ne peut pas fabriquer une croissance exponentielle à partir de $x$ ; il faut qu’on la lui donne en entrée, sous la forme $2^x$.</p></philo>
+<tech>
+<p>Les instructions sont numérotées $1,\dots,m$ et une configuration est un triplet $(i,a,b)$. Elle est <em>nulle</em> si $a=0$ ou $b=0$.</p>
+<p><strong>Lemme des phases.</strong> Pour chaque instruction $i$, il existe des entiers $T_i$ et $d_i\ge1$ tels que l’une des deux choses suivantes ait lieu pour tous les $n\ge T_i$ : (α) le calcul issu de $(i,n,0)$ n’atteint jamais, après au moins un pas, de configuration nulle ni d’arrêt ; (β) il en atteint une première, $C(n)$, d’instruction $i'$ indépendante de $n$, et il existe $(u,v)\in\N^2$ indépendants de $n$ tels que $C(n+d_i)=C(n)+(0,u,v)$, avec $u=0$ si le premier compteur de $C(n)$ est nul et $v=0$ si le second l’est. Il en va de même, symétriquement, en partant de $(i,0,n)$.</p>
+<p><em>Preuve.</em> On part de $(i,n,0)$ avec $n\ge2$. Si l’instruction $i$ est $\mathrm{INC}(a)$, $\mathrm{DEC}(a)$ ou $\mathrm{DEC}(b)$ (qui échoue), ou l’arrêt, la configuration suivante est nulle ou d’arrêt, de la forme $(i',n+c,0)$ avec $c\in\{-1,0,1\}$ : (β) vaut avec $d_i=1$ et $(u,v)=(1,0)$. Reste le cas $\mathrm{INC}(b)$, qui mène à $(j,n,1)$. Tant que les deux compteurs restent positifs, chaque $\mathrm{DEC}$ réussit : la suite des instructions $j=j_0,j_1,j_2,\dots$ ne dépend que de $j$, et après $s$ pas les compteurs valent $n+A(s)$ et $1+B(s)$, où $A(s)$ et $B(s)$ ne dépendent pas de $n$ et vérifient $|A(s)|\le s$. Si cette suite atteint l’arrêt, notons $s_h$ le pas où cela se produit ; si $1+B(s)$ s’annule, notons $s_b$ le premier pas où cela se produit. Ces nombres ne dépendent pas de $n$.</p>
+<ul>
+<li>Si $s_h$ ou $s_b$ existe, soit $s^*$ le plus petit des deux. Pour $n>s^*$, le compteur $a$ ne s’est pas annulé avant $s^*$, donc $C(n)$ est la configuration au pas $s^*$, $(j_{s^*},n+A(s^*),1+B(s^*))$ : (β) avec $d_i=1$, $(u,v)=(1,0)$.</li>
+<li>Sinon, la suite $(j_s)$ est infinie et, n’ayant que $m$ valeurs possibles, elle est ultimement périodique : il existe $p$ et $\ell\ge1$ tels que $j_{s+\ell}=j_s$ pour $s\ge p$. Les variations des compteurs sur une période sont donc constantes : $A(s+\ell)=A(s)+A_c$ et $B(s+\ell)=B(s)+B_c$ pour $s\ge p$. Comme $1+B(s)$ ne s’annule jamais, $B_c\ge0$. Si $A_c\ge0$, alors $A(s)\ge-(p+\ell)$ pour tout $s$, et pour $n>p+\ell$ le compteur $a$ ne s’annule jamais non plus : c’est (α). Si $A_c<0$, posons $d_i=-A_c$, et prenons $n>p+\ell$ ; soit $h(n)$ le premier pas où $n+A(s)=0$ (il existe, car $A(s)\to-\infty$), de sorte que $h(n)\ge p+\ell$. Pour $n'=n+d_i$ : aux pas $s<p+\ell$, $n'+A(s)\ge n'-(p+\ell)>0$ ; aux pas $s+\ell$ avec $s\ge p$, $n'+A(s+\ell)=n+A(s)$. Le premier zéro de $a$ pour $n'$ est donc au pas $h(n)+\ell$, avec la même instruction $j_{h(n)+\ell}=j_{h(n)}$, et $b$ y vaut $1+B(h(n))+B_c$. C’est (β) avec $(u,v)=(0,B_c)$.</li>
+</ul>
+<p>On prend $T_i$ plus grand que $2$, $s^*$ et $p+\ell$. Par récurrence, $C(n+t\,d_i)=C(n)+t\,(0,u,v)$ pour tout $t\ge0$. $\square$</p>
+<p><strong>Preuve du théorème.</strong> Soit $D$ un multiple commun de tous les $d_i$ (pour les deux côtés) et $T$ le plus grand des $T_i$. Appelons <em>petite</em> une configuration nulle dont les deux compteurs sont $<T$ ; il y en a un nombre fini. Si le calcul issu de $(1,x,0)$ passe par une petite configuration, la suite du calcul, donc $f(x)$, est déterminée par cette configuration : ces $x$ n’ont qu’un nombre fini de valeurs $f(x)$, et comme $f$ est injective, ils sont en nombre fini. Choisissons $x_0\ge T$ dont le calcul ne passe par aucune petite configuration. Ce calcul s’arrête ; notons $C_0=(1,x_0,0)$, puis $C_1,\dots,C_N$ ses configurations nulles successives, et $C_{N+1}$ sa configuration d’arrêt. Chaque $C_j$, $j\le N$, a un compteur nul et l’autre, noté $n_j$, au moins égal à $T$ ; et $C_{j+1}$ est la première configuration nulle ou d’arrêt qui suit $C_j$.</p>
+<p>Posons $L=D^{N+2}$ et $x_k=x_0+kL$. Montrons par récurrence sur $j\le N+1$ que la $j$-ième configuration nulle (ou d’arrêt) du calcul issu de $x_k$ est $C_j+k\,g_j\,e_j$, où $e_j$ est un vecteur fixe à coordonnées entières positives, nul sur le compteur nul de $C_j$, et où $g_j$ est un entier divisible par $D^{N+2-j}$. Pour $j=0$, $g_0=L$ et $e_0=(0,1,0)$. Si c’est vrai pour $j\le N$, la valeur non nulle $n_j+kg_j$ est $\ge T$, et $kg_j$ est un multiple de $d_{i_j}$ ; le lemme des phases, appliqué $kg_j/d_{i_j}$ fois, donne la configuration suivante $C_{j+1}+k\,(g_j/d_{i_j})\,(0,u,v)$, et $g_j/d_{i_j}$ est divisible par $D^{N+1-j}$. Pour $j=N+1$, on obtient que le calcul issu de $x_k$ s’arrête, avec un premier compteur égal à $f(x_0)+kG$, où $G\ge0$ ne dépend pas de $k$.</p>
+<p>Pour $f(x)=2^x$, on aurait $2^{x_0+2L}-2^{x_0}=2\,(2^{x_0+L}-2^{x_0})$, soit $(2^L-1)^2=0$, impossible pour $L\ge1$. Pour $f(x)=x^2$, on aurait $4x_0L+4L^2=4x_0L+2L^2$, impossible aussi. Schroeppel a donné le premier résultat de ce type en 1972 ; la preuve ci-dessus montre plus généralement que la suite $k\mapsto f(x_0+kL)$ est affine.</p>
+</tech>
+</res>
+
+<h2>Automates à pile</h2>
+
+<res type="Proposition" nom="Une pile ne suffit pas, deux piles suffisent" id="piles">
+<enonce><p>Les automates à une pile (automate fini muni d’une pile) reconnaissent exactement les langages algébriques (hors contexte) ; ils ne sont pas universels : par exemple le langage $\{a^nb^nc^n:n\ge0\}$, évidemment décidable, n’est reconnu par aucun automate à pile. En revanche, un automate fini muni de <em>deux</em> piles simule une machine de Turing.</p></enonce>
+<philo><p>Une pile est une mémoire dont on ne voit que le sommet : on peut s’en servir pour vérifier des parenthèses, pas pour comparer trois quantités. Deux piles dos à dos forment une bande de Turing : la tête est entre les deux sommets. La frontière de l’universalité passe entre « une » et « deux ».</p></philo>
+<tech><p>Simulation d’une bande par deux piles : la pile gauche contient les cases à gauche de la tête (sommet = case voisine), la pile droite la case lue et les suivantes. Un déplacement à droite dépile à droite et empile à gauche. Les automates à une pile acceptent exactement les langages hors-contexte (<a href="langages.html#automates-pile">démonstration</a>), et le <a href="langages.html#lemme-etoile">lemme de l’étoile</a> montre que $a^nb^nc^n$ n’est pas hors-contexte. Les problèmes sur les automates à pile restent partiellement décidables (le vide d’un langage hors-contexte est <a href="langages.html#decidables-grammaires">décidable</a>), mais l’<em>équivalence</em> de deux automates à pile non déterministes, ou l’universalité d’une grammaire, sont <a href="langages.html#indecidables-2">indécidables</a> (on passe des grammaires aux automates et inversement de façon effective).</p></tech>
+</res>
+
+<h2>Problème de correspondance de Post</h2>
+
+<res type="Théorème" nom="Indécidabilité du problème de correspondance de Post (1946)" id="pcp">
+<enonce>
+<p>Une <strong>instance</strong> est une liste finie de dominos $\frac{u_1}{v_1},\dots,\frac{u_k}{v_k}$, où les $u_i,v_i$ sont des mots. Une <strong>solution</strong> est une suite non vide d’indices $i_1,\dots,i_m$ (avec répétitions permises) telle que $u_{i_1}\cdots u_{i_m}=v_{i_1}\cdots v_{i_m}$. Il n’existe pas d’algorithme qui décide si une instance a une solution.</p>
+</enonce>
+<philo><p>Un jeu de dominos qu’un enfant comprend, et aucun programme ne peut dire en général s’il a une solution. Le problème de Post est l’outil favori pour montrer l’indécidabilité de questions sur les grammaires et les langages, parce qu’il ne parle que de mots. Il sert aussi à montrer l’indécidabilité de questions sur les <a href="mathematiques-indecidables.html#matrices-post">produits de matrices</a>.</p></philo>
+<tech><p>La preuve complète est donnée au chapitre <a href="langages.html#post-langages">Langages et grammaires</a> : on réduit le problème du mot d’un système semi-thuéen, lui-même indécidable par une réduction de l’arrêt, au problème de Post modifié (dont la solution doit commencer par un domino imposé), puis celui-ci au problème de Post. Les dominos sont conçus pour que la seule manière d’égaliser le haut et le bas soit d’écrire, en haut, la suite des mots d’une dérivation, le bas ayant toujours un mot d’avance ; le rattrapage n’est possible que si la dérivation atteint le mot cherché. Le problème est semi-décidable (on essaie toutes les suites par longueur croissante), donc $\Sigma_1$-complet. Il est décidable pour deux dominos, indécidable à partir de cinq (Neary, 2015).</p></tech>
+<techno>
+<p>Exemple : dominos $\frac{a}{baa}$, $\frac{ab}{aa}$, $\frac{bba}{bb}$. La suite $3,2,3,1$ donne en haut $bba\cdot ab\cdot bba\cdot a=bbaabbbaa$ et en bas $bb\cdot aa\cdot bb\cdot baa=bbaabbbaa$ : c’est une solution.</p>
+</techno>
+</res>
+
+<h2 id="diophantiennes">Équations diophantiennes</h2>
+
+<p>Les équations polynomiales à coefficients entiers forment elles aussi un modèle de calcul universel : un ensemble est semi-décidable si et seulement s’il est l’ensemble des paramètres pour lesquels une équation a une solution entière. Ce résultat, le théorème de Matiyasevich-Robinson-Davis-Putnam, et ses conséquences en arithmétique ont leur propre chapitre : <a href="equations-diophantiennes.html">Équations diophantiennes</a>.</p>
+
+<h2>Systèmes multiplicatifs : FRACTRAN</h2>
+
+<res type="Théorème" nom="Universalité de FRACTRAN (Conway, 1987)" id="fractran">
+<enonce><p>Un programme FRACTRAN est une liste finie de fractions $f_1,\dots,f_k$. À partir d’un entier $n$, on cherche la première fraction $f_i$ telle que $n f_i$ soit entier, on remplace $n$ par $nf_i$, et l’on recommence ; on s’arrête si aucune ne convient. Ce modèle est universel : pour toute fonction calculable $f$, il existe un programme et un nombre premier $q$ tels que, partant de $q\,2^x$, le programme s’arrête si et seulement si $f(x)$ est défini, et alors sur $3^{f(x)}$.</p></enonce>
+<philo><p>Un programme est une liste de fractions ; calculer, c’est multiplier. Le langage le plus étrange et le plus économe qui soit, et pourtant il calcule tout ce qui est calculable. John Conway a même écrit un programme de quatorze fractions (PRIMEGAME) qui engendre les nombres premiers. Un programme FRACTRAN est aussi une fonction de Collatz généralisée, ce qui rend ces itérations <a href="mathematiques-indecidables.html#collatz-generalise">indécidables</a>.</p></philo>
+<tech>
+<p>Soit $f$ une fonction calculable et $M$ une machine à compteurs qui la calcule au sens de l’étape 1 du <a href="#compteurs">théorème de Minsky</a> (entrée dans $r_1$ ; à l’arrêt, résultat dans $r_0$ et autres compteurs nuls, quitte à les vider). On suppose aussi qu’aucune instruction ne saute vers elle-même : on remplace au besoin une telle instruction $i$ par un passage par deux instructions nouvelles, $\mathrm{INC}(t,i^*)$ et $i^*:\mathrm{DEC}(t,i,i)$, sur un compteur $t$ inutilisé.</p>
+<p>On associe un nombre premier $p_r$ à chaque compteur $r_r$, avec $p_1=2$ et $p_0=3$ (ici l’indice est celui du compteur, et non le rang du nombre premier), et un nombre premier $q_i$ à chaque instruction, tous distincts. La configuration « instruction $i$, compteurs $c_r$ » est codée par $n=q_i\prod_rp_r^{c_r}$. Le programme FRACTRAN contient, pour chaque instruction $i$ :</p>
+<ul>
+<li>si $i$ est $\mathrm{INC}(r,j)$ : la fraction $\dfrac{q_jp_r}{q_i}$ ;</li>
+<li>si $i$ est $\mathrm{DEC}(r,j,k)$ : la fraction $\dfrac{q_j}{q_ip_r}$, puis, plus loin dans la liste, $\dfrac{q_k}{q_i}$ ;</li>
+<li>si $i$ est l’arrêt : la fraction $\dfrac1{q_i}$.</li>
+</ul>
+<p>Comme $j,k\ne i$, ces fractions sont irréductibles, et $nf$ est entier si et seulement si le dénominateur de $f$ divise $n$. Si $n$ code une configuration d’instruction $i$, seul $q_i$ parmi les $q$ divise $n$, donc seules les fractions de l’instruction $i$ s’appliquent : pour $\mathrm{INC}$, $n$ devient le code de la configuration suivante ; pour $\mathrm{DEC}$, la première fraction s’applique si et seulement si $p_r$ divise $n$, c’est-à-dire $c_r>0$, et donne $q_j\cdot n/(q_ip_r)$ ; sinon la seconde donne $q_k\cdot n/q_i$. À l’arrêt, $n$ devient $\prod_rp_r^{c_r}=3^{f(x)}$, qu’aucune fraction ne peut plus multiplier (chaque dénominateur contient un $q$). Ainsi, partant de $q_1\,2^x$, le programme s’arrête si et seulement si $f(x)$ est défini, et alors sur $3^{f(x)}$.</p>
+<p>Réciproquement, une fonction calculée de cette façon par un programme FRACTRAN est calculable, puisque chaque pas est un calcul arithmétique élémentaire.</p>
+</tech>
+<techno><p>Le programme à une fraction $\left(\frac{3}{2}\right)$ calcule l’addition : partant de $2^a3^b$, il s’arrête sur $3^{a+b}$.</p></techno>
+</res>
+
+<h2 id="automates-cellulaires">Automates cellulaires</h2>
+
+<res type="Définition" nom="Automates cellulaires, automates élémentaires" id="def-automate-cellulaire">
+<enonce>
+<p>Un <strong>automate cellulaire</strong> à une dimension est donné par un ensemble fini d’états $Q$, un rayon $r\ge1$ et une <strong>règle locale</strong> $f:Q^{2r+1}\to Q$. Une configuration est une suite $c\in Q^{\mathbb Z}$ (une ligne infinie de cellules) ; en un pas, toutes les cellules changent en même temps, selon $c'_i=f(c_{i-r},\dots,c_{i+r})$. Les <strong>automates élémentaires</strong> sont ceux de rayon $1$ sur $Q=\{0,1\}$. Leur règle est donnée par les huit valeurs $f(1,1,1),f(1,1,0),\dots,f(0,0,0)$, que l’on lit comme l’écriture binaire d’un entier entre $0$ et $255$, le <em>numéro de Wolfram</em> de la règle. Ainsi la <strong>règle 110</strong>, $110=01101110$ en binaire, est :</p>
+$$\begin{array}{cccccccc}111&110&101&100&011&010&001&000\\\downarrow&\downarrow&\downarrow&\downarrow&\downarrow&\downarrow&\downarrow&\downarrow\\0&1&1&0&1&1&1&0\end{array}$$
+</enonce>
+<philo><p>C’est le modèle de calcul le plus « physique » de ce chapitre : pas de tête de lecture, pas de programme central, seulement une règle locale appliquée partout à la fois, comme les lois de la physique. Von Neumann et Ulam l’ont inventé vers 1950 pour étudier des machines capables de se reproduire. L’histoire d’une configuration se dessine ligne par ligne, le temps vers le bas : c’est un <em>diagramme espace-temps</em>, exactement celui qui sert pour les <a href="mathematiques-indecidables.html#pavage-origine">pavages</a>, pour le <a href="complexite.html#cook-levin">théorème de Cook et Levin</a> et pour le <a href="logique-types.html#binaire">problème de la décision</a>.</p></philo>
+<techno>
+<div class="ac-widget" data-regle="110" data-depart="droite" data-titre="Diagramme espace-temps d’un automate élémentaire"></div>
+<p>Le simulateur ci-dessus dessine $100$ pas sur une ligne de $160$ cellules refermée en anneau. Quelques règles à essayer : $110$ (des structures localisées qui se déplacent et interagissent), $90$ (le triangle de Sierpinski, voir l’<a href="#ex-am-regle90">exercice</a>), $30$ (un comportement d’apparence aléatoire), $184$ (un modèle de circulation automobile), $240$ (un simple décalage).</p>
+</techno>
+</res>
+
+<res type="Théorème" nom="Un automate cellulaire simule une machine de Turing en temps réel" id="ac-simule-mt">
+<enonce><p>Pour toute machine de Turing $Z$, il existe un automate cellulaire de rayon $1$ dont chaque pas réalise un pas de $Z$. Par conséquent, la question « partant de cette configuration finie (entourée de cellules blanches), l’automate fera-t-il apparaître tel état ? » est indécidable pour certains automates. Inversement, l’évolution d’un automate cellulaire à partir d’une configuration finie se calcule par une machine de Turing.</p></enonce>
+<philo><p>Les deux modèles se simulent mutuellement : un automate cellulaire n’est rien d’autre qu’une machine de Turing où chaque case serait son propre processeur. Il ne calcule pas plus de fonctions, mais il peut aller plus vite pour certaines tâches, puisque toutes les cellules travaillent en parallèle. La simulation ci-dessous est l’analogue exact, pour une règle locale qui se répète dans le temps, du jeu de tuiles de Wang qui sert à démontrer l’indécidabilité du <a href="mathematiques-indecidables.html#pavage-origine">pavage avec tuile d’origine</a>.</p></philo>
+<tech><p>Prenons pour états de l’automate les symboles $s$ de $Z$ et les couples $(q,s)$ (« la tête, dans l’état $q$, est sur cette case, qui contient $s$ »). La configuration initiale porte $(q_0,\text{blanc})$ en une case et des blancs ailleurs. La règle locale $f(g,c,d)$ est la suivante. Si $c=(q,s)$ et que $Z$ a la transition « écrire $s'$, aller dans l’état $q'$, se déplacer », alors la nouvelle valeur est $s'$ (la tête s’en va) ; si $q$ est un état d’arrêt, la case garde la valeur $(q,s)$. Si $c=s$ est un symbole et que le voisin de gauche $g=(q,t)$ porte une transition vers la droite d’état d’arrivée $q'$, la nouvelle valeur est $(q',s)$ (la tête arrive) ; de même avec le voisin de droite pour une transition vers la gauche. Sinon, $c$ ne change pas. Comme il n’y a qu’une tête, ces cas ne se recouvrent pas, et la configuration au temps $t$ est exactement celle de $Z$ après $t$ pas. L’état $(q_{\text{arrêt}},s)$ apparaît si et seulement si $Z$ s’arrête : on conclut par l’<a href="indecidabilite.html#arret">indécidabilité de l’arrêt</a>. Pour la réciproque, une configuration finie reste finie (elle grandit d’au plus $r$ cases de chaque côté à chaque pas), et l’on applique la règle cellule par cellule.</p></tech>
+<techno><p>Le programme <a href="assets/code/automates.py">automates.py</a> construit cette règle locale pour une machine de Radó à 3 états, et vérifie que l’automate et la machine ont la même configuration après chacun des 20 premiers pas ; la machine s’arrête au pas 14 avec six symboles $1$, la valeur de <a href="castors-affaires.html#valeurs-bb">Σ(3)</a>.</p></techno>
+</res>
+
+<res type="Théorème" nom="La règle 110 est universelle (Cook, 2004)" id="regle-110">
+<enonce><p>L’automate élémentaire 110 est universel : pour toute machine de Turing et toute entrée, il existe une configuration de la règle 110, formée d’un motif fini placé sur un fond périodique, dont l’évolution simule le calcul de la machine. (Résultat cité pour information, conjecturé par Wolfram en 1985 et démontré par Matthew Cook, dont la démonstration a été publiée en 2004.)</p></enonce>
+<philo>
+<p>Deux états, trois voisins, huit cas : il est difficile d’imaginer une règle plus simple, et elle calcule pourtant tout ce qui est calculable. La règle 110 rejoint la liste des systèmes universels presque sans structure : les <a href="#compteurs">machines à deux compteurs</a>, <a href="#fractran">FRACTRAN</a>, les équations diophantiennes, le <a href="mathematiques-indecidables.html#groupes-topologie">Jeu de la vie</a>. Comme pour eux, l’universalité entraîne l’indécidabilité de questions simples sur l’évolution de la règle à partir d’une configuration donnée.</p>
+<p>La démonstration ne passe pas directement par les machines de Turing. Dans le diagramme de la règle 110, des structures localisées, des « vaisseaux », se déplacent à différentes vitesses sur un fond périodique et se heurtent. Cook a montré qu’en disposant convenablement ces vaisseaux, leurs collisions simulent un <em>système de tag cyclique</em>, variante des <a href="langages.html#systemes-normaux">systèmes de Post</a>, qui est lui-même universel.</p>
+</philo>
+<tech><p>Deux précisions, citées pour information. D’abord, la configuration initiale n’est pas finie au sens du <a href="#ac-simule-mt">théorème précédent</a> : il faut un fond périodique infini, et même une répétition périodique d’un motif à droite et d’un autre à gauche ; c’est une configuration calculable, mais pas une configuration à support fini. Ensuite, la simulation de Cook était exponentiellement lente ; Neary et Woods (2006) l’ont rendue polynomiale, ce qui montre que prédire l’évolution de la règle 110 est un problème $\mathsf P$-complet. La règle 110 a aussi servi à construire de très petites machines de Turing universelles.</p></tech>
+</res>
+
+<res type="Remarque" nom="La classification de Wolfram et l’indécidabilité dans les automates" id="classification-wolfram">
+<enonce>
+<p>Résultats cités pour information.</p>
+<ul>
+<li><strong>Classification de Wolfram (1984).</strong> Wolfram a classé, d’après leur comportement observé à partir de configurations aléatoires, les automates en quatre classes : (I) évolution vers une configuration homogène ; (II) structures stables ou périodiques ; (III) comportement chaotique, d’apparence aléatoire (règle 30) ; (IV) structures localisées complexes qui interagissent (règle 110, Jeu de la vie). Il a conjecturé que les automates de classe IV sont capables de calcul universel. Cette classification est empirique : formalisée, l’appartenance d’un automate à une classe est indécidable (Culik et Yu, 1988). Voir les références de Wolfram et de Culik et Yu dans la <a href="bibliographie.html#automates-cellulaires-biblio">bibliographie</a>.</li>
+<li><strong>Propriétés globales.</strong> Savoir si un automate à une dimension est réversible (sa fonction globale est bijective) est décidable (Amoroso et Patt, 1972), mais c’est indécidable en dimension 2 (Kari, 1990). Savoir si toute configuration finit par devenir uniforme (nilpotence) est indécidable dès la dimension 1 (Kari, 1992).</li>
+<li><strong>Jardins d’Éden.</strong> Une configuration est un <em>jardin d’Éden</em> si elle n’a pas d’antécédent : on ne peut l’obtenir qu’au départ. Par le théorème de Moore et Myhill (1962–1963), un automate a des jardins d’Éden si et seulement s’il existe deux configurations distinctes, ne différant que sur un nombre fini de cellules, qui ont la même image. Le Jeu de la vie a des jardins d’Éden. Leur existence est décidable en dimension 1 et indécidable en dimension 2 (Kari).</li>
+</ul>
+</enonce>
+<philo><p>La frontière entre dimension 1 et dimension 2 rappelle celle de la <a href="logique-types.html#binaire">logique</a> entre relations unaires et binaires, et celle des pavages : une ligne se laisse analyser par des automates finis, un plan peut contenir un diagramme espace-temps, donc un calcul. Pour les questions sur le comportement à partir d’une configuration donnée, au contraire, une dimension suffit déjà à l’indécidabilité, puisque le temps fournit la deuxième.</p></philo>
+</res>
+
+<!--EXERCICES-->
+<h2 id="exercices">Exercices</h2>
+
+<exo niveau="1" titre="Additionner avec des compteurs" id="ex-am-addition">
+<p>Écrire un programme de <a href="#compteurs">machine à compteurs</a> qui ajoute le contenu du registre 2 au registre 1 (et vide le registre 2).</p>
+<corrige>
+<p>Instruction 0 : $\mathrm{DEC}(2,1,2)$ ; instruction 1 : $\mathrm{INC}(1,0)$. Il n’y a pas d’instruction 2 : y aller arrête la machine. Tant que le registre 2 est non nul, on le décrémente et l’on incrémente le registre 1 ; quand il est vide, $\mathrm{DEC}$ envoie à l’instruction 2 et la machine s’arrête avec $r_1+r_2$ dans le registre 1. Le programme fait $2r_2+1$ pas.</p>
+</corrige>
+</exo>
+
+<exo niveau="2" titre="Multiplier avec des compteurs" id="ex-am-multiplication">
+<p>Écrire un programme qui place $r_1\times r_2$ dans le registre 3, en partant de $r_3=r_4=0$. On pourra utiliser le registre 4 comme mémoire auxiliaire pour restaurer $r_2$.</p>
+<corrige>
+$$\begin{aligned}
+&0:\ \mathrm{DEC}(1,1,9) &&1:\ \mathrm{DEC}(2,2,4) &&2:\ \mathrm{INC}(3,3)\\
+&3:\ \mathrm{INC}(4,1) &&4:\ \mathrm{DEC}(4,5,0) &&5:\ \mathrm{INC}(2,4)
+\end{aligned}$$
+<p>À chaque unité retirée de $r_1$ (instruction 0), la boucle 1-2-3 transfère $r_2$ dans $r_4$ en ajoutant autant à $r_3$ ; puis la boucle 4-5 remet $r_4$ dans $r_2$ et revient en 0. Quand $r_1$ est vide, l’instruction 0 envoie en 9, qui n’existe pas : arrêt, avec $r_3=r_1r_2$ et $r_2$ intact. Une simulation sur $r_1,r_2\in\{0,\dots,3\}$ le confirme. Le nombre de pas est de l’ordre de $4r_1r_2$ : les machines à compteurs calculent tout, mais lentement, car elles ne connaissent que l’unaire.</p>
+</corrige>
+</exo>
+
+<exo niveau="3" titre="Un programme FRACTRAN pour la multiplication" id="ex-am-fractran">
+<p>Montrer que le programme FRACTRAN $\frac{455}{33},\frac{11}{13},\frac1{11},\frac37,\frac{11}2,\frac13$, lancé sur $2^a3^b$, s’arrête sur $5^{ab}$.</p>
+<corrige>
+<p>On lit un entier $2^{r_2}3^{r_3}5^{r_5}7^{r_7}11^{r_{11}}13^{r_{13}}$ comme l’état de registres, les petits premiers $7$, $11$, $13$ jouant le rôle d’états de contrôle. Multiplier par $\frac{455}{33}=\frac{5\cdot7\cdot13}{3\cdot11}$ demande $r_3\ge1$ et $r_{11}\ge1$ : cela retire 1 à $r_3$, ajoute 1 à $r_5$ et $r_7$, et passe de l’état 11 à l’état 13. Puis $\frac{11}{13}$ revient à l’état 11. Tant que $r_{11}=1$ et $r_3>0$, ces deux fractions alternent : elles transfèrent $r_3$ vers $r_5$ (le produit) et vers $r_7$ (une copie). Quand $r_3=0$, $\frac1{11}$ quitte l’état 11 ; alors $\frac37$ (première fraction applicable) recopie $r_7$ dans $r_3$. Quand $r_7=0$, $\frac{11}2$ retire 1 à $r_2$ et relance l’état 11. Ainsi chaque unité de $r_2=a$ ajoute $r_3=b$ à $r_5$. Quand $r_2=0$, seule $\frac13$ s’applique encore et vide $r_3$. Il reste $5^{ab}$. La simulation sur $a,b\le3$ donne bien $5^{ab}$. L’ordre des fractions est essentiel : c’est lui qui code les tests.</p>
+</corrige>
+</exo>
+
+<exo niveau="1" titre="Faire tourner la règle 110 à la main" id="ex-am-regle110">
+<p>Partant d’une seule cellule noire ($\cdots000\,1\,000\cdots$), calculer les trois lignes suivantes de la <a href="#def-automate-cellulaire">règle 110</a>. Dans quelle direction le motif grandit-il ?</p>
+<corrige>
+<p>Seules les cellules dont le voisinage contient le $1$ peuvent changer. La cellule à gauche du $1$ voit $001\mapsto1$, la cellule du $1$ voit $010\mapsto1$, celle de droite voit $100\mapsto0$. Ligne 1 : $11$ (la cellule initiale et sa voisine de gauche). Ligne 2 : $111$. Ligne 3 : $1101$. Le motif grandit vers la gauche, d’une cellule par pas, et reste bordé à droite par la cellule de départ ; le simulateur du texte, lancé avec « une cellule à droite », montre la suite. Le programme <a href="assets/code/automates.py">automates.py</a> imprime les huit premières lignes.</p>
+</corrige>
+</exo>
+
+<exo niveau="1" titre="Numéros de Wolfram" id="ex-am-numeros">
+<p>Quel est le numéro de Wolfram de la règle « chaque cellule prend la valeur de sa voisine de gauche » ? Et de la règle « chaque cellule prend la valeur du ou exclusif de ses deux voisines » ? Combien y a-t-il d’automates élémentaires ?</p>
+<corrige>
+<p>Pour la première, la nouvelle valeur est le premier bit du voisinage : $111,110,101,100\mapsto1$, les autres $\mapsto0$, soit $11110000$ en binaire, $240$. Le motif se décale d’une case vers la droite à chaque pas. Pour la seconde, $f(g,c,d)=g\oplus d$ vaut $1$ pour $110,100,011,001$ : $01011010$, soit $90$. Il y a $2^8=256$ automates élémentaires, un par fonction de $\{0,1\}^3$ dans $\{0,1\}$.</p>
+</corrige>
+</exo>
+
+<exo niveau="2" titre="La règle 90 et le triangle de Pascal" id="ex-am-regle90">
+<p>Montrer que, partant d’une seule cellule noire en position $0$, la cellule $j$ vaut au temps $t$ le coefficient binomial $\binom{t}{(t+j)/2}$ modulo $2$ si $t+j$ est pair et $|j|\le t$, et $0$ sinon. Quelle figure obtient-on ?</p>
+<corrige>
+<p>Par récurrence sur $t$. Au temps $0$, seule la cellule $0$ vaut $1=\binom00$. Supposons la formule vraie au temps $t$ ; la règle 90 donne $c_{t+1}(j)=c_t(j-1)\oplus c_t(j+1)$. Si $t+1+j$ est impair, $t+(j-1)$ et $t+(j+1)$ le sont aussi, les deux termes sont nuls, et $c_{t+1}(j)=0$. Sinon, posons $k=(t+1+j)/2$ : alors $c_t(j-1)\equiv\binom t{k-1}$ et $c_t(j+1)\equiv\binom tk$ modulo $2$ (avec la convention $\binom tk=0$ hors de $0\le k\le t$), et le ou exclusif est la somme modulo $2$. La formule de Pascal $\binom t{k-1}+\binom tk=\binom{t+1}k$ donne le résultat. On obtient le triangle de Pascal modulo $2$, c’est-à-dire le triangle de Sierpinski, une figure fractale. Le programme <a href="assets/code/automates.py">automates.py</a> le vérifie sur 32 lignes.</p>
+</corrige>
+</exo>
+
+<exo niveau="3" titre="Savoir si une configuration s’éteint" id="ex-am-extinction">
+<p>Montrer qu’il n’existe pas d’algorithme qui, étant donné un automate cellulaire à une dimension ayant un état « blanc » $b$ (avec $f(b,b,b)=b$) et une configuration finie, décide si la configuration finit par devenir entièrement blanche. On pourra modifier la construction du <a href="#ac-simule-mt">théorème de simulation</a>.</p>
+<corrige>
+<p>Partons de l’automate qui simule une machine $Z$ à partir de la bande blanche, et modifions-le en trois points. (1) Les cases que la tête a déjà visitées sont <em>marquées</em> (on double les états : $s$ et $\bar s$) ; la région marquée est un intervalle, puisque la tête se déplace d’une case à la fois, et elle contient toutes les cases non blanches. Le « blanc » de l’automate est le blanc non marqué $b$. (2) Une case $(q_{\text{arrêt}},s)$ devient un état $\varepsilon$, qui émet deux signaux d’effacement $\varepsilon_G$ et $\varepsilon_D$ dans ses deux voisines si elles sont marquées, puis devient $b$. (3) Un signal $\varepsilon_D$ devient $b$ au pas suivant et se transmet à sa voisine de droite si celle-ci est marquée ; de même pour $\varepsilon_G$ vers la gauche. Les signaux parcourent l’intervalle marqué en laissant du blanc derrière eux et disparaissent à ses bords. Tant que $Z$ ne s’est pas arrêtée, la configuration contient la tête, donc n’est pas blanche ; si $Z$ s’arrête, tout devient blanc en un nombre fini de pas. La configuration s’éteint donc si et seulement si $Z$ s’arrête sur la bande blanche, ce qui est indécidable. Résultat cité pour information : la question plus forte « <em>toute</em> configuration finit-elle par devenir blanche ? » (la nilpotence) est elle aussi indécidable (Kari, 1992), mais sa démonstration est beaucoup plus difficile, car il faut contrôler toutes les configurations, y compris celles qui ne codent aucun calcul.</p>
+</corrige>
+</exo>

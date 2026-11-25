@@ -1,0 +1,110 @@
+<!--
+titre: Fonctions universelles et énumération
+court: Universalité
+chapo: Une seule machine peut simuler toutes les autres, pourvu qu’on lui donne leur description. C’est la version mathématique de l’ordinateur.
+prerequis: equivalence.html#forme-normale|Forme normale de Kleene
+-->
+
+<h2>L’idée de fonction universelle</h2>
+
+<p>On distingue trois formes d’universalité. L’universalité <em>externe</em> : changer raisonnablement le modèle de machine ne change pas ce qu’il calcule (voir <a href="machines-turing.html#variantes">Variantes du modèle</a>). L’universalité <em>interne</em>, objet de ce chapitre : une seule machine peut simuler toutes les autres, si on lui donne leur description. L’universalité <em>en termes de modèles de calcul</em> : tous les modèles raisonnables calculent les mêmes fonctions (<a href="these-church.html">thèse de Church-Turing</a>).</p>
+
+<p>Il n’est pas exagéré de dire que l’ordinateur est né de cette idée. Avant elle, toutes les machines à calculer, des bouliers à la machine à différences de Charles Babbage (1822), demandaient une modification physique pour changer la fonction calculée. Babbage avait conçu, avec sa <em>machine analytique</em> (à partir de 1834), une machine pilotée par des cartes perforées, empruntées aux métiers à tisser de Jacquard ; Ada Lovelace en écrivit en 1843 le premier programme publié, pour calculer les nombres de Bernoulli. La machine ne fut jamais achevée. Là encore, c’est la comparaison de deux machines différentes, un métier à tisser et une machine à calculer, qui fit naître l’idée.</p>
+
+<p>En calculabilité, la notion apparaît naturellement dans la preuve de la <a href="equivalence.html#forme-normale">forme normale</a> : pour montrer qu’une fonction Turing-calculable est récursive, on code la machine par un entier $z$, et la formule obtenue ne dépend de la machine qu’à travers $z$. En faisant de $z$ un argument, on obtient une fonction qui simule toutes les machines.</p>
+
+<res type="Définition" nom="Fonction universelle pour une classe" id="def-universelle">
+<enonce>
+<p>Soit $\mathcal C$ une classe de fonctions de $\N$ dans $\N$. Une fonction $u:\N^2\to\N$ est <strong>universelle</strong> pour $\mathcal C$ si :</p>
+<ol>
+<li>pour toute $g\in\mathcal C$, il existe $e\in\N$ tel que $g=(x\mapsto u(e,x))$ ;</li>
+<li>pour tout $e$, la fonction $x\mapsto u(e,x)$ est dans $\mathcal C$.</li>
+</ol>
+<p>On dit que $u$ <strong>énumère</strong> $\mathcal C$, et qu’un $e$ comme dans (1) est un <strong>indice</strong> de $g$.</p>
+</enonce>
+<tech><p>La restriction à l’arité 1 n’est pas essentielle, grâce au <a href="fonctions-recursives.html#cantor-couple">codage des $n$-uplets</a>. Les deux conditions disent que les « coupes » $u(e,\cdot)$ sont exactement les éléments de $\mathcal C$.</p></tech>
+</res>
+
+<res type="Théorème" nom="Les fonctions totales calculables n’ont pas de fonction universelle calculable" id="pas-universelle-totale">
+<enonce><p>Il n’existe pas de fonction calculable <em>totale</em> $u:\N^2\to\N$ universelle pour la classe $\mathcal R$ des fonctions calculables totales.</p></enonce>
+<philo><p>Un « ordinateur » qui ne pourrait exécuter que des programmes qui s’arrêtent toujours, et qui saurait les exécuter tous, ne peut pas exister. Si l’on veut une machine universelle, il faut qu’elle puisse, sur certains programmes, ne jamais s’arrêter. L’universalité et la certitude de la terminaison sont incompatibles.</p></philo>
+<tech><p>Si $u$ était une telle fonction, $g(x)=u(x,x)+1$ serait calculable et totale, donc égale à $u(e,\cdot)$ pour un $e$ ; alors $u(e,e)=g(e)=u(e,e)+1$, contradiction. C’est l’argument des <a href="motivations.html#diagonale-totale">motivations</a>, maintenant énoncé avec précision.</p></tech>
+</res>
+
+<res type="Théorème" nom="Fonction universelle pour les fonctions calculables" id="universelle">
+<enonce><p>La fonction partielle $u(z,x)\simeq U\big(\mu y\ T_1(z,x,y)\big)$ est calculable et universelle pour la classe des fonctions calculables (partielles) d’une variable. Il existe donc une machine de Turing $\mathcal U$ telle que, pour toute machine $Z$ de nombre de Gödel $z$ et tout $x$ : $\Psi^{(2)}_{\mathcal U}(z,x)\simeq\Psi^{(1)}_Z(x)$.</p></enonce>
+<philo>
+<p>Une seule machine, dite <em>universelle</em>, suffit : on lui donne en entrée la description d’une machine et une donnée, et elle se comporte comme la machine décrite. Le programme est devenu une donnée comme une autre. Il n’est plus nécessaire de construire une machine par fonction : il suffit d’une machine universelle et d’un texte. C’est exactement ce qu’est un ordinateur : un appareil fixe auquel on fournit des programmes.</p>
+<p>On distingue d’ailleurs, dans les modèles de machines à registres, le modèle RAM, où le programme est extérieur à la mémoire, et le modèle RASP (<em>random access stored program</em>), où il est stocké dans la mémoire comme les données. Les ordinateurs réels suivent le second, dit « architecture de von Neumann » (1945), alors que l’idée est déjà entièrement chez Turing en 1936.</p>
+</philo>
+<tech>
+<p>Le théorème de la forme normale donne, pour toute machine $Z$ de code $z$, $\Psi^{(1)}_Z(x)\simeq U(\mu y\,T_1(z,x,y))=u(z,x)$, d’où la condition (1). La condition (2) vient de ce que $u$ est récursive, donc chaque $u(z,\cdot)$ aussi ; si $z$ ne code pas de machine, $T_1(z,x,y)$ est toujours faux et $u(z,\cdot)$ est la fonction partout indéfinie, qui est calculable. Enfin $u$ est récursive, donc Turing-calculable : une machine $\mathcal U$ la calcule.</p>
+</tech>
+<techno>
+<p>Le simulateur de machines de Turing de ce manuel <em>est</em> une fonction universelle : il reçoit le texte d’une machine et une entrée, et reproduit son comportement. Il est écrit en JavaScript, mais la théorie garantit qu’on pourrait l’écrire comme une machine de Turing.</p>
+<p>Des machines universelles explicites et petites ont été construites : Marvin Minsky (1962) en donna une à 7 états et 4 symboles ; Yurii Rogozhin (1996) en construisit plusieurs, dont une à 4 états et 6 symboles. Elles ne simulent pas directement les machines, mais des systèmes intermédiaires (systèmes de « tag ») eux-mêmes universels, ce qui rend leur fonctionnement très indirect et lent.</p>
+</techno>
+</res>
+
+<h2>Numérotation standard des fonctions calculables</h2>
+
+<p>Le codage de Gödel laisse beaucoup d’entiers sans signification (tous ne codent pas une machine). Il est plus commode que <em>tout</em> entier soit un programme.</p>
+
+<res type="Notation" nom="Indices : la notation $\varphi_e$" id="phi">
+<enonce>
+<p>Soit $\eta(0)=\mu z\,\mathrm{MT}(z)$ et $\eta(n+1)=\mu z\,[\mathrm{MT}(z)\wedge z>\eta(n)]$ : $\eta(n)$ est le $n$<sup>e</sup> nombre de Gödel de machine, dans l’ordre croissant. On note</p>
+$$\varphi^{(k)}_e=\Psi^{(k)}_{Z}\quad\text{où } Z \text{ est la machine codée par }\eta(e),$$
+<p>et $\varphi_e=\varphi^{(1)}_e$. Pour un oracle $A$, on note de même $\varphi^{A,(k)}_e$. L’entier $e$ est un <strong>indice</strong> (ou un <em>programme</em>) de $\varphi^{(k)}_e$. On note $W_e=\{x:\varphi_e(x)\conv\}$ le domaine de $\varphi_e$.</p>
+</enonce>
+<philo><p>Désormais « le programme numéro $e$ » a un sens précis, pour tout entier $e$. On peut parler de « l’ensemble des programmes qui s’arrêtent », de « deux programmes équivalents », et poser sur les programmes des questions mathématiques.</p></philo>
+<tech>
+<ul>
+<li>$\eta$ est récursive, strictement croissante, et sa réciproque (sur son image) aussi : passer d’un code de Gödel à un indice est effectif dans les deux sens. Elle est même récursive primitive, car on peut borner explicitement la recherche (entre deux codes de machines consécutifs l’écart est borné par une fonction récursive primitive de $\eta(n)$).</li>
+<li>Chaque fonction calculable a <strong>une infinité d’indices</strong> (lemme de « rembourrage ») : on peut ajouter à une machine des quadruplets portant sur un état jamais atteint, sans changer la fonction calculée, comme on ajouterait à un programme des lignes <code>x := x</code>.</li>
+<li>Un même indice désigne une fonction pour chaque arité et pour chaque oracle.</li>
+<li>Pour montrer que $\eta$ est récursive primitive, on peut borner la recherche ainsi : à partir d’une machine de code $z$, on en obtient une autre, de code strictement plus grand, en décalant d’une unité les indices de tous ses états ; le code de cette machine décalée, fonction récursive primitive de $z$, sert de borne. La plus petite machine est $q_0\,B\,R\,q_0$, de nombre de Gödel $\eta(0)=2^{2^7 3^9 5^3 7^7}$.</li>
+</ul>
+
+</tech>
+</res>
+
+<res type="Théorème" nom="Théorème d’énumération" id="enumeration">
+<enonce>
+<p>Pour tout $n\ge1$ (et tout oracle $A$), il existe un indice $z_n$ tel que, pour tous $e,x_1,\dots,x_n$ :</p>
+$$\varphi^{(n+1)}_{z_n}(e,x_1,\dots,x_n)\simeq\varphi^{(n)}_e(x_1,\dots,x_n).$$
+</enonce>
+<philo><p>La machine universelle a elle-même un numéro, et elle figure dans la liste de toutes les machines. C’est cette auto-référence, une liste qui contient le programme capable de lire la liste, qui rend possibles à la fois les ordinateurs et les paradoxes du chapitre <a href="indecidabilite.html">Indécidabilité</a>.</p></philo>
+<tech><p>$\Phi(e,\vec x)\simeq U(\mu y\,T_n(\eta(e),\vec x,y))$ est récursive (composition de fonctions récursives et d’une minimisation), donc Turing-calculable, donc égale à $\varphi^{(n+1)}_{z_n}$ pour un indice $z_n$. Avec oracle, la même preuve vaut en ajoutant au prédicat de Kleene le cas des quadruplets d’oracle, qui consulte $\chi_A$.</p></tech>
+</res>
+
+<!--EXERCICES-->
+<h2 id="exercices">Exercices</h2>
+
+<exo niveau="1" titre="Une infinité de programmes pour chaque fonction" id="ex-un-indices">
+<p>Montrer que toute fonction calculable $f$ d’une variable a une infinité d’indices : il existe une infinité de $e$ tels que $\varphi_e=f$.</p>
+<corrige>
+<p>Soit $Z$ une machine qui calcule $f$, et $q_m$ un état qui n’apparaît pas dans $Z$. Pour tout $k$, la machine $Z_k=Z\cup\{q_{m+j}\,B\,B\,q_{m+j}:0\le j\le k\}$ calcule encore $f$ : les états ajoutés ne sont jamais atteints, puisqu’aucun quadruplet de $Z$ n’y mène. Les machines $Z_k$ sont deux à deux distinctes, donc leurs nombres de Gödel aussi, et chacun est un $\eta(e)$ pour un $e$ différent. C’est le « remplissage » (<em>padding</em>) : ajouter du code mort ne change pas la fonction calculée.</p>
+</corrige>
+</exo>
+
+<exo niveau="2" titre="Pas de prolongement total de la diagonale" id="ex-un-diagonale">
+<p>Montrer qu’il n’existe pas de fonction calculable totale $f$ telle que $f(e)=\varphi_e(e)$ pour tout $e$ tel que $\varphi_e(e)\conv$.</p>
+<corrige>
+<p>Supposons qu’une telle $f$ existe. La fonction $d(e)=f(e)+1$ est calculable totale, donc $d=\varphi_k$ pour un indice $k$. Alors $\varphi_k(k)=d(k)$ est défini, donc $f(k)=\varphi_k(k)=d(k)=f(k)+1$ : contradiction. La fonction universelle $(e,x)\mapsto\varphi_e(x)$ est donc partielle de façon essentielle : on ne peut pas la compléter en une fonction totale calculable, même sur la seule diagonale (voir aussi <a href="indecidabilite.html#sans-prolongement">fonctions sans prolongement calculable</a>).</p>
+</corrige>
+</exo>
+
+<exo niveau="2" titre="Un interpréteur pour les fonctions récursives primitives" id="ex-un-rp">
+<p>Montrer qu’il existe une fonction calculable totale $u(e,x)$ universelle pour la classe $\RP$ des fonctions récursives primitives d’une variable, et que $u$ n’est pas récursive primitive.</p>
+<corrige>
+<p>On énumère les termes de $\RP$ d’arité 1, $f_0,f_1,\dots$, et l’on pose $u(e,x)=f_e(x)$, calculée en évaluant le terme numéro $e$ (voir l’<a href="equivalence.html#ex-eq-domine">exercice du chapitre 6</a>). Elle est totale, car toutes les fonctions de $\RP$ le sont, et universelle par construction. Si $u$ était récursive primitive, $d(x)=u(x,x)+1$ le serait aussi, donc $d=f_k$ pour un $k$, et $f_k(k)=u(k,k)+1=f_k(k)+1$ : contradiction.</p>
+<p>Comparer avec le <a href="#pas-universelle-totale">théorème</a> : pour $\RP$, l’interpréteur existe mais sort de la classe ; pour les fonctions calculables totales, il n’existe même pas d’interpréteur calculable total ; pour les fonctions calculables partielles, l’interpréteur existe et reste dans la classe.</p>
+</corrige>
+</exo>
+
+<exo niveau="3" titre="Un domaine non vide se détecte" id="ex-un-non-vide">
+<p>Montrer que l’ensemble $\{e:W_e\ne\emptyset\}$ est semi-décidable, en décrivant explicitement une procédure.</p>
+<corrige>
+<p>On ne peut pas tester $\varphi_e(0)$, puis $\varphi_e(1)$, etc., car le premier calcul peut ne pas terminer. On entrelace les calculs : pour $s=0,1,2,\dots$, on exécute $s$ pas du calcul de $\varphi_e(x)$ pour chaque $x\le s$. Si l’un d’eux s’arrête, on s’arrête. Formellement, $W_e\ne\emptyset\iff\exists\langle x,y\rangle\ T_1(\eta(e),x,y)$, et la procédure cherche le plus petit couple $\langle x,y\rangle$ qui vérifie ce prédicat récursif primitif. Si $W_e$ contient un $x$, dont le calcul a pour code $y$, la recherche atteint $\langle x,y\rangle$ et s’arrête ; sinon elle ne s’arrête pas. Cet entrelacement (<em>dovetailing</em>) est la technique de base du chapitre <a href="semi-decidabilite.html#projection">Semi-décidabilité</a>. L’ensemble n’est pas décidable (<a href="indecidabilite.html#rice-theoreme">théorème de Rice</a>).</p>
+</corrige>
+</exo>

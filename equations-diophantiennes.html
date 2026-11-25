@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Frédéric Prost et Claude">
+<title>Équations diophantiennes et dixième problème de Hilbert · Calculabilité</title>
+<link rel="stylesheet" href="assets/katex/katex.min.css">
+<link rel="stylesheet" href="assets/style.css">
+<script>try{var t=localStorage.getItem('calc-theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}document.documentElement.classList.add('js');</script>
+</head>
+<body>
+<header class="entete"><div class="entete-int">
+  <button type="button" class="btn-menu" aria-label="Sommaire">☰ Sommaire</button>
+  <a class="titre-site" href="index.html">Calculabilité <span>·</span> un manuel à trois niveaux</a>
+  <span class="selecteur-legende">Niveau de lecture :</span>
+  <div class="selecteur" role="group" aria-label="Niveau de lecture">
+    <button type="button" data-niveau="philo" title="Sens et implications">Philosophique</button>
+    <button type="button" data-niveau="tech" title="Preuves mathématiques">Technique</button>
+    <button type="button" data-niveau="techno" title="Constructions complètes, machines de Turing">Technologique</button>
+    <button type="button" data-niveau="tout" title="Afficher les trois niveaux">Tout</button>
+  </div>
+  <button type="button" class="btn-theme" aria-label="Changer de thème" title="Clair / sombre">◐</button>
+</div></header>
+<div class="page">
+<nav class="sommaire" aria-label="Sommaire"><ul><li><a href="index.html">Accueil et mode d’emploi</a></li></ul><h2>Entrer dans le sujet</h2><ol><li><a href="motivations.html"><span class="num">1</span>Motivations</a></li><li><a href="trois-approches.html"><span class="num">2</span>Trois approches du calcul</a></li></ol><h2>Modèles de calcul</h2><ol><li><a href="machines-turing.html"><span class="num">3</span>Machines de Turing</a></li><li><a href="fonctions-recursives.html"><span class="num">4</span>Fonctions récursives</a></li><li><a href="lambda-calcul.html"><span class="num">5</span>λ-calcul</a></li><li><a href="equivalence.html"><span class="num">6</span>Équivalence des modèles</a></li><li><a href="these-church.html"><span class="num">7</span>Thèse de Church-Turing</a></li></ol><h2>Théorèmes fondamentaux</h2><ol><li><a href="universalite.html"><span class="num">8</span>Universalité</a></li><li><a href="smn-recursion.html"><span class="num">9</span>s-m-n et récursion</a></li></ol><h2>Limites du calcul</h2><ol><li><a href="indecidabilite.html"><span class="num">10</span>Indécidabilité</a></li><li><a href="semi-decidabilite.html"><span class="num">11</span>Semi-décidabilité</a></li><li><a href="hierarchie-arithmetique.html"><span class="num">12</span>Hiérarchie arithmétique</a></li><li><a href="incompletude.html"><span class="num">13</span>Incomplétude</a></li><li><a href="equations-diophantiennes.html" aria-current="page"><span class="num">14</span>Équations diophantiennes</a></li><li><a href="logique-types.html"><span class="num">15</span>Logique et types</a></li><li><a href="theories-decidables.html"><span class="num">16</span>Théories décidables</a></li><li><a href="mathematiques-indecidables.html"><span class="num">17</span>Mathématiques ordinaires</a></li><li><a href="kolmogorov-omega.html"><span class="num">18</span>Kolmogorov et Ω</a></li><li><a href="langages.html"><span class="num">19</span>Langages et grammaires</a></li></ol><h2>Complexité</h2><ol><li><a href="complexite.html"><span class="num">20</span>Complexité</a></li><li><a href="hasard-quantique.html"><span class="num">21</span>Hasard et quantique</a></li></ol><h2>Études de cas</h2><ol><li><a href="ackermann.html"><span class="num">22</span>Fonction d’Ackermann</a></li><li><a href="castors-affaires.html"><span class="num">23</span>Castors affairés</a></li><li><a href="calculabilite-ia.html"><span class="num">24</span>Calculabilité et IA</a></li><li><a href="autres-modeles.html"><span class="num">25</span>Autres modèles</a></li></ol><h2>Annexes</h2><ol><li><a href="parcours.html">Parcours de lecture</a></li><li><a href="cantor.html">Diagonale de Cantor</a></li><li><a href="bases.html">Notions de base</a></li><li><a href="leibniz.html">Leibniz et le binaire</a></li><li><a href="bibliographie.html">Bibliographie</a></li></ol></nav>
+<main class="contenu">
+<h1>Équations diophantiennes et dixième problème de Hilbert</h1>
+<p class="chapo">Une équation polynomiale à coefficients entiers a-t-elle une solution entière ? Hilbert demandait une méthode ; il n’y en a pas, parce que les équations de Diophante sont un langage de programmation universel. En retour, la calculabilité livre des résultats inattendus sur les nombres.</p>
+<div class="prerequis"><strong>Pré-requis</strong><a href="semi-decidabilite.html">Semi-décidabilité</a> · <a href="incompletude.html#representabilite">Définissabilité arithmétique</a> · <a href="indecidabilite.html#arret">Problème de l’arrêt</a> · <a href="bases.html#premiers">Nombres premiers</a></div>
+<nav class="toc-locale" aria-label="Dans ce chapitre"><strong>Dans ce chapitre</strong><ol><li><a href="#equations">Équations et ensembles diophantiens</a></li><li><a href="#mrdp-section">Programmes et équations : le théorème MRDP</a></li><li><a href="#relecture">Relire la calculabilité en arithmétique</a></li><li><a href="#exercices">Exercices</a></li></ol></nav>
+
+
+<p>Au congrès international de Paris, en 1900, David Hilbert posa ce problème, le dixième de sa liste : « étant donnée une équation diophantienne à un nombre quelconque d’inconnues et à coefficients entiers, trouver une méthode par laquelle on puisse décider, en un nombre fini d’opérations, si l’équation a des solutions en nombres entiers ». L’énoncé est simplissime, et la réponse aussi : <em>non</em> (Matiyasevich, 1970). Comme souvent, c’est moins la réponse qui surprend que le chemin. Il passe par une équivalence entre programmes et équations : tout programme se traduit en une équation qui a une solution exactement quand le programme s’arrête. Lue dans un sens, l’équivalence ramène un problème indécidable de la calculabilité aux équations de Diophante ; lue dans l’autre, elle transporte en théorie des nombres des résultats de calculabilité, et en tire des énoncés arithmétiques étonnants. Deux domaines que tout semblait séparer, y compris deux mille ans d’histoire, se révèlent très proches.</p>
+
+<h2 id="equations">Équations et ensembles diophantiens</h2>
+
+<div class="resultat definition" id="def-diophantien"><div class="entete-res"><div class="type">Définition</div><div class="nom">Équations, familles et ensembles diophantiens</div></div>
+<div class="enonce">
+<p>Une <strong>équation diophantienne</strong> est une équation $D(x_1,\dots,x_n)=0$ où $D$ est un polynôme à coefficients entiers ; on cherche ses solutions entières. Sauf mention contraire, les inconnues parcourent $\N$.</p>
+<p>Une <strong>famille</strong> d’équations est un polynôme $D(a_1,\dots,a_m,x_1,\dots,x_n)$ dont on distingue des <em>paramètres</em> $a_i$ et des <em>inconnues</em> $x_j$. Elle définit l’ensemble</p>
+$$E=\{(a_1,\dots,a_m)\in\N^m:\exists x_1,\dots,x_n\in\N\ \ D(\vec a,\vec x)=0\}.$$
+<p>Un ensemble (une relation) de cette forme est dit <strong>diophantien</strong>, et $D$ en est une <em>représentation diophantienne</em>. Une fonction est diophantienne si son graphe l’est. Exemples :</p>
+<ul>
+<li>les carrés : $a-x^2=0$ ;</li>
+<li>les nombres composés : $a-(x_1+2)(x_2+2)=0$ ;</li>
+<li>les nombres qui ne sont pas des carrés : $(a-z^2-x-1)^2+\big((z+1)^2-a-y-1\big)^2=0$.</li>
+</ul>
+</div>
+<div class="niveau" data-niveau="philo"><p>Une famille d’équations est une <em>définition implicite</em> d’un ensemble : $a$ en fait partie s’il existe des inconnues qui « témoignent » pour lui. Le troisième exemple montre que la définition peut être indirecte : un nombre n’est pas un carré s’il est strictement compris entre deux carrés consécutifs, ce qu’exprime l’existence de $z$, $x$ et $y$. Les questions qui viennent naturellement : les nombres premiers, les puissances de 2 sont-ils diophantiens ? Le complémentaire d’un ensemble diophantien l’est-il ? Le théorème central de ce chapitre répond à toutes d’un coup.</p></div>
+<div class="niveau" data-niveau="tech"><p>Pour le troisième exemple : la somme de deux carrés est nulle si et seulement si les deux le sont, c’est-à-dire $a=z^2+x+1$ et $(z+1)^2=a+y+1$, soit $z^2&lt;a<(z+1)^2$ pour un $z$. C’est exactement dire que $a$ n’est pas un carré. Pour le deuxième, un nombre est composé s’il est produit de deux entiers au moins égaux à 2.</p></div>
+<div class="niveau" data-niveau="techno"><p>Les ensembles diophantiens sont semi-décidables : pour savoir si $a\in E$, on essaie les $n$-uplets d’inconnues l’un après l’autre (par exemple par somme croissante), et l’on s’arrête si l’un d’eux annule $D$. Le programme s’arrête si $a\in E$, et tourne indéfiniment sinon. Toute la question du chapitre est de savoir si l’on peut faire mieux.</p></div>
+</div>
+
+<div class="resultat theoreme" id="reecritures"><div class="entete-res"><div class="type">Proposition</div><div class="nom">Trois réécritures d’une équation</div></div>
+<div class="enonce">
+<ol>
+<li><strong>Systèmes.</strong> Le système $D_1=0,\dots,D_k=0$ a les mêmes solutions que l’équation unique $D_1^2+\cdots+D_k^2=0$. Une équation s’écrit aussi $D_g=D_d$ avec deux polynômes à coefficients positifs.</li>
+<li><strong>Degré 4.</strong> Pour toute équation $D(\vec x)=0$, on peut calculer une équation $D'(\vec x,\vec y)=0$ de degré au plus 4 qui a une solution si et seulement si $D=0$ en a une (et dont les solutions prolongent celles de $D$).</li>
+<li><strong>Entiers relatifs ou naturels.</strong> Décider l’existence de solutions dans $\N$ et décider l’existence de solutions dans $\mathbb Z$ sont deux problèmes équivalents : chacun se ramène à l’autre par une transformation calculable des équations.</li>
+</ol>
+</div>
+<div class="niveau" data-niveau="philo">
+<p>Le premier aller-retour (une équation devient un système de petites équations, puis le système redevient une équation) a une conséquence frappante : le dixième problème de Hilbert se ramène aux équations de degré au plus 4. La complexité d’une équation peut toujours être transférée du degré vers le nombre d’inconnues.</p>
+<p>Le choix entre solutions entières et solutions positives ne change pas la question générale, mais il change chaque équation particulière : $(x+1)^3+(y+1)^3=(z+1)^3$ n’a aucune solution dans $\N$ (c’est le théorème de Fermat pour l’exposant 3, démontré par Euler), alors qu’elle en a dans $\mathbb Z$, par exemple $x=-1$, $y=z$.</p>
+</div>
+<div class="niveau" data-niveau="tech">
+<p>(1) Une somme de carrés d’entiers est nulle si et seulement si chacun est nul. Pour $D_g=D_d$, on fait passer de l’autre côté les monômes de coefficient négatif.</p>
+<p>(2) On écrit $D=0$ sous la forme $D_g=D_d$, puis on introduit une inconnue nouvelle pour chaque résultat intermédiaire du calcul des deux membres, de sorte que chaque équation du système ait l’une des formes $u=v\,w$, $u=v+w$, $u=c$ (constante) : par exemple, $5x^3y^2+9=7z+6w^2x$ devient $p_1=5x$, $p_2=p_1x$, $p_3=p_2x$, $p_4=p_3y$, $p_5=p_4y$, $q_1=7z$, $r_1=6w$, $r_2=r_1w$, $r_3=r_2x$, $t_1=p_5+9$, $t_2=q_1+r_3$, $t_1=t_2$. Chaque équation est de degré au plus 2, et les inconnues nouvelles sont déterminées par les anciennes : le système a une solution si et seulement si $D=0$ en a une. Par (1), le système équivaut à une seule équation, somme de carrés de polynômes de degré au plus 2, donc de degré au plus 4.</p>
+<p>(3) <em>De $\mathbb Z$ vers $\N$</em> : on remplace chaque inconnue $x$ par $p-q$, avec $p,q\in\N$ ; tout entier relatif est une telle différence. <em>De $\N$ vers $\mathbb Z$</em> : on remplace chaque inconnue $x$ par $a^2+b^2+c^2+d^2$, avec $a,b,c,d\in\mathbb Z$. Par le théorème des quatre carrés de Lagrange (1770), démontré ci-dessous, les entiers naturels sont exactement les sommes de quatre carrés d’entiers relatifs ; la nouvelle équation a donc une solution dans $\mathbb Z$ si et seulement si l’ancienne en a une dans $\N$.</p>
+<p><em>Théorème des quatre carrés.</em> (i) L’identité d’Euler $(a^2+b^2+c^2+d^2)(w^2+x^2+y^2+z^2)=(aw+bx+cy+dz)^2+(ax-bw+cz-dy)^2+(ay-bz-cw+dx)^2+(az+by-cx-dw)^2$ montre qu’un produit de sommes de quatre carrés en est une ; comme $0$, $1$ et $2=1+1$ en sont, il suffit de traiter les nombres premiers impairs $p$ (<a href="bases.html#decomposition">décomposition en facteurs premiers</a>). (ii) Les $(p+1)/2$ nombres $x^2$, $0\le x\le(p-1)/2$, sont distincts modulo $p$ (si $x^2\equiv x'^2$, $p$ divise $(x-x')(x+x')$, avec $0&lt;x+x'&lt;p$ si $x\ne x'$), de même que les $(p+1)/2$ nombres $-1-y^2$ ; il y a donc $x,y$ avec $x^2+y^2+1\equiv0\pmod p$, d’où $mp=x^2+y^2+1^2+0^2$ avec $0&lt;m&lt;p$. (iii) Soit $m_0\ge1$ minimal tel que $m_0p=\sum x_i^2$, et supposons $m_0>1$. Si $m_0$ est pair, le nombre de $x_i$ impairs est pair ; en les groupant par parités égales, $\big(\frac{x_1+x_2}2\big)^2+\big(\frac{x_1-x_2}2\big)^2+\big(\frac{x_3+x_4}2\big)^2+\big(\frac{x_3-x_4}2\big)^2=\frac{m_0}2p$ : contradiction. Si $m_0$ est impair, prenons $y_i\equiv x_i\pmod{m_0}$ avec $|y_i|\le(m_0-1)/2$ : $\sum y_i^2=rm_0$ avec $r&lt;m_0$, et $r>0$ (sinon $m_0$ diviserait tous les $x_i$, donc $m_0^2\mid m_0p$ et $m_0\mid p$). L’identité d’Euler écrit $m_0p\cdot rm_0$ comme une somme de quatre carrés $\sum z_i^2$, et chaque $z_i$ est divisible par $m_0$ (en remplaçant $y_i$ par $x_i$, les quatre expressions valent modulo $m_0$ : $\sum x_i^2\equiv0$, puis $x_1x_2-x_2x_1+x_3x_4-x_4x_3=0$, etc.). Donc $rp=\sum(z_i/m_0)^2$ avec $0&lt;r&lt;m_0$ : contradiction. Ainsi $m_0=1$.</p>
+</div>
+<div class="niveau" data-niveau="techno"><p>La fonction <code>systeme_degre_2</code> de <a href="assets/code/diophante.py">diophante.py</a> calcule le système de l’exemple, et vérifie sur les $8^4=4\,096$ quadruplets de $[0,8[^4$ qu’il a exactement les solutions de l’équation de départ. La réduction ne coûte que des inconnues : ici neuf de plus, pour passer du degré 6 au degré 4.</p></div>
+</div>
+
+<h2 id="mrdp-section">Programmes et équations : le théorème MRDP</h2>
+
+
+<p>Les cinq résultats qui suivent préparent le sens difficile du <a href="#mrdp">théorème de Matiyasevich-Robinson-Davis-Putnam</a>, énoncé et démontré ensuite ; on suit l’exposé de Martin Davis (« Hilbert’s tenth problem is unsolvable », 1973). Les variables désignent des entiers naturels, et « diophantien » a le sens de la <a href="#def-diophantien">définition</a> ci-dessus. Le sens facile de MRDP a déjà été vu : un ensemble diophantien est semi-décidable. Tout le travail porte sur la réciproque, et le point clé est de montrer que l’exponentielle, qui croît trop vite pour un polynôme, est pourtant diophantienne.</p>
+
+<div class="resultat theoreme" id="dioph-clotures"><div class="entete-res"><div class="type">Lemme</div><div class="nom">Premières relations diophantiennes</div></div>
+<div class="enonce"><p>Les relations diophantiennes sont closes par $\wedge$, $\vee$, $\exists$ et substitution de fonctions diophantiennes. Les relations $a\le b$, $a&lt;b$, $a\ne b$, $a\mid b$, « $A\equiv B\pmod M$ » (pour des polynômes $A,B,M$), « $r$ est le reste de $a$ modulo $m$ » et « $q=\lfloor a/b\rfloor$ » sont diophantiennes.</p></div>
+<div class="niveau" data-niveau="tech">
+<p>$P=0\wedge Q=0\iff P^2+Q^2=0$ ; $P=0\vee Q=0\iff PQ=0$ (en renommant les inconnues pour qu’elles soient distinctes) ; $\exists x\,\exists\vec y\,P=0$ est déjà de la bonne forme ; $R(f(\vec a))\iff\exists z\,(z=f(\vec a)\wedge R(z))$. Puis $a\le b\iff\exists z\,a+z=b$ ; $a&lt;b\iff a+1\le b$ ; $a\ne b\iff a&lt;b\vee b&lt;a$ ; $a\mid b\iff\exists z\,b=az$ ; $A\equiv B\pmod M\iff\exists w\,(A-B-Mw)(A-B+Mw)=0$ (un multiple de $M$, de signe quelconque) ; $r=a\bmod m\iff r&lt;m\wedge a\equiv r\pmod m$ ; $q=\lfloor a/b\rfloor\iff\exists r\,(a=qb+r\wedge r&lt;b)$.</p>
+</div>
+</div>
+
+<div class="resultat theoreme" id="pell"><div class="entete-res"><div class="type">Lemme</div><div class="nom">L’équation de Pell</div></div>
+<div class="enonce"><p>Soit $a\ge2$, $d=a^2-1$, et $x_n,y_n$ les entiers définis par $x_n+y_n\sqrt d=(a+\sqrt d)^n$ ($n\ge0$). Alors :</p>
+<ol>
+<li>les solutions $(x,y)\in\N^2$ de $x^2-dy^2=1$ sont exactement les $(x_n,y_n)$ ;</li>
+<li>$x_{m\pm n}=x_mx_n\pm d\,y_my_n$, $y_{m\pm n}=x_ny_m\pm x_my_n$ (pour $m\ge n$ dans le cas $-$), et $x_{n+1}=2ax_n-x_{n-1}$, $y_{n+1}=2ay_n-y_{n-1}$, avec $x_0=1,x_1=a,y_0=0,y_1=1$ ;</li>
+<li>$y_n(a)\equiv y_n(b)$ et $x_n(a)\equiv x_n(b)\pmod{a-b}$ ; $y_n\equiv n\pmod{a-1}$ ; $x_n-y_n(a-k)\equiv k^n\pmod{2ak-k^2-1}$ pour tout $k$ ;</li>
+<li>$(x_n)$ et $(y_n)$ sont strictement croissantes, $y_n\ge n$, $y_{n+1}\ge(2a-1)^n$, et $x_n(b)\ge x_n(a)$ si $b\ge a$ ;</li>
+<li>$y_n\mid y_t\iff n\mid t$, et $y_n^2\mid y_t\iff ny_n\mid t$ (pour $n\ge1$) ;</li>
+<li>si $0&lt;i\le n$ et $x_j\equiv x_i\pmod{x_n}$, alors $j\equiv\pm i\pmod{4n}$.</li>
+</ol></div>
+<div class="niveau" data-niveau="tech">
+<p>Notons $\varepsilon=a+\sqrt d$ ; comme $d$ n’est pas un carré ($(a-1)^2&lt;d&lt;a^2$), l’écriture $x+y\sqrt d$ avec $x,y$ entiers est unique, et la conjugaison $x+y\sqrt d\mapsto x-y\sqrt d$ est multiplicative. On a $\varepsilon\,\bar\varepsilon=a^2-d=1$, donc $x_n-y_n\sqrt d=\varepsilon^{-n}$ et $x_n^2-dy_n^2=1$.</p>
+<p>(1) Soit $x^2-dy^2=1$, $\alpha=x+y\sqrt d\ge1$, et $n$ tel que $\varepsilon^n\le\alpha<\varepsilon^{n+1}$. Alors $\beta=\alpha\varepsilon^{-n}=x'+y'\sqrt d$ avec $x',y'$ entiers, $x'^2-dy'^2=1$, $1\le\beta<\varepsilon$, et $\beta^{-1}=x'-y'\sqrt d$. Donc $x'=(\beta+\beta^{-1})/2>0$ et $y'\sqrt d=(\beta-\beta^{-1})/2\ge0$. Si $y'\ge1$, alors $x'^2=1+dy'^2\ge a^2$, et $\beta\ge a+\sqrt d=\varepsilon$ : impossible. Donc $y'=0$, $x'=1$, $\alpha=\varepsilon^n$.</p>
+<p>(2) On développe $\varepsilon^{m+n}=\varepsilon^m\varepsilon^n$ et $\varepsilon^{m-n}=\varepsilon^m\bar\varepsilon^{\,n}$ ; et $\varepsilon+\varepsilon^{-1}=2a$ donne $\varepsilon^{n+1}+\varepsilon^{n-1}=2a\varepsilon^n$.</p>
+<p>(3) Les suites définies par $z_{n+1}=2bz_n-z_{n-1}$ sont, pour $a$ et $b$, congrues modulo $a-b$ terme à terme, par récurrence (mêmes valeurs initiales $0,1$ pour $y$ ; $1,a$ et $1,b$ pour $x$, congrues). Pour $b=1$, la récurrence donne $y_n=n$ : d’où $y_n\equiv n\pmod{a-1}$. Enfin $z_n=x_n-y_n(a-k)$ vérifie la même récurrence, avec $z_0=1$, $z_1=k$ ; et $k^n$ la vérifie modulo $2ak-k^2-1$, puisque $k^2\equiv2ak-1$.</p>
+<p>(4) $x_{n+1}=ax_n+dy_n$ et $y_{n+1}=x_n+ay_n$ (cas $m=1$ de (2)) : les suites croissent strictement, et $y_n\ge n$. De $y_{n+1}=2ay_n-y_{n-1}\ge(2a-1)y_n$ et $y_1=1$ vient $y_{n+1}\ge(2a-1)^n$. La croissance en $a$ se voit sur $x_{n+1}=ax_n+(a^2-1)y_n$, $y_{n+1}=x_n+ay_n$, dont tous les termes croissent avec $a$.</p>
+<p>(5) $\mathrm{pgcd}(x_n,y_n)=1$ puisque $x_n^2-dy_n^2=1$. Par (2), $y_{n(k+1)}=x_ny_{nk}+x_{nk}y_n$, donc $y_n\mid y_{nk}$. Réciproquement, si $y_n\mid y_t$, écrivons $t=nq+r$ avec $r&lt;n$ : $y_t=x_ry_{nq}+x_{nq}y_r$, donc $y_n\mid x_{nq}y_r$ ; or $x_{nq}$ est premier avec $y_{nq}$, donc avec $y_n$ ; ainsi $y_n\mid y_r&lt;y_n$, d’où $y_r=0$ et $r=0$. Pour les carrés : par la formule du binôme, $y_{nk}=\sum_{j\text{ impair}}\binom kjx_n^{k-j}y_n^jd^{(j-1)/2}\equiv kx_n^{k-1}y_n\pmod{y_n^3}$. Si $y_n^2\mid y_t$, alors $t=nk$, et $y_n^2\mid kx_n^{k-1}y_n$, donc $y_n\mid k$ (car $x_n$ est premier avec $y_n$) et $ny_n\mid t$. Si $t=ny_nq$, la même congruence donne $y_{t}\equiv y_nqx_n^{k-1}y_n\equiv0\pmod{y_n^2}$.</p>
+<p>(6) Par (2), $y_{n\pm j}=x_jy_n\pm x_ny_j\equiv x_jy_n\pmod{x_n}$, donc $x_{2n\pm j}=x_nx_{n\pm j}+dy_ny_{n\pm j}\equiv dy_n^2x_j=(x_n^2-1)x_j\equiv-x_j\pmod{x_n}$ ($j\le n$ dans le cas $-$). En appliquant deux fois cette relation, $x_{4n\pm j}\equiv x_j$ : le reste de $x_j$ modulo $x_n$ ne dépend que de $j$ modulo $4n$, et ne change pas si l’on remplace $j$ par $4n-j$. On peut donc supposer $0\le j\le2n$. Les restes de $x_0,\dots,x_{2n}$ sont $x_0,\dots,x_{n-1},0,x_n-x_{n-1},\dots,x_n-x_0$, avec $0&lt;x_0<\dots&lt;x_{n-1}&lt;x_n$. Un reste $x_i$ avec $0&lt;i&lt;n$ ne peut égaler un $x_n-x_l$ ($l&lt;n$) que si $x_i+x_l=x_n$ ; or $x_i+x_l\le2x_{n-1}&lt;ax_{n-1}+dy_{n-1}=x_n$ (ici $n\ge2$, donc $y_{n-1}\ge1$). Le reste $0$ n’est atteint qu’en $j=n$. Donc $x_j\equiv x_i$ avec $0&lt;i\le n$ et $0\le j\le2n$ impose $j=i$, ce qui donne bien $j\equiv\pm i\pmod{4n}$ pour le $j$ de départ.</p>
+</div>
+</div>
+
+<div class="resultat theoreme" id="pell-diophantien"><div class="entete-res"><div class="type">Proposition</div><div class="nom">Les solutions de Pell sont diophantiennes (Davis, d’après Matiyasevich)</div></div>
+<div class="enonce"><p>La relation « $a\ge2$, $k\ge1$ et $y=y_k(a)$ » est diophantienne. Plus précisément, pour $a\ge2$ et $k\ge1$, on a $x=x_k(a)$ et $y=y_k(a)$ si et seulement s’il existe $u,v,s,t,b,r,p,q,c,d',e$ tels que :</p>
+$$\begin{array}{ll}
+\text{(I)}\ x^2-(a^2-1)y^2=1 & \text{(V)}\ b=1+4py=a+qu\\
+\text{(II)}\ u^2-(a^2-1)v^2=1 & \text{(VI)}\ s=x+cu\\
+\text{(III)}\ s^2-(b^2-1)t^2=1 & \text{(VII)}\ t=k+4(d'-1)y\\
+\text{(IV)}\ v=(r+1)y^2 & \text{(VIII)}\ y=k+e-1
+\end{array}$$</div>
+<div class="niveau" data-niveau="philo"><p>C’est le cœur du théorème, trouvé par Matiyasevich en 1970 : une relation qui croît exponentiellement ($y_k(a)$ est de l’ordre de $(2a)^k$) définie par des équations polynomiales. Les inconnues auxiliaires servent de « certificat » : elles imposent, par des congruences, que l’indice $k$ et l’indice caché de $y$ coïncident.</p></div>
+<div class="niveau" data-niveau="tech">
+<p><em>Condition nécessaire.</em> Soit $x=x_k$, $y=y_k$ (donc $y\ge k\ge1$). Posons $m=2ky$, $u=x_m$, $v=y_m$. Par le <a href="#pell">lemme</a> (5), $y^2\mid v$ puisque $ky\mid m$, et $v>0$ : $v=(r+1)y^2$. Comme $m$ est pair, $v=y_m=2x_{m/2}y_{m/2}$ est pair, donc $u$ est impair ($u^2=1+dv^2$) ; et $u$ est premier avec $v$, donc avec $y$. Ainsi $u$ et $4y$ sont premiers entre eux, et par le théorème chinois il existe $b$ aussi grand qu’on veut avec $b\equiv1\pmod{4y}$ et $b\equiv a\pmod u$ : (V) avec $p,q\ge0$, et $b>a$. On pose $s=x_k(b)$, $t=y_k(b)$ : (III). Par le lemme (3), $s\equiv x_k(a)=x\pmod{b-a}$, donc modulo $u$, et $s\ge x$ par (4) : (VI). De même $t\equiv k\pmod{b-1}$, donc modulo $4y$, et $t\ge k$ : (VII) avec $d'\ge1$. Enfin $e=y-k+1\ge1$ : (VIII).</p>
+<p><em>Condition suffisante.</em> Supposons le système satisfait. Par (I) et le lemme (1), $x=x_i(a)$, $y=y_i(a)$ pour un $i$. Par (V), $b\ge a\ge2$, et $y\ne0$ (sinon $b=1$) : donc $i\ge1$. Par (II), $u=x_n(a)$, $v=y_n(a)$, et $n\ge1$ puisque $v\ge y^2>0$. Par (III), $s=x_j(b)$, $t=y_j(b)$ pour un $j$. Par (IV), $y_i^2\mid y_n$, donc $iy_i\mid n$ (lemme (5)) : en particulier $y\mid n$ et $i\le y\le n$.</p>
+<ul>
+<li>Par (V) et le lemme (3), $x_j(b)\equiv x_j(a)\pmod u$ ; par (VI), $x_j(b)\equiv x\pmod u$. Donc $x_j(a)\equiv x_i(a)\pmod{x_n(a)}$ avec $0&lt;i\le n$, et le lemme (6) donne $j\equiv\pm i\pmod{4n}$, donc modulo $4y$.</li>
+<li>Par (V), $4y\mid b-1$, et par le lemme (3), $t=y_j(b)\equiv j\pmod{b-1}$ ; par (VII), $t\equiv k\pmod{4y}$. Donc $k\equiv j\equiv\pm i\pmod{4y}$.</li>
+</ul>
+<p>Or $1\le i\le y$ et, par (VIII), $0\le k\le y+1$. Si $k\equiv i$, $|k-i|\le y<4y$ impose $k=i$ ; si $k\equiv-i$, $0&lt;k+i\le2y+1<4y$ est impossible. Donc $k=i$ : $x=x_k(a)$ et $y=y_k(a)$. Les conditions $a\ge2$ et $k\ge1$ s’écrivent $a=a'+2$, $k=k'+1$.</p>
+</div>
+</div>
+
+<div class="resultat theoreme" id="exp-diophantienne"><div class="entete-res"><div class="type">Proposition</div><div class="nom">Exponentielle, coefficients binomiaux et factorielle sont diophantiens</div></div>
+<div class="enonce"><p>Les relations $m=n^k$, $z=\binom nk$ et $m=n!$ sont diophantiennes.</p></div>
+<div class="niveau" data-niveau="tech">
+<p><em>Exponentielle.</em> Si $k=0$, $m=1$ ; si $n=0$ et $k\ge1$, $m=0$. Soit $n,k\ge1$. Posons $z=y_{k+1}(n+1)$ ; par le <a href="#pell">lemme</a> (4), $z\ge(2n+1)^k>n^k$. Prenons $a>n+z$ et $M=2an-n^2-1$ ; alors $M\ge2a-n-1\ge a>z>n^k$ (car $n\ge1$). Par le lemme (3), $n^k\equiv x_k(a)-y_k(a)(a-n)\pmod M$. Donc $m=n^k$ si et seulement si il existe $z,a,x,y$ avec : $z=y_{k+1}(n+1)$, $a>n+z$, $y=y_k(a)$, $x^2-(a^2-1)y^2=1$ (ce qui force $x=x_k(a)$), $m<2an-n^2-1$ et $m\equiv x-y(a-n)\pmod{2an-n^2-1}$. Tout cela est diophantien par la <a href="#pell-diophantien">proposition précédente</a> et le <a href="#dioph-clotures">lemme de clôture</a>.</p>
+<p><em>Binomiaux.</em> Si $u>2^n$, alors $(u+1)^n=\sum_i\binom niu^i$ avec $\binom ni\le2^n&lt;u$ : ce sont les chiffres de $(u+1)^n$ en base $u$. Donc $\binom nk$ est le reste modulo $u$ de $\lfloor(u+1)^n/u^k\rfloor$, et $z=\binom nk\iff\exists u,v,w\ \big(u=2^n+1\wedge v=(u+1)^n\wedge w=\lfloor v/u^k\rfloor\wedge z=w\bmod u\big)$.</p>
+<p><em>Factorielle.</em> Pour $n\ge1$ et $r>(2n)^{n+1}$, on a $n!=\lfloor r^n/\binom rn\rfloor$. En effet $r^n/\binom rn=n!\prod_{j&lt;n}(1-j/r)^{-1}$ est au moins $n!$ et au plus $n!\,(1-n/r)^{-n}$. Avec $x=n/r\le1/2$, $(1-x)^{-1}\le1+2x$, et $(1+2x)^n=\sum_i\binom ni(2x)^i\le1+2x\cdot2^n$ (car $2x\le1$). Donc $r^n/\binom rn\le n!+n!\,2^{n+1}n/r&lt;n!+1$, puisque $n!\,2^{n+1}n\le2(2n)^nn\le(2n)^{n+1}&lt;r$. Ainsi $m=n!\iff(n=0\wedge m=1)\vee\exists r\,\big(r=(2n)^{n+1}+1\wedge m=\lfloor r^n/\binom rn\rfloor\big)$, relation diophantienne.</p>
+</div>
+</div>
+
+<div class="resultat theoreme" id="quantificateur-borne"><div class="entete-res"><div class="type">Lemme</div><div class="nom">Le quantificateur universel borné (Davis, Putnam, Robinson, 1961)</div></div>
+<div class="enonce"><p>Si $P(y,k,\vec x,\vec v)$ est un polynôme, la relation $R(y,\vec v)\iff\forall k\ (1\le k\le y\Rightarrow\exists\vec x\ P(y,k,\vec x,\vec v)=0)$ est diophantienne.</p></div>
+<div class="niveau" data-niveau="philo"><p>C’est le point où les équations semblent le plus loin des programmes : un programme fait des boucles, une équation ne parle que d’un nombre fixé d’inconnues. Le lemme remplace une boucle « pour $k$ de $1$ à $y$ » par un seul entier $c$ qui, modulo des nombres premiers bien choisis, « vaut » successivement $1,2,\dots,y$.</p></div>
+<div class="niveau" data-niveau="tech">
+<p>Notons $\vec x=(x_1,\dots,x_m)$. D’abord, $R(y,\vec v)$ équivaut à l’existence d’un $u$ tel que les témoins puissent être choisis $\le u$ pour tous les $k\le y$. Soit $Q(y,u,\vec v)$ un polynôme tel que $Q\ge2$, $Q>y$ et $Q>|P(y,k,\vec x,\vec v)|$ pour $k\le y$ et $\vec x\le u$ (par exemple $y+2$ plus la somme des valeurs absolues des coefficients de $P$ multipliée par $(y+u+|\vec v|+1)^{\deg P}$). Posons $t=Q!$ et $M=\prod_{k=1}^{y}(1+kt)$. Montrons que $R(y,\vec v)$ équivaut à l’existence de $u,c,a_1,\dots,a_m$ tels que</p>
+$$1+ct=M,\qquad M\ \Big|\ \prod_{j=0}^{u}(a_i-j)\ \ (i=1,\dots,m),\qquad M\mid P(y,c,a_1,\dots,a_m,\vec v).$$
+<p>Comme $M\equiv1\pmod t$, $c=(M-1)/t$ est un entier naturel. Deux remarques. (i) Tout facteur premier $p$ de $1+kt$ est $>Q$ : sinon $p\mid Q!=t$, et $p\mid1$. (ii) Les $1+kt$, $1\le k\le y$, sont deux à deux premiers entre eux : un nombre premier qui divise $1+kt$ et $1+lt$ divise $l(1+kt)-k(1+lt)=l-k$, de valeur absolue $&lt;y&lt;Q$, contredisant (i). Enfin, $1+kt\mid M=1+ct$ et $1+kt$ est premier avec $t$, donc de $(c-k)t=(1+ct)-(1+kt)$ on tire $c\equiv k\pmod{1+kt}$.</p>
+<ul>
+<li><em>Si les conditions sont satisfaites</em>, soit $k\le y$ et $p$ un facteur premier de $1+kt$. Alors $p\mid\prod_{j\le u}(a_i-j)$, donc $a_i\equiv x_i\pmod p$ pour un $x_i\le u$. Comme $c\equiv k$, $P(y,k,\vec x,\vec v)\equiv P(y,c,\vec a,\vec v)\equiv0\pmod p$, et $|P(y,k,\vec x,\vec v)|&lt;Q&lt;p$ : donc $P(y,k,\vec x,\vec v)=0$.</li>
+<li><em>Réciproquement</em>, si pour chaque $k\le y$ on a des témoins $x^{(k)}_i\le u$, le théorème chinois (remarque (ii)) donne des $a_i$ avec $a_i\equiv x^{(k)}_i\pmod{1+kt}$ pour tout $k$. Alors $1+kt$ divise $a_i-x^{(k)}_i$, qui est un facteur de $\prod_{j\le u}(a_i-j)$, et divise $P(y,c,\vec a,\vec v)\equiv P(y,k,\vec x^{(k)},\vec v)=0$. Les $1+kt$ étant premiers entre eux, leur produit $M$ divise ces deux nombres.</li>
+</ul>
+<p>Reste à voir que les conditions sont diophantiennes. $t=Q!$ l’est par la <a href="#exp-diophantienne">proposition précédente</a> ; $\prod_{j=0}^u(a-j)=(u+1)!\binom a{u+1}$ (les deux membres sont nuls si $a\le u$) ; et pour $M$ : si $qt\equiv1\pmod N$ avec $N=qt-1$, alors $q(1+kt)\equiv q+k$, donc $t^y\,y!\binom{q+y}y=t^y\prod_{k=1}^y(q+k)\equiv(qt)^yM\equiv M\pmod{qt-1}$. Avec $q=(1+yt)^y+1$, on a $qt-1>(1+yt)^y\ge M$ (car $t\ge2$), donc $M$ est le reste de $t^yy!\binom{q+y}y$ modulo $qt-1$. Les divisibilités entre polynômes sont diophantiennes par le lemme de clôture.</p>
+</div>
+</div>
+
+<div class="resultat theoreme" id="mrdp"><div class="entete-res"><div class="type">Théorème</div><div class="nom">Théorème de Matiyasevich-Robinson-Davis-Putnam (1970)</div></div>
+<div class="enonce"><p>Un ensemble $A\subseteq\N$ est semi-décidable si et seulement s’il est <strong>diophantien</strong> : il existe un polynôme $P(x,y_1,\dots,y_k)$ à coefficients entiers tel que $x\in A\iff\exists y_1,\dots,y_k\in\N\ P(x,\vec y)=0$. Par conséquent, le <strong>dixième problème de Hilbert</strong> (trouver une méthode qui décide si une équation polynomiale à coefficients entiers a une solution entière) n’a pas de solution.</p></div>
+<div class="niveau" data-niveau="philo">
+<p>Les équations polynomiales en nombres entiers, étudiées depuis Diophante d’Alexandrie, sont un langage de programmation universel. Les conséquences de ce fait, en arithmétique, font l’objet de la <a href="#relecture">section suivante</a>.</p>
+<p>C’est la réponse négative au dixième problème posé par Hilbert en 1900, aboutissement de vingt ans de travaux de Martin Davis, Hilary Putnam et Julia Robinson, achevés par Youri Matiyasevich à 22 ans.</p>
+</div>
+<div class="niveau" data-niveau="tech">
+<p><strong>Sens facile.</strong> Si $x\in A\iff\exists\vec y\ P(x,\vec y)=0$, on énumère les $\vec y$ et l’on s’arrête quand on trouve une solution : $A$ est semi-décidable.</p>
+<p><strong>Sens difficile.</strong> Par la <a href="incompletude.html#representabilite">proposition de définissabilité</a>, un ensemble semi-décidable est défini par une formule $\exists y\,\theta(x,y)$ avec $\theta$ bornée. Comme les relations diophantiennes sont closes par $\exists$, il suffit de montrer que toute relation définie par une formule bornée est diophantienne. On pousse d’abord les négations vers les égalités (lois de De Morgan, $\neg\forall x&lt;t\,\phi\leftrightarrow\exists x&lt;t\,\neg\phi$ et l’inverse) : la formule est construite à partir de $t_1=t_2$ et $t_1\neq t_2$ par $\wedge$, $\vee$, $\exists x&lt;t$ et $\forall x&lt;t$. Par induction sur cette construction :</p>
+<ul>
+<li>$t_1=t_2$ est une équation polynomiale, et $t_1\ne t_2$ est diophantienne (<a href="#dioph-clotures">lemme de clôture</a>), ainsi que $\wedge$, $\vee$, et $\exists x&lt;t\,\phi\iff\exists x\,(x&lt;t\wedge\phi)$ ;</li>
+<li>si $\phi(x,\vec w)\iff\exists\vec z\ P(x,\vec z,\vec w)=0$, alors $\forall x&lt;t\ \phi\iff\exists y\,\big(y=t(\vec w)\wedge\forall k\,(1\le k\le y\Rightarrow\exists\vec z\ P(k-1,\vec z,\vec w)=0)\big)$, qui est diophantienne par le <a href="#quantificateur-borne">lemme du quantificateur borné</a> (démontré ci-dessus).</li>
+</ul>
+<p>Ce lemme repose sur le caractère diophantien de la factorielle et des coefficients binomiaux, qui repose lui-même sur celui de l’exponentielle, obtenu par l’<a href="#pell-diophantien">équation de Pell</a> : c’était le point manquant, fourni par Matiyasevich (avec la suite de Fibonacci ; la présentation par l’équation de Pell est due à Davis, d’après Robinson et Matiyasevich).</p>
+<p><strong>Dixième problème.</strong> Soit $P_K(e,\vec y)$ un polynôme tel que $e\in K\iff\exists\vec y\in\N\ P_K(e,\vec y)=0$. Un algorithme qui décide si une équation diophantienne a une solution dans $\N$ déciderait $K$, en l’appliquant aux équations $P_K(e,\vec y)=0$. Pour les solutions dans $\mathbb Z$, on utilise la <a href="#reecritures">troisième réécriture</a> (théorème des quatre carrés).</p>
+</div>
+</div>
+
+<h2 id="relecture">Relire la calculabilité en arithmétique</h2>
+
+<p>Le théorème MRDP identifie deux classes définies indépendamment, à deux mille ans d’intervalle : les ensembles diophantiens et les ensembles semi-décidables. Tout ce que l’on sait des seconds se transporte aux premiers. Les résultats qui suivent sont, pour la plupart, des théorèmes de calculabilité déjà établis dans ce manuel, relus en arithmétique ; ils donnent des énoncés sur les nombres qu’aucun arithméticien n’aurait songé à conjecturer.</p>
+
+<div class="resultat theoreme" id="clotures-mrdp"><div class="entete-res"><div class="type">Corollaire</div><div class="nom">Ce que sont les ensembles diophantiens</div></div>
+<div class="enonce">
+<ol>
+<li>L’ensemble des nombres premiers, l’ensemble des puissances de 2, et plus généralement tout ensemble décidable, sont diophantiens.</li>
+<li>La classe des ensembles diophantiens est close par union, intersection et projection, mais <strong>pas par complémentaire</strong> : l’ensemble $K$ du problème de l’arrêt est diophantien, et son complémentaire ne l’est pas.</li>
+<li>Un ensemble est décidable si et seulement si lui et son complémentaire sont diophantiens.</li>
+</ol>
+</div>
+<div class="niveau" data-niveau="philo"><p>Les questions laissées ouvertes à la <a href="#def-diophantien">définition</a> trouvent toutes leur réponse, sans qu’il faille chercher une seule équation : il suffit de savoir écrire un programme. Écrire à la main une équation dont les solutions décrivent les nombres premiers est une autre affaire ; on en connaît (voir <a href="#polynome-premiers">plus bas</a>), et elles sont effrayantes. La dissymétrie du point 2 est remarquable : dire qu’un nombre « a des témoins » est diophantien, dire qu’il « n’en a pas » ne l’est pas toujours.</p></div>
+<div class="niveau" data-niveau="tech">
+<p>(1) Un ensemble décidable est semi-décidable, donc diophantien par le <a href="#mrdp">théorème MRDP</a>. Pour les puissances de 2, on peut aussi invoquer directement le <a href="#exp-diophantienne">caractère diophantien de l’exponentielle</a> : $a\in\{2^n\}\iff\exists n\ a=2^n$.</p>
+<p>(2) L’union, l’intersection et la projection sont traitées par le <a href="#dioph-clotures">lemme de clôture</a>. L’ensemble $K$ est semi-décidable, donc diophantien ; son complémentaire n’est pas semi-décidable (<a href="semi-decidabilite.html#kbar">corollaire</a>), donc pas diophantien, par le sens facile de MRDP.</p>
+<p>(3) C’est le <a href="semi-decidabilite.html#post-complement">théorème de Post</a>, relu par MRDP.</p>
+</div>
+</div>
+
+<div class="resultat theoreme" id="equation-universelle"><div class="entete-res"><div class="type">Théorème</div><div class="nom">Équation diophantienne universelle</div></div>
+<div class="enonce"><p>Il existe un polynôme $U(a,k,y_1,\dots,y_n)$ à coefficients entiers tel que, pour tout ensemble diophantien $E\subseteq\N$, il existe un entier $k$ avec</p>
+$$E=\{a:\exists y_1,\dots,y_n\in\N\ \ U(a,k,\vec y)=0\}.$$
+<p>On peut choisir $U$ de degré au plus 4.</p></div>
+<div class="niveau" data-niveau="philo">
+<p>Une seule équation contient toutes les autres : choisir la valeur du paramètre $k$, c’est choisir un programme ; résoudre l’équation pour $a$, c’est exécuter ce programme sur l’entrée $a$. C’est l’équivalent arithmétique de la <a href="universalite.html">machine universelle</a>. Le nombre $n$ d’inconnues est fixé une fois pour toutes ; aucune famille d’équations, si compliquée soit-elle, n’en demande davantage.</p>
+<p>C’est aussi l’un des arguments les plus frappants en faveur de la <a href="these-church.html">thèse de Church</a>. Les ensembles diophantiens ont été définis par des questions d’arithmétique héritées de l’Antiquité, les ensembles semi-décidables par l’analyse du calcul mécanique au XX<sup>e</sup> siècle ; les deux définitions ne se doivent rien et donnent la même classe.</p>
+</div>
+<div class="niveau" data-niveau="tech">
+<p>L’ensemble $W=\{\langle a,k\rangle:\varphi_k(a)\conv\}$ est semi-décidable (on simule $\varphi_k(a)$ par la machine universelle), où $\langle a,k\rangle=\frac{(a+k)(a+k+1)}2+a$ est le <a href="fonctions-recursives.html#cantor-couple">codage de Cantor</a>. Par MRDP, il existe un polynôme $P(c,\vec y)$ tel que $c\in W\iff\exists\vec y\ P(c,\vec y)=0$. On pose</p>
+$$U(a,k,c,\vec y)=\big(2c-(a+k)(a+k+1)-2a\big)^2+P(c,\vec y)^2 .$$
+<p>La première parenthèse s’annule exactement quand $c=\langle a,k\rangle$. Donc $\exists c,\vec y\ U(a,k,c,\vec y)=0\iff\langle a,k\rangle\in W\iff\varphi_k(a)\conv$. Un ensemble diophantien $E$ est semi-décidable (sens facile de MRDP), donc c’est le domaine d’une fonction $\varphi_k$ (<a href="semi-decidabilite.html#caracterisations-re">caractérisations</a>), et $E=\{a:\exists c,\vec y\ U(a,k,c,\vec y)=0\}$.</p>
+<p>Pour le degré, on applique à $U$ la <a href="#reecritures">réduction au degré 4</a> en traitant $a$ et $k$ comme des inconnues : les inconnues ajoutées sont des fonctions des anciennes, donc pour chaque valeur de $(a,k)$ la nouvelle équation a une solution si et seulement si l’ancienne en a une.</p>
+</div>
+<div class="niveau" data-niveau="techno">
+<p>Cités ici pour information : Matiyasevich a annoncé en 1975 qu’il suffit de 9 inconnues, au prix d’un degré gigantesque (preuve publiée par James Jones, 1982) ; Jones a aussi montré que 58 inconnues suffisent en degré 4, et donné une table de compromis entre degré et nombre d’inconnues. On ignore le nombre minimal d’inconnues.</p>
+<p>Ces équations ne servent pas à calculer : simuler un programme en cherchant des solutions entières d’un polynôme est astronomiquement plus lent qu’exécuter le programme. Leur intérêt est d’exister.</p>
+</div>
+</div>
+
+<div class="resultat theoreme" id="polynome-premiers"><div class="entete-res"><div class="type">Théorème</div><div class="nom">Un polynôme dont les valeurs positives sont les nombres premiers (Putnam, 1960)</div></div>
+<div class="enonce"><p>Pour tout ensemble diophantien $E\subseteq\N$, il existe un polynôme $Q(a,y_1,\dots,y_n)$ à coefficients entiers dont l’ensemble des valeurs strictement positives, quand $a,\vec y$ parcourent $\N$, est exactement $E\setminus\{0\}$. En particulier, il existe un polynôme dont les valeurs positives sont exactement les nombres premiers.</p></div>
+<div class="niveau" data-niveau="philo"><p>C’est le genre d’énoncé qu’on aurait cru faux. On sait depuis le XVIII<sup>e</sup> siècle qu’aucun polynôme non constant à une variable ne prend que des valeurs premières, et des formules comme $n^2+n+41$ (premier pour $0\le n\le39$, mais pas pour $n=40$) ont longtemps nourri l’espoir d’une « formule des nombres premiers ». Le théorème en livre une, mais l’astuce est dans le mot « positives » : le polynôme prend aussi des valeurs négatives, qui ne sont pas toutes des opposés de nombres premiers, et le tri est fait par le signe.</p></div>
+<div class="niveau" data-niveau="tech">
+<p>Soit $P$ tel que $a\in E\iff\exists\vec y\ P(a,\vec y)=0$, et posons $Q(a,\vec y)=a\,\big(1-P(a,\vec y)^2\big)$. Si $a\in E$ et $a>0$, il y a $\vec y$ avec $P=0$, et $Q(a,\vec y)=a$. Inversement, si $Q(a,\vec y)>0$, alors $a>0$ et $1-P^2>0$ ; comme $P$ est un entier, $P=0$, donc $a\in E$ et la valeur $Q(a,\vec y)=a$ est dans $E$. Pour les premiers, on applique ce résultat à l’ensemble des nombres premiers, diophantien par le <a href="#clotures-mrdp">corollaire</a>.</p>
+<p><em>Une variable ne suffit pas.</em> Soit $f$ un polynôme non constant à coefficients entiers, et $p=f(x_0)$ premier. Comme $u-v$ divise $f(u)-f(v)$, $p$ divise $f(x_0+kp)$ pour tout $k$. Si toutes ces valeurs étaient premières, elles vaudraient toutes $p$, et $f-p$ aurait une infinité de racines : $f$ serait constant.</p>
+</div>
+<div class="niveau" data-niveau="techno">
+<p>La fonction <code>putnam_non_carres</code> de <a href="assets/code/diophante.py">diophante.py</a> applique l’astuce de Putnam à l’équation des non-carrés de la <a href="#def-diophantien">définition</a> : en parcourant toutes les valeurs des quatre variables inférieures à 12, les valeurs positives obtenues sont exactement $2,3,5,6,7,8,10,11$, c’est-à-dire les non-carrés de cette plage.</p>
+<p>Cité ici pour information : Jones, Sato, Wada et Wiens ont écrit explicitement en 1976 un polynôme de degré 25 à 26 variables dont les valeurs positives sont les nombres premiers ; c’est une somme de quatorze conditions, dont l’écriture tient sur une demi-page.</p>
+</div>
+</div>
+
+<div class="resultat theoreme" id="pas-de-borne"><div class="entete-res"><div class="type">Théorème</div><div class="nom">Pas de borne calculable sur les solutions</div></div>
+<div class="enonce"><p>Pour une équation diophantienne $D$ de code $e$, notons $m(e)$ le plus petit entier $m$ tel que $D$ a une solution dont toutes les inconnues sont au plus $m$, et $m(e)=0$ si $D$ n’a pas de solution. Aucune fonction calculable $f$ ne vérifie $m(e)\le f(e)$ pour tout $e$.</p></div>
+<div class="niveau" data-niveau="philo">
+<p>Les solutions d’une équation peuvent être cachées arbitrairement loin, et l’on ne peut pas savoir à l’avance jusqu’où chercher. La fonction $m$ joue pour les équations le rôle que joue la <a href="castors-affaires.html#sigma-non-calculable">fonction du castor affairé</a> pour les machines : elle échappe à toute borne calculable.</p>
+<p>Des familles très simples donnent déjà une idée du phénomène. L’équation de Pell $x^2-dy^2=1$ a toujours une solution avec $y\ge1$ quand $d$ n’est pas un carré (Lagrange, 1768, cité ici pour information ; le <a href="#pell">lemme de Pell</a> traite le cas $d=a^2-1$) ; la plus petite vaut $(31,4)$ pour $d=60$, $(63,8)$ pour $d=62$, mais $(1\,766\,319\,049,\ 226\,153\,980)$ pour $d=61$. Il ne faut pas surinterpréter l’exemple : pour l’équation de Pell, on sait calculer la solution, et donc la borner (fractions continues). C’est sur l’ensemble de toutes les équations que la borne devient impossible.</p>
+</div>
+<div class="niveau" data-niveau="tech"><p>Si une telle $f$ existait, voici une procédure de décision du dixième problème : étant donnée une équation de code $e$, essayer tous les uplets d’inconnues inférieures ou égales à $f(e)$, en nombre fini. Si l’un d’eux est solution, l’équation en a une ; sinon, elle n’en a pas, puisque $m(e)\le f(e)$ et qu’une équation qui a une solution en a une de taille au plus $m(e)$. Cela contredit le <a href="#mrdp">théorème MRDP</a>.</p></div>
+<div class="niveau" data-niveau="techno"><p>La fonction <code>pell</code> de <a href="assets/code/diophante.py">diophante.py</a> calcule la plus petite solution par fractions continues. Pour $d=109$ elle vaut déjà $x=158\,070\,671\,986\,249$, $y=15\,140\,424\,455\,100$ ; une recherche exhaustive sur $y$, à un milliard d’essais par seconde, demanderait environ quatre heures, quand le développement en fraction continue la donne en quelques dizaines d’opérations. Pour une équation quelconque, aucune méthode de ce genre n’existe en général.</p></div>
+</div>
+
+<div class="resultat theoreme" id="conjectures"><div class="entete-res"><div class="type">Théorème</div><div class="nom">Les conjectures de forme Π₁ sont des équations sans solution</div></div>
+<div class="enonce">
+<ol>
+<li>Pour tout énoncé de la forme $\forall n\ R(n)$, avec $R$ décidable, on peut calculer une équation diophantienne qui n’a pas de solution si et seulement si l’énoncé est vrai.</li>
+<li>Soit $T$ une théorie récursivement axiomatisable et correcte (elle ne démontre que des énoncés vrais), qui peut exprimer « l’équation $D$ n’a pas de solution ». Il existe une équation sans solution dont $T$ ne démontre pas qu’elle n’en a pas.</li>
+</ol>
+</div>
+<div class="niveau" data-niveau="philo">
+<p>La conjecture de Goldbach (« tout nombre pair supérieur à 2 est somme de deux nombres premiers »), le grand théorème de Fermat, la cohérence de ZFC sont de la forme $\forall n\ R(n)$ avec $R$ décidable. Chacun équivaut donc à l’absence de solution d’une équation diophantienne particulière, que l’on peut écrire explicitement. C’est vrai aussi, ce qui est moins évident, de l’hypothèse de Riemann (Davis, Matiyasevich et Robinson, 1976, résultat cité ici pour information).</p>
+<p>Le second point est l’incomplétude de Gödel sous une forme arithmétique très pure : il y a des équations qui n’ont pas de solution, sans que les mathématiques usuelles puissent le démontrer. Pour l’équation qui exprime la cohérence de ZFC, c’est le <a href="incompletude.html#godel2">second théorème d’incomplétude</a> qui le dit, sous la seule hypothèse que ZFC est cohérente.</p>
+</div>
+<div class="niveau" data-niveau="tech">
+<p>(1) L’ensemble $A=\{x:\exists n\ \neg R(n)\}$ est semi-décidable (on cherche un contre-exemple), et il vaut $\N$ ou $\emptyset$ selon que l’énoncé est faux ou vrai. Par MRDP, dont la preuve est effective, on calcule $P$ avec $x\in A\iff\exists\vec y\ P(x,\vec y)=0$ ; l’équation $P(0,\vec y)=0$ convient. Pour Goldbach, $R(n)$ dit « $2n+4$ est somme de deux premiers », décidable par essais ; pour la cohérence de ZFC, $R(n)$ dit « $n$ n’est pas le code d’une preuve de $0=1$ dans ZFC », décidable parce que les axiomes de ZFC forment un ensemble décidable.</p>
+<p>(2) Soit $S$ l’ensemble des codes d’équations qui ont une solution ; $S$ est semi-décidable et pas décidable (MRDP). L’ensemble $N_T$ des codes $e$ tels que $T$ démontre « l’équation $e$ n’a pas de solution » est semi-décidable : on énumère les preuves de $T$. Comme $T$ est correcte, $N_T\subseteq\overline S$. Si l’on avait $N_T=\overline S$, alors $\overline S$ serait semi-décidable, et $S$ serait décidable par le <a href="semi-decidabilite.html#post-complement">théorème de Post</a>. Il y a donc $e\in\overline S\setminus N_T$.</p>
+</div>
+<div class="niveau" data-niveau="techno"><p>Des équations explicites de ce genre ont été écrites : il est possible, avec patience, de produire un polynôme dont l’absence de racines entières équivaut à la conjecture de Goldbach. Chaitin a de même écrit une équation diophantienne exponentielle liée aux chiffres du nombre $\Omega$ (voir le <a href="kolmogorov-omega.html#omega-theorie">chapitre sur Ω</a>).</p></div>
+</div>
+
+<div class="resultat theoreme" id="questions-ouvertes"><div class="entete-res"><div class="type">Remarque</div><div class="nom">Ce que l’on ne sait pas, et la complexité</div></div>
+<div class="enonce"><p>Les résultats de cette remarque sont cités pour information, sauf le cas d’une inconnue.</p>
+<ul>
+<li><strong>Une inconnue</strong> : décidable. <strong>Degré 2</strong> : décidable (Siegel, 1972). <strong>Degré 3</strong> : ouvert. <strong>Degré 4</strong> : indécidable, par la <a href="#reecritures">réduction</a>.</li>
+<li><strong>Solutions rationnelles</strong> : on ignore si l’on peut décider qu’une équation à coefficients entiers a une solution dans $\mathbb Q$.</li>
+<li><strong>Complexité</strong> : même quand le problème est décidable, il peut être difficile. Décider si $\alpha x^2+\beta y=\gamma$ a une solution dans $\N$, pour des entiers $\alpha,\beta,\gamma$ donnés en binaire, est NP-complet (Manders et Adleman, 1978).</li>
+</ul>
+</div>
+<div class="niveau" data-niveau="philo"><p>Le talk dont ce chapitre s’inspire se terminait sur une question : la calculabilité a éclairé la théorie des nombres ; l’inverse peut-il se produire, des résultats d’arithmétique éclairant la calculabilité ou la <a href="complexite.html">complexité</a> ? Le résultat de Manders et Adleman montre au moins que les équations diophantiennes sont aussi un bon langage pour la complexité : une équation de degré 2 à deux inconnues suffit à coder tout problème NP.</p></div>
+<div class="niveau" data-niveau="tech"><p><em>Une inconnue.</em> Si $D(x)=c_dx^d+\cdots+c_1x+c_0$ et $D(x)=0$, alors $x$ divise $c_0$ : si $c_0\ne0$, il suffit d’essayer les diviseurs de $c_0$, en nombre fini ; si $c_0=0$, $x=0$ est solution.</p></div>
+</div>
+
+<!--EXERCICES-->
+<h2 id="exercices">Exercices</h2>
+
+<p class="legende-exo">Niveaux : ★ application directe du cours, ★★ exercice standard, ★★★ approfondissement. Les corrections sont masquées : cliquer sur « Correction » pour les afficher.</p><div class="exercice" id="ex-dio-premiers"><div class="entete-exo"><span class="etoiles" title="niveau 1">★</span><span class="nom-exo">Exercice 1 — Premiers ensembles diophantiens</span></div><div class="corps-exo">
+<p>Donner une représentation diophantienne (une équation à paramètre $a$) de : (a) les nombres pairs ; (b) les nombres non divisibles par 3 ; (c) les nombres qui ne sont pas des puissances de 2.</p>
+<details class="corrige"><summary>Correction</summary><div class="texte-corrige">
+<ul>
+<li>(a) $a-2x=0$.</li>
+<li>(b) $a=3x+r+1$ avec $r\in\{0,1\}$, c’est-à-dire $r+s=1$ : $(a-3x-r-1)^2+(r+s-1)^2=0$.</li>
+<li>(c) $a$ n’est pas une puissance de 2 si et seulement s’il a un diviseur impair supérieur à 1 (ou s’il vaut 0) : $a\big(a-(2x+3)(y+1)\big)=0$. Le facteur $a$ prend en compte $a=0$ ; pour $a\ge1$, l’équation $a=(2x+3)(y+1)$ dit que $a$ a le diviseur impair $2x+3\ge3$.</li>
+</ul>
+</div></details>
+</div></div>
+
+<div class="exercice" id="ex-dio-degre"><div class="entete-exo"><span class="etoiles" title="niveau 1">★</span><span class="nom-exo">Exercice 2 — Abaisser le degré</span></div><div class="corps-exo">
+<p>Écrire un système d’équations de degré au plus 2 qui a une solution si et seulement si $x^3-2y^2=5$ en a une, en suivant la <a href="#reecritures">méthode des réécritures</a>. Quel est le degré de l’équation unique obtenue ?</p>
+<details class="corrige"><summary>Correction</summary><div class="texte-corrige">
+<p>On écrit $x^3=2y^2+5$ (coefficients positifs), puis on nomme les résultats intermédiaires : $u=x\cdot x$, $v=u\cdot x$, $w=y\cdot y$, $t=2w$, $v=t+5$. Chaque équation est de degré au plus 2, et $u,v,w,t$ sont déterminés par $x,y$. L’équation unique $(u-x^2)^2+(v-ux)^2+(w-y^2)^2+(t-2w)^2+(v-t-5)^2=0$ est de degré 4. Ici l’équation a une solution, $x=7$, $y=13$ : $343-2\cdot169=5$ ; les inconnues auxiliaires valent alors $u=49$, $v=343$, $w=169$, $t=338$.</p>
+</div></details>
+</div></div>
+
+<div class="exercice" id="ex-dio-putnam"><div class="entete-exo"><span class="etoiles" title="niveau 2">★★</span><span class="nom-exo">Exercice 3 — L’astuce de Putnam sur les nombres composés</span></div><div class="corps-exo">
+<p>Appliquer la construction du <a href="#polynome-premiers">théorème de Putnam</a> à la représentation $a-(x_1+2)(x_2+2)=0$ des nombres composés. Vérifier que les valeurs positives obtenues sont bien les nombres composés.</p>
+<details class="corrige"><summary>Correction</summary><div class="texte-corrige">
+<p>On pose $Q(a,x_1,x_2)=a\big(1-(a-(x_1+2)(x_2+2))^2\big)$. Si $a=(x_1+2)(x_2+2)$, alors $Q=a$, qui est composé. Sinon, le carré vaut au moins 1, donc $1-(\cdots)^2\le0$ et $Q\le0$. Les valeurs positives de $Q$ sont donc exactement les nombres composés. Un calcul sur $a,x_1,x_2<40$ donne bien $4,6,8,9,10,12,14,15,16,18,\dots$</p>
+</div></details>
+</div></div>
+
+<div class="exercice" id="ex-dio-lineaire"><div class="entete-exo"><span class="etoiles" title="niveau 2">★★</span><span class="nom-exo">Exercice 4 — Les équations linéaires sont décidables</span></div><div class="corps-exo">
+<p>Montrer qu’on peut décider si $ax+by=c$ ($a,b,c\in\mathbb Z$ donnés) a une solution (a) dans $\mathbb Z$ ; (b) dans $\N$.</p>
+<details class="corrige"><summary>Correction</summary><div class="texte-corrige">
+<p>(a) Soit $g=\mathrm{pgcd}(a,b)$ (si $a=b=0$, il faut $c=0$). Toute combinaison $ax+by$ est un multiple de $g$, et par l’identité de Bézout (algorithme d’Euclide étendu) $g$ lui-même en est une : il y a une solution dans $\mathbb Z$ si et seulement si $g\mid c$.</p>
+<p>(b) Si $a$ et $b$ sont de même signe et non nuls, une solution dans $\N$ vérifie $|x|\le|c|/|a|$ et $|y|\le|c|/|b|$ : une recherche finie suffit. Si l’un est nul, c’est une équation à une inconnue. Si $a>0>b$ et $g\mid c$, partant d’une solution $(x_0,y_0)$ dans $\mathbb Z$, les couples $(x_0+t|b|/g,\ y_0+ta/g)$ sont des solutions, et pour $t$ assez grand les deux coordonnées sont positives : il y a une solution dans $\N$ si et seulement si $g\mid c$. Le dixième problème est donc décidable pour le degré 1 ; la frontière se situe entre le degré 2 (décidable) et le degré 4 (indécidable).</p>
+</div></details>
+</div></div>
+
+<div class="exercice" id="ex-dio-wilson"><div class="entete-exo"><span class="etoiles" title="niveau 3">★★★</span><span class="nom-exo">Exercice 5 — Les nombres premiers par Wilson</span></div><div class="corps-exo">
+<p>(a) Montrer le théorème de Wilson : un entier $n\ge2$ est premier si et seulement si $n$ divise $(n-1)!+1$. (b) En déduire, avec le caractère diophantien de la factorielle (<a href="#exp-diophantienne">proposition</a>), une représentation diophantienne des nombres premiers, sans passer par MRDP.</p>
+<details class="corrige"><summary>Correction</summary><div class="texte-corrige">
+<p>(a) Si $p$ est premier, chaque $x\in\{1,\dots,p-1\}$ a un inverse modulo $p$ dans cet ensemble (Bézout). On a $x^2\equiv1\pmod p$ seulement pour $x=1$ et $x=p-1$, puisque $p\mid(x-1)(x+1)$ entraîne $p\mid x-1$ ou $p\mid x+1$ (<a href="bases.html#lemme-euclide">lemme d’Euclide</a>). Les autres éléments se regroupent en paires $\{x,x^{-1}\}$ de produit 1 : $(p-1)!\equiv1\cdot(p-1)\equiv-1\pmod p$. Si $n$ est composé, $n=uv$ avec $1&lt;u\le v&lt;n$ : si $u&lt;v$, $u$ et $v$ apparaissent dans $(n-1)!$, donc $n\mid(n-1)!$ ; si $u=v$ et $u>2$, $u$ et $2u$ apparaissent ($2u&lt;u^2=n$), donc $n\mid(n-1)!$ ; reste $n=4$, avec $3!=6\equiv2\pmod4$. Dans tous les cas $(n-1)!+1\equiv1$ ou $3\pmod n$, et $n\nmid(n-1)!+1$. Un calcul confirme que les $n<60$ vérifiant la condition sont exactement les premiers.</p>
+<p>(b) $a\text{ premier}\iff\exists m\,\exists q\ \big(a\ge2\wedge m=(a-1)!\wedge m+1=a\,q\big)$. La relation $m=(a-1)!$ est diophantienne, ainsi que $a\ge2$ (« $\exists z\ a=z+2$ »), et la conjonction se traduit par une somme de carrés (<a href="#dioph-clotures">lemme de clôture</a>). Le polynôme des nombres premiers de Jones, Sato, Wada et Wiens part lui aussi du théorème de Wilson.</p>
+</div></details>
+</div></div>
+
+<nav class="nav-chap"><a href="incompletude.html"><small>← Précédent</small>Calcul et logique : incomplétude et problème de la décision</a><a href="logique-types.html" style="text-align:right"><small>Suivant →</small>Logique et calcul : décidabilité, types et preuves</a></nav>
+<footer class="pied">Calculabilité — manuel à trois niveaux de lecture. Auteurs : Frédéric Prost et Claude. Texte sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" rel="license">CC BY-SA 4.0</a>, code sous licence MIT. Les mathématiques sont rendues par KaTeX (licence MIT), embarqué localement : le site se lit sans connexion.</footer>
+</main>
+</div>
+<script src="assets/katex/katex.min.js"></script>
+<script src="assets/katex/contrib/auto-render.min.js"></script>
+<script src="assets/turing.js"></script>
+<script src="assets/lambda.js"></script>
+<script src="assets/pcp.js"></script>
+<script src="assets/automates.js"></script>
+<script src="assets/niveaux.js"></script>
+<script src="assets/widgets.js"></script>
+</body>
+</html>

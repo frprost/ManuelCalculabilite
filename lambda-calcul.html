@@ -1,0 +1,464 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Frédéric Prost et Claude">
+<title>Le λ-calcul · Calculabilité</title>
+<link rel="stylesheet" href="assets/katex/katex.min.css">
+<link rel="stylesheet" href="assets/style.css">
+<script>try{var t=localStorage.getItem('calc-theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}document.documentElement.classList.add('js');</script>
+</head>
+<body>
+<header class="entete"><div class="entete-int">
+  <button type="button" class="btn-menu" aria-label="Sommaire">☰ Sommaire</button>
+  <a class="titre-site" href="index.html">Calculabilité <span>·</span> un manuel à trois niveaux</a>
+  <span class="selecteur-legende">Niveau de lecture :</span>
+  <div class="selecteur" role="group" aria-label="Niveau de lecture">
+    <button type="button" data-niveau="philo" title="Sens et implications">Philosophique</button>
+    <button type="button" data-niveau="tech" title="Preuves mathématiques">Technique</button>
+    <button type="button" data-niveau="techno" title="Constructions complètes, machines de Turing">Technologique</button>
+    <button type="button" data-niveau="tout" title="Afficher les trois niveaux">Tout</button>
+  </div>
+  <button type="button" class="btn-theme" aria-label="Changer de thème" title="Clair / sombre">◐</button>
+</div></header>
+<div class="page">
+<nav class="sommaire" aria-label="Sommaire"><ul><li><a href="index.html">Accueil et mode d’emploi</a></li></ul><h2>Entrer dans le sujet</h2><ol><li><a href="motivations.html"><span class="num">1</span>Motivations</a></li><li><a href="trois-approches.html"><span class="num">2</span>Trois approches du calcul</a></li></ol><h2>Modèles de calcul</h2><ol><li><a href="machines-turing.html"><span class="num">3</span>Machines de Turing</a></li><li><a href="fonctions-recursives.html"><span class="num">4</span>Fonctions récursives</a></li><li><a href="lambda-calcul.html" aria-current="page"><span class="num">5</span>λ-calcul</a></li><li><a href="equivalence.html"><span class="num">6</span>Équivalence des modèles</a></li><li><a href="these-church.html"><span class="num">7</span>Thèse de Church-Turing</a></li></ol><h2>Théorèmes fondamentaux</h2><ol><li><a href="universalite.html"><span class="num">8</span>Universalité</a></li><li><a href="smn-recursion.html"><span class="num">9</span>s-m-n et récursion</a></li></ol><h2>Limites du calcul</h2><ol><li><a href="indecidabilite.html"><span class="num">10</span>Indécidabilité</a></li><li><a href="semi-decidabilite.html"><span class="num">11</span>Semi-décidabilité</a></li><li><a href="hierarchie-arithmetique.html"><span class="num">12</span>Hiérarchie arithmétique</a></li><li><a href="incompletude.html"><span class="num">13</span>Incomplétude</a></li><li><a href="equations-diophantiennes.html"><span class="num">14</span>Équations diophantiennes</a></li><li><a href="logique-types.html"><span class="num">15</span>Logique et types</a></li><li><a href="theories-decidables.html"><span class="num">16</span>Théories décidables</a></li><li><a href="mathematiques-indecidables.html"><span class="num">17</span>Mathématiques ordinaires</a></li><li><a href="kolmogorov-omega.html"><span class="num">18</span>Kolmogorov et Ω</a></li><li><a href="langages.html"><span class="num">19</span>Langages et grammaires</a></li></ol><h2>Complexité</h2><ol><li><a href="complexite.html"><span class="num">20</span>Complexité</a></li><li><a href="hasard-quantique.html"><span class="num">21</span>Hasard et quantique</a></li></ol><h2>Études de cas</h2><ol><li><a href="ackermann.html"><span class="num">22</span>Fonction d’Ackermann</a></li><li><a href="castors-affaires.html"><span class="num">23</span>Castors affairés</a></li><li><a href="calculabilite-ia.html"><span class="num">24</span>Calculabilité et IA</a></li><li><a href="autres-modeles.html"><span class="num">25</span>Autres modèles</a></li></ol><h2>Annexes</h2><ol><li><a href="parcours.html">Parcours de lecture</a></li><li><a href="cantor.html">Diagonale de Cantor</a></li><li><a href="bases.html">Notions de base</a></li><li><a href="leibniz.html">Leibniz et le binaire</a></li><li><a href="bibliographie.html">Bibliographie</a></li></ol></nav>
+<main class="contenu">
+<h1>Le λ-calcul</h1>
+<p class="chapo">Trois constructions, une seule règle de calcul, et pourtant toute l’informatique : le modèle de Church, où tout est fonction, y compris les nombres.</p>
+<div class="prerequis"><strong>Pré-requis</strong><a href="bases.html#mots">Alphabets et mots</a> · <a href="bases.html#fonctions">Notation des fonctions</a></div>
+<nav class="toc-locale" aria-label="Dans ce chapitre"><strong>Dans ce chapitre</strong><ol><li><a href="#variable-abstraction-application">Variable, abstraction, application</a></li><li><a href="#syntaxe-et-regle-de-calcul">Syntaxe et règle de calcul</a></li><li><a href="#confluence">Confluence</a></li><li><a href="#programmer-en-calcul">Programmer en λ-calcul</a></li><li><a href="#bibliotheque-commune">Une bibliothèque commune aux trois modèles</a></li><li><a href="#exercices">Exercices</a></li></ol></nav>
+
+
+<h2 id="variable-abstraction-application">Variable, abstraction, application</h2>
+
+<p>Dans les années 1930, Alonzo Church cherchait une théorie générale des fonctions, d’abord comme fondement de la logique. Le λ-calcul qui en est issu est un des premiers modèles de calcul à avoir donné une définition précise des fonctions calculables (λ-définissabilité, 1933–1936), contemporain des fonctions récursives générales de Herbrand et Gödel (1934) et des machines de Turing (1936).</p>
+
+<p>L’idée de fonction remonte à Leibniz, qui introduit le mot à la fin du XVII<sup>e</sup> siècle ; Jean Bernoulli puis Euler la redéfinissent comme une expression composée de quantités variables et constantes. L’expression $x+1$ n’a de valeur que si celle de $x$ est fixée ; la fonction $f:x\mapsto x+1$ exprime cette dépendance, et calculer $f(4)$ consiste à <em>substituer</em> $4$ à $x$ dans $x+1$. Trois concepts sont à l’œuvre :</p>
+<ul>
+<li><strong>Variable</strong> : un symbole qui représente « n’importe quelle valeur ».</li>
+<li><strong>Abstraction</strong> : la variable n’est qu’un moyen d’indiquer ce qu’il faudra remplacer ; $y\mapsto y+1$ et $x\mapsto x+1$ sont la même fonction (variable <em>muette</em>).</li>
+<li><strong>Application</strong> : évaluer une fonction, c’est remplacer la variable par une valeur.</li>
+</ul>
+<p>Le coup de génie de Church est de n’utiliser que ces trois principes, et d’accepter que <em>n’importe quel terme</em>, y compris une fonction, puisse être substitué à une variable. La notation mathématique usuelle confond la fonction $f$ et sa valeur $f(x)$ ; elle oblige à nommer les fonctions, ce qui rend malaisé l’ordre supérieur (fonctions qui prennent ou rendent des fonctions, comme un compilateur) et l’application partielle : si $g(x,y)=x+y+1$, la fonction « $g$ avec $x=4$ » s’écrit simplement $\lambda y.\,g\,4\,y$.</p>
+
+<h2 id="syntaxe-et-regle-de-calcul">Syntaxe et règle de calcul</h2>
+
+<div class="resultat definition" id="def-termes"><div class="entete-res"><div class="type">Définition</div><div class="nom">λ-termes, variables libres et liées</div></div>
+<div class="enonce">
+<p>Soit $\mathcal V$ un ensemble infini dénombrable de variables. Les <strong>λ-termes</strong> sont définis par la grammaire</p>
+$$M ::= x \;\mid\; (M_1\,M_2) \;\mid\; \lambda x.M \qquad (x\in\mathcal V).$$
+<p>$(M_1\,M_2)$ est une <em>application</em>, $\lambda x.M$ une <em>abstraction</em>. Les variables libres $\mathrm{VL}$ et liées $\mathrm{VB}$ sont définies par</p>
+$$\begin{aligned}
+\mathrm{VL}(x)&=\{x\} & \mathrm{VL}(M_1M_2)&=\mathrm{VL}(M_1)\cup\mathrm{VL}(M_2) & \mathrm{VL}(\lambda x.M)&=\mathrm{VL}(M)\setminus\{x\}\\
+\mathrm{VB}(x)&=\emptyset & \mathrm{VB}(M_1M_2)&=\mathrm{VB}(M_1)\cup\mathrm{VB}(M_2) & \mathrm{VB}(\lambda x.M)&=\mathrm{VB}(M)\cup\{x\}
+\end{aligned}$$
+</div>
+<div class="niveau" data-niveau="tech">
+<p>Conventions d’écriture : l’application associe à gauche ($MNP$ abrège $((MN)P)$), le corps d’une abstraction s’étend le plus loin possible à droite, et $\lambda xy.M$ abrège $\lambda x.\lambda y.M$.</p>
+</div>
+<div class="niveau" data-niveau="techno"><p>Dans le réducteur de la page, on écrit <code>λx.M</code> ou <code>\x.M</code>, <code>λx y.M</code> pour $\lambda x.\lambda y.M$, et les entiers <code>0</code>, <code>1</code>, <code>2</code>… désignent les entiers de Church définis plus bas.</p></div>
+</div>
+
+<div class="resultat definition" id="def-beta"><div class="entete-res"><div class="type">Définition</div><div class="nom">Substitution, α-équivalence, β-réduction</div></div>
+<div class="enonce">
+<p>La <strong>substitution</strong> $M[x:=N]$ (remplacement des occurrences libres de $x$ par $N$) est définie par induction :</p>
+$$\begin{aligned}
+x[x:=N]&=N, \qquad y[x:=N]=y\ \ (y\neq x),\qquad (M_1M_2)[x:=N]=(M_1[x:=N]\ M_2[x:=N]),\\
+(\lambda x.M)[x:=N]&=\lambda x.M,\\
+(\lambda y.M)[x:=N]&=\lambda y.\,M[x:=N] \quad\text{si } y\ne x \text{ et } y\notin\mathrm{VL}(N),\\
+(\lambda y.M)[x:=N]&=\lambda z.\,M[y:=z][x:=N] \quad\text{si } y\ne x,\ y\in\mathrm{VL}(N), \text{ avec } z \text{ neuve.}
+\end{aligned}$$
+<p>Deux termes sont <strong>α-équivalents</strong> s’ils ne diffèrent que par le nom de variables liées : $\lambda x.M=_\alpha\lambda z.M[x:=z]$ pour $z\notin\mathrm{VL}(M)\cup \mathrm{VB}(M)$, et cette relation est close par passage aux sous-termes. On travaille désormais modulo $=_\alpha$.</p>
+<p>La <strong>β-réduction</strong> $\to_\beta$ est la plus petite relation telle que $(\lambda x.M)\,N\to_\beta M[x:=N]$ et close par contexte : si $M\to_\beta M'$, alors $MN\to_\beta M'N$, $NM\to_\beta NM'$ et $\lambda x.M\to_\beta\lambda x.M'$. On note $\twoheadrightarrow_\beta$ sa clôture réflexive et transitive, et $=_\beta$ la relation d’équivalence engendrée.</p>
+</div>
+<div class="niveau" data-niveau="philo"><p>Une seule règle de calcul : remplacer le paramètre formel par l’argument. C’est le mécanisme que l’on apprend au collège pour évaluer $f(4)$. La seule subtilité est de ne pas <em>capturer</em> une variable : dans $\lambda y.x$, remplacer $x$ par $y$ ne doit pas donner $\lambda y.y$ (l’identité !) mais $\lambda z.y$ (la fonction constante égale à $y$). Les variables liées sont des noms internes, qu’on peut renommer.</p></div>
+<div class="niveau" data-niveau="tech">
+<p>Un sous-terme de la forme $(\lambda x.M)N$ s’appelle un <em>rédex</em>. Un terme sans rédex est une <strong>forme normale</strong>. Un terme <em>a une forme normale</em> s’il se réduit vers une forme normale.</p>
+</div>
+<div class="niveau" data-niveau="techno"><p>Le réducteur évite les problèmes de capture en représentant les variables liées par des <em>indices de de Bruijn</em> (le numéro du λ qui les lie, compté de l’intérieur vers l’extérieur), et ne repasse aux noms que pour l’affichage, en ajoutant des primes si nécessaire.</p></div>
+</div>
+
+<h3 id="un-premier-calcul">Un premier calcul</h3>
+
+<p>Prenons une fonction de deux arguments $a$ et $b$ qui applique $a$ à $b$, appliquée à « itérer deux fois » puis à « itérer trois fois » :</p>
+$$t=(\lambda a.\lambda b.\,a\,b)\ (\lambda f.\lambda x.\,f(f\,x))\ (\lambda g.\lambda y.\,g(g(g\,y))).$$
+<p>Notons $\mathbf 2=\lambda f.\lambda x.f(fx)$ et $\mathbf 3=\lambda g.\lambda y.g(g(gy))$. Deux réductions donnent $t\twoheadrightarrow_\beta \mathbf2\,\mathbf3$, puis :</p>
+$$\mathbf2\,\mathbf3\to_\beta\lambda x.\,\mathbf3(\mathbf3\,x)\twoheadrightarrow_\beta\lambda x.\lambda y.\,x(x(x(x(x(x(x(x(x\,y)))))))) = \mathbf 9.$$
+<p>Itérer deux fois « itérer trois fois », c’est itérer $3^2=9$ fois. </p>
+<div class="lambda-widget"><pre class="src">(λa.λb.(a b)) (λf.λx.(f (f x))) (λg.λy.(g (g (g y))))</pre></div>
+
+<p>Le calcul peut aussi ne jamais finir. Avec $\delta=\lambda x.x\,x$, le terme $\delta\,\delta=(\lambda x.x\,x)(\lambda x.x\,x)$ se réduit en lui-même : c’est l’équivalent d’une boucle infinie. Il repose sur l’auto-application $x\,x$, qui n’a pas de sens pour une fonction au sens ensembliste, mais en a un pour un programme : un programme peut recevoir son propre texte en entrée. C’est cette <em>réflexivité</em> qui fait la puissance du λ-calcul, et qui le rend moins intuitif que les machines de Turing.</p>
+
+<h2 id="confluence">Confluence</h2>
+
+<div class="resultat theoreme" id="church-rosser"><div class="entete-res"><div class="type">Théorème</div><div class="nom">Confluence (Church-Rosser, 1936)</div></div>
+<div class="enonce"><p>Si $M\twoheadrightarrow_\beta N_1$ et $M\twoheadrightarrow_\beta N_2$, il existe $Q$ tel que $N_1\twoheadrightarrow_\beta Q$ et $N_2\twoheadrightarrow_\beta Q$. En particulier, un terme a au plus une forme normale.</p></div>
+<div class="niveau" data-niveau="philo">
+<p>Quel que soit l’ordre dans lequel on fait les calculs, on ne peut pas aboutir à deux résultats différents. Comme à l’école : on peut calculer $(2+3)\times(4+1)$ en commençant par la gauche ou par la droite, le résultat est le même. Le programmeur fonctionnel n’a donc pas à se soucier de l’ordre d’évaluation… pour le <em>résultat</em>. Pour la <em>terminaison</em>, l’ordre compte : $(\lambda x.y)\,(\delta\,\delta)$ donne $y$ si l’on réduit d’abord le rédex externe, et ne termine jamais si l’on s’obstine sur $\delta\,\delta$.</p>
+</div>
+<div class="niveau" data-niveau="tech">
+<p>On suit la méthode de Tait et Martin-Löf. On définit la <strong>réduction parallèle</strong> $\Rightarrow$ :</p>
+$$\frac{}{x\Rightarrow x}\qquad\frac{M\Rightarrow M'}{\lambda x.M\Rightarrow\lambda x.M'}\qquad\frac{M\Rightarrow M'\quad N\Rightarrow N'}{MN\Rightarrow M'N'}\qquad\frac{M\Rightarrow M'\quad N\Rightarrow N'}{(\lambda x.M)N\Rightarrow M'[x:=N']}$$
+<p>Elle réduit simultanément un ensemble quelconque de rédex présents dans le terme. On a $\to_\beta\subseteq\Rightarrow\subseteq\twoheadrightarrow_\beta$, donc la clôture transitive de $\Rightarrow$ est $\twoheadrightarrow_\beta$.</p>
+<p><strong>Lemme de substitution.</strong> Si $M\Rightarrow M'$ et $N\Rightarrow N'$ alors $M[x:=N]\Rightarrow M'[x:=N']$ (induction sur la dérivation de $M\Rightarrow M'$, en utilisant $M[y:=P][x:=N]=M[x:=N][y:=P[x:=N]]$ pour $y\notin\mathrm{VL}(N)$).</p>
+<p><strong>Développement complet.</strong> Soit $M^*$ le terme obtenu en réduisant tous les rédex de $M$ : $x^*=x$, $(\lambda x.M)^*=\lambda x.M^*$, $((\lambda x.M)N)^*=M^*[x:=N^*]$, et $(MN)^*=M^*N^*$ si $M$ n’est pas une abstraction. Par induction sur $M\Rightarrow M'$ et grâce au lemme de substitution : <em>si $M\Rightarrow M'$ alors $M'\Rightarrow M^*$</em>.</p>
+<p>Ainsi $\Rightarrow$ a la propriété du losange : si $M\Rightarrow N_1$ et $M\Rightarrow N_2$, alors $N_1\Rightarrow M^*$ et $N_2\Rightarrow M^*$. Une relation qui a la propriété du losange la transmet à sa clôture transitive (on pave le rectangle formé par deux suites de pas, case par case). Comme cette clôture est $\twoheadrightarrow_\beta$, la confluence suit. Unicité de la forme normale : si $N_1,N_2$ sont normales et $M\twoheadrightarrow N_1$, $M\twoheadrightarrow N_2$, le $Q$ commun vérifie $N_1\twoheadrightarrow Q$, donc $Q=N_1$, de même $Q=N_2$.</p>
+<p>La propriété du losange est fausse pour $\to_\beta$ lui-même : réduire un rédex peut dupliquer un autre rédex, qu’il faut ensuite réduire plusieurs fois. C’est pourquoi on passe par $\Rightarrow$.</p>
+</div>
+<div class="niveau" data-niveau="techno">
+<p>On trouve aussi une autre preuve classique, celle de Barendregt (<em>The Lambda Calculus</em>, ch. 11), par un λ-calcul « souligné » où l’on marque les rédex à suivre, une fonction $\varphi$ qui réduit en parallèle tous les rédex soulignés, une fonction d’effacement $|\cdot|$ et trois lemmes de commutation menant au « strip lemma ». Les deux preuves reposent sur la même idée (réduire en bloc un ensemble de rédex) ; celle de Tait et Martin-Löf évite les termes soulignés.</p>
+<p>Exemple où $\to_\beta$ n’a pas la propriété du losange : $M=(\lambda x.x\,x)((\lambda y.y)z)$. En un pas, $M\to(\lambda y.y)z\,((\lambda y.y)z)$ ou $M\to(\lambda x.xx)z$. Le premier terme demande <em>deux</em> pas pour rejoindre $z\,z$, le second un seul.</p>
+<div class="lambda-widget"><pre class="src">(λx.x x) ((λy.y) z)</pre></div>
+</div>
+</div>
+
+<div class="resultat theoreme" id="tete-faible"><div class="entete-res"><div class="type">Théorème</div><div class="nom">Normalisation de tête faible</div></div>
+<div class="enonce">
+<p>La <strong>réduction de tête faible</strong> $\to_t$ contracte le rédex le plus à gauche lorsqu’il n’est pas sous une abstraction :</p>
+$$(\lambda y.P)\,Q\,M_1\cdots M_n\ \to_t\ P[y:=Q]\,M_1\cdots M_n\qquad(n\ge0),$$
+<p>et rien d’autre (on ne réduit jamais sous un $\lambda$). Elle est déterministe. Un terme sans tel rédex est une <strong>forme normale de tête faible</strong> : c’est soit une abstraction $\lambda x.P$, soit un terme $v\,M_1\cdots M_n$ de tête une variable.</p>
+<p><em>Théorème.</em> Si $M\twoheadrightarrow_\beta N$ et si $N$ est une forme normale de tête faible, alors la réduction de tête faible de $M$ termine. En particulier, si un terme clos a une forme normale, sa réduction de tête faible termine (une forme normale close est une abstraction).</p>
+</div>
+<div class="niveau" data-niveau="philo"><p>Pour savoir si un calcul peut aboutir, il suffit de regarder la stratégie la plus paresseuse : celle qui ne travaille que sur ce qui est « en tête », là où se décide la forme du résultat. Si même elle tourne en rond, aucune autre stratégie ne trouvera de forme normale. C’est l’outil qui permet de <em>démontrer</em> qu’un programme ne termine pas, et non seulement de le constater sur un réducteur.</p></div>
+<div class="niveau" data-niveau="tech">
+<p>On utilise la réduction parallèle $\Rightarrow$ et son lemme de substitution, démontrés pour la <a href="#church-rosser">confluence</a>. Une étape $M\Rightarrow N$ est <strong>interne</strong>, notée $M\Rightarrow_{\mathrm{int}}N$, si elle ne contracte pas le rédex de tête faible, c’est-à-dire si l’on est dans l’un des trois cas : (i) $M=\lambda x.P$, $N=\lambda x.P'$ avec $P\Rightarrow P'$ ; (ii) $M=v\,M_1\cdots M_n$, $N=v\,N_1\cdots N_n$ avec $M_i\Rightarrow N_i$ ; (iii) $M=(\lambda y.P)\,Q\,M_1\cdots M_n$, $N=(\lambda y.P')\,Q'\,N_1\cdots N_n$ avec $P\Rightarrow P'$, $Q\Rightarrow Q'$, $M_i\Rightarrow N_i$.</p>
+<p><strong>Fait 0.</strong> Si $M\to_tM'$, alors $M[x:=Q]\to_tM'[x:=Q]$ et $M\,R\to_tM'\,R$ (le rédex de tête faible reste en tête). Si $M\Rightarrow_{\mathrm{int}}M'$ et $R\Rightarrow R'$, alors $M\,R\Rightarrow_{\mathrm{int}}M'\,R'$ (dans le cas (i), $(\lambda x.P)\,R\Rightarrow(\lambda x.P')\,R'$ est du type (iii)). Si $M\Rightarrow_{\mathrm{int}}M'$ et $Q\Rightarrow Q'$ et si la tête de $M$ n’est pas $x$, alors $M[x:=Q]\Rightarrow_{\mathrm{int}}M'[x:=Q']$ (lemme de substitution, composante par composante).</p>
+<p><strong>Lemme 1.</strong> Si $M\Rightarrow N$, il existe $L$ tel que $M\to_t^*L\Rightarrow_{\mathrm{int}}N$. Notons $M\rhd N$ cette propriété. Par récurrence sur la dérivation de $M\Rightarrow N$.</p>
+<ul>
+<li>$x\Rightarrow x$ et $\lambda x.P\Rightarrow\lambda x.P'$ sont internes : $L=M$.</li>
+<li>$P\,Q\Rightarrow P'\,Q'$ sans contracter la racine. Par hypothèse de récurrence, $P\to_t^*L\Rightarrow_{\mathrm{int}}P'$, donc, par le fait 0, $P\,Q\to_t^*L\,Q\Rightarrow_{\mathrm{int}}P'\,Q'$.</li>
+<li>$(\lambda y.P)\,Q\Rightarrow P'[y:=Q']$ avec $P\Rightarrow P'$ et $Q\Rightarrow Q'$. Par hypothèse de récurrence, $P\to_t^*L\Rightarrow_{\mathrm{int}}P'$ et $Q\rhd Q'$. D’abord $(\lambda y.P)\,Q\to_tP[y:=Q]\to_t^*L[y:=Q]$ (fait 0). Si la tête de $L$ n’est pas $y$, le fait 0 donne $L[y:=Q]\Rightarrow_{\mathrm{int}}P'[y:=Q']$. Sinon $L=y\,L_1\cdots L_n$ et $P'=y\,P_1\cdots P_n$ avec $L_i\Rightarrow P_i$ ; alors $L[y:=Q]=Q\,L_1^\ast\cdots L_n^\ast$ et $P'[y:=Q']=Q'\,P_1^\ast\cdots P_n^\ast$, où $L_i^\ast=L_i[y:=Q]\Rightarrow P_i^\ast=P_i[y:=Q']$. Comme $Q\to_t^*G\Rightarrow_{\mathrm{int}}Q'$, le fait 0 (appliqué $n$ fois) donne $Q\,\vec L^\ast\to_t^*G\,\vec L^\ast\Rightarrow_{\mathrm{int}}Q'\,\vec P^\ast$.</li>
+</ul>
+<p><strong>Lemme 2.</strong> Si $M\Rightarrow_{\mathrm{int}}N\to_tN'$, alors $M\to_tM''\Rightarrow N'$ pour un $M''$. En effet $N$ a un rédex de tête faible, donc l’étape interne est du type (iii) : $M=(\lambda y.P)\,Q\,\vec M$, $N=(\lambda y.P')\,Q'\,\vec N$, $N'=P'[y:=Q']\,\vec N$. On prend $M''=P[y:=Q]\,\vec M$, et $M''\Rightarrow N'$ par le lemme de substitution.</p>
+<p><strong>Preuve du théorème.</strong> Comme $\to_\beta\subseteq\Rightarrow$, on a $M=M_0\Rightarrow M_1\Rightarrow\cdots\Rightarrow M_k=N$. Montrons, par récurrence sur $k$, que $M\to_t^*L$ pour une forme normale de tête faible $L$. Pour $k=0$, $L=N$. Sinon, par hypothèse de récurrence, $M_1\to_t^mL_1$ avec $L_1$ forme normale de tête faible. Par le lemme 1, $M\to_t^*G_0\Rightarrow_{\mathrm{int}}M_1$. Si $M_1\to_tM_1'$, le lemme 2 donne $G_0\to_tK'\Rightarrow M_1'$, puis le lemme 1 donne $G'\to_t^*G_1\Rightarrow_{\mathrm{int}}M_1'$. En répétant $m$ fois, on obtient $M\to_t^*G_m\Rightarrow_{\mathrm{int}}L_1$. Si $G_m$ avait un rédex de tête faible, l’étape interne serait du type (iii) et $L_1$ en aurait un aussi ; donc $G_m$ est une forme normale de tête faible. La réduction de tête faible étant déterministe, celle de $M$ termine sur $G_m$.</p>
+<p>Enfin, si $M$ est clos et a une forme normale $N$, alors $N$ est clos ; un terme normal clos n’est pas de la forme $v\,\vec M$ (la variable $v$ serait libre), c’est donc une abstraction, et l’on applique le théorème.</p>
+<p><strong>Deux remarques utiles.</strong> Les réduits d’une abstraction $\lambda x.P$ sont des abstractions $\lambda x.P'$ avec $P\twoheadrightarrow P'$ ; les réduits d’un terme $v\,M_1\cdots M_n$ sont des termes $v\,M'_1\cdots M'_n$ (aucun rédex ne peut apparaître en tête). Avec la confluence, on en déduit : si $M\twoheadrightarrow_tL$ avec $L$ forme normale de tête faible et si $M\twoheadrightarrow\lambda x.N_0$ avec $\lambda x.N_0$ normal, alors $L=\lambda x.L_0$ avec $L_0\twoheadrightarrow N_0$ ; si $M\twoheadrightarrow v\,N_1\cdots N_n$ normal, alors $L=v\,L_1\cdots L_n$ avec $L_i\twoheadrightarrow N_i$.</p>
+</div>
+</div>
+
+<div class="resultat theoreme" id="normalisation"><div class="entete-res"><div class="type">Théorème</div><div class="nom">La stratégie normale trouve la forme normale</div></div>
+<div class="enonce"><p>Si $M$ a une forme normale, la stratégie qui réduit toujours le rédex le plus à gauche et le plus externe (<em>ordre normal</em>) l’atteint.</p></div>
+<div class="niveau" data-niveau="tech"><p>Par récurrence sur la taille de la forme normale $N$ de $M$. Par le théorème de <a href="#tete-faible">normalisation de tête faible</a>, la réduction de tête faible de $M$ termine sur une forme normale de tête faible $L$. Tant qu’un terme a un rédex de tête faible, ce rédex est le plus à gauche et le plus externe : l’ordre normal commence donc par ces pas, et arrive à $L$. Par la seconde remarque qui suit ce théorème, deux cas se présentent.</p>
+<ul>
+<li>$N=\lambda x.N_0$ et $L=\lambda x.L_0$ avec $L_0\twoheadrightarrow N_0$. Le rédex le plus à gauche et le plus externe de $\lambda x.L_0$ est celui de $L_0$ : l’ordre normal se poursuit par celui de $L_0$, qui atteint $N_0$ par hypothèse de récurrence ($N_0$ est plus petit que $N$).</li>
+<li>$N=v\,N_1\cdots N_n$ et $L=v\,L_1\cdots L_n$ avec $L_i\twoheadrightarrow N_i$. Le rédex le plus à gauche et le plus externe de $L$ se trouve dans le premier $L_i$ qui n’est pas normal. L’ordre normal réduit donc $L_1$ selon son propre ordre normal, qui atteint $N_1$ par hypothèse de récurrence, puis $L_2$, et ainsi de suite jusqu’à $L_n$.</li>
+</ul>
+<p>Dans les deux cas, l’ordre normal atteint $N$. On le retrouve plus bas comme conséquence du <a href="#standardisation">théorème de standardisation</a> de Curry et Feys.</p></div>
+<div class="niveau" data-niveau="techno"><p>C’est la stratégie du réducteur de cette page. L’exemple $(\lambda x.y)\,(\delta\,\delta)$ termine en un pas :</p>
+<div class="lambda-widget"><pre class="src">(λx.y) ((λx.x x) (λx.x x))</pre></div></div>
+</div>
+
+<div class="resultat theoreme" id="standardisation"><div class="entete-res"><div class="type">Théorème</div><div class="nom">Standardisation (Curry et Feys, 1958)</div></div>
+<div class="enonce"><p>Si $M\twoheadrightarrow_\beta N$, il existe une réduction <strong>standard</strong> de $M$ à $N$ : on réduit d’abord en tête faible, puis on traite les sous-termes de gauche à droite, sans jamais revenir sur un sous-terme déjà quitté. Formellement, la relation $M\twoheadrightarrow_sN$ est définie par :</p>
+<ul>
+<li>(S1) si $M\to_t^*x$ (une variable), alors $M\twoheadrightarrow_sx$ ;</li>
+<li>(S2) si $M\to_t^*\lambda x.P$ et $P\twoheadrightarrow_sP'$, alors $M\twoheadrightarrow_s\lambda x.P'$ ;</li>
+<li>(S3) si $M\to_t^*P\,Q$, $P\twoheadrightarrow_sP'$ et $Q\twoheadrightarrow_sQ'$, alors $M\twoheadrightarrow_sP'\,Q'$.</li>
+</ul>
+<p>Le théorème dit : $M\twoheadrightarrow_\beta N$ implique $M\twoheadrightarrow_sN$.</p></div>
+<div class="niveau" data-niveau="philo"><p>Toute réduction, si désordonnée soit-elle, peut être remise dans l’ordre « de gauche à droite et de l’extérieur vers l’intérieur ». Le résultat ne dépend donc pas de l’ordre de travail, et une stratégie mécanique, fixée à l’avance, suffit pour tout atteindre.</p></div>
+<div class="niveau" data-niveau="tech">
+<p>La forme inductive ci-dessus est due à Takahashi (1995). Chaque dérivation de $M\twoheadrightarrow_sN$ décrit une suite de réductions : les pas de tête faible, puis (S2) ceux de $P$ sous le $\lambda$, ou (S3) ceux de $P$ puis ceux de $Q$. En particulier $M\twoheadrightarrow_sN$ implique $M\twoheadrightarrow_\beta N$. On utilise le fait 0 de la <a href="#tete-faible">normalisation de tête faible</a> : si $M\to_tM'$, alors $M[x:=Q]\to_tM'[x:=Q]$ et $M\,R\to_tM'\,R$.</p>
+<p><strong>Lemme 1.</strong> $M\twoheadrightarrow_sM$, par récurrence sur $M$, avec zéro pas de tête.</p>
+<p><strong>Lemme 2.</strong> Si $M\to_t^*M'$ et $M'\twoheadrightarrow_sN$, alors $M\twoheadrightarrow_sN$ : on ajoute les pas de tête devant ceux de la règle utilisée.</p>
+<p><strong>Lemme 3 (substitution).</strong> Si $M\twoheadrightarrow_sM'$ et $L\twoheadrightarrow_sL'$, alors $M[x:=L]\twoheadrightarrow_sM'[x:=L']$. Par récurrence sur la dérivation de $M\twoheadrightarrow_sM'$.</p>
+<ul>
+<li>(S1) $M\to_t^*y$. Par le fait 0, $M[x:=L]\to_t^*y[x:=L]$. Si $y\ne x$, c’est $y$, et (S1) s’applique. Si $y=x$, c’est $L$, et $L\twoheadrightarrow_sL'$ donne la conclusion par le lemme 2.</li>
+<li>(S2) $M\to_t^*\lambda z.P$ avec $P\twoheadrightarrow_sP'$, la variable liée $z$ étant choisie différente de $x$ et non libre dans $L$ ni dans $L'$. Alors $M[x:=L]\to_t^*\lambda z.P[x:=L]$, et $P[x:=L]\twoheadrightarrow_sP'[x:=L']$ par hypothèse de récurrence : on conclut par (S2).</li>
+<li>(S3) $M\to_t^*P\,Q$ avec $P\twoheadrightarrow_sP'$ et $Q\twoheadrightarrow_sQ'$. Alors $M[x:=L]\to_t^*P[x:=L]\,Q[x:=L]$, et l’hypothèse de récurrence, appliquée aux deux sous-dérivations, permet de conclure par (S3).</li>
+</ul>
+<p><strong>Lemme 4.</strong> Si $M\twoheadrightarrow_sN$ et $N\to_\beta N'$, alors $M\twoheadrightarrow_sN'$. Par récurrence sur la dérivation de $M\twoheadrightarrow_sN$.</p>
+<ul>
+<li>(S1) $N$ est une variable : il n’a pas de rédex.</li>
+<li>(S2) $N=\lambda x.P'$ et le pas a lieu dans $P'$ : $P'\to_\beta P''$. Par hypothèse de récurrence, $P\twoheadrightarrow_sP''$, et (S2) donne $M\twoheadrightarrow_s\lambda x.P''$.</li>
+<li>(S3) $N=P'\,Q'$. Si le pas a lieu dans $P'$ ou dans $Q'$, on applique l’hypothèse de récurrence à la sous-dérivation correspondante, puis (S3). Sinon on contracte la racine : $P'=\lambda y.R'$ et $N'=R'[y:=Q']$. La dérivation de $P\twoheadrightarrow_s\lambda y.R'$ se termine forcément par (S2) : $P\to_t^*\lambda y.R$ avec $R\twoheadrightarrow_sR'$. Par le fait 0, $M\to_t^*P\,Q\to_t^*(\lambda y.R)\,Q\to_tR[y:=Q]$. Le lemme 3 donne $R[y:=Q]\twoheadrightarrow_sR'[y:=Q']$, et le lemme 2 donne $M\twoheadrightarrow_sN'$.</li>
+</ul>
+<p><strong>Preuve du théorème.</strong> Par récurrence sur le nombre de pas de $M\twoheadrightarrow_\beta N$ : le lemme 1 pour zéro pas, le lemme 4 pour ajouter un pas.</p>
+<p><strong>Retour à l’ordre normal.</strong> Si $N$ est normal, la suite décrite par une dérivation de $M\twoheadrightarrow_sN$ est la réduction en ordre normal. On le montre par récurrence sur la dérivation, en montrant aussi que, si $N$ n’est pas une abstraction, aucun terme de la suite n’en est une. Un terme qui a un rédex de tête faible est une application, et ce rédex est le plus à gauche et le plus externe ; cela règle (S1) et les pas de tête des autres cas. En (S2), le rédex le plus à gauche et le plus externe de $\lambda x.P_i$ est celui de $P_i$. En (S3), $P'$ est normal et n’est pas une abstraction (sinon $P'\,Q'$ serait un rédex). Par hypothèse de récurrence, aucun terme $P_i$ de la suite de $P$ n’est une abstraction ; la racine de $P_i\,Q$ n’est donc pas un rédex, et son rédex le plus à gauche et le plus externe est celui de $P_i$. Une fois $P'$ atteint, il est dans $Q$. On retrouve ainsi le <a href="#normalisation">théorème précédent</a>.</p>
+</div>
+</div>
+
+<h2 id="programmer-en-calcul">Programmer en λ-calcul</h2>
+
+<p>Le λ-calcul n’a aucune structure de données : il faut tout coder par des fonctions. Pour la calculabilité, il suffit de coder les entiers. L’idée de Church est de voir un entier comme un <em>itérateur</em> : l’entier $n$ est « appliquer $n$ fois ».</p>
+
+<div class="resultat definition" id="church"><div class="entete-res"><div class="type">Définition</div><div class="nom">Entiers de Church et fonctions λ-définissables</div></div>
+<div class="enonce">
+<p>L’entier de Church $\mathbf n$ est le terme $\lambda f.\lambda x.\underbrace{f(f(\cdots(f}_{n}\,x)\cdots))$ ; en particulier $\mathbf 0=\lambda f.\lambda x.x$. Une fonction partielle $f:\N^k\to\N$ est <strong>λ-définissable</strong> s’il existe un terme $F$ tel que, pour tous $n_1,\dots,n_k$ :</p>
+<ul>
+<li>si $f(n_1,\dots,n_k)=m$, alors $F\,\mathbf n_1\cdots\mathbf n_k\twoheadrightarrow_\beta\mathbf m$ ;</li>
+<li>si $f(n_1,\dots,n_k)\ind$, alors $F\,\mathbf n_1\cdots\mathbf n_k$ n’a pas de forme normale.</li>
+</ul>
+</div>
+<div class="niveau" data-niveau="philo"><p>Un nombre n’est plus une quantité mais une action : « trois », c’est « faire trois fois ». $\mathbf 4\,P\,V\twoheadrightarrow P(P(P(P\,V)))$ : c’est la boucle <code>pour i de 1 à 4 faire P</code>. Le lecteur logicien reconnaît la présentation de Peano, où $f$ joue le rôle du successeur et $x$ celui de zéro.</p></div>
+<div class="niveau" data-niveau="tech">
+<p>On démontre au chapitre <a href="equivalence.html#lambda">Équivalence</a> que les fonctions λ-définissables sont exactement les fonctions récursives. Ce résultat montre aussi que le choix des entiers de Church n’est pas limitant : tout autre codage <em>calculable</em> des entiers (où l’on passe d’un codage à l’autre par un terme) donne la même classe. Un codage non calculable pourrait en revanche « cacher » de l’information dans la représentation des nombres.</p>
+</div>
+</div>
+
+<div class="resultat theoreme" id="programmes-lambda"><div class="entete-res"><div class="type">Proposition</div><div class="nom">Arithmétique, booléens et point fixe en λ-calcul</div></div>
+<div class="enonce">
+<p>Les termes suivants vérifient, pour tous entiers $m,n$ et termes $M,N,G$ :</p>
+$$\begin{aligned}
+\mathsf{S}&=\lambda n.\lambda f.\lambda x.\,f(n\,f\,x) & \mathsf S\,\mathbf n&\twoheadrightarrow\mathbf{n+1}\\
+\mathsf{plus}&=\lambda m.\lambda n.\lambda f.\lambda x.\,m\,f\,(n\,f\,x) & \mathsf{plus}\,\mathbf m\,\mathbf n&\twoheadrightarrow\mathbf{m+n}\\
+\mathsf{mult}&=\lambda m.\lambda n.\lambda f.\,m\,(n\,f) & \mathsf{mult}\,\mathbf m\,\mathbf n&\twoheadrightarrow\mathbf{m\times n}\\
+\mathsf{tt}&=\lambda x.\lambda y.\,x,\quad \mathsf{ff}=\lambda x.\lambda y.\,y,\quad \mathsf{if}=\lambda b.\lambda x.\lambda y.\,b\,x\,y & \mathsf{if}\,\mathsf{tt}\,M\,N&\twoheadrightarrow M,\quad \mathsf{if}\,\mathsf{ff}\,M\,N\twoheadrightarrow N\\
+\mathsf{zero?}&=\lambda n.\,n\,(\lambda z.\mathsf{ff})\,\mathsf{tt} & \mathsf{zero?}\,\mathbf0&\twoheadrightarrow\mathsf{tt},\quad\mathsf{zero?}\,\mathbf{n+1}\twoheadrightarrow\mathsf{ff}\\
+\mathsf{pred}&=\lambda n.\lambda f.\lambda x.\,n\,(\lambda g.\lambda h.\,h\,(g\,f))\,(\lambda u.x)\,(\lambda u.u) & \mathsf{pred}\,\mathbf{n+1}&\twoheadrightarrow\mathbf n,\quad \mathsf{pred}\,\mathbf 0\twoheadrightarrow\mathbf 0\\
+\mathsf Y&=\lambda f.\,(\lambda x.\,f\,(x\,x))\,(\lambda x.\,f\,(x\,x)) & \mathsf Y\,G&=_\beta G\,(\mathsf Y\,G)
+\end{aligned}$$
+</div>
+<div class="niveau" data-niveau="philo">
+<p>Le combinateur $\mathsf Y$ est la clé de la récursion : il donne à une fonction le moyen de s’appeler elle-même alors que le λ-calcul n’a pas de noms. $\mathsf Y\,G$ est un <em>point fixe</em> de $G$. C’est la même idée réflexive que celle du <a href="smn-recursion.html#recursion">théorème de récursion de Kleene</a> et des programmes qui affichent leur propre texte.</p>
+<p>Le prédécesseur est étonnamment difficile : Church lui-même ne savait pas le définir, et c’est son étudiant Stephen Kleene qui trouva une solution (selon la légende, chez le dentiste). Retirer une itération à un itérateur demande une astuce.</p>
+</div>
+<div class="niveau" data-niveau="tech">
+<p>$\mathsf{plus}\,\mathbf m\,\mathbf n\twoheadrightarrow\lambda f.\lambda x.\,\mathbf m\,f\,(\mathbf n\,f\,x)$ : $\mathbf n\,f\,x$ applique $n$ fois $f$ à $x$, puis $\mathbf m\,f$ l’applique encore $m$ fois. Pour $\mathsf Y$ :</p>
+$$\mathsf Y\,G\to_\beta(\lambda x.G(xx))(\lambda x.G(xx))\to_\beta G\big((\lambda x.G(xx))(\lambda x.G(xx))\big)\ {}_\beta\!\!\leftarrow G(\mathsf Y\,G).$$
+<p>On n’a pas $\mathsf Y\,G\twoheadrightarrow G(\mathsf YG)$, mais les deux termes se réduisent vers un même terme : $\mathsf Y\,G=_\beta G(\mathsf YG)$.</p>
+</div>
+<div class="niveau" data-niveau="techno">
+<p>Toutes ces égalités ont été vérifiées avec le réducteur. Modifiez la dernière ligne pour essayer d’autres calculs (une ligne <code>NOM = terme</code> définit une abréviation) :</p>
+<div class="lambda-widget"><pre class="src">tt = λx y.x
+ff = λx y.y
+if = λb x y.b x y
+S = λn f x.f (n f x)
+plus = λm n f x.m f (n f x)
+mult = λm n f.m (n f)
+zero? = λn.n (λz.ff) tt
+pred = λn f x.n (λg h.h (g f)) (λu.x) (λu.u)
+mult (plus 2 1) (pred 3)</pre></div>
+
+<p>Le combinateur $\mathsf Y$ appliqué à $g$ n’a pas de forme normale : sa réduction produit $g(g(g(\cdots)))$ sans fin. Développez les étapes pour le voir.</p>
+<div class="lambda-widget" data-max="12"><pre class="src">Y = λf.(λx.f (x x)) (λx.f (x x))
+Y g</pre></div>
+</div>
+</div>
+
+<h2 id="bibliotheque-commune">Une bibliothèque commune aux trois modèles</h2>
+<p>Les mêmes douze fonctions sont définies dans les trois modèles de ce manuel (voir aussi les chapitres <a href="fonctions-recursives.html#bibliotheque-commune">Fonctions récursives</a> et <a href="machines-turing.html#bibliotheque-commune">Machines de Turing</a>). Pour chaque terme, on démontre qu’il <a href="#church">λ-définit</a> sa spécification : appliqué à des entiers de Church, il se réduit vers l’entier de Church du résultat, et, pour le quotient par $0$, il n’a pas de forme normale. Les preuves reposent sur un seul lemme d’itération. Quand c’est éclairant, on donne aussi la <em>traduction littérale</em> de la définition récursive, à côté du terme le plus court. Tous les termes ont été vérifiés avec le réducteur sur des grilles d’entrées.</p>
+<table class="table-trois">
+<tr><th>Fonction</th><th>Spécification</th><th>Récursive</th><th>Turing</th><th>λ-calcul</th></tr>
+<tr><td>Successeur</td><td>$S(x)=x+1$</td><td><a href="fonctions-recursives.html#f-succ">définition</a></td><td><a href="machines-turing.html#f-succ">machine</a></td><td><a href="#f-succ">terme</a></td></tr>
+<tr><td>Constantes</td><td>$m^{(k)}(x_1,\dots,x_k)=m$</td><td><a href="fonctions-recursives.html#f-const">définition</a></td><td><a href="machines-turing.html#f-const">machine</a></td><td><a href="#f-const">terme</a></td></tr>
+<tr><td>Projections</td><td>$A^{(k)}_i(x_1,\dots,x_k)=x_i$</td><td><a href="fonctions-recursives.html#f-proj">définition</a></td><td><a href="machines-turing.html#f-proj">machine</a></td><td><a href="#f-proj">terme</a></td></tr>
+<tr><td>Addition</td><td>$\mathrm{add}(x,y)=x+y$</td><td><a href="fonctions-recursives.html#f-add">définition</a></td><td><a href="machines-turing.html#f-add">machine</a></td><td><a href="#f-add">terme</a></td></tr>
+<tr><td>Prédécesseur</td><td>$\mathrm{pred}(x)=x\monus1$</td><td><a href="fonctions-recursives.html#f-pred">définition</a></td><td><a href="machines-turing.html#f-pred">machine</a></td><td><a href="#f-pred">terme</a></td></tr>
+<tr><td>Soustraction propre</td><td>$x\monus y=\max(x-y,0)$</td><td><a href="fonctions-recursives.html#f-monus">définition</a></td><td><a href="machines-turing.html#f-monus">machine</a></td><td><a href="#f-monus">terme</a></td></tr>
+<tr><td>Multiplication</td><td>$\mathrm{mult}(x,y)=x\times y$</td><td><a href="fonctions-recursives.html#f-mult">définition</a></td><td><a href="machines-turing.html#f-mult">machine</a></td><td><a href="#f-mult">terme</a></td></tr>
+<tr><td>Puissance</td><td>$\mathrm{puiss}(x,y)=x^y$</td><td><a href="fonctions-recursives.html#f-pow">définition</a></td><td><a href="machines-turing.html#f-pow">machine</a></td><td><a href="#f-pow">terme</a></td></tr>
+<tr><td>Factorielle</td><td>$\mathrm{fact}(y)=y!$</td><td><a href="fonctions-recursives.html#f-fact">définition</a></td><td><a href="machines-turing.html#f-fact">machine</a></td><td><a href="#f-fact">terme</a></td></tr>
+<tr><td>Signe et test de nullité</td><td>$\mathrm{sg}(x)=1$ si $x>0$, $0$ sinon ; $\overline{\mathrm{sg}}(x)=1-\mathrm{sg}(x)$</td><td><a href="fonctions-recursives.html#f-sg">définition</a></td><td><a href="machines-turing.html#f-sg">machine</a></td><td><a href="#f-sg">terme</a></td></tr>
+<tr><td>Égalité</td><td>$\chi_=(x,y)=1$ si $x=y$, $0$ sinon</td><td><a href="fonctions-recursives.html#f-eq">définition</a></td><td><a href="machines-turing.html#f-eq">machine</a></td><td><a href="#f-eq">terme</a></td></tr>
+<tr><td>Quotient (minimisation)</td><td>$\mathrm{quot}(x,y)=\lfloor x/y\rfloor$ si $y\ge1$, indéfini si $y=0$</td><td><a href="fonctions-recursives.html#f-div">définition</a></td><td><a href="machines-turing.html#f-div">machine</a></td><td><a href="#f-div">terme</a></td></tr>
+</table>
+<div class="resultat theoreme" id="f-iteration"><div class="entete-res"><div class="type">Lemme</div><div class="nom">Itération, récurrence et couples</div></div>
+<div class="enonce">
+<p>Pour tous termes $F,X$ et tout entier $n$, on note $F^n\,X$ le terme $F(F(\cdots(F\,X)\cdots))$ ($n$ fois $F$).</p>
+<ol>
+<li>$\mathbf n\,F\,X\twoheadrightarrow F^n\,X$.</li>
+<li>$\mathbf n\,F\twoheadrightarrow\lambda x.\,F^n\,x$ ($x$ non libre dans $F$).</li>
+<li>(Itération) Soit $f(0)=a$, $f(y+1)=h(f(y))$. Si $A\twoheadrightarrow\mathbf a$ et $H\,\mathbf m\twoheadrightarrow\mathbf{h(m)}$ pour tout $m$, alors $\mathbf y\,H\,A\twoheadrightarrow\mathbf{f(y)}$.</li>
+<li>(Couples) Avec $\mathsf{pair}=\lambda a.\lambda b.\lambda s.\,s\,a\,b$, $\mathsf{fst}=\lambda p.\,p\,\mathsf{tt}$, $\mathsf{snd}=\lambda p.\,p\,\mathsf{ff}$ : $\mathsf{fst}\,(\mathsf{pair}\,M\,N)\twoheadrightarrow M$ et $\mathsf{snd}\,(\mathsf{pair}\,M\,N)\twoheadrightarrow N$. Si un terme $P$ envoie tout couple $\mathsf{pair}\,\mathbf k\,\mathbf{v}$ (avec $v=f(k)$) sur un terme qui se réduit vers $\mathsf{pair}\,\mathbf{k+1}\,\mathbf{f(k+1)}$, alors $\mathbf y\,P\,(\mathsf{pair}\,\mathbf0\,\mathbf{f(0)})\twoheadrightarrow\mathsf{pair}\,\mathbf y\,\mathbf{f(y)}$.</li>
+</ol>
+</div>
+<div class="niveau" data-niveau="philo"><p>Un entier de Church est une boucle « pour ». Une récurrence primitive dont le pas ne dépend que de la valeur précédente est donc directement une boucle : $\mathbf y\,H\,A$. Quand le pas dépend aussi du compteur (factorielle, prédécesseur), on fait tourner la boucle sur un couple (compteur, valeur), exactement comme on le ferait dans un langage impératif avec deux variables.</p></div>
+<div class="niveau" data-niveau="tech"><p>(1) $\mathbf n\,F\,X=(\lambda f.\lambda x.\,f^nx)\,F\,X\to(\lambda x.\,F^nx)\,X\to F^nX$ ($x$ n’est pas libre dans $F$, quitte à renommer). (2) Un seul pas : $\mathbf n\,F\to\lambda x.\,F^nx$. (3) Par (1), $\mathbf y\,H\,A\twoheadrightarrow H^y\,A$ ; par récurrence sur $y$, $H^y\,A\twoheadrightarrow\mathbf{f(y)}$ : c’est l’hypothèse sur $A$ pour $y=0$, et $H(H^yA)\twoheadrightarrow H\,\mathbf{f(y)}\twoheadrightarrow\mathbf{h(f(y))}=\mathbf{f(y+1)}$ (on réduit d’abord l’argument, ce qui est permis puisque $\twoheadrightarrow$ autorise la réduction de n’importe quel sous-terme). (4) $\mathsf{fst}\,(\mathsf{pair}\,M\,N)\twoheadrightarrow(\lambda s.\,s\,M\,N)\,\mathsf{tt}\to\mathsf{tt}\,M\,N\twoheadrightarrow M$, de même pour $\mathsf{snd}$ ; la seconde partie est (1) suivi d’une récurrence sur $y$ comme en (3).</p></div>
+</div>
+
+<div class="resultat definition" id="f-succ"><div class="entete-res"><div class="type">Exemple</div><div class="nom">Successeur</div></div>
+<div class="enonce"><p>Spécification : $S(x)=x+1$.</p><p>$\mathsf S=\lambda n.\lambda f.\lambda x.\,f\,(n\,f\,x)$.</p><p class="trois-vues">Les trois versions : <a href="fonctions-recursives.html#f-succ">récursive</a> · <a href="machines-turing.html#f-succ">Turing</a> · <strong>λ-calcul</strong>.</p></div>
+<div class="niveau" data-niveau="tech"><p>$\mathsf S\,\mathbf n\to_\beta\lambda f.\lambda x.\,f\,(\mathbf n\,f\,x)\twoheadrightarrow\lambda f.\lambda x.\,f\,(f^n\,x)=\mathbf{n+1}$, par le <a href="#f-iteration">lemme d’itération</a> (1) appliqué sous les abstractions.</p></div>
+<div class="niveau" data-niveau="techno"><div class="lambda-widget"><pre class="src">S = λn f x.f (n f x)
+S 3</pre></div></div>
+</div>
+<div class="resultat definition" id="f-const"><div class="entete-res"><div class="type">Exemple</div><div class="nom">Constantes</div></div>
+<div class="enonce"><p>Spécification : $m^{(k)}(x_1,\dots,x_k)=m$.</p><p>$\lambda x_1\cdots\lambda x_k.\,\mathbf m$.</p><p class="trois-vues">Les trois versions : <a href="fonctions-recursives.html#f-const">récursive</a> · <a href="machines-turing.html#f-const">Turing</a> · <strong>λ-calcul</strong>.</p></div>
+<div class="niveau" data-niveau="tech"><p>$(\lambda x_1\cdots x_k.\mathbf m)\,\mathbf n_1\cdots\mathbf n_k$ se réduit en $k$ pas vers $\mathbf m$, qui ne contient aucun $x_i$.</p></div>
+<div class="niveau" data-niveau="techno"><div class="lambda-widget"><pre class="src">const3 = λx y.3
+const3 5 7</pre></div></div>
+</div>
+<div class="resultat definition" id="f-proj"><div class="entete-res"><div class="type">Exemple</div><div class="nom">Projections</div></div>
+<div class="enonce"><p>Spécification : $A^{(k)}_i(x_1,\dots,x_k)=x_i$.</p><p>$\lambda x_1\cdots\lambda x_k.\,x_i$.</p><p class="trois-vues">Les trois versions : <a href="fonctions-recursives.html#f-proj">récursive</a> · <a href="machines-turing.html#f-proj">Turing</a> · <strong>λ-calcul</strong>.</p></div>
+<div class="niveau" data-niveau="tech"><p>$k$ pas de β-réduction substituent $\mathbf n_j$ à $x_j$ et donnent $\mathbf n_i$.</p></div>
+<div class="niveau" data-niveau="techno"><div class="lambda-widget"><pre class="src">proj2 = λx y z.y
+proj2 1 2 3</pre></div></div>
+</div>
+<div class="resultat definition" id="f-add"><div class="entete-res"><div class="type">Exemple</div><div class="nom">Addition</div></div>
+<div class="enonce"><p>Spécification : $\mathrm{add}(x,y)=x+y$.</p><p>$\mathsf{plus}=\lambda m.\lambda n.\lambda f.\lambda x.\,m\,f\,(n\,f\,x)$. Traduction littérale de la définition récursive : $\mathsf{plus}^{\prime}=\lambda m.\lambda n.\,m\,\mathsf S\,n$ ($x+y=S^x(y)$).</p><p class="trois-vues">Les trois versions : <a href="fonctions-recursives.html#f-add">récursive</a> · <a href="machines-turing.html#f-add">Turing</a> · <strong>λ-calcul</strong>.</p></div>
+<div class="niveau" data-niveau="tech"><p>$\mathsf{plus}\,\mathbf m\,\mathbf n\twoheadrightarrow\lambda f.\lambda x.\,\mathbf m\,f\,(\mathbf n\,f\,x)\twoheadrightarrow\lambda f.\lambda x.\,f^m(f^n\,x)=\mathbf{m+n}$ (lemme d’itération deux fois). Pour $\mathsf{plus}^{\prime}$ : $\mathbf m\,\mathsf S\,\mathbf n\twoheadrightarrow\mathsf S^m\,\mathbf n\twoheadrightarrow\mathbf{m+n}$ par le <a href="#f-iteration">principe d’itération</a> (3) et la correction de $\mathsf S$. C’est exactement la récurrence $\mathrm{add}(x+1,y)=S(\mathrm{add}(x,y))$, où le pas ne dépend pas du compteur.</p></div>
+<div class="niveau" data-niveau="techno"><div class="lambda-widget"><pre class="src">plus = λm n f x.m f (n f x)
+plus 2 3</pre></div><div class="lambda-widget"><pre class="src">S = λn f x.f (n f x)
+plus' = λm n.m S n
+plus' 2 3</pre></div></div>
+</div>
+<div class="resultat definition" id="f-pred"><div class="entete-res"><div class="type">Exemple</div><div class="nom">Prédécesseur</div></div>
+<div class="enonce"><p>Spécification : $\mathrm{pred}(x)=x\monus1$.</p><p>Le terme de Kleene, et la traduction littérale de la récursion par les couples :</p>$$\begin{aligned}\mathsf{pred}&=\lambda n.\lambda f.\lambda x.\,n\,(\lambda g.\lambda h.\,h\,(g\,f))\,(\lambda u.x)\,(\lambda u.u)\\ \mathsf{pred}^{\prime}&=\lambda n.\,\mathsf{fst}\,\big(n\,(\lambda p.\,\mathsf{pair}\,(\mathsf{snd}\,p)\,(\mathsf S\,(\mathsf{snd}\,p)))\,(\mathsf{pair}\,\mathbf0\,\mathbf0)\big)\end{aligned}$$<p class="trois-vues">Les trois versions : <a href="fonctions-recursives.html#f-pred">récursive</a> · <a href="machines-turing.html#f-pred">Turing</a> · <strong>λ-calcul</strong>.</p></div>
+<div class="niveau" data-niveau="tech"><p>Soit $\Phi=\lambda g.\lambda h.\,h\,(g\,f)$, avec $f$ et $x$ libres. On montre par récurrence sur $k\ge1$ que $\Phi^k(\lambda u.x)\twoheadrightarrow\lambda h.\,h\,(f^{k-1}x)$. Pour $k=1$ : $\Phi(\lambda u.x)\to\lambda h.\,h\,((\lambda u.x)f)\to\lambda h.\,h\,x$. Ensuite $\Phi(\lambda h.\,h\,(f^{k-1}x))\to\lambda h^{\prime}.\,h^{\prime}\big((\lambda h.\,h\,(f^{k-1}x))\,f\big)\to\lambda h^{\prime}.\,h^{\prime}\,(f^kx)$. Donc</p>$$\mathsf{pred}\,\mathbf{n+1}\twoheadrightarrow\lambda f.\lambda x.\,\Phi^{n+1}(\lambda u.x)(\lambda u.u)\twoheadrightarrow\lambda f.\lambda x.\,(\lambda u.u)(f^nx)\to\mathbf n,$$<p>et $\mathsf{pred}\,\mathbf0\twoheadrightarrow\lambda f.\lambda x.\,(\lambda u.x)(\lambda u.u)\to\mathbf0$. L’astuce : $\Phi$ « retarde » chaque application de $f$, et la toute première est absorbée par $\lambda u.x$. Pour $\mathsf{pred}^{\prime}$ : par le <a href="#f-iteration">principe des couples</a> (4), le couple après $k$ pas est $\langle\mathbf{k\monus1},\mathbf k\rangle$ (on part de $\langle\mathbf0,\mathbf0\rangle$, et le pas envoie $\langle a,\mathbf k\rangle$ sur $\langle\mathbf k,\mathbf{k+1}\rangle$) ; c’est la récurrence $\mathrm{pred}(y+1)=y$, qui utilise le compteur.</p></div>
+<div class="niveau" data-niveau="techno"><div class="lambda-widget"><pre class="src">pred = λn f x.n (λg h.h (g f)) (λu.x) (λu.u)
+pred 4</pre></div><div class="lambda-widget"><pre class="src">tt = λx y.x
+ff = λx y.y
+S = λn f x.f (n f x)
+pair = λa b s.s a b
+fst = λp.p tt
+snd = λp.p ff
+pred' = λn.fst (n (λp.pair (snd p) (S (snd p))) (pair 0 0))
+pred' 4</pre></div></div>
+</div>
+<div class="resultat definition" id="f-monus"><div class="entete-res"><div class="type">Exemple</div><div class="nom">Soustraction propre</div></div>
+<div class="enonce"><p>Spécification : $x\monus y=\max(x-y,0)$.</p><p>$\mathsf{moins}=\lambda m.\lambda n.\,n\,\mathsf{pred}\,m$ : itérer $n$ fois le prédécesseur à partir de $m$.</p><p class="trois-vues">Les trois versions : <a href="fonctions-recursives.html#f-monus">récursive</a> · <a href="machines-turing.html#f-monus">Turing</a> · <strong>λ-calcul</strong>.</p></div>
+<div class="niveau" data-niveau="tech"><p>$\mathsf{moins}\,\mathbf m\,\mathbf n\twoheadrightarrow\mathbf n\,\mathsf{pred}\,\mathbf m\twoheadrightarrow\mathsf{pred}^n\,\mathbf m$, et par récurrence sur $n$ (correction de $\mathsf{pred}$) $\mathsf{pred}^n\,\mathbf m\twoheadrightarrow\mathbf{m\monus n}$. C’est la définition récursive, mot pour mot.</p></div>
+<div class="niveau" data-niveau="techno"><div class="lambda-widget"><pre class="src">pred = λn f x.n (λg h.h (g f)) (λu.x) (λu.u)
+moins = λm n.n pred m
+moins 5 2</pre></div></div>
+</div>
+<div class="resultat definition" id="f-mult"><div class="entete-res"><div class="type">Exemple</div><div class="nom">Multiplication</div></div>
+<div class="enonce"><p>Spécification : $\mathrm{mult}(x,y)=x\times y$.</p><p>$\mathsf{mult}=\lambda m.\lambda n.\lambda f.\,m\,(n\,f)$. Traduction littérale de la définition récursive : $\mathsf{mult}^{\prime}=\lambda m.\lambda n.\,m\,(\mathsf{plus}\,n)\,\mathbf0$.</p><p class="trois-vues">Les trois versions : <a href="fonctions-recursives.html#f-mult">récursive</a> · <a href="machines-turing.html#f-mult">Turing</a> · <strong>λ-calcul</strong>.</p></div>
+<div class="niveau" data-niveau="tech"><p>$\mathsf{mult}\,\mathbf m\,\mathbf n\twoheadrightarrow\lambda f.\,\mathbf m\,(\mathbf n\,f)\twoheadrightarrow\lambda f.\lambda x.\,(\mathbf n\,f)^m\,x$ (lemme d’itération (2)). Par récurrence sur $m$, $(\mathbf n\,f)^m\,x\twoheadrightarrow f^{nm}\,x$ : c’est vrai pour $m=0$, et $(\mathbf n\,f)\big((\mathbf nf)^{m}x\big)\twoheadrightarrow\mathbf n\,f\,(f^{nm}x)\twoheadrightarrow f^n(f^{nm}x)$. Donc $\mathsf{mult}\,\mathbf m\,\mathbf n\twoheadrightarrow\mathbf{mn}$. Pour $\mathsf{mult}^{\prime}$ : $\mathbf m\,(\mathsf{plus}\,\mathbf n)\,\mathbf0\twoheadrightarrow(\mathsf{plus}\,\mathbf n)^m\,\mathbf0\twoheadrightarrow\mathbf{mn}$ par le principe d’itération (3) et la correction de $\mathsf{plus}$.</p></div>
+<div class="niveau" data-niveau="techno"><div class="lambda-widget"><pre class="src">mult = λm n f.m (n f)
+mult 3 2</pre></div><div class="lambda-widget"><pre class="src">plus = λm n f x.m f (n f x)
+mult' = λm n.m (plus n) 0
+mult' 3 2</pre></div></div>
+</div>
+<div class="resultat definition" id="f-pow"><div class="entete-res"><div class="type">Exemple</div><div class="nom">Puissance</div></div>
+<div class="enonce"><p>Spécification : $\mathrm{puiss}(x,y)=x^y$.</p><p>$\mathsf{puiss}=\lambda m.\lambda n.\,n\,(\mathsf{mult}\,m)\,\mathbf1$.</p><p class="trois-vues">Les trois versions : <a href="fonctions-recursives.html#f-pow">récursive</a> · <a href="machines-turing.html#f-pow">Turing</a> · <strong>λ-calcul</strong>.</p></div>
+<div class="niveau" data-niveau="tech"><p>$\mathsf{puiss}\,\mathbf m\,\mathbf n\twoheadrightarrow(\mathsf{mult}\,\mathbf m)^n\,\mathbf1\twoheadrightarrow\mathbf{m^n}$ par le principe d’itération (3) et la correction de $\mathsf{mult}$ ; c’est la récurrence $t(y+1,x)=x\times t(y,x)$. Le terme plus court $\lambda m.\lambda n.\,n\,m$, souvent cité, n’est correct qu’à η près : $\mathbf0\,\mathbf m\twoheadrightarrow\lambda x.x$, qui n’est pas $\mathbf1=\lambda f.\lambda x.\,f\,x$ (il lui est seulement η-équivalent) ; pour $n\ge1$ il donne bien $\mathbf{m^n}$.</p></div>
+<div class="niveau" data-niveau="techno"><div class="lambda-widget"><pre class="src">mult = λm n f.m (n f)
+puiss = λm n.n (mult m) 1
+puiss 2 3</pre></div></div>
+</div>
+<div class="resultat definition" id="f-fact"><div class="entete-res"><div class="type">Exemple</div><div class="nom">Factorielle</div></div>
+<div class="enonce"><p>Spécification : $\mathrm{fact}(y)=y!$.</p><p>Avec les couples $\mathsf{pair}=\lambda a.\lambda b.\lambda s.\,s\,a\,b$, $\mathsf{fst}=\lambda p.\,p\,\mathsf{tt}$, $\mathsf{snd}=\lambda p.\,p\,\mathsf{ff}$ :</p>$$\mathsf{fact}=\lambda n.\,\mathsf{snd}\Big(n\,\big(\lambda p.\,\mathsf{pair}\,(\mathsf S(\mathsf{fst}\,p))\,(\mathsf{mult}\,(\mathsf S(\mathsf{fst}\,p))\,(\mathsf{snd}\,p))\big)\,(\mathsf{pair}\,\mathbf0\,\mathbf1)\Big).$$<p class="trois-vues">Les trois versions : <a href="fonctions-recursives.html#f-fact">récursive</a> · <a href="machines-turing.html#f-fact">Turing</a> · <strong>λ-calcul</strong>.</p></div>
+<div class="niveau" data-niveau="tech"><p>Le pas $P=\lambda p.\dots$ envoie un couple $\langle\mathbf k,\mathbf{k!}\rangle$ sur un terme qui se réduit vers $\langle\mathbf{k+1},\mathbf{(k+1)!}\rangle$ : $\mathsf{fst}\,\langle a,b\rangle\twoheadrightarrow a$, $\mathsf{snd}\,\langle a,b\rangle\twoheadrightarrow b$, puis correction de $\mathsf S$ et de $\mathsf{mult}$. Par le <a href="#f-iteration">principe des couples</a> (4), $\mathbf n\,P\,\langle\mathbf0,\mathbf1\rangle\twoheadrightarrow\langle\mathbf n,\mathbf{n!}\rangle$, et $\mathsf{snd}$ donne $\mathbf{n!}$. C’est la traduction exacte de $\rho[g,h]$ : le couple porte le compteur $y$ et la valeur $f(y)$ (voir le <a href="equivalence.html#rec-lambda">théorème général</a>).</p></div>
+<div class="niveau" data-niveau="techno"><div class="lambda-widget"><pre class="src">tt = λx y.x
+ff = λx y.y
+S = λn f x.f (n f x)
+mult = λm n f.m (n f)
+pair = λa b s.s a b
+fst = λp.p tt
+snd = λp.p ff
+fact = λn.snd (n (λp.pair (S (fst p)) (mult (S (fst p)) (snd p))) (pair 0 1))
+fact 3</pre></div></div>
+</div>
+<div class="resultat definition" id="f-sg"><div class="entete-res"><div class="type">Exemple</div><div class="nom">Signe et test de nullité</div></div>
+<div class="enonce"><p>Spécification : $\mathrm{sg}(x)=1$ si $x>0$, $0$ sinon ; $\overline{\mathrm{sg}}(x)=1-\mathrm{sg}(x)$.</p><p>$\mathsf{sg}=\lambda n.\,n\,(\lambda z.\mathbf1)\,\mathbf0$ et $\overline{\mathsf{sg}}=\lambda n.\,n\,(\lambda z.\mathbf0)\,\mathbf1$. (À ne pas confondre avec $\mathsf{zero?}$, qui rend un booléen $\mathsf{tt}$ ou $\mathsf{ff}$.)</p><p class="trois-vues">Les trois versions : <a href="fonctions-recursives.html#f-sg">récursive</a> · <a href="machines-turing.html#f-sg">Turing</a> · <strong>λ-calcul</strong>.</p></div>
+<div class="niveau" data-niveau="tech"><p>$\mathbf0\,(\lambda z.\mathbf1)\,\mathbf0\twoheadrightarrow\mathbf0$ et $\mathbf{n+1}\,(\lambda z.\mathbf1)\,\mathbf0\twoheadrightarrow(\lambda z.\mathbf1)\big((\lambda z.\mathbf1)^n\mathbf0\big)\to\mathbf1$. Même calcul pour $\overline{\mathsf{sg}}$. C’est la récurrence $\rho[0^{(0)},1^{(2)}]$ traduite par itération : le pas est la fonction constante $1$.</p></div>
+<div class="niveau" data-niveau="techno"><div class="lambda-widget"><pre class="src">sg = λn.n (λz.1) 0
+sg 3</pre></div><div class="lambda-widget"><pre class="src">sgbarre = λn.n (λz.0) 1
+sgbarre 0</pre></div></div>
+</div>
+<div class="resultat definition" id="f-eq"><div class="entete-res"><div class="type">Exemple</div><div class="nom">Égalité</div></div>
+<div class="enonce"><p>Spécification : $\chi_=(x,y)=1$ si $x=y$, $0$ sinon.</p>$$\mathsf{egal}=\lambda m.\lambda n.\,\overline{\mathsf{sg}}\,\big(\mathsf{plus}\,(\mathsf{moins}\,m\,n)\,(\mathsf{moins}\,n\,m)\big)$$<p class="trois-vues">Les trois versions : <a href="fonctions-recursives.html#f-eq">récursive</a> · <a href="machines-turing.html#f-eq">Turing</a> · <strong>λ-calcul</strong>.</p></div>
+<div class="niveau" data-niveau="tech"><p>Composition de termes corrects : $\mathsf{moins}\,\mathbf m\,\mathbf n\twoheadrightarrow\mathbf{m\monus n}$, etc., donc $\mathsf{egal}\,\mathbf m\,\mathbf n\twoheadrightarrow\overline{\mathsf{sg}}\,\mathbf{|m-n|}\twoheadrightarrow\mathbf{\chi_=(m,n)}$. Toutes les fonctions sont totales, donc la composition naïve suffit (le cas partiel demande plus de soin, voir l’<a href="equivalence.html#rec-lambda">équivalence</a>).</p></div>
+<div class="niveau" data-niveau="techno"><div class="lambda-widget"><pre class="src">plus = λm n f x.m f (n f x)
+pred = λn f x.n (λg h.h (g f)) (λu.x) (λu.u)
+moins = λm n.n pred m
+sgbarre = λn.n (λz.0) 1
+egal = λm n.sgbarre (plus (moins m n) (moins n m))
+egal 3 3</pre></div></div>
+</div>
+<div class="resultat definition" id="f-div"><div class="entete-res"><div class="type">Exemple</div><div class="nom">Quotient (minimisation)</div></div>
+<div class="enonce"><p>Spécification : $\mathrm{quot}(x,y)=\lfloor x/y\rfloor$ si $y\ge1$, indéfini si $y=0$.</p><p>Avec le combinateur de Turing $\Theta=(\lambda x.\lambda y.\,y\,(x\,x\,y))\,(\lambda x.\lambda y.\,y\,(x\,x\,y))$, qui vérifie $\Theta\,W\twoheadrightarrow W\,(\Theta\,W)$ :</p>$$\mathsf{quot}=\lambda x.\lambda y.\,\Theta\,\big(\lambda h.\lambda z.\,\mathsf{zero?}\,(G\,z)\,z\,(h\,(\mathsf S\,z))\big)\,\mathbf0,\qquad G=\lambda z.\,\overline{\mathsf{sg}}\,(\mathsf{moins}\,(\mathsf{mult}\,(\mathsf S\,z)\,y)\,x).$$<p class="trois-vues">Les trois versions : <a href="fonctions-recursives.html#f-div">récursive</a> · <a href="machines-turing.html#f-div">Turing</a> · <strong>λ-calcul</strong>.</p></div>
+<div class="niveau" data-niveau="tech"><p><em>Le combinateur.</em> En notant $A=\lambda x.\lambda y.\,y(xxy)$, $\Theta\,W=A\,A\,W\to(\lambda y.\,y(AAy))\,W\to W(AAW)=W(\Theta W)$. On l’utilise plutôt que $\mathsf Y$ parce qu’il se <em>réduit</em> vers $W(\Theta W)$, ce qui simplifie les preuves.</p><p><em>Cas $y\ge1$.</em> Fixons $\mathbf x,\mathbf y$ et notons $W$ le terme entre parenthèses. Pour tout terme $N\twoheadrightarrow\mathbf k$ :</p>$$\Theta\,W\,N\twoheadrightarrow W\,(\Theta W)\,N\twoheadrightarrow\mathsf{zero?}\,(G\,N)\,N\,\big(\Theta W\,(\mathsf S\,N)\big).$$<p>Par correction des composants, $G\,N\twoheadrightarrow\mathbf0$ si $(k+1)y>x$, et $\mathbf1$ sinon ; $\mathsf{zero?}$ donne $\mathsf{tt}$ ou $\mathsf{ff}$, qui choisit le premier ou le second argument. Ainsi, pour $k&lt;q=\lfloor x/y\rfloor$, $\Theta W N\twoheadrightarrow\Theta W(\mathsf SN)$ avec $\mathsf SN\twoheadrightarrow\mathbf{k+1}$, et pour $k=q$, $\Theta W N\twoheadrightarrow N\twoheadrightarrow\mathbf q$. Par récurrence sur $q-k$, $\mathsf{quot}\,\mathbf x\,\mathbf y\twoheadrightarrow\Theta W\mathbf0\twoheadrightarrow\mathbf q$.</p><p><em>Cas $y=0$ : pas de forme normale.</em> On suit la <a href="#tete-faible">réduction de tête faible</a> $\to_t$, qui contracte le rédex de tête sans jamais réduire les arguments. Posons $N_0=\mathbf0$ et $N_{k+1}=\mathsf S\,N_k$ : ce sont des termes clos, et $N_k\twoheadrightarrow\mathbf k$. On a $\mathsf{quot}\,\mathbf x\,\mathbf0\to_t\to_t\Theta W N_0$ (ici $W$ est le terme entre parenthèses, avec $y:=\mathbf0$). Montrons que $\Theta W N_k\to_t^{+}\Theta W N_{k+1}$ pour tout $k$. Il en résulte que la réduction de tête faible de $\mathsf{quot}\,\mathbf x\,\mathbf0$ est infinie ; par le <a href="#tete-faible">théorème de normalisation de tête faible</a>, ce terme clos n’a donc pas de forme normale.</p><p>Fixons $N=N_k$ et notons $G\,N=\mathsf{sgbarre}\,(\mathsf{moins}\,(\mathsf{mult}\,(\mathsf SN)\,\mathbf0)\,\mathbf x)$, $R=\Theta W(\mathsf SN)=\Theta W N_{k+1}$. Les premiers pas sont des pas de tête faible :</p>$$\begin{aligned}\Theta W N&\to_t(\lambda y.\,y(AAy))\,W\,N\to_t W(\Theta W)\,N\to_t(\lambda z.\cdots)\,N\\&\to_t\mathsf{zero?}\,(GN)\,N\,R\to_t(GN)\,(\lambda z.\mathsf{ff})\,\mathsf{tt}\,N\,R.\end{aligned}$$<p>Par correction des composants, $\mathsf{mult}\,(\mathsf SN)\,\mathbf0\twoheadrightarrow\mathbf0$, $\mathsf{moins}\,\mathbf0\,\mathbf x\twoheadrightarrow\mathbf0$ et $\mathsf{sgbarre}\,\mathbf0\twoheadrightarrow\mathbf1$, donc $G\,N\twoheadrightarrow\mathbf1$.</p><p><em>Lemme.</em> Si $M\twoheadrightarrow\mathbf1$, alors pour tous termes $a,b,c_1,\dots,c_j$, on a $M\,a\,b\,c_1\cdots c_j\to_t^*a\,P\,c_1\cdots c_j$ pour un certain $P$. En effet, prenons deux variables $f,x$ qui ne sont libres ni dans $M$, ni dans $a$, ni dans $b$. Alors $M\,f\,x\twoheadrightarrow\mathbf1\,f\,x\twoheadrightarrow f\,x$, qui est normal et de tête la variable $f$. Par le théorème de normalisation de tête faible, la réduction de tête faible de $M\,f\,x$ termine sur un terme $L$, et, par la seconde remarque qui le suit, $L=f\,L_1$. Comme $\to_t$ est stable par substitution et par application à un argument (fait 0 de la preuve), $M\,a\,b=(M\,f\,x)[f:=a][x:=b]\to_t^*a\,L_1[f:=a][x:=b]$, puis $M\,a\,b\,\vec c\to_t^*a\,P\,\vec c$ avec $P=L_1[f:=a][x:=b]$.</p><p>Appliqué à $G\,N$, le lemme donne $(GN)\,(\lambda z.\mathsf{ff})\,\mathsf{tt}\,N\,R\to_t^*(\lambda z.\mathsf{ff})\,P\,N\,R\to_t\mathsf{ff}\,N\,R\to_t(\lambda y.y)\,R\to_t R$. Donc $\Theta W N_k\to_t^{+}\Theta W N_{k+1}$, ce qu’il fallait démontrer. Le terme λ-définit donc bien la fonction partielle $\mathrm{quot}$. On a vérifié cette preuve sur machine : la réduction de tête faible de $\mathsf{quot}\,\mathbf3\,\mathbf0$ passe exactement par les termes $\Theta W N_k$, aux pas 2, 39, 81, 128, … (83 passages en 20 000 pas).</p></div>
+<div class="niveau" data-niveau="techno"><div class="lambda-widget"><pre class="src">tt = λx y.x
+ff = λx y.y
+zero? = λn.n (λz.ff) tt
+S = λn f x.f (n f x)
+pred = λn f x.n (λg h.h (g f)) (λu.x) (λu.u)
+moins = λm n.n pred m
+mult = λm n f.m (n f)
+sgbarre = λn.n (λz.0) 1
+T = (λx y.y (x x y)) (λx y.y (x x y))
+quot = λx y.T (λh z.zero? (sgbarre (moins (mult (S z) y) x)) z (h (S z))) 0
+quot 7 2</pre></div><p>Avec $y=0$, la réduction ne se termine pas (le réducteur s’arrête à sa limite de pas) :</p><div class="lambda-widget" data-max="3000"><pre class="src">tt = λx y.x
+ff = λx y.y
+zero? = λn.n (λz.ff) tt
+S = λn f x.f (n f x)
+pred = λn f x.n (λg h.h (g f)) (λu.x) (λu.u)
+moins = λm n.n pred m
+mult = λm n f.m (n f)
+sgbarre = λn.n (λz.0) 1
+T = (λx y.y (x x y)) (λx y.y (x x y))
+quot = λx y.T (λh z.zero? (sgbarre (moins (mult (S z) y) x)) z (h (S z))) 0
+quot 3 0</pre></div></div>
+</div>
+
+<p>Le λ-calcul est à la base des langages de programmation fonctionnelle : Lisp (1958), Scheme, ML, OCaml, Haskell. Les « fonctions anonymes » (<code>lambda</code> en Python, <code>fun</code> en OCaml, <code>=&gt;</code> en JavaScript) en sont l’héritage direct.</p>
+
+<h3 id="pour-aller-plus-loin">Pour aller plus loin</h3>
+<ul>
+<li>H. Barendregt, <em>The Lambda Calculus, its Syntax and Semantics</em>, North-Holland, 1984 : l’ouvrage de référence, très complet mais austère pour une première approche.</li>
+<li>J.-L. Krivine, <em>Lambda-calcul, types et modèles</em>, Masson, 1990 : en français, plus accessible.</li>
+</ul>
+
+<p>Le λ-calcul pur est universel, et c’est pourquoi des termes comme $\Omega$ ne terminent pas. En ajoutant des <em>types</em>, on obtient des langages où tout programme termine, et dont les programmes sont des démonstrations : c’est l’objet du chapitre <a href="logique-types.html#totaux">Logique et types</a> (λ-calcul simplement typé, Système T de Gödel, correspondance de Curry-Howard).</p>
+
+<!--EXERCICES-->
+<h2 id="exercices">Exercices</h2>
+
+<p class="legende-exo">Niveaux : ★ application directe du cours, ★★ exercice standard, ★★★ approfondissement. Les corrections sont masquées : cliquer sur « Correction » pour les afficher.</p><div class="exercice" id="ex-lc-reduction"><div class="entete-exo"><span class="etoiles" title="niveau 1">★</span><span class="nom-exo">Exercice 1 — Variables libres et réduction</span></div><div class="corps-exo">
+<p>(a) Donner les variables libres de $(\lambda x.\,x\,y)(\lambda y.\,y\,z)$. (b) Réduire jusqu’à la forme normale $(\lambda x.\lambda y.\,x\,y)(\lambda z.z)\,a$.</p>
+<details class="corrige"><summary>Correction</summary><div class="texte-corrige">
+<p>(a) Dans $\lambda x.\,x\,y$, $x$ est liée et $y$ libre ; dans $\lambda y.\,y\,z$, $y$ est liée et $z$ libre. Donc $\mathrm{VL}=\{y,z\}$ : la variable $y$ est libre dans le premier facteur et liée dans le second, ce sont deux usages indépendants du même nom.</p>
+<p>(b) L’application associe à gauche : le terme est $\big((\lambda x.\lambda y.\,x\,y)(\lambda z.z)\big)\,a$.</p>
+$$\to_\beta(\lambda y.\,(\lambda z.z)\,y)\,a\ \to_\beta\ (\lambda z.z)\,a\ \to_\beta\ a .$$
+</div></details>
+</div></div>
+
+<div class="exercice" id="ex-lc-succ"><div class="entete-exo"><span class="etoiles" title="niveau 1">★</span><span class="nom-exo">Exercice 2 — Le successeur de 1</span></div><div class="corps-exo">
+<p>Avec $\mathsf S=\lambda n.\lambda f.\lambda x.\,f(n\,f\,x)$, réduire $\mathsf S\,\mathbf 1$ et vérifier qu’on obtient $\mathbf 2$.</p>
+<details class="corrige"><summary>Correction</summary><div class="texte-corrige">
+$$\mathsf S\,\mathbf1\to_\beta\lambda f.\lambda x.\,f(\mathbf1\,f\,x)=\lambda f.\lambda x.\,f\big((\lambda g.\lambda y.\,g\,y)\,f\,x\big)\twoheadrightarrow_\beta\lambda f.\lambda x.\,f(f\,x)=\mathbf2 .$$
+<p>Les deux dernières réductions ont lieu sous les lambdas $\lambda f.\lambda x$ : la β-réduction s’applique à n’importe quel sous-terme. On a renommé la variable liée de $\mathbf 1$ en $g,y$ pour la lisibilité, ce qui est permis ($\alpha$-équivalence).</p>
+</div></details>
+</div></div>
+
+<div class="exercice" id="ex-lc-booleens"><div class="entete-exo"><span class="etoiles" title="niveau 1">★</span><span class="nom-exo">Exercice 3 — Opérations booléennes</span></div><div class="corps-exo">
+<p>Avec $\mathsf{tt}=\lambda x.\lambda y.\,x$ et $\mathsf{ff}=\lambda x.\lambda y.\,y$, proposer des termes $\mathsf{non}$ et $\mathsf{et}$ et vérifier leur table.</p>
+<details class="corrige"><summary>Correction</summary><div class="texte-corrige">
+<p>Un booléen choisit entre ses deux arguments. On pose $\mathsf{non}=\lambda b.\,b\,\mathsf{ff}\,\mathsf{tt}$ et $\mathsf{et}=\lambda a.\lambda b.\,a\,b\,\mathsf{ff}$. Alors $\mathsf{non}\,\mathsf{tt}\twoheadrightarrow\mathsf{tt}\,\mathsf{ff}\,\mathsf{tt}\twoheadrightarrow\mathsf{ff}$ et $\mathsf{non}\,\mathsf{ff}\twoheadrightarrow\mathsf{tt}$. Pour $\mathsf{et}$ : $\mathsf{et}\,\mathsf{tt}\,b\twoheadrightarrow\mathsf{tt}\,b\,\mathsf{ff}\twoheadrightarrow b$, et $\mathsf{et}\,\mathsf{ff}\,b\twoheadrightarrow\mathsf{ff}\,b\,\mathsf{ff}\twoheadrightarrow\mathsf{ff}$ : c’est bien la conjonction. De même $\mathsf{ou}=\lambda a.\lambda b.\,a\,\mathsf{tt}\,b$.</p>
+</div></details>
+</div></div>
+
+<div class="exercice" id="ex-lc-strategie"><div class="entete-exo"><span class="etoiles" title="niveau 2">★★</span><span class="nom-exo">Exercice 4 — La stratégie compte</span></div><div class="corps-exo">
+<p>Soit $\Omega=(\lambda x.\,x\,x)(\lambda x.\,x\,x)$ et $\mathsf K=\lambda x.\lambda y.\,x$. (a) Montrer que $\Omega$ n’a pas de forme normale. (b) Le terme $\mathsf K\,a\,\Omega$ a-t-il une forme normale ? Que se passe-t-il si l’on réduit toujours d’abord les arguments ?</p>
+<details class="corrige"><summary>Correction</summary><div class="texte-corrige">
+<p>(a) $\Omega$ ne contient qu’un seul rédex, lui-même, et $\Omega\to_\beta\Omega$. Toute suite de réductions est donc $\Omega\to\Omega\to\cdots$, infinie, et aucun terme accessible n’est normal.</p>
+<p>(b) En réduisant le rédex de tête (stratégie normale) : $\mathsf K\,a\,\Omega\to_\beta(\lambda y.\,a)\,\Omega\to_\beta a$, forme normale. Si l’on réduit d’abord l’argument $\Omega$ (stratégie « par valeur »), on boucle indéfiniment. Les deux comportements sont compatibles avec la <a href="#church-rosser">confluence</a> : elle garantit l’unicité de la forme normale, pas que toute stratégie la trouve. Le <a href="#normalisation">théorème de normalisation</a> dit que la stratégie normale la trouve toujours quand elle existe.</p>
+</div></details>
+</div></div>
+
+<div class="exercice" id="ex-lc-theta"><div class="entete-exo"><span class="etoiles" title="niveau 2">★★</span><span class="nom-exo">Exercice 5 — Le combinateur de Turing</span></div><div class="corps-exo">
+<p>Soit $A=\lambda x.\lambda y.\,y\,(x\,x\,y)$ et $\Theta=A\,A$. Montrer que $\Theta\,G\twoheadrightarrow_\beta G(\Theta\,G)$ pour tout terme $G$. En quoi est-ce plus fort que la propriété de $\mathsf Y$ ?</p>
+<details class="corrige"><summary>Correction</summary><div class="texte-corrige">
+$$\Theta\,G=(\lambda x.\lambda y.\,y\,(x\,x\,y))\,A\,G\to_\beta(\lambda y.\,y\,(A\,A\,y))\,G\to_\beta G\,(A\,A\,G)=G\,(\Theta\,G).$$
+<p>Ici $\Theta\,G$ se <em>réduit</em> en $G(\Theta G)$. Pour $\mathsf Y$, on a seulement $\mathsf Y\,G=_\beta G(\mathsf Y\,G)$ : les deux termes ont un réduit commun, mais aucun ne se réduit en l’autre (<a href="#programmes-lambda">calcul</a>). Avec $\Theta$, la récursion se déroule par simple calcul, ce qui est commode pour programmer.</p>
+</div></details>
+</div></div>
+
+<div class="exercice" id="ex-lc-puissance"><div class="entete-exo"><span class="etoiles" title="niveau 3">★★★</span><span class="nom-exo">Exercice 6 — La puissance</span></div><div class="corps-exo">
+<p>Montrer que $\mathsf{exp}=\lambda m.\lambda n.\,n\,m$ calcule la puissance : $\mathsf{exp}\,\mathbf m\,\mathbf n\twoheadrightarrow_\beta\mathbf{m^n}$ pour $n\ge1$ (on notera $M^k\,x$ pour $M(M(\cdots(M\,x)))$, avec $k$ applications).</p>
+<details class="corrige"><summary>Correction</summary><div class="texte-corrige">
+<p><em>Lemme.</em> Pour tous $k,j$ et toute variable $x$ : $\mathbf m\,(\lambda y.\,x^k\,y)\twoheadrightarrow\lambda y.\,x^{mk}\,y$. En effet $\mathbf m\,g\twoheadrightarrow\lambda y.\,g^m\,y$ ; avec $g=\lambda y.\,x^k\,y$, chaque application de $g$ ajoute $k$ applications de $x$ (par récurrence sur le nombre d’applications de $g$, en réduisant de l’intérieur), d’où $\lambda y.\,x^{mk}\,y$.</p>
+<p>Ensuite $\mathsf{exp}\,\mathbf m\,\mathbf n\twoheadrightarrow\mathbf n\,\mathbf m\twoheadrightarrow\lambda x.\,\mathbf m^n\,x$. Montrons par récurrence sur $j\ge1$ que $\mathbf m^j\,x\twoheadrightarrow\lambda y.\,x^{m^j}\,y$. Pour $j=1$, c’est la définition de $\mathbf m$. Si c’est vrai pour $j$, alors $\mathbf m^{j+1}\,x=\mathbf m\,(\mathbf m^j\,x)\twoheadrightarrow\mathbf m\,(\lambda y.\,x^{m^j}\,y)\twoheadrightarrow\lambda y.\,x^{m\cdot m^j}\,y$ par le lemme. Avec $j=n$ : $\mathsf{exp}\,\mathbf m\,\mathbf n\twoheadrightarrow\lambda x.\lambda y.\,x^{m^n}\,y=\mathbf{m^n}$.</p>
+<p>Pour $n=0$, on obtient $\mathbf 0\,\mathbf m\twoheadrightarrow\lambda x.\,x$, qui n’est pas $\mathbf 1=\lambda f.\lambda x.\,f\,x$ mais lui est égal à η-équivalence près ; c’est pourquoi l’énoncé exclut ce cas.</p>
+</div></details>
+</div></div>
+
+<nav class="nav-chap"><a href="fonctions-recursives.html"><small>← Précédent</small>Fonctions récursives</a><a href="equivalence.html" style="text-align:right"><small>Suivant →</small>Équivalence des modèles de calcul</a></nav>
+<footer class="pied">Calculabilité — manuel à trois niveaux de lecture. Auteurs : Frédéric Prost et Claude. Texte sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" rel="license">CC BY-SA 4.0</a>, code sous licence MIT. Les mathématiques sont rendues par KaTeX (licence MIT), embarqué localement : le site se lit sans connexion.</footer>
+</main>
+</div>
+<script src="assets/katex/katex.min.js"></script>
+<script src="assets/katex/contrib/auto-render.min.js"></script>
+<script src="assets/turing.js"></script>
+<script src="assets/lambda.js"></script>
+<script src="assets/pcp.js"></script>
+<script src="assets/automates.js"></script>
+<script src="assets/niveaux.js"></script>
+<script src="assets/widgets.js"></script>
+</body>
+</html>

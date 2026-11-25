@@ -1,0 +1,196 @@
+<!--
+titre: Notions de base
+court: Notions de base
+chapo: Les définitions et résultats élémentaires utilisés dans le manuel : entiers naturels jusqu’à la décomposition en facteurs premiers, mots et langages, ensembles et fonctions, logique des prédicats.
+-->
+
+<h2 id="entiers">Entiers naturels</h2>
+
+<res type="Définition" nom="Axiomes de Peano" id="peano">
+<enonce>
+<p>L’ensemble $\N$ des entiers naturels est muni d’un élément $0$ et d’une application successeur $S:\N\to\N$ telles que :</p>
+<ol>
+<li>$0$ n’est le successeur d’aucun entier ;</li>
+<li>$S$ est injective : si $S(n)=S(m)$ alors $n=m$ ;</li>
+<li>(récurrence) toute partie de $\N$ contenant $0$ et stable par $S$ est égale à $\N$.</li>
+</ol>
+<p>On note $1=S(0)$, $2=S(1)$, etc. L’addition et la multiplication sont définies par récurrence sur le second argument : $n+0=n$, $n+S(m)=S(n+m)$ ; $n\times0=0$, $n\times S(m)=(n\times m)+n$.</p>
+</enonce>
+<tech>
+<p>À partir de ces définitions, on démontre par récurrence que $+$ et $\times$ sont associatives et commutatives, que $0$ et $1$ sont neutres, que $\times$ est distributive sur $+$, et que $a+b=a+b'\Rightarrow b=b'$. Par exemple, l’associativité $(a+b)+c=a+(b+c)$ se prouve par récurrence sur $c$ : pour $c=0$ les deux membres valent $a+b$ ; et $(a+b)+S(c)=S((a+b)+c)=S(a+(b+c))=a+S(b+c)=a+(b+S(c))$. La commutativité demande deux lemmes, $0+n=n$ et $S(m)+n=S(m+n)$, chacun par récurrence sur $n$.</p>
+</tech>
+</res>
+
+<res type="Proposition" nom="Ordre, soustraction et règles de calcul" id="ordre">
+<enonce>
+<p>On pose $a\le b$ s’il existe $c\in\N$ tel que $b=a+c$ ; cet entier $c$ est alors unique, on le note $b-a$. On écrit $a<b$ si $a\le b$ et $a\ne b$, c’est-à-dire si $b\ge a+1$. Alors :</p>
+<ol>
+<li>$\le$ est un ordre total sur $\N$, de plus petit élément $0$ ;</li>
+<li>il est compatible avec les opérations : $a\le b\Rightarrow a+c\le b+c$ et $ac\le bc$ ;</li>
+<li>règles de simplification : $a+c=b+c\Rightarrow a=b$ ; si $ab=0$ alors $a=0$ ou $b=0$ ; si $ac=bc$ et $c\ne0$ alors $a=b$ ; si $ac<bc$ alors $a<b$.</li>
+</ol>
+</enonce>
+<philo><p>Ce sont les règles que l’on applique sans y penser dès l’école primaire. Les démontrer à partir des seuls axiomes de Peano montre que rien n’y est caché : tout découle de « commencer à $0$ et ajouter $1$ ». C’est la même démarche que celle de la calculabilité, qui reconstruit tout ce qui est calculable à partir de quelques opérations élémentaires.</p></philo>
+<tech>
+<p><strong>Unicité de $c$</strong> : c’est la simplification $a+c=a+c'\Rightarrow c=c'$, établie à partir de Peano par récurrence sur $a$ (si $S(a)+c=S(a)+c'$ alors $S(a+c)=S(a+c')$, et l’injectivité de $S$ donne $a+c=a+c'$).</p>
+<p><strong>(1)</strong> Réflexivité : $a=a+0$. Transitivité : $b=a+c$ et $d=b+c'$ donnent $d=a+(c+c')$. Antisymétrie : si $b=a+c$ et $a=b+c'$, alors $a=a+(c+c')$, donc $c+c'=0$ par simplification ; si $c'\ne0$, $c'=S(c'')$ et $c+c'=S(c+c'')\ne0$ ; donc $c=c'=0$. Totalité, par récurrence sur $b$ à $a$ fixé : $0\le a$ car $a=0+a$ ; si $a\le b$ alors $a\le S(b)$ ; si $b\le a$, ou bien $b=a$ et $a\le S(b)$, ou bien $a=b+c$ avec $c=S(c')$, d’où $a=S(b)+c'$ et $S(b)\le a$.</p>
+<p><strong>(2)</strong> Si $b=a+d$ alors $b+c=(a+c)+d$ et $bc=ac+dc$.</p>
+<p><strong>(3)</strong> La première règle est déjà démontrée. Si $a\ne0$ et $b\ne0$, écrivons $b=S(b')$ : $ab=ab'+a\ne0$ car $a\ne0$. Pour la simplification par $c\ne0$ : si $a\ne b$, par exemple $a<b$, alors $b=a+d$ avec $d\ne0$, et $bc=ac+dc$ avec $dc\ne0$, donc $bc\ne ac$. Enfin si $ac<bc$ on ne peut avoir $b\le a$, car alors $bc\le ac$ par (2).</p>
+</tech>
+</res>
+
+<res type="Théorème" nom="Bon ordre et récurrence forte" id="bon-ordre">
+<enonce>
+<ol>
+<li>(Bon ordre) Toute partie non vide de $\N$ a un plus petit élément.</li>
+<li>(Récurrence forte) Si une propriété $P$ vérifie « pour tout $n$, si $P(m)$ est vraie pour tous les $m<n$, alors $P(n)$ est vraie », alors $P(n)$ est vraie pour tout $n$.</li>
+</ol>
+</enonce>
+<philo><p>Il n’existe pas de suite infinie strictement décroissante d’entiers naturels : on finit toujours par toucher le fond. C’est l’argument qui garantit qu’un algorithme qui fait décroître un entier à chaque étape s’arrête, et c’est ainsi que l’on prouvera la terminaison de l’algorithme d’Euclide.</p></philo>
+<tech>
+<p>(1) Soit $A\subseteq\N$ sans plus petit élément ; montrons que $A$ est vide. Soit $B=\{n:\ \forall m\le n,\ m\notin A\}$. On a $0\in B$, sinon $0$ serait le plus petit élément de $A$. Si $n\in B$, alors $n+1\notin A$ (sinon, tout élément plus petit étant $\le n$ donc hors de $A$, $n+1$ serait le plus petit élément de $A$), et comme les $m\le n+1$ sont les $m\le n$ et $n+1$, on a $n+1\in B$. Par l’axiome de récurrence, $B=\N$, donc $A=\emptyset$.</p>
+<p>(2) Si $P$ n’était pas toujours vraie, l’ensemble des $n$ tels que $P(n)$ est fausse aurait un plus petit élément $n_0$ ; $P$ serait vraie pour tous les $m<n_0$, donc pour $n_0$ par hypothèse : contradiction.</p>
+</tech>
+</res>
+
+<res type="Proposition" nom="Division euclidienne" id="division">
+<enonce><p>Pour tous $a\in\N$ et $b\ge1$, il existe un unique couple $(q,r)$ tel que $a=bq+r$ et $0\le r<b$. On note $q=\lfloor a/b\rfloor$ (quotient) et $r=a\bmod b$ (reste).</p></enonce>
+<philo><p>Partager $a$ objets en paquets de $b$ : il y a une seule façon de le faire si l’on exige qu’il reste moins d’un paquet. Cette opération, avec l’algorithme d’Euclide qui en découle, est le plus ancien algorithme encore utilisé quotidiennement : il sert, entre autres, au chiffrement des communications sur Internet.</p></philo>
+<tech>
+<p><strong>Existence</strong>, par récurrence forte sur $a$. Si $a<b$, on prend $q=0$ et $r=a$. Si $a\ge b$, alors $a-b<a$ (car $b\ge1$), et par hypothèse de récurrence $a-b=bq'+r$ avec $r<b$ ; donc $a=b(q'+1)+r$. On en tire les équations $\lfloor a/b\rfloor=\lfloor (a-b)/b\rfloor+1$ et $a\bmod b=(a-b)\bmod b$ pour $a\ge b$.</p>
+<p><strong>Unicité.</strong> Si $bq+r=bq'+r'$ avec $r,r'<b$ et, par exemple, $q<q'$, alors $q'=q+d$ avec $d\ge1$, et $r=bd+r'\ge b$ : contradiction. Donc $q=q'$, puis $r=r'$ par simplification.</p>
+</tech>
+<techno>
+<p>La preuve d’existence est un programme : soustraire $b$ tant que c’est possible, en comptant les soustractions.</p>
+<pre><code>division(a, b) :        // b ≥ 1
+    q := 0 ; r := a
+    tant que r ≥ b :
+        r := r - b ; q := q + 1
+    renvoyer (q, r)</code></pre>
+<p>La boucle termine parce que $r$ décroît strictement (bon ordre). Elle fait $q$ tours, ce qui est lent pour de grands nombres ; la division posée de l’école calcule le même couple chiffre par chiffre, en un nombre d’étapes proportionnel au nombre de chiffres. Les deux fonctions sont récursives primitives (voir <a href="fonctions-recursives.html#mu-borne">minimisation bornée</a>).</p>
+</techno>
+</res>
+
+<res type="Définition" nom="Divisibilité" id="divisibilite">
+<enonce><p>On dit que $d$ divise $a$, noté $d\mid a$, s’il existe $k\in\N$ tel que $a=dk$ ; on dit aussi que $d$ est un diviseur de $a$, ou $a$ un multiple de $d$. Pour $d\ge1$, $d\mid a$ si et seulement si $a\bmod d=0$.</p>
+<p>Propriétés : $1\mid a$, $a\mid a$ et $a\mid0$ ; si $d\mid a$ et $a\mid b$ alors $d\mid b$ ; si $d\mid a$ et $a\mid d$ alors $a=d$ ; si $d\mid a$ et $d\mid b$ alors $d\mid a+b$, $d\mid a-b$ (pour $a\ge b$) et $d\mid ka$ ; si $d\mid a$ et $a\ne0$ alors $d\le a$.</p></enonce>
+<tech>
+<p>Transitivité : $a=dk$ et $b=al$ donnent $b=d(kl)$. Antisymétrie : si $a=dk$ et $d=al$, alors $a=a(lk)$ ; si $a=0$ alors $d=0$ ; sinon $lk=1$ par simplification, donc $k=l=1$ (si $k\ge2$ ou $l\ge2$, ou si l’un est nul, le produit n’est pas $1$). Combinaisons : $dk+dl=d(k+l)$ et, pour $dk\ge dl$, $dk-dl=d(k-l)$ (on a $k\ge l$ par la dernière règle de simplification). Si $a=dk\ne0$ alors $k\ge1$ et $a=d+d(k-1)\ge d$. L’équivalence avec le reste vient de l’unicité de la division : $a=dk+0$.</p>
+</tech>
+</res>
+
+<res type="Définition" nom="Nombres premiers" id="premiers">
+<enonce><p>Un entier $p$ est premier s’il a exactement deux diviseurs, $1$ et $p$ ; autrement dit si $p\ge2$ et si ses seuls diviseurs sont $1$ et $p$. Les premiers nombres premiers sont $2,3,5,7,11,13,17,19,23,29,\dots$ Un entier $n\ge2$ qui n’est pas premier est dit composé : il s’écrit $n=ab$ avec $1<a,b<n$.</p></enonce>
+<philo><p>Les nombres premiers sont les « atomes » de la multiplication : on ne peut pas les casser en produit de nombres plus petits. Le théorème fondamental de l’arithmétique, ci-dessous, dit que tout entier est fait de ces atomes, d’une seule manière. Ni $0$ ni $1$ ne sont premiers : $1$ est l’élément neutre (le « produit vide »), et l’exclure est exactement ce qui rend la décomposition unique.</p></philo>
+</res>
+
+<res type="Proposition" nom="Diviseur premier et infinité des nombres premiers (Euclide)" id="infinite-premiers">
+<enonce><ol>
+<li>Tout entier $n\ge2$ a au moins un diviseur premier : son plus petit diviseur $d>1$ est premier. Si $n$ est composé, ce diviseur vérifie $d^2\le n$.</li>
+<li>Il existe une infinité de nombres premiers.</li>
+</ol></enonce>
+<philo><p>La preuve d’Euclide (<em>Éléments</em>, livre IX, proposition 20, vers 300 avant notre ère) est l’un des plus anciens raisonnements mathématiques qui nous soient parvenus, et l’un des plus courts : donnez-moi une liste finie de nombres premiers, je fabrique un nombre qui n’est divisible par aucun d’eux. Elle est constructive : elle fournit un algorithme qui, à partir de $k$ nombres premiers, en trouve un nouveau.</p></philo>
+<tech>
+<p>(1) L’ensemble des diviseurs de $n$ supérieurs à $1$ contient $n$, il est donc non vide et a un plus petit élément $d$ (bon ordre). Si $d$ n’était pas premier, il aurait un diviseur $e$ avec $1<e<d$, et $e\mid d\mid n$ contredirait la minimalité de $d$. Si $n$ est composé, $n=de$ avec $e>1$ un autre diviseur, donc $e\ge d$ et $n=de\ge d^2$.</p>
+<p>(2) Soient $p_1,\dots,p_k$ des nombres premiers et $N=p_1p_2\cdots p_k+1\ge2$. Par (1), $N$ a un diviseur premier $p$. Si $p$ était l’un des $p_i$, il diviserait $N$ et $p_1\cdots p_k$, donc leur différence $1$, ce qui est impossible puisque $p\ge2$. Aucune liste finie ne contient donc tous les nombres premiers.</p>
+</tech>
+<techno>
+<p>Le point (1) donne la méthode des divisions d’essai : pour savoir si $n$ est premier, il suffit d’essayer les diviseurs $d$ tels que $d^2\le n$. Le point (2) fournit la borne $p_{k+1}\le p_1\cdots p_k+1\le p_k!+1$ qui rend la suite des nombres premiers <a href="fonctions-recursives.html#mu-borne">récursive primitive</a>. L’outil ci-dessous décompose un entier par divisions d’essai (essayez $360$, $2^{31}-1=2147483647$, qui est premier, ou $1001$).</p>
+<div class="arith-widget" data-mode="facteurs" data-titre="Décomposition en facteurs premiers" data-args="360"></div>
+</techno>
+</res>
+
+<res type="Théorème" nom="Lemme d’Euclide" id="lemme-euclide">
+<enonce><p>Si un nombre premier $p$ divise un produit $ab$, alors $p\mid a$ ou $p\mid b$. Plus généralement, si $p\mid a_1a_2\cdots a_k$, alors $p$ divise l’un des $a_i$.</p></enonce>
+<philo><p>C’est la propriété qui fait des nombres premiers de vrais atomes. Elle est fausse pour les nombres composés : $6$ divise $4\times9=36$ sans diviser ni $4$ ni $9$. Elle n’a rien d’évident : pourquoi un nombre qui ne « voit » ni $a$ ni $b$ verrait-il leur produit ? La preuve ci-dessous repose sur la division euclidienne, c’est-à-dire, au fond, sur un algorithme.</p></philo>
+<tech>
+<p>Supposons $p\nmid a$ et montrons $p\mid b$. Soit $E=\{n\ge1:\ p\mid na\}$. On a $p\in E$, et $b\in E$ si $b\ne0$ (si $b=0$, $p\mid b$ et il n’y a rien à démontrer). Soit $m$ le plus petit élément de $E$ (bon ordre).</p>
+<p><em>$m$ divise tout élément de $E$.</em> Soit $n\in E$ ; divisons : $n=qm+r$ avec $r<m$. Alors $na=q(ma)+ra$, et $p$ divise $na$ et $q(ma)$, donc leur différence $ra$. Si $r\ne0$, $r$ serait un élément de $E$ plus petit que $m$ : impossible. Donc $r=0$ et $m\mid n$.</p>
+<p>En particulier $m\mid p$, donc $m=1$ ou $m=p$ puisque $p$ est premier. Si $m=1$, alors $p\mid a$, contrairement à l’hypothèse. Donc $m=p$, et comme $m\mid b$, on a $p\mid b$.</p>
+<p>Le cas de $k$ facteurs s’en déduit par récurrence sur $k$ : si $p\mid(a_1\cdots a_{k-1})\,a_k$, alors $p\mid a_k$ ou $p\mid a_1\cdots a_{k-1}$.</p>
+</tech>
+<techno>
+<p>On trouve plus souvent une preuve par l’identité de Bézout : si $p\nmid a$, alors $\mathrm{pgcd}(a,p)=1$, et l’algorithme d’Euclide étendu fournit des entiers relatifs $u,v$ avec $au+pv=1$, d’où $b=abu+pbv$, divisible par $p$. L’outil suivant exécute l’algorithme d’Euclide et affiche les coefficients de Bézout ; l’algorithme termine parce que les restes décroissent strictement, et le dernier reste non nul est le pgcd, puisque $\mathrm{pgcd}(a,b)=\mathrm{pgcd}(b,a\bmod b)$ (un entier divise $a$ et $b$ si et seulement s’il divise $b$ et $a-qb$).</p>
+<div class="arith-widget" data-mode="euclide" data-titre="Algorithme d’Euclide et identité de Bézout" data-args="1071, 462"></div>
+</techno>
+</res>
+
+<res type="Théorème" nom="Théorème fondamental de l’arithmétique" id="decomposition">
+<enonce><p>Tout entier $n\ge1$ s’écrit comme un produit de nombres premiers
+$$n=p_1p_2\cdots p_k\qquad(k\ge0,\ p_1\le p_2\le\cdots\le p_k),$$
+et cette écriture est unique (pour $n=1$, c’est le produit vide, $k=0$). En regroupant les facteurs égaux : $n=\prod_{i\ge1}\mathrm{Pr}(i)^{e_i}$, où $\mathrm{Pr}(i)$ est le $i$-ième nombre premier et où les exposants $e_i\in\N$, presque tous nuls, sont déterminés par $n$.</p></enonce>
+<philo>
+<p>Chaque entier a une « carte d’identité » unique : la liste de ses facteurs premiers. C’est sur ce théorème que repose la <a href="fonctions-recursives.html#godel">numérotation de Gödel</a> utilisée dans tout ce manuel : on code une suite $(a_1,\dots,a_k)$ par l’entier $2^{a_1}3^{a_2}\cdots$, et l’unicité de la décomposition garantit qu’on peut toujours relire la suite. Sans ce théorème, on ne pourrait pas faire de programmes des nombres, ni des nombres des programmes.</p>
+<p>Trouver effectivement la décomposition est une autre affaire. Elle est calculable (il suffit d’essayer les diviseurs), mais aucun algorithme connu ne factorise rapidement les très grands nombres sur un ordinateur classique, et c’est sur cette difficulté que repose la sécurité du chiffrement RSA. L’existence d’un algorithme ne dit rien de son efficacité : c’est la frontière entre calculabilité et complexité.</p>
+</philo>
+<tech>
+<p><strong>Existence</strong>, par récurrence forte sur $n$. Pour $n=1$, on prend le produit vide. Si $n\ge2$ est premier, $n=n$ convient. Sinon $n=ab$ avec $1<a,b<n$ ; par hypothèse de récurrence $a$ et $b$ sont des produits de nombres premiers, donc $n$ aussi (on range les facteurs par ordre croissant).</p>
+<p><strong>Unicité</strong>, par récurrence forte sur $n$. Supposons $n=p_1\cdots p_k=q_1\cdots q_l$, deux écritures ordonnées. Si $n=1$, alors $k=l=0$, car un produit non vide de nombres premiers vaut au moins $2$. Sinon $k,l\ge1$ ; $p_1$ divise $q_1\cdots q_l$, donc, par le lemme d’Euclide, divise un $q_j$ ; comme $q_j$ est premier et $p_1\ne1$, $p_1=q_j\ge q_1$. Symétriquement $q_1\ge p_1$, donc $p_1=q_1$. En simplifiant par $p_1\ne0$ : $p_2\cdots p_k=q_2\cdots q_l=n/p_1<n$, et par hypothèse de récurrence $k=l$ et $p_i=q_i$ pour tout $i$.</p>
+<p><strong>Conséquences.</strong> $d\mid n$ si et seulement si chaque exposant de $d$ est inférieur ou égal à l’exposant correspondant de $n$ ; les exposants d’un produit s’additionnent ; et l’exposant de $\mathrm{Pr}(i)$ dans $n$, noté $(n)_i$, est une fonction récursive primitive de $(n,i)$ : c’est le plus grand $e\le n$ tel que $\mathrm{Pr}(i)^e\mid n$.</p>
+</tech>
+<techno>
+<p>Le programme de décomposition suit la preuve d’existence, en remplaçant « $n=ab$ » par la recherche du plus petit diviseur, qui est premier :</p>
+<pre><code>décomposer(n) :         // n ≥ 1
+    facteurs := [] ; d := 2
+    tant que d × d ≤ n :
+        si n mod d = 0 : ajouter d à facteurs ; n := n / d
+        sinon : d := d + 1
+    si n > 1 : ajouter n à facteurs
+    renvoyer facteurs</code></pre>
+<p>Les facteurs sortent dans l’ordre croissant, et chacun est premier : quand on trouve $d\mid n$, aucun entier entre $2$ et $d-1$ ne divise plus $n$. Quand $d^2>n$, ce qui reste est $1$ ou premier, par le point (1) de la proposition d’Euclide. L’unicité garantit que tout autre algorithme correct donnera la même liste. Ces programmes, comme les fonctions $(n)_i$ et $\mathrm{Pr}(i)$, sont exactement ceux dont la <a href="fonctions-recursives.html#codages-suites">bibliothèque récursive primitive</a> a besoin pour décoder les nombres de Gödel.</p>
+</techno>
+</res>
+
+<h2 id="mots">Alphabets, mots, langages</h2>
+
+<res type="Définition" nom="Mots et langages" id="def-mots">
+<enonce>
+<ul>
+<li>Un <strong>alphabet</strong> $\Sigma$ est un ensemble fini non vide de <em>lettres</em>.</li>
+<li>Un <strong>mot</strong> est une suite finie de lettres ; $\Sigma^*$ est l’ensemble des mots, $\varepsilon$ le mot vide, $|u|$ la longueur de $u$.</li>
+<li>La <strong>concaténation</strong> $u\cdot v$ (ou $uv$) met $v$ à la suite de $u$ : $u\cdot\varepsilon=u$ et $u\cdot(va)=(u\cdot v)a$ pour $a\in\Sigma$. Elle est associative, d’élément neutre $\varepsilon$, et non commutative. On note $u^n=u\cdots u$ ($n$ fois), $u^0=\varepsilon$.</li>
+<li>Un <strong>langage</strong> est une partie de $\Sigma^*$. Pour des langages $L,L'$ : $LL'=\{uu':u\in L,u'\in L'\}$, $L^0=\{\varepsilon\}$, $L^{n+1}=LL^n$, $L^*=\bigcup_n L^n$ (étoile de Kleene), $L^+=LL^*$.</li>
+<li>Les <strong>langages réguliers</strong> sont le plus petit ensemble de langages contenant $\emptyset$, $\{\varepsilon\}$ et les $\{a\}$ ($a\in\Sigma$), et clos par union, concaténation et étoile.</li>
+</ul>
+</enonce>
+</res>
+
+<h2 id="fonctions">Ensembles, relations et fonctions</h2>
+
+<res type="Définition" nom="Ensembles, relations, fonctions partielles" id="def-fonctions">
+<enonce>
+<ul>
+<li>$\mathcal P(E)$ est l’ensemble des parties de $E$ ; $E\times F=\{(x,y):x\in E\text{ et }y\in F\}$ est le produit cartésien.</li>
+<li>Une <strong>relation</strong> entre $E$ et $F$ est une partie de $E\times F$. Une relation $R$ sur $E$ est réflexive, symétrique, antisymétrique, transitive selon les définitions usuelles ; un <em>préordre</em> est réflexif et transitif, un <em>ordre</em> est un préordre antisymétrique, une <em>équivalence</em> est un préordre symétrique.</li>
+<li>Une <strong>fonction partielle</strong> $f$ de $E$ dans $F$ est une relation telle que pour tout $x$ il existe <em>au plus</em> un $y$ avec $(x,y)\in f$ ; on écrit alors $f(x)=y$ et $f(x)\conv$, et $f(x)\ind$ s’il n’y en a pas. Elle est <strong>totale</strong> si $f(x)\conv$ pour tout $x\in E$. $F^E$ désigne l’ensemble des fonctions totales de $E$ dans $F$.</li>
+<li>Une fonction totale $f:E\to F$ est <strong>injective</strong> si deux éléments distincts ont des images distinctes, <strong>surjective</strong> si tout $y\in F$ a au moins un antécédent, <strong>bijective</strong> si elle est les deux. $E$ est <strong>dénombrable</strong> s’il est en bijection avec une partie de $\N$.</li>
+<li>Notation anonyme : $x\mapsto e$ (ou $\lambda x.e$) désigne la fonction qui à $x$ associe la valeur de l’expression $e$.</li>
+</ul>
+</enonce>
+<tech></tech>
+</res>
+
+<h2 id="logique">Logique des prédicats</h2>
+
+<res type="Définition" nom="Formules et vérité" id="def-logique">
+<enonce>
+<p>Les <strong>termes</strong> de l’arithmétique sont construits à partir des variables et des constantes $0,1$ par $+$ et $\times$. Les <strong>formules</strong> sont construites à partir des égalités $t_1=t_2$ par $\neg$, $\wedge$, $\vee$, $\Rightarrow$, $\exists x$, $\forall x$. Étant donnée une valuation $\sigma$ (une fonction des variables dans $\N$), la valeur $\llbracket t\rrbracket_\sigma$ d’un terme et la vérité $\sigma\models\phi$ d’une formule sont définies par induction :</p>
+$$\begin{aligned}
+&\llbracket x\rrbracket_\sigma=\sigma(x),\quad \llbracket t_1+t_2\rrbracket_\sigma=\llbracket t_1\rrbracket_\sigma+\llbracket t_2\rrbracket_\sigma,\quad \llbracket t_1\times t_2\rrbracket_\sigma=\llbracket t_1\rrbracket_\sigma\times\llbracket t_2\rrbracket_\sigma,\\
+&\sigma\models t_1=t_2 \iff \llbracket t_1\rrbracket_\sigma=\llbracket t_2\rrbracket_\sigma,\qquad \sigma\models\neg\phi\iff\sigma\not\models\phi,\qquad \sigma\models\phi\wedge\psi\iff\sigma\models\phi\text{ et }\sigma\models\psi,\\
+&\sigma\models\exists x\,\phi\iff\text{il existe }n\in\N\text{ tel que }\sigma[x\mapsto n]\models\phi,\qquad \sigma\models\forall x\,\phi\iff\text{pour tout }n,\ \sigma[x\mapsto n]\models\phi.
+\end{aligned}$$
+<p>Les quantificateurs <strong>bornés</strong> $\exists x<t\,\phi$ et $\forall x<t\,\phi$ abrègent $\exists x\,(x<t\wedge\phi)$ et $\forall x\,(x<t\Rightarrow\phi)$, où $x<t$ abrège $\exists z\,(x+z+1=t)$.</p>
+</enonce>
+<tech><p>L’exponentiation n’est pas nécessaire dans le langage : elle est définissable à partir de $+$ et $\times$ (grâce à la fonction $\beta$ de Gödel, voir <a href="incompletude.html#representabilite">Incomplétude</a>).</p></tech>
+</res>
+
+<res type="Définition" nom="La théorie des ensembles ZFC" id="zfc">
+<enonce>
+<p><strong>ZFC</strong> (Zermelo-Fraenkel avec l’axiome du choix) est une théorie du premier ordre dans un langage qui n’a qu’un symbole de relation, l’appartenance $\in$. Ses axiomes affirment l’extensionnalité (deux ensembles qui ont les mêmes éléments sont égaux), l’existence de l’ensemble vide, de la paire $\{a,b\}$, de la réunion $\bigcup a$, de l’ensemble des parties $\mathcal P(a)$ et d’un ensemble infini, la fondation (pas de suite infinie $a_1\ni a_2\ni\cdots$) et le choix ; s’y ajoutent deux <em>schémas</em> : la compréhension (pour toute formule $\phi$, $\{x\in a:\phi(x)\}$ existe) et le remplacement (l’image d’un ensemble par une relation fonctionnelle définie par une formule est un ensemble).</p>
+<p>On y code les entiers à la manière de von Neumann : $0=\varnothing$, $n+1=n\cup\{n\}$, et $\mathbb N$ est le plus petit ensemble qui contient $0$ et qui est clos par $x\mapsto x\cup\{x\}$. Addition et multiplication se définissent par récurrence sur $\mathbb N$.</p>
+<p>Deux faits sont utilisés dans ce manuel : (1) l’ensemble des axiomes de ZFC est récursif primitif (une formule est un axiome si elle est l’un des huit axiomes ou une instance de l’un des deux schémas, ce qu’on vérifie par un parcours de la formule) ; (2) ZFC démontre la traduction, pour les entiers de von Neumann, de chacun des axiomes de l’<a href="incompletude.html#def-peano">arithmétique de Peano</a>, donc de chacun de ses théorèmes.</p>
+</enonce>
+<philo><p>ZFC est la théorie dans laquelle se rédige, en principe, presque toute la mathématique : une démonstration publiée peut, avec beaucoup de patience, être traduite en une démonstration formelle dans ZFC. Dire qu’un énoncé n’est « pas démontrable dans ZFC », c’est dire qu’il échappe aux méthodes usuelles des mathématiciens. Comme ZFC contient l’arithmétique de Peano et que ses axiomes sont décidables, les théorèmes d’incomplétude s’y appliquent.</p></philo>
+<tech><p><strong>Le point (2).</strong> L’axiome de l’infini et la compréhension donnent $\mathbb N$, intersection des ensembles inductifs contenus dans un ensemble inductif donné. D’où le principe de récurrence pour toute formule : si $\phi(0)$ et $\forall n\,(\phi(n)\Rightarrow\phi(n+1))$, l’ensemble $\{n\in\mathbb N:\phi(n)\}$ est inductif, donc égal à $\mathbb N$. Le successeur ne vaut jamais $\varnothing$ (il contient $n$), et il est injectif : si $n\cup\{n\}=m\cup\{m\}$ avec $n\ne m$, alors $n\in m$ et $m\in n$, ce que la fondation interdit. Le théorème de définition par récurrence (qui utilise le remplacement) fournit $+$ et $\times$ avec leurs équations de définition. Chaque axiome de Peano devient ainsi un théorème de ZFC ; comme les règles de déduction sont les mêmes, tout théorème de PA aussi.</p></tech>
+</res>

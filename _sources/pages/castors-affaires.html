@@ -1,0 +1,197 @@
+<!--
+titre: Les castors affairés
+court: Castors affairés
+chapo: Quelle est la plus longue tâche qu’une machine à n états peut accomplir avant de s’arrêter ? Une question concrète, une fonction qui croît plus vite que toute fonction calculable, et des valeurs connues seulement jusqu’à n = 5.
+prerequis: machines-turing.html|Machines de Turing ; indecidabilite.html|Problème de l’arrêt ; incompletude.html|Incomplétude ; bases.html#zfc|La théorie ZFC
+-->
+
+<h2>Le problème</h2>
+
+<p>Le problème des castors affairés (<em>busy beavers</em>), proposé par Tibor Radó en 1962, donne une fonction non calculable très concrète, qui ne parle pas d’indices de machines mais de machines réelles : parmi toutes les machines de Turing à $n$ états qui, lancées sur une bande blanche, finissent par s’arrêter, laquelle écrit le plus de symboles ?</p>
+
+<p>À première vue la question semble soluble : il y a un nombre fini de machines à $n$ états ; il suffit de les lancer toutes et de garder le meilleur résultat. Mais certaines ne s’arrêtent jamais, et l’on ne peut pas savoir, en général, si une machine qui tourne encore finira par s’arrêter avec un meilleur score. C’est de là que vient l’incalculabilité. La preuve, elle, n’est pas une réduction au problème de l’arrêt : elle montre directement que la fonction croît plus vite que toute fonction calculable.</p>
+
+<h2>Le modèle de Radó</h2>
+
+<res type="Définition" nom="Machines de Radó et fonctions Σ et S" id="def-rado">
+<enonce>
+<p>Une machine de Radó à $n$ états utilise les symboles $0$ (le blanc) et $1$. Ses états sont les lettres $A,B,C,\dots$ (les $n$ premières), plus un état d’arrêt $H$, sans transition. Elle a exactement une transition pour chaque couple (état $\ne H$, symbole lu), soit $2n$ transitions. On note $A0\to1RB$ la transition « dans l’état $A$, en lisant $0$, écrire $1$, se déplacer d’une case à droite ($R$) et passer dans l’état $B$ » ; la direction est $R$ ou $L$. C’est un <em>quintuplet</em> au sens du <a href="machines-turing.html#quintuplets">chapitre 3</a>, écrit $A\ 0\ 1\ R\ B$ dans les simulateurs. La machine démarre dans l’état $A$ sur une bande blanche.</p>
+<ul>
+<li>$\Sigma(n)$ est le plus grand nombre de $1$ présents sur la bande à l’arrêt, parmi les machines à $n$ états qui s’arrêtent ;</li>
+<li>$S(n)$ est le plus grand nombre de pas effectués avant l’arrêt (la transition vers $H$ comptant pour un pas), parmi les machines à $n$ états qui s’arrêtent.</li>
+</ul>
+<p>Une machine qui atteint $\Sigma(n)$ s’appelle un <strong>castor affairé</strong>.</p>
+</enonce>
+<tech>
+<p>Écrire et se déplacer à chaque pas ne change rien du point de vue de la calculabilité (on simule un pas « sur place » par un aller-retour), mais change les valeurs précises de $\Sigma$ et $S$, qui dépendent toujours du modèle exact. Il y a $(4(n+1))^{2n}$ machines à $n$ états : chacune des $2n$ transitions choisit un symbole (2 choix), une direction (2) et un état d’arrivée ($n+1$, en comptant $H$). Pour les énumérations du niveau technologique, on emploie aussi des <em>tables partielles</em>, où certaines transitions manquent : une machine qui atteint une transition manquante s’arrête. Une table partielle représente toutes ses complétions qui font le même calcul.</p>
+</tech>
+</res>
+
+<res type="Exemple" nom="Une machine à 3 états et le calcul de Σ(3)" id="exemple-rado">
+<enonce><p>La machine $A0\to1RB$, $A1\to1LC$, $B0\to1LA$, $B1\to1RB$, $C0\to1LB$, $C1\to1RH$ s’arrête après 13 pas avec six 1 sur la bande. On a $\Sigma(3)=6$ et $S(3)=21$.</p></enonce>
+<tech>
+<p>La trace de l’exécution (l’état, entre crochets, est écrit devant le symbole lu ; trace produite par le simulateur) :</p>
+<pre class="no-math">[A] 0 ⊢ 1 [B] 0 ⊢ [A] 1 1 ⊢ [C] 0 1 1 ⊢ [B] 0 1 1 1 ⊢ [A] 0 1 1 1 1 ⊢ 1 [B] 1 1 1 1
+  ⊢ 1 1 [B] 1 1 1 ⊢ 1 1 1 [B] 1 1 ⊢ 1 1 1 1 [B] 1 ⊢ 1 1 1 1 1 [B] 0 ⊢ 1 1 1 1 [A] 1 1
+  ⊢ 1 1 1 [C] 1 1 1 ⊢ 1 1 1 1 [H] 1 1</pre>
+<p>Elle montre $\Sigma(3)\ge6$ et $S(3)\ge13$. Les valeurs exactes $\Sigma(3)=6$ et $S(3)=21$ ont été établies par Lin et Radó (1965) ; le record de 21 pas est atteint par une <em>autre</em> machine (qui n’écrit que cinq 1).</p>
+</tech>
+<techno>
+<p>Exécutez la machine :</p>
+<div class="rado-widget"><pre class="src">A 0 1 R B
+A 1 1 L C
+B 0 1 L A
+B 1 1 R B
+C 0 1 L B
+C 1 1 R H</pre></div>
+<p>Pour ce manuel, les valeurs $\Sigma(2)=4$, $S(2)=6$, $\Sigma(3)=6$, $S(3)=21$ ont été <strong>revérifiées par énumération exhaustive</strong> des $12^4=20\,736$ machines à 2 états et des $16^6=16\,777\,216$ machines à 3 états, sans utiliser les valeurs connues. Chaque machine est simulée pendant 200 pas ; pour <em>chacune</em> de celles qui ne se sont pas arrêtées, le programme exhibe une preuve de non-arrêt. La limite de 200 pas ne sert donc qu’à trier : elle n’est pas supposée suffisante, ce qui serait circulaire. Chaque preuve est un ensemble de configurations qui contient la configuration initiale, est stable par un pas de calcul et ne contient aucune configuration d’arrêt. Pour 3 états :</p>
+<ul>
+<li>7 571 840 machines s’arrêtent, en au plus 21 pas et avec au plus six 1 ;</li>
+<li>2 985 984 n’ont aucune transition d’arrêt ;</li>
+<li>1 383 152 sont réglées par <em>raisonnement arrière</em> : toute chaîne de configurations menant à l’arrêt, remontée pas à pas, devient incohérente en moins de 30 pas ;</li>
+<li>155 792 répètent exactement une configuration (cycle) ;</li>
+<li>4 679 088 répètent une configuration à une translation près, en avançant sur une bande vierge (cycle translaté) ;</li>
+<li>1 152 sont réglées par un ensemble fermé de fenêtres de la bande (n-grammes) ;</li>
+<li>les 208 dernières, qui se comportent comme des compteurs binaires, sont réglées par un <em>langage régulier fermé</em> : la moitié gauche de la bande est résumée par un automate fini à au plus 3 états, la moitié droite est gardée telle quelle, comme une pile. On obtient un système à pile, dont l’ensemble des configurations accessibles est régulier et se calcule exactement par saturation (voir les <a href="langages.html#automates-pile">automates à pile</a>) ; il ne contient aucune configuration d’arrêt. Ce critère, essayé sur 3 000 machines qui s’arrêtent, n’en a déclaré aucune sans arrêt.</li>
+</ul>
+<p>Le total vaut bien $16^6$. Pour 2 états, les cinq premiers critères suffisent. Programmes : <a href="assets/code/castors.c">castors.c</a> et <a href="assets/code/castors_far.py">castors_far.py</a>. Voici la machine qui réalise $S(3)=21$ :</p>
+<div class="rado-widget"><pre class="src">A 0 1 R B
+A 1 1 L H
+B 0 1 L B
+B 1 0 R C
+C 0 1 L C
+C 1 1 L A</pre></div>
+</techno>
+</res>
+
+<h2>Incalculabilité</h2>
+
+<res type="Théorème" nom="Σ croît plus vite que toute fonction calculable (Radó, 1962)" id="sigma-non-calculable">
+<enonce><p>Pour toute fonction calculable totale $f:\N\to\N$, on a $\Sigma(N)>f(N)$ pour tout $N$ assez grand. En particulier $\Sigma$ n’est pas calculable, et $S$ non plus.</p></enonce>
+<philo>
+<p>Ce n’est pas seulement que $\Sigma$ soit difficile à calculer : elle croît plus vite que tout ce qu’un programme peut calculer, plus vite que l’exponentielle, que la fonction d’Ackermann, que n’importe quelle fonction qu’on puisse décrire par un algorithme. Pourtant chacune de ses valeurs est un entier bien déterminé.</p>
+<p>Connaître $\Sigma(n)$ ou $S(n)$ serait d’ailleurs un super-pouvoir : connaissant $S(n)$, on déciderait l’arrêt de toutes les machines à $n$ états (on les lance pendant $S(n)$ pas ; celles qui ne se sont pas arrêtées ne s’arrêteront jamais). Comme de nombreuses conjectures mathématiques (Goldbach, Riemann) s’expriment par l’arrêt d’une machine de taille modeste, connaître $S$ pour quelques dizaines ou centaines d’états les résoudrait toutes.</p>
+</philo>
+<tech>
+<p>Soit $f$ calculable totale. Posons $F(x)=\sum_{i=0}^{x}\big(f(i)+i^2\big)$. $F$ est calculable, strictement croissante, et $F(x)\ge f(x)$, $F(x)\ge x^2$. Soit $M_F$ une machine de Radó à $n$ états qui, partant de $x$ barres consécutives (tête sur la première), s’arrête en laissant ces $x$ barres, un blanc, puis $F(x)$ barres, tête sur la première du résultat, et qui ne visite jamais les cases à gauche de son entrée (on peut toujours l’exiger : une bande infinie d’un seul côté calcule les mêmes fonctions).</p>
+<p>Pour tout $x$, construisons une machine $M_x$ : $x$ états écrivent $x$ barres en allant à droite ; deux états ramènent la tête sur la première ; puis deux copies de $M_F$ (états décalés) s’enchaînent. $M_x$ a $x+2+2n$ états, part d’une bande blanche et s’arrête avec au moins $x+F(x)+F(F(x))$ barres. Donc
+$$\Sigma(x+2+2n)\ge F(F(x)).$$
+Pour $x$ assez grand, $x^2>x+2+2n$, donc $F(x)\ge x^2>x+2+2n$, et comme $F$ est strictement croissante,
+$$\Sigma(x+2+2n)\ge F(F(x))>F(x+2+2n)\ge f(x+2+2n).$$
+Ainsi $\Sigma(N)>f(N)$ pour tout $N$ assez grand. Si $\Sigma$ était calculable, on aurait en particulier $\Sigma(N)>\Sigma(N)$ pour $N$ grand, absurde. Enfin $S(n)\ge\Sigma(n)$ (il faut au moins un pas par 1 écrit), donc $S$ domine aussi toute fonction calculable.</p>
+</tech>
+</res>
+
+<h2>Valeurs connues</h2>
+
+<res type="Proposition" nom="Valeurs de Σ et S connues en 2026" id="valeurs-bb">
+<enonce>
+<table>
+<tr><th>$n$</th><th>$\Sigma(n)$</th><th>$S(n)$</th><th>Établi par</th></tr>
+<tr><td>1</td><td>1</td><td>1</td><td>trivial</td></tr>
+<tr><td>2</td><td>4</td><td>6</td><td>Radó (1962) ; revérifié ici</td></tr>
+<tr><td>3</td><td>6</td><td>21</td><td>Lin et Radó (1965) ; revérifié ici</td></tr>
+<tr><td>4</td><td>13</td><td>107</td><td>Brady (1983) ; revérifié ici</td></tr>
+<tr><td>5</td><td>4 098</td><td>47 176 870</td><td>Marxen et Buntrock (1989, candidats) ; preuve complète par le projet collaboratif <em>bbchallenge</em> (2024), vérifiée dans l’assistant de preuve Coq (aujourd’hui renommé Rocq) ; ici, seule la borne inférieure est revérifiée</td></tr>
+<tr><td>6</td><td>$>10\uparrow\uparrow 15$</td><td>$>2\uparrow\uparrow\uparrow 5$</td><td>bornes inférieures (Kropitz, 2022, pour $\Sigma$ ; mxdys, 2025, pour $S$) ; valeur inconnue</td></tr>
+</table>
+<p>($10\uparrow\uparrow15$ désigne une tour de quinze 10 : $10^{10^{\cdot^{\cdot^{10}}}}$. $2\uparrow\uparrow\uparrow5=2\uparrow\uparrow(2\uparrow\uparrow65\,536)$ est une tour de 2 dont la hauteur est elle-même une tour de 65 536 deux. « Revérifié ici » renvoie aux vérifications exhaustives décrites au niveau technologique : dans l’<a href="#exemple-rado">exemple à 3 états</a> pour $n\le3$, et ci-dessous pour $n=4$.)</p>
+</enonce>
+<philo>
+<p>Il a fallu soixante ans et une collaboration internationale assistée par ordinateur pour déterminer $S(5)$. Pour $n=6$, on connaît des machines qui s’arrêtent après un nombre de pas qui défie toute écriture, et il reste des machines dont on ne sait pas si elles s’arrêtent ; certaines simulent des problèmes proches de la conjecture de Collatz. Il est vraisemblable qu’on ne connaîtra jamais $\Sigma(6)$.</p>
+<p>Au-delà, la logique elle-même s’en mêle : il existe un rang $n$ à partir duquel les valeurs de $S$ et de $\Sigma$ ne sont plus démontrables dans la théorie des ensembles usuelle ZFC (pour $S$, on sait que ce rang est inférieur à 800) (<a href="#castors-zfc">théorème ci-dessous</a>).</p>
+</philo>
+<tech><
+<p><strong>Ce qu’il faut pour établir une valeur.</strong> Établir $S(n)=k$ demande deux choses. La borne inférieure $S(n)\ge k$ se prouve en exhibant une machine à $n$ états et en la simulant jusqu’à son arrêt au pas $k$ : c’est un calcul fini. La borne supérieure demande, pour chacune des machines à $n$ états (il y en a $(4n+4)^{2n}$, un nombre fini), soit de la simuler jusqu’à son arrêt, qui a alors lieu en au plus $k$ pas, soit de <em>démontrer</em> qu’elle ne s’arrête jamais. Pour $\Sigma(n)$, on compte en plus les symboles 1 sur la bande des machines qui s’arrêtent. Pour chaque $n$, la valeur est donc atteinte par un nombre fini de vérifications et de preuves ; mais aucun algorithme ne fournit ces preuves pour tous les $n$, sans quoi $S$ serait calculable, ce qu’exclut le <a href="#sigma-non-calculable">théorème de Radó</a>. Le <a href="#castors-zfc">théorème qui suit</a> va plus loin : à partir d’un certain rang, certaines de ces preuves de non-arrêt n’existent même pas dans ZFC.</p>
+<p><strong>Statut des lignes du tableau.</strong> Les lignes $n\le4$ sont démontrées dans ce manuel (vérifications exhaustives du niveau technologique, avec trois preuves à la main pour $n=4$). La ligne $n=5$ est démontrée ici pour la borne inférieure, citée pour la borne supérieure. La ligne $n=6$ et la borne « inférieur à 800 » de la partie philosophique sont citées pour information.</p></tech>
+<techno>
+<p><strong>Vérification de $\Sigma(4)=13$ et $S(4)=107$.</strong> Pour 4 états, les $20^8\approx2{,}6\cdot10^{10}$ tables ne s’énumèrent plus une à une. On les parcourt en <em>forme normale arborescente</em> : une machine n’est définie que sur les transitions qu’elle emploie effectivement. On la simule ; quand elle atteint une transition non définie, on ramifie : soit elle s’arrête là, soit on choisit le symbole écrit, le déplacement et l’état suivant, parmi les états déjà employés et un seul état neuf. Le premier déplacement est pris vers la droite, puisque la machine miroir fait le même nombre de pas et écrit le même nombre de 1. Toute machine à 4 états se ramène ainsi, à renumérotation des états près, à une feuille de l’arbre qui fait le même calcul. Il y a 3 995 005 feuilles :</p>
+<ul>
+<li>249 693 s’arrêtent, en au plus 107 pas et avec au plus treize 1 ;</li>
+<li>3 136 096 n’ont plus de transition d’arrêt possible ;</li>
+<li>315 648 sont réglées par raisonnement arrière, 27 556 par un cycle, 257 557 par un cycle translaté, 6 386 par un ensemble fermé de $n$-grammes ;</li>
+<li>2 066 par le langage régulier fermé décrit dans l’<a href="#exemple-rado">exemple à 3 états</a>, avec des automates à au plus 6 états ;</li>
+<li>les 3 dernières par des preuves à la main, données ci-dessous.</li>
+</ul>
+<p>Pour ces feuilles, une transition non définie compte comme un arrêt possible : chaque preuve de non-arrêt vaut donc pour toutes les manières de compléter la table. Le premier critère simule 1 000 pas, ce qui sert seulement à trier : aucune valeur de $S$ n’est supposée. Le critère par automates a aussi été essayé sur des machines qui s’arrêtent, et n’en a déclaré aucune sans arrêt. Programmes : <a href="assets/code/castors_tnf.c">castors_tnf.c</a> et <a href="assets/code/far.c">far.c</a>, réécriture en C de castors_far.py, qui donne les mêmes résultats sur les machines à 3 états.</p>
+<p><em>Les trois dernières machines.</em> On note $u\,[X]\,v$ la configuration où la bande porte $uv$, le reste étant vide, et où la tête, dans l’état $X$, lit la première lettre de $v$. Les trois preuves suivent le même schéma. On trouve une famille de configurations qui se transforment les unes dans les autres par des « macro-pas », en un nombre fixe de pas chacun, et l’on vérifie que la seule transition non définie n’est jamais employée. Chaque macro-pas se vérifie en suivant ses quelques transitions à la main, quelle que soit la valeur des paramètres.</p>
+<ol>
+<li><strong>$A0\to1RB$, $A1\to1LD$, $B0\to1RC$, $B1\to0LC$, $C0\to1LA$, $C1\to1RA$, $D1\to0RB$</strong> ($D0$ non défini). Pour $a\ge2$, $1^a[A]11(01)^b$ mène en 4 pas à $1^{a-2}[A]11(01)^{b+1}$. Pour $a=1$, les mêmes 4 pas mènent à $[A](01)^{b+2}$. Ensuite, $1^c[A]0101$ mène en 6 pas à $1^{c+4}[A]$, et $1^c[A]$ mène en 3 pas à $1^{c+1}[A]11$. Partons de $1^a[A]11$ avec $a\equiv1\pmod4$. On arrive à $1[A]11(01)^{(a-1)/2}$, puis à $[A](01)^k$ avec $k=(a+3)/2$, qui est pair. On arrive enfin à $1^{2k}[A]$, puis à $1^{a+4}[A]11$. La machine atteint $1^{25}[A]11$ au pas 291.</li>
+<li><strong>$A0\to1RB$, $A1\to0RB$, $B0\to1LB$, $B1\to0LC$, $C0\to0LD$, $D0\to1RD$, $D1\to0RA$</strong> ($C1$ non défini). Pour $j\ge1$, $1^j0[A]001^m$ mène en 5 pas à $1^{j-1}0[A]001^{m+1}$. Pour $j=0$, $0[A]001^m$ mène en 8 pas à $1110[A]1^m$. Enfin, pour $m\ge3$, $1^k0[A]1^m$ mène en 7 pas à $1^{k+3}0[A]1^{m-3}$. Partons de $1^k0[A]$ avec $k\equiv0\pmod3$ : on arrive à $0[A]001^k$, puis à $1110[A]1^k$, puis à $1^{k+3}0[A]$. La machine atteint $1110[A]$ au pas 8.</li>
+<li><strong>$A0\to1RB$, $A1\to1LB$, $B0\to1RC$, $B1\to0RD$, $C0\to1LD$, $C1\to1RB$, $D1\to0LA$</strong> ($D0$ non défini). Pour $j\ge1$, $1^j[A]101^m$ mène en 7 pas à $1^{j-1}[A]101^{m+1}$. Pour $m\ge3$, $[A]101^m$ mène en 7 pas à $1111[A]001^{m-3}$. Pour $r\ge3$, $1^c[A]001^r$ mène en 5 pas à $1^{c+3}[A]001^{r-3}$. Enfin, $1^c[A]001$ mène en 6 pas à $1^{c+2}[A]101$. Partons de $1^k[A]101$ avec $k\equiv0\pmod3$ et $k\ge3$. On arrive à $[A]101^{k+1}$, puis à $1111[A]001^{k-2}$. Comme $k-2\equiv1\pmod3$, on arrive à $1^{k+1}[A]001$, puis à $1^{k+3}[A]101$. La machine atteint $111[A]101$ au pas 12.</li>
+</ol>
+<p>Dans les trois cas, on retrouve une configuration de la même famille, avec un paramètre plus grand qui garde la même congruence. La machine ne s’arrête donc jamais. Les macro-pas et les cycles complets ont aussi été vérifiés par programme pour les petites valeurs des paramètres (<a href="assets/code/castor4_dernieres.py">castor4_dernieres.py</a>). Les preuves, elles, valent pour toutes les valeurs.</p>
+<p><strong>Ce qui n’est pas refait ici.</strong> Pour 5 états, on a vérifié la borne inférieure en simulant la machine championne : elle s’arrête après 47 176 870 pas, avec 4 098 symboles 1 sur la bande. La borne supérieure demande de prouver le non-arrêt de toutes les autres machines. Le projet bbchallenge l’a fait en 2024 sur environ 180 millions de machines, avec des critères plus élaborés et quelques preuves individuelles, le tout formalisé en Coq. Ce travail est cité, et n’est pas reproduit ici. Pour 6 états, les bornes inférieures du tableau sont citées : les machines correspondantes ne se simulent pas pas à pas, et leur analyse demande des accélérations symboliques qui ne sont pas reprises ici.</p>
+<p>Les champions pour $n=2$, $4$ et $5$. Le dernier fait 47 176 870 pas : le simulateur rapide de la page le termine en moins d’une seconde.</p>
+<div class="rado-widget" data-titre="Σ(2) = 4, S(2) = 6"><pre class="src">A 0 1 R B
+A 1 1 L B
+B 0 1 L A
+B 1 1 R H</pre></div>
+<div class="rado-widget" data-titre="Σ(4) = 13, S(4) = 107 (Brady)"><pre class="src">A 0 1 R B
+A 1 1 L B
+B 0 1 L A
+B 1 0 L C
+C 0 1 R H
+C 1 1 L D
+D 0 1 R D
+D 1 0 R A</pre></div>
+<div class="rado-widget" data-titre="Σ(5) = 4098, S(5) = 47 176 870 (Marxen et Buntrock)"><pre class="src">A 0 1 R B
+A 1 1 L C
+B 0 1 R C
+B 1 1 R B
+C 0 1 R D
+C 1 0 L E
+D 0 1 L A
+D 1 1 L D
+E 0 1 R H
+E 1 0 L A</pre></div>
+</techno>
+</res>
+
+<res type="Théorème" nom="Les valeurs de S et Σ échappent à ZFC à partir d’un certain rang" id="castors-zfc">
+<enonce><p>Supposons ZFC cohérente. Il existe un entier $N$ tel que, pour tout $n\ge N$ et tout entier $k$, ZFC ne démontre pas l’énoncé « $S(n)=k$ ». Il en va de même pour $\Sigma$, avec un autre entier $N'$.</p></enonce>
+<philo><p>Il ne s’agit pas seulement de valeurs trop grandes pour être calculées. Au-delà d’un certain nombre d’états, aucune démonstration, dans la théorie qui sert de fondement aux mathématiques, ne peut établir la valeur. La raison est simple : connaître $S(n)$, c’est savoir décider l’arrêt de toutes les machines à $n$ états, et l’une d’elles cherche une contradiction dans ZFC. Le nombre <a href="kolmogorov-omega.html#omega-arret">Ω de Chaitin</a> joue le même rôle sous une forme comprimée : ses $n$ premiers chiffres décident l’arrêt de tous les programmes de longueur au plus $n$.</p></philo>
+<tech>
+<p>Les axiomes de <a href="bases.html#zfc">ZFC</a> forment un ensemble décidable. Il existe donc une machine de Radó $M$ qui énumère toutes les démonstrations formelles dans ZFC, et qui s’arrête dès qu’elle en trouve une de $0\ne0$. Soit $N$ son nombre d’états. ZFC démontre « $M$ ne s’arrête pas $\iff$ ZFC est cohérente » : c’est la traduction de la définition de $M$. Pour $n\ge N$, on ajoute à $M$ des états inaccessibles et l’on obtient une machine à $n$ états qui se comporte comme $M$.</p>
+<p>Supposons que ZFC démontre $S(n)=k$. Par définition de $S$, ZFC démontre alors que $M$, si elle s’arrête, s’arrête en au plus $k$ pas.</p>
+<ul>
+<li>Si $M$ s’arrête effectivement en au plus $k$ pas, ZFC est contradictoire, contrairement à l’hypothèse.</li>
+<li>Sinon, l’énoncé « $M$ ne s’arrête pas en au plus $k$ pas » est une vérification finie, vraie, et ZFC la démontre. Tout énoncé borné vrai est démontrable dans PA (<a href="incompletude.html#sigma-complet">Σ-complétude</a>), et ZFC démontre tous les théorèmes de PA. ZFC démontre donc que $M$ ne s’arrête pas, c’est-à-dire que ZFC est cohérente. Cela contredit le <a href="incompletude.html#godel2">second théorème d’incomplétude</a>. Celui-ci s’applique à toute théorie qui contient PA et dont les axiomes forment un ensemble récursif primitif. C’est le cas de ZFC, une fois l’arithmétique traduite dans les entiers de von Neumann (<a href="bases.html#zfc">points (1) et (2)</a>).</li>
+</ul>
+<p><strong>Pour $\Sigma$.</strong> Soit $M'$ une machine qui exécute pas à pas la même recherche que $M$ et qui, après chaque pas simulé, ajoute un 1 à une zone de comptage placée à gauche, qu’elle n’efface jamais. $M'$ s’arrête si et seulement si $M$ s’arrête. Si elle s’arrête après $t$ pas simulés, au moins $t$ cases contiennent un 1. Soit $N'$ son nombre d’états. Si ZFC démontre $\Sigma(n)=k$ pour un $n\ge N'$, ZFC démontre que $M$, si elle s’arrête, le fait en au plus $k$ pas, et l’on conclut comme ci-dessus.</p>
+<p><strong>Valeurs explicites.</strong> La preuve ne donne pas de valeur précise de $N$ : il faudrait écrire la machine $M$. C’est ce qu’ont fait Yedidia et Aaronson (2016), avec une machine à 7 918 états, sous une hypothèse un peu plus forte que la cohérence de ZFC. D’autres ont suivi, et descendent sous les 800 états pour ZF (Riebel, 2023). Cela vaut aussi pour ZFC, car PA démontre que ZF et ZFC sont cohérentes en même temps (Gödel, 1938). Ces résultats portent sur $S$ ; la machine $M'$ demande quelques états de plus. Ces machines sont produites par des compilateurs et ne sont pas revérifiées ici.</p>
+</tech>
+</res>
+
+<!--EXERCICES-->
+<h2 id="exercices">Exercices</h2>
+
+<exo niveau="1" titre="Le champion à deux états" id="ex-bb-deux">
+<p>Simuler la machine de Radó $A0\to1RB$, $A1\to1LB$, $B0\to1LA$, $B1\to1RH$ sur une bande blanche. Combien de pas fait-elle, combien de 1 laisse-t-elle ?</p>
+<corrige>
+<p>On note la bande avec la case lue entre crochets. Départ : $A$, $[0]$. Puis : $A0\to1RB$ donne $1[0]$ en $B$ ; $B0\to1LA$ donne $[1]1$ en $A$ ; $A1\to1LB$ donne $[0]11$ en $B$ ; $B0\to1LA$ donne $[0]111$ en $A$ ; $A0\to1RB$ donne $1[1]11$ en $B$ ; $B1\to1RH$ : arrêt sur $11[1]1$. Six pas, quatre 1. Ce sont les valeurs $S(2)=6$ et $\Sigma(2)=4$ (<a href="#valeurs-bb">valeurs connues</a>).</p>
+</corrige>
+</exo>
+
+<exo niveau="1" titre="Combien de machines ?" id="ex-bb-nombre">
+<p>Combien y a-t-il de machines de Radó à $n$ états (au sens de la <a href="#def-rado">définition</a>) ? Calculer pour $n=1,2,3,4$.</p>
+<corrige>
+<p>Il y a $2n$ transitions à fixer (un couple état, symbole lu). Chacune choisit un symbole à écrire (2 choix), une direction (2 choix) et un état suivant parmi les $n$ états et $H$ ($n+1$ choix) : $4(n+1)$ possibilités. D’où $(4n+4)^{2n}$ machines : $64$, $20\,736$, $16\,777\,216$ et $25\,600\,000\,000$ pour $n=1,2,3,4$. En pratique, on réduit beaucoup ce nombre par symétrie (échange gauche-droite, renumérotation des états) et en ne gardant qu’une transition vers $H$ ; mais la croissance reste plus qu’exponentielle, et chaque machine doit être <em>prouvée</em> s’arrêter ou non.</p>
+</corrige>
+</exo>
+
+<exo niveau="2" titre="Un état de plus, un 1 de plus" id="ex-bb-croissance">
+<p>Montrer que $\Sigma(n+1)\ge\Sigma(n)+1$ et $S(n)\ge\Sigma(n)$.</p>
+<corrige>
+<p>Soit $M$ une machine à $n$ états qui s’arrête en laissant $\Sigma(n)$ uns. On remplace, dans sa transition vers $H$, l’état $H$ par un nouvel état $N$, avec $N1\to1RN$ et $N0\to1RH$. Arrivée en $N$, la machine avance vers la droite sur des 1 ; comme la bande ne porte qu’un nombre fini de 1, elle trouve un 0, l’écrit en 1 et s’arrête. Elle a $n+1$ états et laisse $\Sigma(n)+1$ uns, d’où $\Sigma(n+1)\ge\Sigma(n)+1$.</p>
+<p>Chaque pas écrit au plus un symbole, donc ajoute au plus un 1 ; une machine qui laisse $k$ uns sur une bande initialement blanche fait au moins $k$ pas : $S(n)\ge\Sigma(n)$.</p>
+</corrige>
+</exo>
+
+<exo niveau="3" titre="Connaître S(n), c’est décider l’arrêt" id="ex-bb-arret">
+<p>(a) Montrer que si l’on connaît $S(n)$, on peut décider, pour chaque machine de Radó à $n$ états, si elle s’arrête sur une bande blanche. (b) En déduire, sans passer par $\Sigma$, que $S$ n’est majorée par aucune fonction calculable.</p>
+<corrige>
+<p>(a) On simule la machine pendant $S(n)$ pas. Si elle ne s’est pas arrêtée, elle ne s’arrêtera jamais, puisque toute machine à $n$ états qui s’arrête le fait en au plus $S(n)$ pas.</p>
+<p>(b) Le même argument marche avec n’importe quelle majoration : si $f$ est calculable et $f(n)\ge S(n)$ pour tout $n$, simuler $f(n)$ pas décide l’arrêt sur bande blanche des machines à $n$ états. Or ce problème est indécidable : à toute machine de Turing $Z$ et toute entrée $x$, on associe (calculablement) une machine de Radó qui écrit d’abord $x$ sur la bande blanche, puis simule $Z$ ; elle s’arrête si et seulement si $Z$ s’arrête sur $x$. Un décideur de l’arrêt sur bande blanche déciderait donc $K$. C’est l’argument de Radó, et la raison pour laquelle chaque nouvelle valeur de $S$ demande de résoudre des problèmes mathématiques, comme des variantes de la conjecture de Collatz (<a href="#valeurs-bb">valeurs connues</a>).</p>
+</corrige>
+</exo>

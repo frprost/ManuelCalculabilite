@@ -1,0 +1,538 @@
+<!--
+titre: Machines de Turing
+court: Machines de Turing
+chapo: Un automate fini, une tête de lecture, une bande sans fin : le modèle le plus simple et le plus mécanique du calcul, défini ici formellement et exécutable dans la page.
+prerequis: bases.html#mots|Alphabets et mots ; bases.html#entiers|Entiers
+-->
+
+<h2>Une machine très simple</h2>
+
+<p>Pour modéliser ce que fait un calculateur humain, Alan Turing a proposé en 1936 un modèle mathématique très simple. Il en existe de nombreuses variantes, toutes équivalentes du point de vue de ce qu’elles calculent ; nous suivons la présentation à <em>quadruplets</em> de Martin Davis (<em>Computability and Unsolvability</em>, 1958). Une machine est constituée de trois éléments :</p>
+<ol>
+<li>une <strong>bande</strong> infinie dans les deux sens, divisée en cases, chaque case portant un symbole ; les cases sont blanches (symbole $B$) sauf un nombre fini d’entre elles ;</li>
+<li>une <strong>tête</strong> de lecture-écriture, placée sur une case, et un <strong>état</strong> interne, pris dans un ensemble fini ;</li>
+<li>un <strong>programme</strong> : une liste finie d’instructions, les quadruplets.</li>
+</ol>
+
+<figure>
+<svg viewBox="0 0 560 170" role="img" aria-label="Schéma d’une machine de Turing : une bande de cases, une tête dans l’état q pointant sur une case contenant 1, et un programme.">
+  <g font-family="ui-monospace, Menlo, monospace" font-size="18" fill="currentColor">
+    <g stroke="currentColor" stroke-width="1.2" fill="none">
+      <rect x="20" y="110" width="40" height="40"/><rect x="60" y="110" width="40" height="40"/><rect x="100" y="110" width="40" height="40"/>
+      <rect x="140" y="110" width="40" height="40" stroke-width="3"/><rect x="180" y="110" width="40" height="40"/><rect x="220" y="110" width="40" height="40"/><rect x="260" y="110" width="40" height="40"/>
+    </g>
+    <text x="33" y="137" opacity=".5">B</text><text x="73" y="137" opacity=".5">B</text><text x="115" y="137">1</text><text x="155" y="137" font-weight="700">1</text><text x="195" y="137">1</text><text x="233" y="137" opacity=".5">B</text><text x="273" y="137" opacity=".5">B</text>
+    <text x="0" y="137" opacity=".5">…</text><text x="304" y="137" opacity=".5">…</text>
+    <circle cx="160" cy="45" r="22" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    <text x="153" y="51">q</text>
+    <line x1="160" y1="67" x2="160" y2="104" stroke="currentColor" stroke-width="1.5"/>
+    <path d="M154 96 L160 106 L166 96" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    <rect x="360" y="20" width="185" height="78" rx="6" fill="none" stroke="currentColor" stroke-width="1"/>
+    <text x="372" y="48" font-size="16">q, 1, B, q′</text>
+    <text x="372" y="74" font-size="16">q′, B, R, q</text>
+    <text x="372" y="122" font-size="13" opacity=".7">programme</text>
+    <text x="20" y="168" font-size="13" opacity=".7">bande (presque partout blanche)</text>
+  </g>
+</svg>
+<figcaption>La tête, dans l’état $q$, lit un 1. L’instruction $q,1,B,q'$ dit : effacer le 1 et passer dans l’état $q'$ ; ensuite $q',B,R,q$ : se déplacer d’une case à droite et revenir dans l’état $q$.</figcaption>
+</figure>
+
+<p>Une instruction $q_i, S_j, \dots$ s’applique lorsque la machine est dans l’état $q_i$ et lit le symbole $S_j$. Elle est de l’un de deux types : <strong>écrire</strong> un symbole à la place de celui qui est lu, ou <strong>se déplacer</strong> d’une case à gauche ($L$) ou à droite ($R$) ; dans les deux cas elle indique le nouvel état. La machine enchaîne les pas tant qu’une instruction s’applique ; elle s’arrête dès qu’aucune ne s’applique. Pour que le calcul soit déterministe, il ne doit y avoir qu’une instruction par couple (état, symbole).</p>
+
+<p>La machine de la figure, lancée sur la bande <code>1 1 1</code>, efface la barre lue, se déplace à droite, recommence… et s’arrête quand elle lit un blanc dans l’état $q$ (aucune instruction ne commence par $q, B$). Elle efface donc un bloc de barres. Essayez :</p>
+
+<div class="tm-widget" data-titre="Effacer un bloc de barres" data-args="2"><pre class="src">q0 1 B q1
+q1 B R q0</pre></div>
+
+<h2>Définition formelle</h2>
+
+<res type="Définition" nom="Machine de Turing" id="def-mt">
+<enonce>
+<p>On fixe deux ensembles infinis dénombrables disjoints : les <em>états</em> $Q=\{q_0,q_1,\dots\}$ et les <em>symboles</em> $S=\{S_0,S_1,\dots\}$, ainsi que deux marques $L,R\notin Q\cup S$. On note $B=S_0$ (le <em>blanc</em>) et $1=S_1$ (la <em>barre</em>, parfois notée $|$).</p>
+<p>Une <strong>machine de Turing</strong> $Z$ est un ensemble fini non vide $P_Z$ de quadruplets de l’une des trois formes</p>
+$$ q_i\,S_j\,S_k\,q_l \qquad q_i\,S_j\,R\,q_l \qquad q_i\,S_j\,L\,q_l $$
+<p>qui est <strong>consistant</strong> : deux quadruplets distincts de $P_Z$ ne commencent jamais par le même couple $q_i\,S_j$.</p>
+</enonce>
+<philo><p>Tout est fini : l’alphabet effectivement utilisé, les états, le programme. Seule la bande est sans limite, mais à chaque instant elle ne porte qu’un nombre fini de symboles non blancs : c’est la « finitude non bornée » des <a href="motivations.html">motivations</a>. La consistance est la forme mathématique du déterminisme : à chaque situation correspond au plus une action.</p></philo>
+<tech><p>On note $E_Z\subset Q$ et $S_Z\subset S$ les ensembles (finis) d’états et de symboles qui apparaissent dans $P_Z$. Fixer d’avance des ensembles « canoniques » $Q$ et $S$ permet de dire que l’ensemble de toutes les machines est dénombrable, et de les coder par des entiers (chapitre <a href="equivalence.html#godel-mt">Équivalence</a>).</p></tech>
+<techno><p>Dans le simulateur, un programme s’écrit un quadruplet par ligne, par exemple <code>q0 1 B q1</code> ; les symboles sont des mots quelconques (<code>B</code>, <code>1</code>, <code>X</code>…), et <code>L</code>, <code>R</code> sont réservés aux déplacements. Le simulateur refuse un programme non consistant.</p></techno>
+</res>
+
+<res type="Définition" nom="Description instantanée et pas de calcul" id="def-pas">
+<enonce>
+<p>Une <strong>description instantanée</strong> est un mot $\alpha=\gamma\,q_i\,S_j\,\delta$ avec $\gamma,\delta\in S^*$ : la bande porte $\gamma S_j\delta$ (et des blancs ailleurs), la machine est dans l’état $q_i$ et la tête lit $S_j$. On dit que $\alpha$ <strong>donne</strong> $\beta$ par $Z$, noté $\alpha\vdash_Z\beta$, dans les cas suivants :</p>
+<ol type="a">
+<li>$q_i\,S_j\,S_k\,q_l\in P_Z$ et $\beta=\gamma\,q_l\,S_k\,\delta$ ;</li>
+<li>$q_i\,S_j\,R\,q_l\in P_Z$ et $\beta=\gamma S_j\,q_l\,S_k\,\delta'$ si $\delta=S_k\delta'$, ou $\beta=\gamma S_j\,q_l\,B$ si $\delta$ est vide ;</li>
+<li>$q_i\,S_j\,L\,q_l\in P_Z$ et $\beta=\gamma'\,q_l\,S_k\,S_j\delta$ si $\gamma=\gamma' S_k$, ou $\beta=q_l\,B\,S_j\delta$ si $\gamma$ est vide.</li>
+</ol>
+<p>$\alpha$ est <strong>terminale</strong> si aucun quadruplet de $P_Z$ ne commence par $q_i\,S_j$. Un <strong>calcul</strong> est une suite finie $\alpha_1\vdash_Z\alpha_2\vdash_Z\dots\vdash_Z\alpha_p$ où $\alpha_p$ est terminale ; on note $\alpha_p=\mathrm{Res}_Z(\alpha_1)$, la <em>résultante</em>. Si aucun calcul ne part de $\alpha_1$, $\mathrm{Res}_Z(\alpha_1)$ est indéfinie.</p>
+</enonce>
+<philo><p>Une description instantanée est une photographie complète de la machine : rien d’autre n’influence la suite. Le calcul est un film image par image, et la règle qui fait passer d’une image à la suivante est purement locale : elle ne regarde que l’état et la case lue.</p></philo>
+<tech>
+<p>Les descriptions qui ne diffèrent que par des blancs ajoutés aux extrémités décrivent la même situation, comme $3$, $3{,}0$ et $3{,}00$ désignent le même nombre ; on raisonne sur la description <em>minimale</em>. Comme $P_Z$ est consistant, une description a au plus un successeur : la relation $\vdash_Z$ est fonctionnelle, et $\mathrm{Res}_Z$ est une fonction partielle.</p>
+</tech>
+<techno><p>Le simulateur affiche les descriptions instantanées successives sous la forme <code>1 1 [q3] B 1</code>, l’état étant écrit juste avant le symbole lu. C’est exactement le mot $\gamma\,q_i\,S_j\,\delta$ de la définition.</p></techno>
+</res>
+
+<h2>Fonctions calculées</h2>
+
+<res type="Convention" nom="Codage des entiers sur la bande" id="codage-entrees">
+<enonce>
+<p>L’entier $x$ est représenté par le mot $\overline{x}=1^{x+1}$ ($x+1$ barres). Un $n$-uplet $(x_1,\dots,x_n)$ est représenté par $\overline{x_1}\,B\,\overline{x_2}\,B\cdots B\,\overline{x_n}$. Pour un mot $\alpha$, on note $\langle\alpha\rangle$ le nombre de barres qu’il contient.</p>
+</enonce>
+<tech><p>On met $x+1$ barres et non $x$ pour distinguer l’argument $0$ de l’absence d’argument : la bande de $(0,0)$ est <code>1 B 1</code>, celle de $()$ est toute blanche. En sortie au contraire, on compte les barres sans décalage : $\langle\alpha\rangle=y$ code $y$. Cette dissymétrie, héritée de Davis, simplifie la machine du successeur (voir ci-dessous) ; d’autres conventions sont possibles et donnent la même classe de fonctions.</p></tech>
+</res>
+
+<res type="Définition" nom="Fonction calculée par une machine, fonction Turing-calculable" id="def-psi">
+<enonce>
+<p>À toute machine $Z$ et tout entier $n$ on associe la fonction partielle $\Psi^{(n)}_Z:\N^n\to\N$ :</p>
+$$\Psi^{(n)}_Z(x_1,\dots,x_n)\simeq\big\langle \mathrm{Res}_Z\big(q_0\,\overline{x_1}B\cdots B\overline{x_n}\big)\big\rangle,$$
+<p>indéfinie lorsque la résultante l’est. Une fonction $f:\N^n\to\N$ est <strong>Turing-calculable</strong> s’il existe $Z$ telle que $f=\Psi^{(n)}_Z$. On note $\mathcal T$ cette classe.</p>
+</enonce>
+<philo><p>La machine démarre dans l’état $q_0$, la tête sur la première barre de l’entrée. Si elle ne s’arrête jamais, la fonction n’a pas de valeur en ce point : la non-terminaison est la seule manière, pour une machine, de « ne pas répondre ». Tout arrêt, au contraire, produit une réponse.</p></philo>
+<tech><p>Une même machine calcule une fonction pour chaque arité $n$. Une même fonction est calculée par une infinité de machines (on peut toujours ajouter des instructions inutiles, par exemple portant sur un état jamais atteint).</p></tech>
+<techno><p>Les exemples de la section suivante sont tous exécutables. Le résultat affiché est $\langle\alpha\rangle$, le nombre total de barres à l’arrêt, comme dans la définition.</p></techno>
+</res>
+
+<h2 id="exemples">Exemples de programmes</h2>
+
+<res type="Exemple" nom="Le successeur" id="ex-succ">
+<enonce><p>La machine $P=\{\,q_0\,B\,B\,q_0\,\}$ calcule $x\mapsto x+1$.</p></enonce>
+<tech><p>Sur l’entrée $\overline{x}$, la tête lit une barre dans l’état $q_0$ ; aucun quadruplet ne commence par $q_0\,1$, la machine s’arrête immédiatement, et la bande porte $x+1$ barres. (Le quadruplet $q_0BBq_0$ ne sert qu’à rendre $P$ non vide ; il ne s’exécute jamais.)</p></tech>
+<techno><div class="tm-widget" data-args="3"><pre class="src">q0 B B q0</pre></div></techno>
+</res>
+
+<res type="Exemple" nom="L’addition" id="ex-add">
+<enonce><p>La machine suivante calcule $(x,y)\mapsto x+y$ : elle efface la première barre de chaque argument.</p>
+$$q_0\,1\,B\,q_1\quad q_1\,B\,R\,q_2\quad q_2\,1\,R\,q_2\quad q_2\,B\,R\,q_3\quad q_3\,1\,B\,q_4$$</enonce>
+<tech><p>Sur $1^{x+1}B1^{y+1}$ : la première barre est effacée ($q_0\to q_1$), la tête traverse le reste du premier bloc ($q_2$), franchit le séparateur ($q_2\to q_3$) et efface la première barre du second bloc ($q_3\to q_4$). Il reste $x+y$ barres ; l’état $q_4$ n’a pas d’instruction, la machine s’arrête. Le résultat n’a pas besoin d’être d’un seul bloc, puisqu’on compte toutes les barres.</p></tech>
+<techno><div class="tm-widget" data-args="2, 3"><pre class="src">q0 1 B q1
+q1 B R q2
+q2 1 R q2
+q2 B R q3
+q3 1 B q4</pre></div></techno>
+</res>
+<res type="Exemple" nom="La soustraction (partielle et propre)" id="ex-sous">
+<enonce>
+<p>La machine suivante, tirée du polycopié de Ch. Boitet, calcule la soustraction <em>partielle</em> $(x,y)\mapsto x-y$, définie seulement si $x\ge y$ : elle retire une barre à chaque bloc, à tour de rôle, jusqu’à épuisement du second ; si le premier s’épuise d’abord ($x<y$), elle entre dans une boucle infinie.</p>
+$$\begin{aligned}&q_0\,1\,B\,q_0\quad q_0\,B\,R\,q_1\quad q_1\,1\,R\,q_1\quad q_1\,B\,R\,q_2\quad q_2\,1\,R\,q_2\quad q_2\,B\,L\,q_3\quad q_3\,1\,B\,q_3\quad q_3\,B\,L\,q_4\\ &q_4\,1\,L\,q_5\quad q_5\,1\,L\,q_5\quad q_5\,B\,L\,q_6\quad q_6\,B\,R\,q_8\quad q_6\,1\,L\,q_7\quad q_7\,1\,L\,q_7\quad q_7\,B\,R\,q_0\quad q_8\,B\,B\,q_8\end{aligned}$$
+<p>En remplaçant le dernier quadruplet par $q_8\,B\,R\,q_9$ et $q_9\,1\,B\,q_8$ (effacer ce qui reste du second bloc), on obtient la <strong>soustraction propre</strong> $x\monus y=\max(x-y,0)$, totale.</p>
+</enonce>
+<philo><p>C’est le premier exemple de ce manuel où la partialité apparaît naturellement : une machine qui « ne sait pas quoi répondre » ne s’arrête pas. La version totale est obtenue en décidant d’une réponse par défaut ($0$), ce qui est possible ici mais pas toujours (voir <a href="indecidabilite.html#sans-prolongement">fonctions sans prolongement calculable</a>).</p></philo>
+<tech>
+<p>On part de $q_0\,1^{m+1}B1^{n+1}$. Une itération de la boucle efface la première barre du premier bloc, va au bout du second ($q_1,q_2$), efface sa dernière barre ($q_3$), puis revient : si le second bloc est vide, l’état $q_4$ lit un blanc et la machine s’arrête ; sinon on revient au premier bloc ($q_5$) et l’on teste s’il est vide ($q_6$) ; s’il ne l’est pas, on retourne à son début ($q_7$) et l’on recommence. Après $k$ itérations il reste $m+1-k$ et $n+1-k$ barres ; l’arrêt a lieu pour $k=n+1$, avec $m-n$ barres, si $m\ge n$.</p>
+</tech>
+<techno>
+<div class="tm-widget" data-titre="Soustraction partielle (essayez 2, 4 : pas d’arrêt)" data-args="5, 2"><pre class="src">q0 1 B q0
+q0 B R q1
+q1 1 R q1
+q1 B R q2
+q2 1 R q2
+q2 B L q3
+q3 1 B q3
+q3 B L q4
+q4 1 L q5
+q5 1 L q5
+q5 B L q6
+q6 B R q8
+q6 1 L q7
+q7 1 L q7
+q7 B R q0
+q8 B B q8</pre></div>
+<div class="tm-widget" data-titre="Soustraction propre" data-args="2, 4"><pre class="src">q0 1 B q0
+q0 B R q1
+q1 1 R q1
+q1 B R q2
+q2 1 R q2
+q2 B L q3
+q3 1 B q3
+q3 B L q4
+q4 1 L q5
+q5 1 L q5
+q5 B L q6
+q6 B R q8
+q6 1 L q7
+q7 1 L q7
+q7 B R q0
+q8 B R q9
+q9 1 B q8</pre></div>
+</techno>
+</res>
+
+
+<res type="Exemple" nom="Les fonctions constantes" id="ex-const">
+<enonce><p>Pour tout $k$ et tout $m$, la fonction constante $m^{(k)}:(x_1,\dots,x_k)\mapsto m$ est Turing-calculable.</p></enonce>
+<tech><p>La machine efface tous les blocs d’arguments (un blanc suivi d’un blanc signale la fin de l’entrée), puis écrit $m$ barres. Pour $k=0$ la bande est blanche dès le départ et la phase d’effacement s’arrête aussitôt.</p>
+</tech>
+<techno>
+<p>Programme pour $m=3$ ; pour un autre $m$, on prolonge la chaîne d’écriture $w_t\,B\,1\,v_t$, $v_t\,1\,R\,w_{t+1}$ jusqu’à $w_m$, qui n’a pas d’instruction.</p>
+<div class="tm-widget" data-args="2, 0, 4"><pre class="src">q0 1 B q1
+q1 B R q0
+q0 B R q2
+q2 1 B q1
+q2 B B w0
+w0 B 1 v0
+v0 1 R w1
+w1 B 1 v1
+v1 1 R w2
+w2 B 1 v2
+v2 1 R w3</pre></div></techno>
+</res>
+
+<res type="Exemple" nom="Le choix d’argument (projections)" id="ex-proj">
+<enonce><p>Pour $1\le i\le k$, la projection $A^{(k)}_i:(x_1,\dots,x_k)\mapsto x_i$ est Turing-calculable.</p></enonce>
+<tech><p>On traite les blocs l’un après l’autre, avec un groupe d’états par bloc (il y a $k$ blocs, nombre fixé) : le bloc $i$ perd sa première barre et est conservé, les autres sont effacés. Il reste $x_i$ barres.</p>
+</tech>
+<techno>
+<p>Programme pour $A^{(3)}_2$ : états $b_t$ (début du bloc $t$), $m_t$, $c_t$.</p>
+<div class="tm-widget" data-args="1, 2, 3"><pre class="src">q0 1 B m1
+m1 B R c1
+c1 1 B m1
+c1 B R b2
+b2 1 B m2
+m2 B R c2
+c2 1 R c2
+c2 B R b3
+b3 1 B m3
+m3 B R c3
+c3 1 B m3
+c3 B R b4</pre></div></techno>
+</res>
+
+<p>Ces machines sont écrites à la main. Le chapitre <a href="equivalence.html">Équivalence des modèles</a> montre comment <em>construire automatiquement</em> une machine pour toute fonction récursive ; la page contient un compilateur qui le fait réellement.</p>
+
+<h2 id="bibliotheque-commune">Une bibliothèque commune aux trois modèles</h2>
+<p>Les mêmes douze fonctions sont définies dans les trois modèles de ce manuel (voir aussi les chapitres <a href="fonctions-recursives.html#bibliotheque-commune">Fonctions récursives</a> et <a href="lambda-calcul.html#bibliotheque-commune">λ-calcul</a>). Les plus simples sont calculées par des machines écrites à la main, dont on démontre la correction par un <em>invariant</em> : une description de la bande et de l’état, vraie au début de chaque tour de boucle. Pour la puissance, la factorielle et le quotient, on utilise la machine produite par le <a href="equivalence.html#rec-turing">compilateur</a> à partir de la définition récursive : c’est le lien le plus direct entre les deux modèles. Toutes les machines ont été testées par simulation, la sortie étant comparée à la spécification (entrées jusqu’à 5 ou 7 selon les cas).</p>
+<table class="table-trois">
+<tr><th>Fonction</th><th>Spécification</th><th>Récursive</th><th>Turing</th><th>λ-calcul</th></tr>
+<tr><td>Successeur</td><td>$S(x)=x+1$</td><td><a href="fonctions-recursives.html#f-succ">définition</a></td><td><a href="#f-succ">machine</a></td><td><a href="lambda-calcul.html#f-succ">terme</a></td></tr>
+<tr><td>Constantes</td><td>$m^{(k)}(x_1,\dots,x_k)=m$</td><td><a href="fonctions-recursives.html#f-const">définition</a></td><td><a href="#f-const">machine</a></td><td><a href="lambda-calcul.html#f-const">terme</a></td></tr>
+<tr><td>Projections</td><td>$A^{(k)}_i(x_1,\dots,x_k)=x_i$</td><td><a href="fonctions-recursives.html#f-proj">définition</a></td><td><a href="#f-proj">machine</a></td><td><a href="lambda-calcul.html#f-proj">terme</a></td></tr>
+<tr><td>Addition</td><td>$\mathrm{add}(x,y)=x+y$</td><td><a href="fonctions-recursives.html#f-add">définition</a></td><td><a href="#f-add">machine</a></td><td><a href="lambda-calcul.html#f-add">terme</a></td></tr>
+<tr><td>Prédécesseur</td><td>$\mathrm{pred}(x)=x\monus1$</td><td><a href="fonctions-recursives.html#f-pred">définition</a></td><td><a href="#f-pred">machine</a></td><td><a href="lambda-calcul.html#f-pred">terme</a></td></tr>
+<tr><td>Soustraction propre</td><td>$x\monus y=\max(x-y,0)$</td><td><a href="fonctions-recursives.html#f-monus">définition</a></td><td><a href="#f-monus">machine</a></td><td><a href="lambda-calcul.html#f-monus">terme</a></td></tr>
+<tr><td>Multiplication</td><td>$\mathrm{mult}(x,y)=x\times y$</td><td><a href="fonctions-recursives.html#f-mult">définition</a></td><td><a href="#f-mult">machine</a></td><td><a href="lambda-calcul.html#f-mult">terme</a></td></tr>
+<tr><td>Puissance</td><td>$\mathrm{puiss}(x,y)=x^y$</td><td><a href="fonctions-recursives.html#f-pow">définition</a></td><td><a href="#f-pow">machine</a></td><td><a href="lambda-calcul.html#f-pow">terme</a></td></tr>
+<tr><td>Factorielle</td><td>$\mathrm{fact}(y)=y!$</td><td><a href="fonctions-recursives.html#f-fact">définition</a></td><td><a href="#f-fact">machine</a></td><td><a href="lambda-calcul.html#f-fact">terme</a></td></tr>
+<tr><td>Signe et test de nullité</td><td>$\mathrm{sg}(x)=1$ si $x>0$, $0$ sinon ; $\overline{\mathrm{sg}}(x)=1-\mathrm{sg}(x)$</td><td><a href="fonctions-recursives.html#f-sg">définition</a></td><td><a href="#f-sg">machine</a></td><td><a href="lambda-calcul.html#f-sg">terme</a></td></tr>
+<tr><td>Égalité</td><td>$\chi_=(x,y)=1$ si $x=y$, $0$ sinon</td><td><a href="fonctions-recursives.html#f-eq">définition</a></td><td><a href="#f-eq">machine</a></td><td><a href="lambda-calcul.html#f-eq">terme</a></td></tr>
+<tr><td>Quotient (minimisation)</td><td>$\mathrm{quot}(x,y)=\lfloor x/y\rfloor$ si $y\ge1$, indéfini si $y=0$</td><td><a href="fonctions-recursives.html#f-div">définition</a></td><td><a href="#f-div">machine</a></td><td><a href="lambda-calcul.html#f-div">terme</a></td></tr>
+</table>
+<res type="Exemple" nom="Successeur" id="f-succ">
+<enonce><p>Spécification : $S(x)=x+1$.</p><p>$P=\{\,q_0\,B\,B\,q_0\,\}$ (voir l’<a href="#ex-succ">exemple</a>).</p><p class="trois-vues">Les trois versions : <a href="fonctions-recursives.html#f-succ">récursive</a> · <strong>Turing</strong> · <a href="lambda-calcul.html#f-succ">λ-calcul</a>.</p></enonce>
+<tech><p>Sur $q_0\,1^{x+1}$, aucun quadruplet ne commence par $q_0\,1$ : la machine s’arrête sans rien faire, et la bande porte $x+1$ barres. C’est la convention d’entrée ($x+1$ barres) qui rend cette machine triviale.</p></tech>
+<techno><div class="tm-widget" data-args="3"><pre class="src">q0 B B q0</pre></div></techno>
+</res>
+<res type="Exemple" nom="Constantes" id="f-const">
+<enonce><p>Spécification : $m^{(k)}(x_1,\dots,x_k)=m$.</p><p>Machine de l’<a href="#ex-const">exemple des constantes</a> : effacer tous les blocs, puis écrire $m$ barres.</p><p class="trois-vues">Les trois versions : <a href="fonctions-recursives.html#f-const">récursive</a> · <strong>Turing</strong> · <a href="lambda-calcul.html#f-const">λ-calcul</a>.</p></enonce>
+<tech><p><em>Effacement.</em> Dans l’état $q_0$ sur une barre, $q_0\,1\,B\,q_1$, $q_1\,B\,R\,q_0$ effacent la barre et avancent ; quand $q_0$ lit un blanc (fin d’un bloc), $q_0\,B\,R\,q_2$ regarde la case suivante : une barre (début du bloc suivant) est effacée par $q_2\,1\,B\,q_1$ et l’on continue ; un second blanc signale la fin de l’entrée ($q_2\,B\,B\,w_0$). <em>Écriture.</em> $w_t\,B\,1\,v_t$, $v_t\,1\,R\,w_{t+1}$ pour $t<m$ écrivent $m$ barres, et $w_m$ n’a pas de quadruplet. Il reste exactement $m$ barres. Pour $k=0$, la bande est blanche : $q_0\,B\,R\,q_2$, $q_2\,B\,B\,w_0$, puis l’écriture.</p></tech>
+<techno><p>Voir l’<a href="#ex-const">exemple des constantes</a>, exécutable, pour $m=3$.</p></techno>
+</res>
+<res type="Exemple" nom="Projections" id="f-proj">
+<enonce><p>Spécification : $A^{(k)}_i(x_1,\dots,x_k)=x_i$.</p><p>Machine de l’<a href="#ex-proj">exemple des projections</a> : un groupe d’états par bloc, le bloc $i$ perd une barre, les autres sont effacés.</p><p class="trois-vues">Les trois versions : <a href="fonctions-recursives.html#f-proj">récursive</a> · <strong>Turing</strong> · <a href="lambda-calcul.html#f-proj">λ-calcul</a>.</p></enonce>
+<tech><p>Pour le bloc $t$, l’état $b_t$ est sur sa première barre. Si $t\ne i$ : $b_t\,1\,B\,m_t$, $m_t\,B\,R\,c_t$, $c_t\,1\,B\,m_t$ effacent tout le bloc, et $c_t\,B\,R\,b_{t+1}$ passe au suivant. Si $t=i$ : $b_i\,1\,B\,m_i$ efface seulement la première barre, $c_i\,1\,R\,c_i$ traverse le reste sans l’effacer. Après le bloc $k$, $b_{k+1}$ n’a pas de quadruplet. Il reste les $x_i$ barres du bloc $i$.</p></tech>
+<techno><p>Voir l’<a href="#ex-proj">exemple</a>, exécutable, pour $A^{(3)}_2$.</p></techno>
+</res>
+<res type="Exemple" nom="Addition" id="f-add">
+<enonce><p>Spécification : $\mathrm{add}(x,y)=x+y$.</p><p>Machine de l’<a href="#ex-add">exemple</a> : $q_0\,1\,B\,q_1$, $q_1\,B\,R\,q_2$, $q_2\,1\,R\,q_2$, $q_2\,B\,R\,q_3$, $q_3\,1\,B\,q_4$.</p><p class="trois-vues">Les trois versions : <a href="fonctions-recursives.html#f-add">récursive</a> · <strong>Turing</strong> · <a href="lambda-calcul.html#f-add">λ-calcul</a>.</p></enonce>
+<tech><p>Calcul complet sur $1^{x+1}B1^{y+1}$ : $q_0$ efface la première barre, $q_1$ avance d’une case, $q_2$ traverse les $x$ barres restantes et le séparateur, $q_3$ efface la première barre du second bloc, et $q_4$ n’a pas de quadruplet. Il reste $(x+1-1)+(y+1-1)=x+y$ barres. Si $x=0$, $q_2$ lit tout de suite le séparateur ; le calcul est le même.</p></tech>
+<techno><div class="tm-widget" data-args="2, 3"><pre class="src">q0 1 B q1
+q1 B R q2
+q2 1 R q2
+q2 B R q3
+q3 1 B q4</pre></div></techno>
+</res>
+<res type="Exemple" nom="Prédécesseur" id="f-pred">
+<enonce><p>Spécification : $\mathrm{pred}(x)=x\monus1$.</p><p>$q_0\,1\,B\,q_1\quad q_1\,B\,R\,q_2\quad q_2\,1\,B\,q_3$ : effacer deux barres si possible.</p><p class="trois-vues">Les trois versions : <a href="fonctions-recursives.html#f-pred">récursive</a> · <strong>Turing</strong> · <a href="lambda-calcul.html#f-pred">λ-calcul</a>.</p></enonce>
+<tech><p>Sur $1^{x+1}$ : $q_0$ efface la première barre et $q_1$ avance. Si $x=0$, $q_2$ lit un blanc et s’arrête : $0$ barre. Sinon $q_2$ efface une seconde barre et $q_3$ s’arrête : $x+1-2=x-1$ barres.</p></tech>
+<techno><div class="tm-widget" data-args="4"><pre class="src">q0 1 B q1
+q1 B R q2
+q2 1 B q3</pre></div></techno>
+</res>
+<res type="Exemple" nom="Soustraction propre" id="f-monus">
+<enonce><p>Spécification : $x\monus y=\max(x-y,0)$.</p><p>Machine de la <a href="#ex-sous">soustraction propre</a> (17 quadruplets) : retirer une barre à chaque bloc, à tour de rôle.</p><p class="trois-vues">Les trois versions : <a href="fonctions-recursives.html#f-monus">récursive</a> · <strong>Turing</strong> · <a href="lambda-calcul.html#f-monus">λ-calcul</a>.</p></enonce>
+<tech><p>Notons $C_k=q_0\,1^{x+1-k}B1^{y+1-k}$. Une itération, depuis $C_k$ : $q_0$ efface la première barre du premier bloc ; $q_1$ puis $q_2$ vont au bout du second bloc ; $q_3$ efface sa dernière barre et regarde à gauche. Si le second bloc est vide, $q_4$ lit le séparateur et s’arrête. Sinon $q_5$ revient au premier bloc et $q_6$ regarde sa dernière case : s’il est vide, $q_8,q_9$ effacent ce qui reste du second bloc et s’arrêtent ; sinon $q_7$ revient à sa première barre, et l’on est en $C_{k+1}$ (le premier bloc perd sa barre de gauche, le second sa barre de droite : le séparateur reste un seul blanc).</p><p>Si $x\ge y$, le second bloc se vide à l’itération $k=y+1$, alors que le premier a encore $x+1-(y+1)=x-y$ barres : résultat $x-y$. Si $x<y$, le premier bloc se vide à l’itération $x+1$, le second a encore $y-x\ge1$ barres, qui sont effacées : résultat $0$.</p></tech>
+<techno><p>Voir la <a href="#ex-sous">machine exécutable</a>.</p></techno>
+</res>
+<res type="Exemple" nom="Multiplication" id="f-mult">
+<enonce><p>Spécification : $\mathrm{mult}(x,y)=x\times y$.</p><p>Une machine de 38 quadruplets, avec deux symboles auxiliaires $X$ (séparateurs) et $Y$ (barre marquée) :</p>$$\begin{aligned}&q_{0}\,1\,B\,s_{1}\quad s_{1}\,B\,R\,s_{2}\quad s_{2}\,1\,R\,s_{2}\quad s_{2}\,B\,X\,s_{3}\quad s_{3}\,X\,R\,s_{4}\quad s_{4}\,1\,R\,s_{4}\\ &s_{4}\,B\,L\,s_{5}\quad s_{5}\,1\,X\,s_{6}\quad s_{6}\,X\,L\,s_{7}\quad s_{7}\,1\,L\,s_{7}\quad s_{7}\,X\,L\,s_{8}\quad s_{8}\,1\,L\,s_{8}\\ &s_{8}\,B\,R\,m\quad m\,1\,B\,m_{1}\quad m_{1}\,B\,R\,m_{2}\quad m_{2}\,1\,R\,m_{2}\quad m_{2}\,X\,R\,k\quad k\,1\,Y\,k_{1}\\ &k_{1}\,Y\,R\,k_{2}\quad k_{2}\,1\,R\,k_{2}\quad k_{2}\,X\,R\,k_{3}\quad k_{3}\,1\,R\,k_{3}\quad k_{3}\,B\,1\,k_{4}\quad k_{4}\,1\,L\,k_{5}\\ &k_{5}\,1\,L\,k_{5}\quad k_{5}\,X\,L\,k_{6}\quad k_{6}\,1\,L\,k_{6}\quad k_{6}\,Y\,R\,k\quad k\,X\,L\,r\quad r\,Y\,1\,r_{1}\\ &r_{1}\,1\,L\,r\quad r\,X\,L\,r_{2}\quad r_{2}\,1\,L\,r_{2}\quad r_{2}\,B\,R\,m\quad m\,X\,R\,e\quad e\,1\,B\,e_{1}\\ &e_{1}\,B\,R\,e\quad e\,X\,X\,z\end{aligned}$$<p class="trois-vues">Les trois versions : <a href="fonctions-recursives.html#f-mult">récursive</a> · <strong>Turing</strong> · <a href="lambda-calcul.html#f-mult">λ-calcul</a>.</p></enonce>
+<tech><p><em>Préparation</em> ($q_0,s_1,\dots,s_8$) : on efface la première barre du premier bloc, on remplace le séparateur par $X$ et la dernière barre du second bloc par $X$, puis on revient au début. La bande est $1^x\,X\,1^y\,X$, la tête en $m$ sur la première case.</p><p><em>Boucle principale.</em> Invariant $I_j$ : la bande est $B^{j}\,1^{x-j}\,X\,1^y\,X\,1^{jy}$, l’état $m$ sur la première case non blanche. Si $m$ lit $1$, il l’efface et va au premier $X$ ($m_1,m_2$) ; on entre dans la boucle de copie en $k$.</p><p><em>Boucle de copie.</em> Invariant : la zone entre les deux $X$ est $Y^i1^{y-i}$, il y a $jy+i$ barres après le second $X$, et $k$ lit la case $i+1$ de la zone. Si $k$ lit $1$, il le marque $Y$, va écrire une barre au bout ($k_1,k_2,k_3$), revient au dernier $Y$ ($k_4,k_5,k_6$) et avance : invariant pour $i+1$. Si $k$ lit $X$ ($i=y$), $r,r_1$ remplacent les $Y$ par des $1$ en revenant, puis $r_2$ revient au début du premier bloc : c’est $I_{j+1}$.</p><p><em>Fin.</em> Quand $m$ lit $X$ ($j=x$), $e,e_1$ effacent les $y$ barres du second bloc, et $z$ s’arrête. Il reste $xy$ barres (les $X$ ne comptent pas). Pour $y=0$, la zone est vide et la boucle de copie s’arrête aussitôt ; pour $x=0$, $m$ lit $X$ dès le départ.</p></tech>
+<techno><div class="tm-widget" data-args="3, 2"><pre class="src">q0 1 B s1
+s1 B R s2
+s2 1 R s2
+s2 B X s3
+s3 X R s4
+s4 1 R s4
+s4 B L s5
+s5 1 X s6
+s6 X L s7
+s7 1 L s7
+s7 X L s8
+s8 1 L s8
+s8 B R m
+m 1 B m1
+m1 B R m2
+m2 1 R m2
+m2 X R k
+k 1 Y k1
+k1 Y R k2
+k2 1 R k2
+k2 X R k3
+k3 1 R k3
+k3 B 1 k4
+k4 1 L k5
+k5 1 L k5
+k5 X L k6
+k6 1 L k6
+k6 Y R k
+k X L r
+r Y 1 r1
+r1 1 L r
+r X L r2
+r2 1 L r2
+r2 B R m
+m X R e
+e 1 B e1
+e1 B R e
+e X X z</pre></div></techno>
+</res>
+<res type="Exemple" nom="Puissance" id="f-pow">
+<enonce><p>Spécification : $\mathrm{puiss}(x,y)=x^y$.</p><p>Machine obtenue en <em>compilant</em> la définition récursive avec le <a href="equivalence.html#rec-turing">compilateur à discipline de pile</a> : 4 702 quadruplets.</p><p class="trois-vues">Les trois versions : <a href="fonctions-recursives.html#f-pow">récursive</a> · <strong>Turing</strong> · <a href="lambda-calcul.html#f-pow">λ-calcul</a>.</p></enonce>
+<tech><p>La correction découle du <a href="equivalence.html#rec-turing">théorème de compilation</a>, démontré au chapitre 6 sans utiliser cet exemple : pour tout terme $f$ du formalisme, la machine compilée calcule $f$ ; avec la correction de la définition récursive, elle calcule $x^y$. Écrire une machine à la main serait possible (itérer la machine de la multiplication), mais c’est précisément le travail que fait le compilateur.</p></tech>
+<techno><p>Testée sur $x,y\le3$ avec $x^y\le27$ (jusqu’à 633 286 pas) :</p><div class="compil-widget" data-fn="pow" data-args="2, 3"></div></techno>
+</res>
+<res type="Exemple" nom="Factorielle" id="f-fact">
+<enonce><p>Spécification : $\mathrm{fact}(y)=y!$.</p><p>Machine obtenue en compilant la définition récursive : 4 064 quadruplets.</p><p class="trois-vues">Les trois versions : <a href="fonctions-recursives.html#f-fact">récursive</a> · <strong>Turing</strong> · <a href="lambda-calcul.html#f-fact">λ-calcul</a>.</p></enonce>
+<tech><p>Comme pour la puissance, par le <a href="equivalence.html#rec-turing">théorème de compilation</a>.</p></tech>
+<techno><p>Testée pour $y\le4$ (471 927 pas pour $4!$) :</p><div class="compil-widget" data-fn="fact" data-args="3"></div></techno>
+</res>
+<res type="Exemple" nom="Signe et test de nullité" id="f-sg">
+<enonce><p>Spécification : $\mathrm{sg}(x)=1$ si $x>0$, $0$ sinon ; $\overline{\mathrm{sg}}(x)=1-\mathrm{sg}(x)$.</p><p>$\mathrm{sg}$ :</p>$$\begin{aligned}&q_{0}\,1\,B\,q_{1}\quad q_{1}\,B\,R\,q_{2}\quad q_{2}\,1\,B\,q_{3}\quad q_{3}\,B\,R\,q_{4}\quad q_{4}\,1\,B\,q_{3}\quad q_{4}\,B\,1\,q_{5}\end{aligned}$$<p>$\overline{\mathrm{sg}}$ :</p>$$\begin{aligned}&q_{0}\,1\,B\,q_{1}\quad q_{1}\,B\,R\,q_{2}\quad q_{2}\,B\,1\,q_{5}\quad q_{2}\,1\,B\,q_{3}\quad q_{3}\,B\,R\,q_{4}\quad q_{4}\,1\,B\,q_{3}\end{aligned}$$<p class="trois-vues">Les trois versions : <a href="fonctions-recursives.html#f-sg">récursive</a> · <strong>Turing</strong> · <a href="lambda-calcul.html#f-sg">λ-calcul</a>.</p></enonce>
+<tech><p>Dans les deux machines, $q_0$ efface la première barre et $q_1$ avance ; $q_2$ teste si $x=0$ (case blanche). Pour $\mathrm{sg}$ : si $x=0$, arrêt sur 0 barre ; sinon $q_2,q_3,q_4$ effacent toutes les barres restantes, puis $q_4\,B\,1\,q_5$ écrit une barre. Pour $\overline{\mathrm{sg}}$ : si $x=0$, $q_2\,B\,1\,q_5$ écrit une barre ; sinon tout est effacé et $q_4$ s’arrête sur un blanc.</p></tech>
+<techno><div class="tm-widget" data-titre="Signe" data-args="3"><pre class="src">q0 1 B q1
+q1 B R q2
+q2 1 B q3
+q3 B R q4
+q4 1 B q3
+q4 B 1 q5</pre></div><div class="tm-widget" data-titre="Test de nullité" data-args="0"><pre class="src">q0 1 B q1
+q1 B R q2
+q2 B 1 q5
+q2 1 B q3
+q3 B R q4
+q4 1 B q3</pre></div></techno>
+</res>
+<res type="Exemple" nom="Égalité" id="f-eq">
+<enonce><p>Spécification : $\chi_=(x,y)=1$ si $x=y$, $0$ sinon.</p><p>Une machine de 27 quadruplets, avec un séparateur auxiliaire $X$ : retirer une barre à chaque bloc jusqu’à épuisement de l’un d’eux.</p>$$\begin{aligned}&q_{0}\,1\,R\,q_{0}\quad q_{0}\,B\,X\,g\quad g\,X\,L\,g\quad g\,1\,L\,g\quad g\,B\,R\,a\quad a\,1\,B\,a_{1}\\ &a_{1}\,B\,R\,a_{2}\quad a_{2}\,1\,R\,a_{2}\quad a_{2}\,X\,R\,a_{3}\quad a_{3}\,1\,R\,a_{3}\quad a_{3}\,B\,L\,a_{4}\quad a_{4}\,1\,B\,a_{5}\\ &a_{5}\,B\,L\,a_{6}\quad a_{6}\,1\,L\,a_{6}\quad a_{6}\,X\,L\,a_{7}\quad a_{7}\,1\,L\,a_{7}\quad a_{7}\,B\,R\,a\quad a_{4}\,X\,L\,n\\ &n\,1\,B\,n_{1}\quad n_{1}\,B\,L\,n\quad n\,B\,B\,z\quad a\,X\,R\,c\quad c\,B\,1\,z\quad c\,1\,B\,d\\ &d\,B\,R\,d_{1}\quad d_{1}\,1\,B\,d\quad d_{1}\,B\,B\,z\end{aligned}$$<p class="trois-vues">Les trois versions : <a href="fonctions-recursives.html#f-eq">récursive</a> · <strong>Turing</strong> · <a href="lambda-calcul.html#f-eq">λ-calcul</a>.</p></enonce>
+<tech><p>$q_0$ remplace le séparateur par $X$ et $g$ revient au début. Invariant : après $j$ tours, la bande est $B^j\,1^{x+1-j}\,X\,1^{y+1-j}$ et $a$ est sur la première case non blanche. Un tour : si $a$ lit $1$, il l’efface, $a_1,a_2,a_3$ vont au bout du second bloc ; si $a_4$ y lit une barre, il l’efface et $a_5,a_6,a_7$ reviennent au début ; si $a_4$ lit $X$, le second bloc est déjà vide alors que le premier ne l’était pas ($x>y$) : $n,n_1$ effacent ce qui reste du premier bloc, résultat $0$. Si $a$ lit $X$, le premier bloc est vide ($j=x+1$) : $c$ regarde après $X$ ; un blanc signifie que le second est vide aussi ($y=x$), et $c\,B\,1\,z$ écrit le résultat $1$ ; une barre signifie $y>x$, et $d,d_1$ effacent le reste, résultat $0$.</p></tech>
+<techno><div class="tm-widget" data-args="3, 3"><pre class="src">q0 1 R q0
+q0 B X g
+g X L g
+g 1 L g
+g B R a
+a 1 B a1
+a1 B R a2
+a2 1 R a2
+a2 X R a3
+a3 1 R a3
+a3 B L a4
+a4 1 B a5
+a5 B L a6
+a6 1 L a6
+a6 X L a7
+a7 1 L a7
+a7 B R a
+a4 X L n
+n 1 B n1
+n1 B L n
+n B B z
+a X R c
+c B 1 z
+c 1 B d
+d B R d1
+d1 1 B d
+d1 B B z</pre></div><p>La machine compilée depuis la définition récursive :</p><div class="compil-widget" data-fn="eq" data-args="2, 2"></div></techno>
+</res>
+<res type="Exemple" nom="Quotient (minimisation)" id="f-div">
+<enonce><p>Spécification : $\mathrm{quot}(x,y)=\lfloor x/y\rfloor$ si $y\ge1$, indéfini si $y=0$.</p><p>Machine obtenue en compilant la définition par minimisation.</p><p class="trois-vues">Les trois versions : <a href="fonctions-recursives.html#f-div">récursive</a> · <strong>Turing</strong> · <a href="lambda-calcul.html#f-div">λ-calcul</a>.</p></enonce>
+<tech><p>Par le <a href="equivalence.html#rec-turing">théorème de compilation</a>, qui traite la minimisation par une boucle : la machine essaie $z=0,1,2,\dots$ et s’arrête au premier $z$ tel que $g(x,y,z)=0$. Pour $y=0$ elle ne s’arrête pas, ce qui est la seule façon, pour une machine, de « ne pas répondre ».</p></tech>
+<techno><p>Essayez $y=0$ :</p><div class="compil-widget" data-fn="div" data-args="7, 2"></div></techno>
+</res>
+
+<h2 id="ensembles-predicats">Fonctions, ensembles, prédicats, langages</h2>
+
+<res type="Proposition" nom="Quatre façons équivalentes de parler du calculable" id="quatre-presentations">
+<enonce>
+<p>On peut présenter la calculabilité par des <em>fonctions</em> (de $\N^n$ dans $\N$), par des <em>ensembles</em> (un ensemble $A\subseteq\N$ est décidable si sa fonction caractéristique $\chi_A$ est Turing-calculable), par des <em>prédicats</em> (une propriété $p$ des entiers est décidable si la fonction qui vaut $1$ quand $p(x)$ est vrai et $0$ sinon est calculable) ou par des <em>langages</em> (un langage $L\subseteq\Sigma^*$ est décidable si une machine qui lit un mot $w$ répond en un temps fini si $w\in L$). Ces quatre présentations sont équivalentes, au sens où chacune se traduit dans les autres par des codages calculables.</p>
+</enonce>
+<philo>
+<p>« Calculer une fonction », « reconnaître une propriété », « trier les mots corrects des mots incorrects » : trois métiers en apparence différents (le comptable, le juge, le correcteur orthographique) qui sont en fait le même. La clé est qu’on peut toujours coder plusieurs nombres par un seul, et un mot par un nombre : poser une question oui/non sur des objets finis revient à calculer une fonction à valeurs dans $\{0,1\}$, et inversement calculer $f$ revient à répondre aux questions « $f(x)$ vaut-il $y$ ? ».</p>
+</philo>
+<tech>
+<p><strong>Codage des couples.</strong> La bijection de <a href="cantor.html">Cantor</a> $\langle x,y\rangle=\tfrac12\big((x+y)^2+3x+y\big)$ et ses inverses $\pi_1,\pi_2$ sont récursives primitives ; en l’itérant on code tout $n$-uplet par un entier. Ensembles et prédicats sont donc la même chose (un prédicat est la fonction caractéristique de l’ensemble des $x$ qui le vérifient), et un ensemble de $n$-uplets se ramène à un ensemble d’entiers.</p>
+<p><strong>Codage des mots.</strong> Si $\Sigma=\{a_1,\dots,a_k\}$, on code le mot $w=a_{l_1}\cdots a_{l_n}$ par $\mathrm{code}(w)=\prod_{i=1}^n p_i^{\,p_{l_i}}$, où $p_j$ est le $j$-ième nombre premier. L’unicité de la décomposition en facteurs premiers rend ce codage injectif et décodable de façon récursive primitive (c’est le procédé de la <a href="equivalence.html#godel-mt">numérotation de Gödel</a>). Alors $w\in L\iff\mathrm{code}(w)\in\{\mathrm{code}(v)\mid v\in L\}$, et un langage est décidable si et seulement si l’ensemble des codes de ses mots l’est. La bijection $\Sigma^*\to\N$ par l’ordre hiérarchique (longueur, puis ordre alphabétique) convient aussi; c’est même une bijection, alors que le codage par les nombres premiers n’atteint pas tous les entiers.</p>
+<p><strong>Des ensembles aux fonctions.</strong> Inversement, une fonction <em>totale</em> $f$ est calculable si et seulement si son graphe $G_f=\{\langle x,f(x)\rangle\mid x\in\N\}$ est décidable. Si $f$ est calculable, on décide $\langle x,y\rangle\in G_f$ en calculant $f(x)$ ; si $G_f$ est décidable, on calcule $f(x)$ en cherchant le premier $y$ tel que $\langle x,y\rangle\in G_f$ (recherche qui termine parce que $f$ est totale).</p>
+
+</tech>
+</res>
+
+<h2>Machines avec oracle</h2>
+
+<p>Pour étudier les degrés d’indécidabilité (chapitre <a href="hierarchie-arithmetique.html">Hiérarchie arithmétique</a>), on autorise une machine à interroger un ensemble $A\subseteq\N$ fixé, une « boîte noire » qui répond instantanément à la question « $n\in A$ ? ».</p>
+
+<res type="Définition" nom="Machine de Turing avec oracle" id="def-oracle">
+<enonce>
+<p>Soit $A\subseteq\N$. Une machine relative à l’oracle $A$ peut contenir, en plus des trois formes habituelles, des quadruplets de la forme $q_i\,S_j\,q_k\,q_l$. Si $\alpha=\gamma\,q_i\,S_j\,\delta$ et $q_i\,S_j\,q_k\,q_l\in P_Z$, alors</p>
+$$\alpha\vdash_{Z^A}\gamma\,q_k\,S_j\,\delta \text{ si } \langle\alpha\rangle\in A,\qquad \alpha\vdash_{Z^A}\gamma\,q_l\,S_j\,\delta \text{ si } \langle\alpha\rangle\notin A.$$
+<p>On définit comme plus haut $\Psi^{(n)}_{Z^A}$ et la classe $\mathcal T^A$ des fonctions $A$-calculables. On démontre que $\mathcal T^A=P^A$, les fonctions récursives relativement à $A$ (<a href="equivalence.html#relatif">équivalence relative</a>).</p>
+</enonce>
+<philo><p>Un oracle est une hypothèse : « si l’on savait répondre à telle question impossible, que pourrait-on calculer de plus ? ». On découvre ainsi que l’impossible a des degrés : même avec un oracle pour le problème de l’arrêt, il reste des questions sans réponse.</p></philo>
+<tech><p>La machine pose la question sur le nombre de barres présentes sur la bande ; le contenu de la bande n’est pas modifié, seul l’état suivant dépend de la réponse. Une machine sans quadruplet d’oracle calcule la même fonction pour tout $A$ : $\mathcal T\subseteq\mathcal T^A$, et $\mathcal T^A=\mathcal T$ si $A$ est calculable (on remplace chaque question à l’oracle par le calcul de $\chi_A$).</p>
+</tech>
+</res>
+
+<res type="Proposition" nom="Tout ensemble est calculable relativement à lui-même" id="a-calculable">
+<enonce>
+<p>Pour tout $A\subseteq\N$, la fonction caractéristique $\chi_A$ est $A$-calculable : $\chi_A\in\mathcal T^A$.</p>
+</enonce>
+<philo><p>C’est presque une tautologie, mais elle fixe le sens du mot : un oracle est une réponse donnée gratuitement, et ce qui coûte, c’est seulement le travail autour de la question. Elle montre aussi que la hiérarchie des degrés est « pleine » : n’importe quel ensemble, aussi compliqué soit-il, devient calculable dès qu’on se le donne comme oracle.</p></philo>
+<tech>
+<p>La question porte sur $\langle\alpha\rangle$, le nombre de barres de la bande. Sur l’entrée $\overline x=1^{x+1}$, il y a $x+1$ barres : on en efface d’abord une, puis on interroge l’oracle, qui reçoit exactement $x$ ; on efface ensuite tout le bloc, et l’on écrit une barre si et seulement si la réponse était positive. La machine $Z$ suivante convient :</p>
+$$\begin{array}{llll}
+q_0\,1\,B\,q_1 & q_1\,B\,R\,q_2 & q_2\,1\,q_3\,q_4 & q_2\,B\,q_3\,q_4\\
+q_3\,1\,B\,q_5 & q_5\,B\,R\,q_3 & q_3\,B\,1\,q_6 & \\
+q_4\,1\,B\,q_7 & q_7\,B\,R\,q_4 & &
+\end{array}$$
+<p>Après $q_0\,1\,B\,q_1$ et $q_1\,B\,R\,q_2$, la tête est sur la première des $x$ barres restantes (ou sur un blanc si $x=0$), et $\langle\alpha\rangle=x$. Les deux quadruplets d’oracle couvrent les deux symboles possibles. Si $x\in A$, la boucle $q_3,q_5$ efface les barres vers la droite, puis $q_3\,B\,1\,q_6$ écrit une barre et la machine s’arrête en $q_6$ (aucun quadruplet ne commence par $q_6$) : $\Psi^{(1)}_{Z^A}(x)=1$. Si $x\notin A$, la boucle $q_4,q_7$ efface tout et la machine s’arrête en $q_4$ sur un blanc : $\Psi^{(1)}_{Z^A}(x)=0$. Donc $\Psi^{(1)}_{Z^A}=\chi_A$.</p>
+<p>La même machine, pour un autre oracle $B$, calcule $\chi_B$ : c’est une seule machine, « uniforme en l’oracle ».</p>
+</tech>
+<techno>
+<p>Vérification par simulation de la machine ci-dessus pour les 63 ensembles $A\subseteq\{0,\dots,5\}$ de taille au plus 6 et $x\le 7$ : le résultat est toujours $\chi_A(x)$.</p>
+<pre><code>Q = {('q0','1'):('B','q1'), ('q1','B'):('R','q2'),
+     ('q3','1'):('B','q5'), ('q5','B'):('R','q3'), ('q3','B'):('1','q6'),
+     ('q4','1'):('B','q7'), ('q7','B'):('R','q4')}
+O = {('q2','1'):('q3','q4'), ('q2','B'):('q3','q4')}   # quadruplets d’oracle
+def psi(x, A):
+    t = {i:'1' for i in range(x+1)}; h, s = 0, 'q0'
+    while True:
+        c = t.get(h, 'B')
+        if (s, c) in O:                       # question : nombre de barres dans A ?
+            s = O[(s, c)][0 if list(t.values()).count('1') in A else 1]; continue
+        if (s, c) not in Q: return list(t.values()).count('1')
+        a, s = Q[(s, c)]
+        if a == 'L': h -= 1
+        elif a == 'R': h += 1
+        elif a == 'B': t.pop(h, None)
+        else: t[h] = a</code></pre>
+</techno>
+</res>
+
+<h2 id="variantes">Variantes du modèle : universalité externe</h2>
+
+<p>On distingue trois formes d’universalité des machines de Turing : l’universalité <em>externe</em> (modifier raisonnablement le modèle ne change pas ce qu’il calcule, ci-dessous), l’universalité <em>interne</em> (une seule machine simule toutes les autres, voir <a href="universalite.html">Universalité</a>) et l’universalité <em>en termes de modèles de calcul</em> (la <a href="these-church.html">thèse de Church-Turing</a>).</p>
+
+<p>On peut donner plus de capacités à la machine : écrire <em>et</em> se déplacer en un seul pas (quintuplets, c’est le modèle des <a href="castors-affaires.html">castors affairés</a>), plusieurs bandes, plusieurs têtes sur une même bande, un programme non déterministe, ou une combinaison de tout cela. On peut aussi lui en retirer : bande infinie d’un seul côté, alphabet réduit à $\{B,1\}$, nombre d’états borné une fois pour toutes (il suffit d’une <a href="universalite.html#universelle">machine universelle</a>). Pour chacun de ces modèles on reprend le même schéma (descriptions instantanées, pas de calcul, résultante, fonction calculée), et l’on obtient exactement la classe $T$ des fonctions Turing-calculables. Les simulations changent le temps de calcul d’un facteur au plus polynomial (voir <a href="trois-approches.html#cout-simulation">Coût de la simulation</a>), mais jamais l’ensemble des fonctions calculables. Voici le cas le plus simple traité en détail.</p>
+
+<res type="Théorème" nom="Les machines à quintuplets calculent les mêmes fonctions" id="quintuplets">
+<enonce>
+<p>Une <strong>machine à quintuplets</strong> (ou « mobile ») est un ensemble fini consistant de quintuplets $q_i\,S_j\,S_k\,X\,q_l$ avec $X\in\{L,R,I\}$ : en lisant $S_j$ dans l’état $q_i$, elle écrit $S_k$, se déplace à gauche, à droite ou reste immobile ($I$), et passe dans l’état $q_l$. En définissant de la même manière descriptions instantanées, calculs et fonctions calculées $\Psi^{(n)}$, on obtient une classe $T_m$ de fonctions, et $T_m=T$.</p>
+</enonce>
+<philo><p>Que la machine fasse une ou deux choses par pas ne change rien à ce qu’elle peut calculer : seulement au nombre de pas. C’est le cas le plus simple d’un phénomène général. Dès qu’on sait <em>compiler</em> les programmes d’un modèle dans un autre, les deux modèles ont la même puissance ; toute l’équivalence des modèles de calcul repose sur des compilateurs de ce genre.</p></philo>
+<tech>
+<p>$T\subseteq T_m$ : une machine à quadruplets est une machine à quintuplets qui n’utilise qu’une partie de ses possibilités. On remplace $q_i\,S_j\,S_k\,q_l$ par $q_i\,S_j\,S_k\,I\,q_l$, et $q_i\,S_j\,X\,q_l$ ($X=L,R$) par $q_i\,S_j\,S_j\,X\,q_l$. Une récurrence sur la longueur des calculs montre que les deux machines ont les mêmes résultantes.</p>
+<p>$T_m\subseteq T$ : un quintuplet $q_i\,S_j\,S_k\,I\,q_l$ devient le quadruplet $q_i\,S_j\,S_k\,q_l$. Pour $q_i\,S_j\,S_k\,X\,q_l$ avec $X=L$ ou $R$, il faut d’abord écrire, puis se déplacer, en passant par un état intermédiaire <em>nouveau</em> $r$, propre à ce quintuplet : $q_i\,S_j\,S_k\,r$ et $r\,S_k\,X\,q_l$. La machine obtenue est consistante, et chaque pas de la machine à quintuplets est simulé par un ou deux pas.</p>
+</tech>
+<techno>
+<p>Le compilateur en action sur la machine à 2 états du chapitre des castors affairés ($A\,B\,1\,R\,B$ ; $A\,1\,1\,L\,B$ ; $B\,B\,1\,L\,A$ ; $B\,1\,1\,R\,h$) : chaque quintuplet donne un quadruplet d’écriture et un de déplacement, avec un état intermédiaire par quintuplet.</p>
+<pre><code>A B 1 r1     r1 1 R B      # A B 1 R B
+A 1 1 r2     r2 1 L B      # A 1 1 L B
+B B 1 r3     r3 1 L A      # B B 1 L A
+B 1 1 r4     r4 1 R h      # B 1 1 R h</code></pre>
+<p>Ici les intermédiaires $r_1,r_2$ ont le même état d’arrivée $B$ et lisent le même symbole $1$ : avec un seul état « $B^w$ », on aurait eu à la fois $B^w\,1\,R\,B$ et $B^w\,1\,L\,B$. C’est exactement l’écueil signalé ci-dessus.</p>
+</techno>
+</res>
+
+<res type="Proposition" nom="Ce qui fait perdre l’universalité" id="restrictions">
+<enonce>
+<p>Certaines restrictions, en revanche, font perdre des fonctions calculables :</p>
+<ul>
+<li>une tête qui ne se déplace que dans une seule direction (la machine devient un automate fini qui lit son entrée) ;</li>
+<li>un seul symbole utilisé (la bande reste blanche : on ne peut ni donner d’entrée ni lire de résultat) ;</li>
+<li>une bande de taille bornée (le nombre de configurations est fini, et la machine est un automate fini) ;</li>
+<li>une mémoire organisée en une seule pile (<a href="autres-modeles.html#piles">automates à pile</a>).</li>
+</ul>
+<p>Les trois premiers points sont démontrés ci-dessous. Le dernier demande la théorie des langages algébriques : il est démontré plus loin (<a href="langages.html#automates-pile">automates à pile et grammaires</a>, <a href="langages.html#lemme-etoile">lemme de l’étoile</a>), et rien dans les chapitres intermédiaires n’en dépend.</p>
+<p>En revanche, le hasard n’ajoute rien : une machine probabiliste dont la réponse est correcte avec une probabilité supérieure à $1/2$ ne calcule que des fonctions calculables.</p>
+</enonce>
+<philo><p>Ce qui fait la puissance des machines de Turing n’est donc ni la taille de l’alphabet, ni le nombre d’états, ni la richesse des instructions : c’est la possibilité de revenir sur ce qui a été écrit, dans une mémoire non bornée. Retirez l’une de ces deux choses et l’on tombe dans des modèles strictement plus faibles, mais dont on peut décider beaucoup de propriétés (voir le récapitulatif du chapitre <a href="langages.html#indecidables-2">Langages et grammaires</a>).</p></philo>
+<tech>
+<p><strong>Tête à sens unique.</strong> Supposons que la machine n’ait aucun quadruplet de déplacement à gauche. Une case quittée n’est donc jamais relue. Quand la tête arrive sur une case dans l’état $q$ et y lit $s$, la machine applique sur place des quadruplets d’écriture, de façon déterministe, jusqu’à ce que : elle parte à droite dans un état $q'$, ou s’arrête, ou boucle sur place (un couple (état, symbole) se répète). Notons $\delta(q,s)\in E\cup\{\text{arrêt},\text{boucle}\}$ ce résultat, qui ne dépend que de $q$ et $s$. Sur l’entrée $w=s_1\cdots s_\ell$, l’état en quittant la case $j$ est donc obtenu en lisant $w$ avec l’automate fini déterministe de fonction de transition $\delta$ (les deux résultats $\text{arrêt}$ et $\text{boucle}$ étant absorbants). Après l’entrée, la tête ne lit plus que des blancs, et la suite d’états $q,\delta(q,B),\delta(\delta(q,B),B),\dots$ atteint l’arrêt en au plus $|E|$ cases ou ne l’atteint jamais. L’ensemble des entrées sur lesquelles la machine s’arrête est donc reconnu par un automate fini : il est régulier (reconnu par un automate fini ; ces langages sont étudiés au chapitre <a href="langages.html#automates-finis">Langages et grammaires</a>, mais l’argument qui suit n’en a pas besoin). Pour des entrées $\overline x=1^{x+1}$, un automate fini sur une lettre a une suite d’états ultimement périodique, donc l’ensemble des $x$ sur lesquels la machine s’arrête est ultimement périodique : une telle machine ne semi-décide pas, par exemple, l’ensemble décidable des carrés, dont les écarts croissent.</p>
+<p><strong>Machines probabilistes.</strong> Une machine probabiliste a, pour chaque couple (état, symbole), zéro, un ou deux quadruplets ; quand il y en a deux, elle tire à pile ou face, indépendamment à chaque pas. Elle <em>calcule</em> $f$ si, pour tout $x$, la probabilité de s’arrêter avec le résultat $f(x)$ dépasse $1/2$ quand $f(x)$ est défini, et si, quand $f(x)$ n’est pas défini, aucun résultat n’a une probabilité supérieure à $1/2$. Une telle $f$ est calculable. Notons $P(x,y)$ la probabilité de s’arrêter avec le résultat $y$, et $P_s(x,y)$ la somme des $2^{-c}$ sur les calculs qui s’arrêtent en au plus $s$ pas avec le résultat $y$, $c$ étant le nombre de tirages du calcul. Ces calculs sont des événements disjoints, en nombre fini pour chaque $s$, donc $P_s(x,y)$ est un rationnel calculable, croissant en $s$, de limite $P(x,y)$. L’algorithme cherche, pour $s=0,1,2,\dots$ et $y\le s$, un couple avec $P_s(x,y)>1/2$, et répond $y$. Si $f(x)$ est défini, $P(x,f(x))>1/2$, donc un tel couple existe ; et toute réponse $y$ vérifie $P(x,y)\ge P_s(x,y)>1/2$, d’où $y=f(x)$, car deux résultats différents ne peuvent pas avoir chacun une probabilité supérieure à $1/2$. Si $f(x)$ n’est pas défini, aucun couple ne convient et l’algorithme ne s’arrête pas. Réciproquement, une machine déterministe est une machine probabiliste qui ne tire jamais.</p>
+
+<p><strong>Un seul symbole.</strong> Si l’alphabet est réduit au blanc, la bande est blanche au départ et le reste : la configuration ne contient aucune information sur l’entrée, et le calcul est le même pour tous les arguments. La machine calcule donc une fonction constante ou nulle part définie.</p>
+<p><strong>Bande bornée.</strong> Pour une machine dont la bande est bornée par $\ell$ cases, il y a au plus $|E|\cdot\ell\cdot|A|^\ell$ configurations : on peut décider si elle s’arrête (une configuration répétée signifie qu’elle boucle). Une telle machine ne peut d’ailleurs même pas lire une entrée de plus de $\ell$ cases : elle ne distingue qu’un nombre fini d’arguments, et ne calcule donc pas, par exemple, le successeur.</p>
+</tech>
+</res>
+
+<h2 id="temps">Temps de calcul</h2>
+
+<res type="Définition" nom="Temps de calcul, classes P et NP" id="temps-p-np">
+<enonce>
+<p>Le <strong>temps</strong> d’un calcul est son nombre de pas (<a href="#def-pas">pas de calcul</a>). Une machine (à une ou plusieurs bandes) travaille <strong>en temps $t(n)$</strong> si, sur toute entrée de longueur $n$, elle s’arrête en au plus $t(n)$ pas. On travaille ici sur des mots (par exemple les entiers écrits en binaire), car la longueur de l’écriture unaire $1^{x+1}$ est exponentielle en celle de l’écriture binaire.</p>
+<p>$\mathsf P$ est la classe des langages décidés par une machine de Turing déterministe en temps $p(n)$ pour un polynôme $p$.</p>
+<p>Une machine <strong>non déterministe</strong> peut avoir plusieurs quadruplets pour un même couple (état, symbole) ; elle <em>accepte</em> une entrée si <em>l’un au moins</em> de ses calculs possibles s’arrête dans un état acceptant. $\mathsf{NP}$ est la classe des langages acceptés par une machine non déterministe dont tous les calculs, sur une entrée de longueur $n$, ont au plus $p(n)$ pas.</p>
+<p>De façon équivalente, $L\in\mathsf{NP}$ si et seulement s’il existe un polynôme $q$ et un langage $R\in\mathsf P$ (de couples codés) tels que $x\in L\iff\exists y\ \big(|y|\le q(|x|)\wedge(x,y)\in R\big)$ : $y$ est un <strong>certificat</strong> que l’on vérifie rapidement. Un langage $L\in\mathsf{NP}$ est <strong>NP-complet</strong> si tout langage de $\mathsf{NP}$ s’y réduit par une fonction calculable en temps polynomial.</p>
+</enonce>
+<philo><p>$\mathsf P$ rassemble les problèmes que l’on sait <em>résoudre</em> rapidement, $\mathsf{NP}$ ceux dont on sait <em>vérifier</em> rapidement une solution proposée. Savoir si les deux classes sont égales est la question ouverte la plus célèbre de l’informatique. Grâce aux simulations polynomiales entre modèles (<a href="trois-approches.html#cout-simulation">coût des simulations</a>), ces classes ne dépendent pas du modèle raisonnable choisi.</p></philo>
+<tech><p><strong>Équivalence des deux définitions.</strong> Si $N$ est non déterministe en temps $p$, avec au plus $d$ choix par pas, un calcul est déterminé par la suite de ses choix, un mot $y$ de longueur $p(n)$ sur $\{1,\dots,d\}$ (codé en binaire). La relation « le calcul de $N$ sur $x$ guidé par les choix $y$ accepte » se vérifie en simulant $p(|x|)$ pas : elle est dans $\mathsf P$. Réciproquement, si $x\in L\iff\exists y\,(|y|\le q(|x|)\wedge(x,y)\in R)$ et si $R$ est décidé en temps $r$, une machine non déterministe écrit un mot $y$ de longueur au plus $q(|x|)$ en choisissant chaque lettre, puis exécute la machine de $R$ : tous ses calculs ont au plus $O(q(n)+r(n+q(n)))$ pas, ce qui est polynomial. Que des problèmes NP-complets existent (par exemple la satisfaisabilité des formules propositionnelles) est le théorème de Cook et Levin (1971), démontré au chapitre <a href="complexite.html#cook-levin">Complexité</a>, qui étudie aussi l’espace de calcul et les autres classes.</p></tech>
+</res>
+
+<!--EXERCICES-->
+<h2 id="exercices">Exercices</h2>
+
+<exo niveau="1" titre="Une machine, plusieurs fonctions" id="ex-mt-arite">
+<p>Soit $Z=\{q_0\,1\,B\,q_1,\ q_1\,B\,R\,q_0\}$. Déterminer $\Psi^{(1)}_Z$ et $\Psi^{(2)}_Z$.</p>
+<corrige>
+<p>Dans l’état $q_0$ sur une barre, la machine l’efface ($q_1$), avance d’une case et revient en $q_0$. Elle efface donc le bloc de barres sous la tête, de gauche à droite, et s’arrête sur le premier blanc rencontré en $q_0$ (aucun quadruplet ne commence par $q_0\,B$).</p>
+<p>Sur $\overline x=1^{x+1}$, tout est effacé : $\Psi^{(1)}_Z(x)=0$, la fonction constante nulle. Sur $\overline x\,B\,\overline y$, la machine efface le premier bloc et s’arrête sur le séparateur ; il reste les $y+1$ barres du second bloc : $\Psi^{(2)}_Z(x,y)=y+1$. Une même machine calcule une fonction pour chaque arité ; c’est pourquoi la notation $\Psi^{(n)}_Z$ mentionne $n$.</p>
+</corrige>
+</exo>
+
+<exo niveau="1" titre="Compter les pas de l’addition" id="ex-mt-pas-add">
+<p>Combien de pas la <a href="#ex-add">machine de l’addition</a> fait-elle sur l’entrée $\overline x\,B\,\overline y$ ? En déduire qu’elle travaille en temps linéaire en la longueur de l’entrée.</p>
+<corrige>
+<p>Un pas pour effacer la première barre ($q_0\to q_1$), un pour avancer ($q_1\to q_2$), $x$ pas pour traverser les $x$ barres restantes du premier bloc ($q_2\,1\,R\,q_2$), un pour franchir le séparateur ($q_2\to q_3$), un pour effacer la première barre du second bloc ($q_3\to q_4$) : au total $x+4$ pas, indépendamment de $y$. L’entrée a pour longueur $n=x+y+3$, et $x+4\le n+1$ : le temps est linéaire (il est même sous-linéaire en $y$, puisque la machine ne lit jamais le second bloc au-delà de sa première case).</p>
+</corrige>
+</exo>
+
+<exo niveau="2" titre="La parité" id="ex-mt-parite">
+<p>Écrire une machine à quadruplets, sur l’alphabet $\{B,1\}$, qui calcule $x\mapsto x\bmod 2$ (le résultat est le nombre de barres présentes à l’arrêt).</p>
+<corrige>
+<p>On efface les barres une à une en alternant entre deux paires d’états, ce qui mémorise la parité du nombre de barres effacées :</p>
+$$q_0\,1\,B\,q_1\quad q_1\,B\,R\,q_2\quad q_2\,1\,B\,q_3\quad q_3\,B\,R\,q_0\quad q_0\,B\,1\,q_4 .$$
+<p>On arrive au blanc final dans l’état $q_0$ après avoir effacé un nombre pair de barres, dans l’état $q_2$ après un nombre impair. Comme l’entrée compte $x+1$ barres, $q_0$ correspond à $x$ impair : la machine écrit alors une barre et s’arrête en $q_4$. En $q_2$ ($x$ pair), aucun quadruplet ne s’applique : la machine s’arrête sur une bande vide, résultat $0$. On a vérifié par simulation que la machine donne $0,1,0,1,\dots$ pour $x=0,\dots,7$.</p>
+</corrige>
+</exo>
+
+<exo niveau="2" titre="Arrêt et non-arrêt" id="ex-mt-boucle">
+<p>(a) Écrire une machine $Z$ telle que $\Psi^{(1)}_Z$ soit la fonction nulle part définie. (b) Écrire une machine qui calcule la fonction définie seulement en $0$, avec $f(0)=0$.</p>
+<corrige>
+<p>(a) $Z=\{q_0\,1\,R\,q_0,\ q_0\,B\,R\,q_0\}$ : la tête part vers la droite et ne s’arrête jamais, quelle que soit l’entrée. Aucune description terminale n’est atteinte, $\mathrm{Res}_Z$ est indéfinie partout.</p>
+<p>(b) On efface la première barre, puis on regarde la case suivante : si elle est blanche, l’entrée était $\overline0=1$ et la bande est vide (résultat $0$) ; sinon on boucle.</p>
+$$q_0\,1\,B\,q_1\quad q_1\,B\,R\,q_2\quad q_2\,1\,R\,q_3\quad q_3\,1\,R\,q_3\quad q_3\,B\,R\,q_3 .$$
+<p>En $q_2$ sur un blanc, aucun quadruplet ne s’applique : arrêt avec $0$ barre. Sinon l’état $q_3$ avance indéfiniment vers la droite.</p>
+</corrige>
+</exo>
+
+<exo niveau="3" titre="Le double" id="ex-mt-double">
+<p>Écrire une machine qui calcule $x\mapsto 2x$. On pourra utiliser un symbole auxiliaire $a=S_2$. Estimer son temps de calcul.</p>
+<corrige>
+<p>Comme le résultat est le nombre total de barres, il suffit d’ajouter, à droite de l’entrée, une barre par barre de l’entrée. On efface d’abord une barre (il en reste $x$), puis on répète : marquer d’un $a$ la première barre non marquée, aller au bout de la bande écrire une barre, revenir. À la fin on remplace les $a$ par des barres.</p>
+$$\begin{aligned}
+&q_0\,1\,B\,q_1\quad q_1\,B\,R\,q_2\quad q_2\,a\,R\,q_2\quad q_2\,1\,a\,q_3\quad q_2\,B\,L\,q_6\quad q_3\,a\,R\,q_4\quad q_4\,1\,R\,q_4\quad q_4\,B\,R\,q_5\\
+&q_5\,1\,R\,q_5\quad q_5\,B\,1\,q_7\quad q_7\,1\,L\,q_7\quad q_7\,B\,L\,q_8\quad q_8\,1\,L\,q_8\quad q_8\,a\,R\,q_2\quad q_6\,a\,1\,q_9\quad q_9\,1\,L\,q_6
+\end{aligned}$$
+<p>La bande a la forme $B\,a^i1^{x-i}\,B\,1^i$ au début de chaque tour. En $q_2$ on saute les $a$ ; sur une barre on la marque ($q_3$), on traverse le reste du bloc ($q_4$), le séparateur, les barres déjà ajoutées ($q_5$), on écrit une barre ; on revient ($q_7$, puis $q_8$ à travers le bloc) jusqu’au dernier $a$, et l’on repart en $q_2$ juste à sa droite. Quand $q_2$ lit le séparateur, toutes les barres sont marquées : $q_6$ et $q_9$ remontent vers la gauche en changeant chaque $a$ en barre, et la machine s’arrête sur le blanc de gauche. Il y a $x$ barres dans le bloc et $x$ ajoutées : le résultat est $2x$. (Pour $x=0$, $q_2$ lit tout de suite un blanc, et $q_6$ s’arrête sur une bande vide.)</p>
+<p>Le $i$-ième tour parcourt environ $2x$ cases à l’aller et autant au retour : le temps est de l’ordre de $2x^2$ (la simulation donne $3, 12, 25, 42, 63$ pas pour $x=0,\dots,4$). Une machine à deux bandes ferait la même chose en temps linéaire ; le passage d’une à plusieurs bandes coûte au plus un facteur quadratique (<a href="trois-approches.html#cout-simulation">simulation</a>).</p>
+</corrige>
+</exo>

@@ -1,0 +1,424 @@
+<!--
+titre: La hiérarchie arithmétique
+court: Hiérarchie arithmétique
+chapo: Compter les alternances de quantificateurs « il existe » et « pour tout » mesure exactement le degré d’indécidabilité d’un problème.
+prerequis: semi-decidabilite.html|Semi-décidabilité ; machines-turing.html#def-oracle|Machines avec oracle ; equivalence.html#relatif|Équivalence relative
+-->
+
+<p>Deux faits simples sur les ensembles semi-décidables servent de point de départ : ce sont exactement les <em>projections</em> des relations décidables ($x\in A\iff\exists y\,R(x,y)$), et le complémentaire d’un ensemble semi-décidable non décidable n’est pas semi-décidable. En alternant projections et complémentaires, c’est-à-dire quantificateurs $\exists$ et $\forall$, on construit des ensembles de plus en plus compliqués. On classe ainsi les ensembles selon la complexité de leur <em>description</em> logique ; le théorème de Post montrera que ce classement coïncide avec celui que donnent les <em>oracles</em>.</p>
+
+<h2 id="definition">Définition</h2>
+
+<p>Les ensembles décidables sont définis par une formule sans quantificateur non borné ; les ensembles semi-décidables, par une formule $\exists y\,R$. Que se passe-t-il avec plus de quantificateurs ?</p>
+
+<res type="Définition" nom="Classes $\Sigma_n$, $\Pi_n$, $\Delta_n$" id="def-hierarchie">
+<enonce>
+<p>Soit $n\ge1$. Un ensemble $A\subseteq\N$ est $\Sigma_n$ s’il existe un prédicat décidable $R$ tel que</p>
+$$x\in A\iff\exists y_1\,\forall y_2\,\exists y_3\cdots Q y_n\ R(x,y_1,\dots,y_n)$$
+<p>($n$ quantificateurs alternés commençant par $\exists$). Il est $\Pi_n$ si la formule commence par $\forall$. Il est $\Delta_n$ s’il est à la fois $\Sigma_n$ et $\Pi_n$. On pose $\Sigma_0=\Pi_0=\Delta_0$ = les ensembles décidables. Un ensemble est <strong>arithmétique</strong> s’il appartient à l’une de ces classes.</p>
+</enonce>
+<philo>
+<p>Chaque alternance de quantificateurs ajoute un niveau d’ignorance. Un énoncé $\Sigma_1$ (« il existe un témoin ») se confirme en trouvant le témoin. Un énoncé $\Pi_1$ (« pour tout $x$, … ») se réfute en trouvant un contre-exemple : la conjecture de Goldbach est de ce type. Un énoncé $\Pi_2$ (« pour tout $x$ il existe $y$… », comme « ce programme s’arrête sur toute entrée ») ne se confirme ni ne se réfute par une observation finie.</p>
+<p>La plupart des grandes conjectures se placent à un niveau précis : Goldbach et l’hypothèse de Riemann sont $\Pi_1$ ; la conjecture des nombres premiers jumeaux (« pour tout $n$ il existe des premiers jumeaux au-delà de $n$ ») est $\Pi_2$.</p>
+</philo>
+<tech>
+<p><strong>Contraction des quantificateurs.</strong> Deux quantificateurs consécutifs de même nature se contractent en un seul grâce au <a href="fonctions-recursives.html#cantor-couple">codage des couples</a> : $\exists y\,\exists z\,R(x,y,z)\iff\exists w\,R(x,\pi_1w,\pi_2w)$, et de même pour $\forall$, la relation $R(x,\pi_1w,\pi_2w)$ restant décidable. Plus généralement, des blocs de quantificateurs de même nature, $\exists y_1\cdots\exists y_k\,\forall z_1\cdots\forall z_l\cdots$, se ramènent à une alternance stricte en codant chaque bloc par un seul entier. On peut donc autoriser des blocs quelconques dans la définition : seul compte le nombre d’<em>alternances</em>. On peut aussi remplacer $x$ par un $k$-uplet, codé par un entier, ce qui définit les relations $\Sigma_n$ et $\Pi_n$ d’arité quelconque.</p>
+<p><strong>Ensembles arithmétiques et formules.</strong> Toute formule de l’arithmétique du premier ordre se met sous forme prénexe. Sa partie sans quantificateur est décidable, puisque les termes se calculent : tout ensemble défini par une formule de l’arithmétique est donc arithmétique. Réciproquement, toute relation décidable $R$ est définie par une formule $\Sigma_1$, de même que son complémentaire (<a href="incompletude.html#representabilite">représentabilité</a>, démontrée au chapitre Incomplétude sans rien utiliser du présent chapitre). En remplaçant $R$ par cette formule dans la définition ci-dessus, on voit que tout ensemble arithmétique est définissable. Les ensembles arithmétiques sont donc exactement les ensembles définissables dans l’arithmétique, et le niveau $\Sigma_1$ correspond aux <a href="incompletude.html#delta0">formules $\Sigma_1$</a> du chapitre Incomplétude. D’après la <a href="semi-decidabilite.html#caracterisations-re">caractérisation des ensembles semi-décidables</a>, $\Sigma_1$ est la classe des ensembles semi-décidables ; avec le <a href="semi-decidabilite.html#post-complement">théorème du complémentaire</a> et le point 1 du lemme suivant, $\Delta_1=\Delta_0$.</p>
+</tech>
+</res>
+
+<res type="Lemme" nom="Propriétés de clôture de la hiérarchie" id="clotures">
+<enonce>
+<p>Pour tout $n\ge0$ :</p>
+<ol>
+<li>(Dualité) $A\in\Sigma_n\iff\overline A\in\Pi_n$.</li>
+<li>(Cumulativité) $\Sigma_n\cup\Pi_n\subseteq\Delta_m$ pour tout $m>n$.</li>
+<li>$\Sigma_n$, $\Pi_n$ et $\Delta_n$ sont closes par union et intersection finies.</li>
+<li>$\Sigma_n$ est close par quantification existentielle et $\Pi_n$ par quantification universelle : si la relation $R$ est $\Sigma_n$, l’ensemble $\{x:\exists y\,R(x,y)\}$ est $\Sigma_n$ ($n\ge1$).</li>
+<li>Les classes sont closes par réduction many-one : si $B\le_m A$ et $A\in\Sigma_n$, alors $B\in\Sigma_n$ (de même pour $\Pi_n$, $\Delta_n$).</li>
+<li>Les classes sont closes par quantification bornée : si $R$ est $\Sigma_n$, les relations $\exists z<y\,R(x,y,z)$ et $\forall z<y\,R(x,y,z)$ sont $\Sigma_n$ (de même pour $\Pi_n$, $\Delta_n$).</li>
+</ol>
+</enonce>
+<philo><p>Ces règles sont la « grammaire » de la hiérarchie : elles permettent de lire le niveau d’un ensemble sur sa définition sans rien calculer. Les connecteurs $\vee,\wedge$ et les quantificateurs bornés sont gratuits ; seuls les quantificateurs non bornés, et plus précisément leurs alternances, coûtent un niveau. La dernière règle est la moins évidente : un « pour tout $z<y$ » devant un « il existe » ne coûte rien, parce qu’on peut deviner d’un coup la liste finie de tous les témoins.</p></philo>
+<tech>
+<p>Pour (3), (5) et (6), il suffit de traiter $\Sigma_n$ et $\Pi_n$ : le cas de $\Delta_n=\Sigma_n\cap\Pi_n$ s’en déduit.</p>
+<p>(1) Si $x\in A\iff\exists y_1\forall y_2\cdots Qy_n\,R(x,\vec y)$, en niant on obtient $x\in\overline A\iff\forall y_1\exists y_2\cdots\overline Q y_n\,\neg R(x,\vec y)$, et $\neg R$ est décidable. La réciproque est identique.</p>
+<p>(2) On ajoute des quantificateurs muets. Si $x\in A\iff\exists y_1\cdots Qy_n\,R(x,\vec y)$ et $m>n$, posons $R'(x,y_0,y_1,\dots,y_m)\iff R(x,y_1,\dots,y_n)$, décidable. Alors</p>
+$$\begin{aligned}x\in A&\iff\exists y_1\cdots Qy_n\ Q'y_{n+1}\cdots y_m\ R'(x,0,y_1,\dots,y_m)\\ &\iff\forall y_0\ \exists y_1\cdots Q''y_{m-1}\ R'(x,y_0,y_1,\dots,y_{m-1},0).\end{aligned}$$
+<p>Dans la première ligne, les quantificateurs muets sont ajoutés <em>à la fin</em> : $A\in\Sigma_m$. Dans la seconde, un quantificateur muet est ajouté <em>au début</em>, et d’autres à la fin si $n<m-1$ ($R'$ ne dépend que de $y_1,\dots,y_n$, et $n\le m-1$) : il y a $m$ quantificateurs commençant par $\forall$, donc $A\in\Pi_m$. Donc $\Sigma_n\subseteq\Sigma_m\cap\Pi_m=\Delta_m$, et de même pour $\Pi_n$.</p>
+<p>(3) Si $x\in A\iff\exists y_1\cdots Qy_n\,R(x,\vec y)$ et $x\in B\iff\exists z_1\cdots Qz_n\,S(x,\vec z)$, les variables étant distinctes, on peut faire sortir les quantificateurs d’une disjonction : $x\in A\cup B\iff\exists y_1\exists z_1\,\forall y_2\forall z_2\cdots\big(R(x,\vec y)\vee S(x,\vec z)\big)$, puis contracter chaque paire $u_i=\langle y_i,z_i\rangle$ : la relation $R(x,\pi_1u_1,\dots)\vee S(x,\pi_2u_1,\dots)$ est décidable. Même chose pour $\cap$ avec $\wedge$, et pour $\Pi_n$.</p>
+<p>(4) $\exists y\,\exists y_1\forall y_2\cdots R(\langle x,y\rangle,\vec y)$ : on contracte les deux premiers quantificateurs.</p>
+<p>(5) Si $f:B\le_m A$ et $x\in A\iff\exists y_1\cdots R(x,\vec y)$, alors $x\in B\iff f(x)\in A\iff\exists y_1\cdots R(f(x),\vec y)$, et $R(f(x),\vec y)$ est décidable puisque $f$ est totale calculable.</p>
+<p>(6) Par récurrence sur $n$, on montre simultanément les quatre clôtures ($\Sigma_n$ et $\Pi_n$, par $\exists z<y$ et $\forall z<y$). Pour $n=0$, une quantification bornée d’une relation décidable est décidable. Soit $n\ge1$. Pour $\Sigma_n$ et $\exists z<y$ : $\exists z<y\,R\iff\exists z\,(z<y\wedge R)$, qui est $\Sigma_n$ par (3) et (4). Pour $\Sigma_n$ et $\forall z<y$ : écrivons $R(x,y,z)\iff\exists u\,S(x,y,z,u)$ avec $S\in\Pi_{n-1}$ (on isole le premier quantificateur). Alors</p>
+$$\forall z<y\ \exists u\ S(x,y,z,u)\iff\exists\sigma\ \forall z<y\ S\big(x,y,z,(\sigma)_z\big),$$
+<p>où $\sigma$ code la liste finie des témoins $u_0,\dots,u_{y-1}$ (dans le sens direct on prend $\sigma=\prod_{z<y}p_z^{u_z}$ ; la réciproque est immédiate). Par hypothèse de récurrence, $\Pi_{n-1}$ est close par $\forall z<y$, donc la relation entre crochets est $\Pi_{n-1}$ et le tout est $\Sigma_n$. Les deux cas de $\Pi_n$ s’en déduisent par dualité : $\neg\forall z<y\,R\iff\exists z<y\,\neg R$.</p>
+</tech>
+<techno>
+<p>La règle (6) en action, pour lire un niveau : « $x$ est la somme de deux nombres premiers » est décidable (deux quantificateurs bornés par $x$) ; « $W_e\supseteq\{0,\dots,y-1\}$ » s’écrit $\forall z<y\ \exists s\ T_1(e,z,s)$ et reste $\Sigma_1$ : on cherche d’un coup un $\sigma$ qui code les $y$ temps d’arrêt. C’est le programme « lancer les $y$ calculs en parallèle et attendre qu’ils aient tous fini ».</p>
+</techno>
+</res>
+
+<h2 id="relatif">Calcul relatif, saut et réductions one-one</h2>
+
+<p>On utilise les machines munies d’un oracle (<a href="machines-turing.html#def-oracle">définition</a>) et leur équivalence avec les fonctions récursives relatives (<a href="equivalence.html#relatif">équivalence relative</a>). On note $\varphi^A_e$ la $e$<sup>e</sup> fonction $A$-calculable, $W^A_e$ son domaine, et l’on dit qu’un ensemble est <strong>semi-décidable en $A$</strong> (ou $A$-r.e.) s’il est de la forme $W^A_e$.</p>
+
+<res type="Définition" nom="Réductibilité de Turing, degrés" id="def-turing">
+<enonce>
+<p>$A$ est <strong>Turing-réductible</strong> à $B$, ou <strong>décidable en $B$</strong> ($A\le_T B$), si $c_A$ est $B$-récursive. Si $A\le_TB$ et $B\le_TA$, $A$ et $B$ sont <strong>Turing-équivalents</strong> ($A\equiv_TB$) ; la classe d’équivalence $\deg_T(A)$ est le <strong>degré de Turing</strong> de $A$. Pour tous $A,B,C$ :</p>
+<ol>
+<li>(Forme normale relative) $W^A_e=\{x:\exists y\ T^A_1(e,x,y)\}$, où $T^A_1$ est récursif primitif en $A$.</li>
+<li>(Projection) $X$ est semi-décidable en $A$ si et seulement si $X=\{x:\exists y\,R(x,y)\}$ pour une relation $R$ décidable en $A$.</li>
+<li>(Complémentaire) $X$ est décidable en $A$ si et seulement si $X$ et $\overline X$ sont semi-décidables en $A$.</li>
+<li>(Transitivité) Si $A\le_TB$ et $B\le_TC$, alors $A\le_TC$ ; si $X$ est semi-décidable en $B$ et $B\le_TC$, alors $X$ est semi-décidable en $C$. En particulier $\le_T$ est un préordre, et $A\equiv_T\overline A$.</li>
+</ol>
+</enonce>
+<philo><p>Ce sont les propriétés des ensembles décidables et semi-décidables, relativisées : elles restent vraies quand on donne à toutes les machines la même boîte noire. Presque toute la calculabilité se relativise ainsi, mot pour mot. Le degré de Turing regroupe les problèmes « aussi difficiles l’un que l’autre » : chacun se résout si l’on sait résoudre l’autre.</p></philo>
+<tech>
+<p>(1) C’est la <a href="equivalence.html#relatif">forme normale relative</a> : $\varphi^A_e(x)\simeq U(\mu y\,T^A_1(\eta^\ast(e),x,y))$, donc $x\in W^A_e\iff\exists y\,T^A_1(\eta^\ast(e),x,y)$ (on écrit $e$ pour $\eta^\ast(e)$).</p>
+<p>(2) Si $X=W^A_e$, on prend $R(x,y)\iff T^A_1(e,x,y)$. Réciproquement, $x\mapsto\mu y\,[c_R(x,y)=1]$ est dans $P^A$ et a pour domaine $X$.</p>
+<p>(3) Comme pour le <a href="semi-decidabilite.html#post-complement">théorème du complémentaire</a> : si $X=W^A_a$ et $\overline X=W^A_b$, on cherche $\mu y\,[T^A_1(a,x,y)\vee T^A_1(b,x,y)]$, qui existe toujours, et l’on répond selon le disjoint vérifié. La réciproque est immédiate.</p>
+<p>(4) Par récurrence sur la définition de $P^B$ : si $c_B\in P^C$, toute fonction de $P^B$ est dans $P^C$ (on remplace la fonction de base $c_B$ par sa définition dans $P^C$ ; les clôtures sont les mêmes). Appliqué à $c_A$, cela donne $A\le_TC$ ; appliqué à une fonction de domaine $X$, cela donne $X$ semi-décidable en $C$. Enfin $c_{\overline A}=1\monus c_A$, donc $\overline A\le_TA$ et inversement.</p>
+</tech>
+</res>
+
+<res type="Lemme" nom="s-m-n injectif (bourrage)" id="smn-injectif">
+<enonce><p>Dans le <a href="smn-recursion.html#smn">théorème s-m-n</a>, relativisé ou non, on peut choisir $s^m_n$ injective, et même strictement croissante en $\langle e,\vec y\rangle$.</p></enonce>
+<philo><p>Un même programme a une infinité d’écritures différentes : on peut toujours le « rembourrer » de lignes inutiles. On s’en sert ici pour que deux spécialisations différentes reçoivent toujours deux numéros différents, ce qui transforme une réduction many-one en réduction one-one.</p></philo>
+<tech><p>Le <a href="universalite.html">lemme de rembourrage</a> fournit une fonction récursive primitive $\mathrm{pad}(i,k)$, strictement croissante en $k$, telle que $\varphi^A_{\mathrm{pad}(i,k)}=\varphi^A_i$ pour tout $A$ (on ajoute $k$ quadruplets portant sur un état jamais atteint ; ils ne posent aucune question à l’oracle). Écrivons $s(w)$ pour $s^m_n(e,\vec y)$ avec $w=\langle e,\vec y\rangle$, et posons $s'(0)=s(0)$, $s'(w+1)=\mathrm{pad}\big(s(w+1),k\big)$ pour le plus petit $k$ tel que ce nombre dépasse $s'(w)$ (il existe, $\mathrm{pad}$ étant strictement croissante en $k$). Alors $s'$ est calculable, strictement croissante donc injective, et $\varphi^A_{s'(w)}=\varphi^A_{s(w)}$.</p></tech>
+</res>
+
+<res type="Définition" nom="Réduction one-one, ensembles complets" id="un-complet">
+<enonce>
+<p>$A\le_1B$ s’il existe $f$ totale calculable <em>injective</em> telle que $x\in A\iff f(x)\in B$ (voir la <a href="indecidabilite.html#reductibilites">hiérarchie des réductibilités</a> : $A\le_1B\Rightarrow A\le_mB\Rightarrow A\le_TB$). On note $A\equiv_1B$ si $A\le_1B$ et $B\le_1A$ ; $\le_1$ est réflexive et transitive (la composée de deux injections est une injection), donc $\equiv_1$ est une équivalence.</p>
+<p>Soit $\mathcal C$ une classe d’ensembles ($\Sigma_n$, $\Pi_n$, les ensembles semi-décidables en $A$…). Un ensemble $A$ est <strong>$\mathcal C$-complet</strong> si $A\in\mathcal C$ et si $B\le_1A$ pour tout $B\in\mathcal C$.</p>
+</enonce>
+<philo><p>On exige ici des réductions one-one plutôt que many-one parce que c’est la notion qui caractérise la semi-décidabilité relative (proposition suivante), et parce qu’elle a un sens géométrique fort : deux ensembles one-one équivalents sont, à un renommage calculable près, le même ensemble (théorème de Myhill ci-dessous).</p></philo>
+</res>
+
+<res type="Proposition" nom="Le saut est complet ; le saut caractérise ≤T" id="saut-complet">
+<enonce>
+<p>Le <strong>saut</strong> de $A$ est $A'=\{e:\varphi^A_e(e)\conv\}$ ; on pose $A^{(0)}=A$ et $A^{(n+1)}=(A^{(n)})'$. Pour tous ensembles $A$ et $B$ :</p>
+<ol>
+<li>$B\le_1A'$ si et seulement si $B$ est semi-décidable en $A$. Autrement dit, $A'$ est complet pour les ensembles semi-décidables en $A$.</li>
+<li>$B\le_1B'$ et $\overline B\le_1B'$.</li>
+<li>$B'\le_1A'$ si et seulement si $B\le_TA$.</li>
+<li>$A<_TA'$ : $A\le_TA'$ mais $A'\not\le_TA$.</li>
+</ol>
+</enonce>
+<philo><p>Le saut est le problème de l’arrêt des machines munies de l’oracle $A$. Il ne dépend, à équivalence one-one près, que du degré de $A$ (point 3), et il est toujours strictement plus difficile que $A$ (point 4) : chaque oracle a son propre problème de l’arrêt, hors de sa portée.</p></philo>
+<tech>
+<p>(1) $A'$ est semi-décidable en $A$ (domaine de $e\mapsto\varphi^A_e(e)$), et les ensembles semi-décidables en $A$ sont clos par $\le_m$ (si $x\in B\iff f(x)\in A'$, alors $B$ est le domaine de $x\mapsto\varphi^A_{f(x)}(f(x))$). Réciproquement, soit $B=W^A_a$. La fonction $\psi(x,z)\simeq\varphi^A_a(x)$ est dans $P^A$ ; par le <a href="#smn-injectif">s-m-n injectif</a> relativisé, il existe $f$ injective, récursive primitive, telle que $\varphi^A_{f(x)}(z)\simeq\varphi^A_a(x)$ pour tout $z$. Alors $f(x)\in A'\iff\varphi^A_{f(x)}(f(x))\conv\iff\varphi^A_a(x)\conv\iff x\in B$. C’est la preuve de la <a href="semi-decidabilite.html#k-complet">complétude de $K$</a>, relativisée.</p>
+<p>(2) $B$ et $\overline B$ sont décidables, a fortiori semi-décidables, en $B$ ; on applique (1) avec $A=B$.</p>
+<p>(3) Si $B\le_TA$ : $B'$ est semi-décidable en $B$, donc en $A$ (transitivité), donc $B'\le_1A'$ par (1). Réciproquement, si $B'\le_1A'$, alors par (2) et transitivité de $\le_1$, $B\le_1A'$ et $\overline B\le_1A'$ ; par (1), $B$ et $\overline B$ sont semi-décidables en $A$, donc $B\le_TA$ (complémentaire relatif).</p>
+<p>(4) $A\le_1A'$ par (2), donc $A\le_TA'$. Et $A'\not\le_TA$ : c’est l’<a href="equivalence.html#enumeration-relative">arrêt relatif</a>.</p>
+</tech>
+</res>
+
+<res type="Lemme" nom="Variantes du problème de l’arrêt" id="k0">
+<enonce><p>$K_0=\{\langle x,y\rangle:y\in W_x\}$ est one-one équivalent à $K=\{x:x\in W_x\}$. Plus généralement, $\{\langle x,y\rangle:y\in W^A_x\}\equiv_1A'$.</p></enonce>
+<tech><p>Soit $K^A_0=\{\langle x,y\rangle:y\in W^A_x\}$. D’une part $A'\le_1K^A_0$ par $x\mapsto\langle x,x\rangle$, injective. D’autre part $K^A_0$ est semi-décidable en $A$ (domaine de $\langle x,y\rangle\mapsto\varphi^A_x(y)$), donc $K^A_0\le_1A'$ par la <a href="#saut-complet">proposition précédente</a>. Avec $A=\emptyset$, on obtient $K_0\equiv_1K$.</p></tech>
+<philo><p>Que l’on demande « le programme $x$ s’arrête-t-il sur $x$ ? » ou « sur $y$ ? », c’est le même problème, à un codage près. On utilise donc l’une ou l’autre forme selon la commodité.</p></philo>
+</res>
+
+<res type="Théorème" nom="Théorème d’isomorphisme de Myhill" id="myhill">
+<enonce><p>$A\equiv_1B$ si et seulement s’il existe une <strong>permutation calculable</strong> $h$ de $\N$ telle que $h(A)=B$ (on dit que $A$ et $B$ sont <em>récursivement isomorphes</em>, $A\equiv B$).</p></enonce>
+<philo><p>C’est un analogue effectif du théorème de Cantor-Bernstein : deux injections, l’une dans un sens et l’autre dans l’autre, suffisent à fabriquer une bijection. Ici, les injections sont calculables et respectent les deux ensembles, et la bijection obtenue l’est aussi. Deux ensembles one-one équivalents ne diffèrent donc que par la façon de nommer les entiers. Par exemple, tous les ensembles $\Sigma_1$-complets sont des copies renommées du problème de l’arrêt.</p></philo>
+<tech>
+<p>Si $h$ existe, $h$ et $h^{-1}$ (calculable : $h^{-1}(y)=\mu x\,[h(x)=y]$) sont des réductions one-one. Réciproquement, soient $f:A\le_1B$ et $g:B\le_1A$. On construit par étapes une suite croissante de bijections finies $p_s$, avec $x\in A\iff p_s(x)\in B$ pour tout $x\in\mathrm{dom}\,p_s$, par un <em>va-et-vient</em>.</p>
+<ul>
+<li><em>Aller</em> (étape $2s+1$) : soit $x$ le plus petit entier hors de $\mathrm{dom}\,p$. On calcule $y=f(x)$ ; tant que $y\in\mathrm{ran}\,p$, on remplace $y$ par $f(p^{-1}(y))$. On ajoute $(x,y)$ à $p$.</li>
+<li><em>Retour</em> (étape $2s+2$) : symétriquement, avec le plus petit $y$ hors de $\mathrm{ran}\,p$, et $g$, $p$ à la place de $f$, $p^{-1}$.</li>
+</ul>
+<p><em>La boucle termine.</em> Les éléments $x_1=p^{-1}(f(x)),\ x_2=p^{-1}(f(x_1)),\dots$ parcourus sont dans $\mathrm{dom}\,p$, fini. Ils sont deux à deux distincts : si $x_i=x_j$ avec $i<j$ minimaux, alors $f(x_{i-1})=f(x_{j-1})$ (en posant $x_0=x$), donc $x_{i-1}=x_{j-1}$ par injectivité de $f$ et de $p$ ; si $i>1$ cela contredit la minimalité, et si $i=1$ cela donne $x=x_{j-1}\in\mathrm{dom}\,p$, contradiction. La boucle s’arrête donc après au plus $|\mathrm{dom}\,p|$ tours, sur un $y\notin\mathrm{ran}\,p$.</p>
+<p><em>L’appartenance est préservée.</em> $x\in A\iff f(x)\in B\iff x_1\in A$ (car $p$ préserve, appliqué à $x_1=p^{-1}(f(x))$) $\iff f(x_1)\in B\iff\cdots\iff y\in B$.</p>
+<p>$h=\bigcup_sp_s$ est alors une bijection (chaque $x$ entre dans le domaine à une étape d’aller, chaque $y$ dans l’image à une étape de retour), calculable (on exécute les étapes jusqu’à ce que $x$ soit dans le domaine), et $h(A)=B$.</p>
+</tech>
+<techno>
+<p>Le va-et-vient programmé et vérifié sur $A=$ les pairs, $B=$ les multiples de $3$, avec $f(x)=3x$ si $x$ est pair, $3x+1$ sinon, et $g(y)=2y$ si $3\mid y$, $2y+1$ sinon (injectives et réductions, vérifié jusqu’à $10^4$). Après 4 000 étapes, $p$ est une bijection partielle qui envoie les pairs sur les multiples de 3 et les impairs sur les autres, et contient $0,\dots,999$ au départ et à l’arrivée. Début de $h$ : $0,4,6,1,12,2,3,22,24,28,30,5$.</p>
+<pre><code>def myhill(f, g, N):
+    p, q = {}, {}                   # p : bijection finie, q = p⁻¹
+    while len(p) &lt; N:
+        x = min(n for n in range(N+1) if n not in p)       # aller
+        y = f(x)
+        while y in q: y = f(q[y])
+        p[x], q[y] = y, x
+        y = min(n for n in range(N+1) if n not in q)       # retour
+        x = g(y)
+        while x in p: x = g(p[x])
+        p[x], q[y] = y, x
+    return p</code></pre>
+</techno>
+</res>
+
+<h2 id="post-section">Le théorème de Post</h2>
+
+<p>On note $\emptyset'=K$ (car $\emptyset$ est décidable, $\varphi^\emptyset_e=\varphi_e$), $\emptyset''=K'$, et en général $\emptyset^{(n)}$ le $n$<sup>e</sup> saut de l’ensemble vide.</p>
+
+<res type="Théorème" nom="Théorème de Post (hiérarchie et oracles)" id="post">
+<enonce>
+<p>Pour tout $n\ge0$ :</p>
+<ol>
+<li>$B$ est $\Sigma_{n+1}$ si et seulement si $B$ est semi-décidable en $\emptyset^{(n)}$, si et seulement si $B$ est semi-décidable en un ensemble $\Sigma_n$, si et seulement si $B$ est semi-décidable en un ensemble $\Pi_n$.</li>
+<li>$\emptyset^{(n+1)}$ est $\Sigma_{n+1}$-complet.</li>
+<li>$B$ est $\Delta_{n+1}$ si et seulement si $B\le_T\emptyset^{(n)}$.</li>
+</ol>
+</enonce>
+<philo>
+<p>L’indécidable a des étages, et chaque étage est le problème de l’arrêt de l’étage précédent. Le théorème relie deux façons de mesurer la difficulté : la complexité de la <em>description</em> (combien d’alternances $\exists\forall$) et la puissance de l’<em>oracle</em> nécessaire (combien de sauts). Un quantificateur $\forall$ de plus, c’est exactement une question de plus au problème de l’arrêt de l’étage d’en dessous.</p>
+<p>Même un être qui saurait résoudre le problème de l’arrêt aurait son propre problème de l’arrêt, qu’il ne pourrait pas résoudre. Il n’y a pas de sommet.</p>
+</philo>
+<tech>
+<p>On démontre successivement quatre faits, puis on conclut.</p>
+<p><strong>(a) Si $C\in\Sigma_n\cup\Pi_n$ et si $B$ est semi-décidable en $C$, alors $B\in\Sigma_{n+1}$.</strong> Par le <a href="equivalence.html#relatif">principe d’usage</a>, il existe $\hat T$ récursif primitif tel que $T^C_1(e,x,y)\iff\hat T(e,x,y,\hat c_C(y))$ avec $\hat c_C(y)=\prod_{i<y}p_i^{c_C(i)}$. Si $B=W^C_e$ :</p>
+$$x\in B\iff\exists y\ \exists w\ \Big[\hat T(e,x,y,w)\ \wedge\ w=\textstyle\prod_{i<y}p_i^{(w)_i}\ \wedge\ \forall i<y\ \big(((w)_i=1\wedge i\in C)\vee((w)_i=0\wedge i\notin C)\big)\Big].$$
+<p>(Le $w$ deviné est le segment initial de l’oracle utilisé par le calcul ; on vérifie qu’il est correct.) Les relations « $i\in C$ » et « $i\notin C$ » sont l’une $\Sigma_n$, l’autre $\Pi_n$, donc toutes deux $\Delta_{n+1}$ (<a href="#clotures">cumulativité</a>, et pour $n=0$ elles sont décidables). Par clôture par $\wedge,\vee$ et quantification bornée, la relation entre crochets est $\Delta_{n+1}$, a fortiori $\Sigma_{n+1}$, et les deux $\exists$ la laissent $\Sigma_{n+1}$.</p>
+<p><strong>(b) Si $B\in\Sigma_{n+1}$, alors $B$ est semi-décidable en un ensemble $C\in\Pi_n$.</strong> En isolant le premier quantificateur, $x\in B\iff\exists y\,R(x,y)$ avec $R\in\Pi_n$. Soit $C=\{\langle x,y\rangle:R(x,y)\}\in\Pi_n$. La relation $R$ est décidable en $C$ ($c_R(x,y)=c_C(\langle x,y\rangle)$), donc $B$ est la projection d’une relation décidable en $C$ : semi-décidable en $C$ (projection relative). Comme $C\equiv_T\overline C$ et $\overline C\in\Sigma_n$, $B$ est aussi semi-décidable en un ensemble $\Sigma_n$.</p>
+<p><strong>(c) $\emptyset^{(n)}\in\Sigma_n$ pour $n\ge1$.</strong> Par récurrence : $\emptyset'=K\in\Sigma_1$ ; si $\emptyset^{(n)}\in\Sigma_n$, alors $\emptyset^{(n+1)}$, semi-décidable en $\emptyset^{(n)}$, est $\Sigma_{n+1}$ par (a).</p>
+<p><strong>(d) Tout ensemble $\Sigma_{n+1}$ est semi-décidable en $\emptyset^{(n)}$, et donc one-one réductible à $\emptyset^{(n+1)}$.</strong> Pour $n=0$ : un ensemble $\Sigma_1$ est semi-décidable (en $\emptyset$) et $\le_1K$. Pour $n\ge1$, supposons que $\emptyset^{(n)}$ est $\Sigma_n$-complet. Si $B\in\Sigma_{n+1}$, par (b) $B$ est semi-décidable en un $C\in\Pi_n$ ; alors $\overline C\in\Sigma_n$, donc $\overline C\le_1\emptyset^{(n)}$, d’où $C\le_T\emptyset^{(n)}$ ; par transitivité $B$ est semi-décidable en $\emptyset^{(n)}$, et $B\le_1\emptyset^{(n+1)}$ par la <a href="#saut-complet">complétude du saut</a>.</p>
+<p><strong>Conclusion.</strong> (2) : par récurrence sur $n$, (c) et (d) donnent que $\emptyset^{(n+1)}$ est $\Sigma_{n+1}$ et que tout ensemble $\Sigma_{n+1}$ s’y réduit (l’hypothèse de récurrence de (d) est le cas $n$ de (2)). (1) : si $B\in\Sigma_{n+1}$, $B$ est semi-décidable en $\emptyset^{(n)}$ par (d), qui est $\Sigma_n$ par (c) (ou décidable si $n=0$), et aussi en un ensemble $\Pi_n$ par (b) ; réciproquement chacune des trois conditions implique $B\in\Sigma_{n+1}$ par (a). (3) : $B\le_T\emptyset^{(n)}$ si et seulement si $B$ et $\overline B$ sont semi-décidables en $\emptyset^{(n)}$ (complémentaire relatif), si et seulement si $B,\overline B\in\Sigma_{n+1}$ par (1), c’est-à-dire $B\in\Sigma_{n+1}\cap\Pi_{n+1}=\Delta_{n+1}$.</p>
+
+</tech>
+</res>
+
+<res type="Corollaire" nom="La hiérarchie est stricte" id="hierarchie-stricte">
+<enonce>
+<p>Pour tout $n\ge1$, $\emptyset^{(n)}\in\Sigma_n\setminus\Pi_n$ et $\overline{\emptyset^{(n)}}\in\Pi_n\setminus\Sigma_n$. Par conséquent</p>
+$$\Delta_n\subsetneq\Sigma_n,\qquad\Delta_n\subsetneq\Pi_n,\qquad\Sigma_n\ne\Pi_n,\qquad\Sigma_n\cup\Pi_n\subsetneq\Delta_{n+1}.$$
+</enonce>
+<philo><p>Chaque marche est vraiment une marche : il y a toujours des problèmes de la forme « il existe… pour tout… » (avec $n$ alternances) qu’aucune formule à $n$ alternances commençant par l’autre quantificateur ne décrit. Une conséquence en logique : aucune formule de niveau fixé ne définit la vérité arithmétique de toutes les formules (voir <a href="incompletude.html">incomplétude</a>).</p></philo>
+<tech>
+<p>$\emptyset^{(n)}\in\Sigma_n$ par Post (2). S’il était $\Pi_n$, il serait $\Delta_n$, donc décidable en $\emptyset^{(n-1)}$ par Post (3), ce qui contredit $\emptyset^{(n-1)}<_T\emptyset^{(n)}$ (<a href="#saut-complet">saut</a>, point 4). Le complémentaire s’en déduit par dualité. Ainsi $\Sigma_n\not\subseteq\Pi_n$ et $\Pi_n\not\subseteq\Sigma_n$, d’où les trois premières inégalités. Pour la dernière, $\emptyset^{(n)}\oplus\overline{\emptyset^{(n)}}=\{2x:x\in\emptyset^{(n)}\}\cup\{2x+1:x\notin\emptyset^{(n)}\}$ est $\Delta_{n+1}$ (décidable en $\emptyset^{(n)}$) mais n’est ni $\Sigma_n$ ni $\Pi_n$, puisque $\emptyset^{(n)}$ et son complémentaire s’y réduisent par $x\mapsto2x$ et $x\mapsto2x+1$ (<a href="#clotures">clôture par $\le_m$</a>).</p>
+</tech>
+<techno>
+<p>La structure obtenue (chaque flèche est une inclusion stricte) :</p>
+<figure class="diagramme">
+<svg viewBox="0 0 560 170" role="img" aria-label="Diagramme de la hiérarchie arithmétique" style="max-width:100%;height:auto">
+<defs><marker id="fl-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker></defs>
+<g fill="none" stroke="currentColor" stroke-width="1.3" marker-end="url(#fl-ah)">
+<line x1="152" y1="78" x2="198" y2="40"/><line x1="152" y1="92" x2="198" y2="130"/>
+<line x1="232" y1="40" x2="282" y2="78"/><line x1="232" y1="130" x2="282" y2="92"/>
+<line x1="312" y1="78" x2="358" y2="40"/><line x1="312" y1="92" x2="358" y2="130"/>
+<line x1="392" y1="40" x2="442" y2="78"/><line x1="392" y1="130" x2="442" y2="92"/>
+</g>
+<g font-size="18" text-anchor="middle" fill="currentColor" font-family="KaTeX_Main, serif">
+<text x="40" y="91">Δ₀</text><text x="138" y="91">Δ₁</text><text x="215" y="34">Σ₁</text><text x="215" y="148">Π₁</text>
+<text x="298" y="91">Δ₂</text><text x="375" y="34">Σ₂</text><text x="375" y="148">Π₂</text><text x="460" y="91">Δ₃</text><text x="520" y="91">⋯</text>
+</g>
+<text x="89" y="91" font-size="18" text-anchor="middle" fill="currentColor">=</text>
+</svg>
+</figure>
+<p>Les témoins : $K$ pour $\Sigma_1$, $\mathrm{Fin}$ pour $\Sigma_2$, $\mathrm{Cof}$ et $\mathrm{Rec}$ pour $\Sigma_3$ ; leurs complémentaires pour les $\Pi_n$ (voir ci-dessous).</p>
+</techno>
+</res>
+
+<p>Une question naturelle : les ensembles de $\Sigma_{n+1}$ qui ne sont ni $\Sigma_n$ ni $\Pi_n$ sont-ils tous du degré de $\emptyset^{(n+1)}$ ? Non : pour $n=0$, c’est le <em>problème de Post</em>, résolu négativement par Friedberg et Muchnik (il existe des ensembles semi-décidables non décidables de degré strictement inférieur à celui de $K$, voir le <a href="indecidabilite.html#friedberg-muchnik">théorème de Friedberg-Muchnik</a>), et leur méthode se relativise à tous les niveaux (même théorème, dernier paragraphe).</p>
+
+<h2 id="complets">Ensembles complets</h2>
+
+<p>Majorer le niveau d’un ensemble est en général facile : on écrit sa définition et l’on applique les <a href="#clotures">règles de clôture</a>. Le minorer est plus difficile : on montre qu’il est <em>complet</em> pour un niveau, ce qui, par le <a href="#hierarchie-stricte">corollaire</a>, l’exclut des niveaux inférieurs. Les exemples les plus naturels sont des <strong>ensembles d’indices</strong> $\{x:\varphi_x\in\mathcal C\}$, indécidables dès que la classe $\mathcal C$ n’est pas triviale (<a href="indecidabilite.html#rice-theoreme">théorème de Rice</a>).</p>
+
+<res type="Proposition" nom="Exemples classés" id="exemples-hierarchie">
+<enonce>
+<table>
+<tr><th>Ensemble</th><th>Question sur le programme $e$</th><th>Niveau exact</th></tr>
+<tr><td>$K$</td><td>s’arrête-t-il sur sa propre entrée ?</td><td>$\Sigma_1$-complet</td></tr>
+<tr><td>$\mathrm{Vide}=\{e:W_e=\emptyset\}$</td><td>ne s’arrête-t-il jamais ?</td><td>$\Pi_1$-complet</td></tr>
+<tr><td>$\mathrm{Fin}=\{e:W_e\text{ fini}\}$</td><td>ne s’arrête-t-il que sur un nombre fini d’entrées ?</td><td>$\Sigma_2$-complet</td></tr>
+<tr><td>$\mathrm{Inf}=\{e:W_e\text{ infini}\}$</td><td>s’arrête-t-il sur une infinité d’entrées ?</td><td>$\Pi_2$-complet</td></tr>
+<tr><td>$\mathrm{Tot}=\{e:\varphi_e\text{ totale}\}$</td><td>s’arrête-t-il sur toute entrée ?</td><td>$\Pi_2$-complet</td></tr>
+<tr><td>$\{e:W_e\not\subseteq K\}$</td><td>s’arrête-t-il sur une entrée hors de $K$ ?</td><td>$\Sigma_2$-complet</td></tr>
+<tr><td>$\mathrm{Cof}=\{e:\overline{W_e}\text{ fini}\}$</td><td>s’arrête-t-il sur presque toute entrée ?</td><td>$\Sigma_3$-complet</td></tr>
+<tr><td>$\mathrm{Rec}=\{e:W_e\text{ décidable}\}$</td><td>son domaine est-il décidable ?</td><td>$\Sigma_3$-complet</td></tr>
+<tr><td>$\mathrm{Comp}=\{e:W_e\equiv_TK\}$</td><td>son domaine est-il aussi difficile que l’arrêt ?</td><td>$\Sigma_4$-complet</td></tr>
+</table>
+</enonce>
+<philo><p>« Ce programme répond-il toujours ? » (totalité) est strictement plus difficile que « ce programme répond-il sur cette entrée ? » (arrêt). C’est la question qu’on se pose sur tout logiciel censé ne jamais se bloquer : elle est d’un degré d’indécidabilité supérieur. Et « le domaine de ce programme est-il décidable ? » est plus difficile encore : il faut deviner un autre programme, puis vérifier une infinité de choses à son sujet.</p></philo>
+<tech>
+<p><strong>Majorations.</strong> Elles se lisent sur les formules, avec les <a href="#clotures">règles de clôture</a> ($y\in W_e$ est $\Sigma_1$, $y\notin W_e$ est $\Pi_1$) :</p>
+<ul>
+<li>$e\in\mathrm{Vide}\iff\forall y\,\forall s\,\neg T_1(e,y,s)$ : $\Pi_1$ ;</li>
+<li>$e\in\mathrm{Fin}\iff\exists n\,\forall y\,(y\le n\vee y\notin W_e)$ : la parenthèse est $\Pi_1$, le tout $\Sigma_2$ ; $\mathrm{Inf}=\overline{\mathrm{Fin}}$ est $\Pi_2$ ;</li>
+<li>$e\in\mathrm{Tot}\iff\forall y\,\exists s\,T_1(e,y,s)$ : $\Pi_2$ ;</li>
+<li>$e\in\mathrm{Cof}\iff\exists n\,\forall y\,(y\le n\vee y\in W_e)$ : la parenthèse est $\Sigma_1$, donc $\Pi_2$, et le tout $\Sigma_3$ ;</li>
+<li>$e\in\mathrm{Rec}\iff\exists i\,\forall y\,\big((y\in W_e\vee y\in W_i)\wedge\neg(y\in W_e\wedge y\in W_i)\big)$ : $W_e$ est décidable si et seulement si son complémentaire est un $W_i$ ; la parenthèse est la conjonction d’un $\Sigma_1$ et d’un $\Pi_1$, donc $\Delta_2$, et le tout $\Sigma_3$ ;</li>
+<li>$\mathrm{Comp}$ : on a toujours $W_e\le_TK$ (un ensemble semi-décidable se réduit à $K$), donc $e\in\mathrm{Comp}\iff K\le_TW_e\iff\exists j\,\forall z\,\exists v\,\big[\varphi^{W_e}_j(z)\conv=v\ \wedge\ ((v=1\wedge z\in K)\vee(v=0\wedge z\notin K))\big]$. Par le principe d’usage, « $\varphi^{W_e}_j(z)\conv=v$ » s’écrit $\exists y\,\exists w\,[\dots\wedge w\text{ est le segment initial de }W_e]$, qui est $\Sigma_2$ (fait (a) de la preuve de Post, avec $C=W_e\in\Sigma_1$) ; le crochet est $\Sigma_2$, $\forall z\,\exists v$ donne $\Pi_3$, et $\exists j$ donne $\Sigma_4$.</li>
+</ul>
+<p><strong>Minorations.</strong> $K$ : <a href="semi-decidabilite.html#k-complet">complétude</a> (avec le <a href="#smn-injectif">s-m-n injectif</a>, la réduction est one-one). $\mathrm{Vide}$ : $\overline K\le_1\mathrm{Vide}$ par $x\mapsto f(x)$ avec $\varphi_{f(x)}(z)\simeq\varphi_x(x)$ ; or tout $\Pi_1$ se réduit à $\overline K$ (dualité). $\mathrm{Fin}$, $\mathrm{Tot}$, $\mathrm{Inf}$ : <a href="#fin-tot">proposition suivante</a>. $\{e:W_e\not\subseteq K\}$ : <a href="#saut-faible">saut faible</a>. $\mathrm{Cof}$ et $\mathrm{Rec}$ : <a href="#cof-rec">proposition</a> ci-dessous. $\mathrm{Comp}$ : <a href="#comp-complet">proposition</a> suivante, par un argument de priorité à injures infinies.</p>
+
+</tech>
+</res>
+
+<res type="Proposition" nom="Fin est Σ₂-complet, Tot et Inf sont Π₂-complets" id="fin-tot">
+<enonce><p>Pour tout $A\in\Sigma_2$, il existe $f$ totale calculable injective telle que $x\in A\Rightarrow W_{f(x)}$ fini et $x\notin A\Rightarrow W_{f(x)}=\N$. Par conséquent $A\le_1\mathrm{Fin}$ et $\overline A\le_1\mathrm{Tot}$, $\overline A\le_1\mathrm{Inf}$ par la même fonction : $\mathrm{Fin}$ est $\Sigma_2$-complet, $\mathrm{Tot}$ et $\mathrm{Inf}$ sont $\Pi_2$-complets.</p></enonce>
+<philo><p>On fabrique, pour chaque $x$, un programme qui « travaille tant qu’il n’a pas de raison de s’arrêter de travailler ». Si $x\in A$, un témoin finit par bloquer le programme, qui ne répond plus qu’à un nombre fini d’entrées ; sinon il répond à tout. Les deux extrêmes, « presque rien » et « tout », suffisent à coder n’importe quel problème du deuxième niveau.</p></philo>
+<tech>
+<p>Soit $x\in A\iff\exists y\,\forall z\,R(x,y,z)$ avec $R$ décidable. La relation $Q(x,u)\iff\forall y\le u\ \exists z\ \neg R(x,y,z)$ est $\Sigma_1$ (quantification bornée), donc la fonction $\psi(x,u)=0$ si $Q(x,u)$, indéfinie sinon, est calculable. Par le <a href="#smn-injectif">s-m-n injectif</a>, il existe $f$ injective avec $\varphi_{f(x)}(u)\simeq\psi(x,u)$, c’est-à-dire $W_{f(x)}=\{u:Q(x,u)\}$.</p>
+<ul>
+<li>Si $x\in A$, soit $y_0$ tel que $\forall z\,R(x,y_0,z)$. Pour $u\ge y_0$, $Q(x,u)$ est faux (il échoue en $y=y_0$), donc $W_{f(x)}\subseteq\{0,\dots,y_0-1\}$ est fini.</li>
+<li>Si $x\notin A$, alors $\forall y\,\exists z\,\neg R(x,y,z)$, donc $Q(x,u)$ pour tout $u$ : $W_{f(x)}=\N$, $\varphi_{f(x)}$ est totale.</li>
+</ul>
+<p>Comme $\mathrm{Fin}\cap\mathrm{Tot}=\emptyset$ et $\N\in\mathrm{Inf}$, on obtient $x\in A\iff f(x)\in\mathrm{Fin}$, $x\in\overline A\iff f(x)\in\mathrm{Tot}\iff f(x)\in\mathrm{Inf}$. Tout ensemble $\Pi_2$ est de la forme $\overline A$ avec $A\in\Sigma_2$ ; avec les majorations ci-dessus, cela donne les trois complétudes.</p>
+
+</tech>
+<techno>
+<p>Le programme d’indice $f(x)$, écrit comme une recherche explicite (on parcourt les couples $\langle y,z\rangle$ et l’on ne s’arrête que lorsque chaque $y\le u$ a reçu un contre-témoin $z$) :</p>
+<pre><code>def phi_f(x):
+    def prog(u):
+        restants = set(range(u + 1))      # les y ≤ u sans contre-témoin
+        z = 0
+        while restants:                   # boucle infinie si un y n’en a jamais
+            restants = {y for y in restants if R(x, y, z)}
+            z += 1
+        return 0
+    return prog</code></pre>
+<p>Ce programme parcourt les $z$ dans l’ordre et retire $y$ dès qu’un $z$ vérifie $\neg R(x,y,z)$ ; il s’arrête si et seulement si $Q(x,u)$.</p>
+<p>Essai sur $R(x,y,z)\iff(x\text{ pair}\wedge y\ge x)\vee z\ne y$, pour lequel $A$ est l’ensemble des pairs (avec une limite de 500 tours, au-delà de laquelle on considère que le programme ne s’arrête pas) : pour $x=0,2,4,6$, $W_{f(x)}=\emptyset,\{0,1\},\{0,\dots,3\},\{0,\dots,5\}$ (fini) ; pour $x$ impair, le programme s’arrête sur tous les $u<40$ essayés.</p>
+</techno>
+</res>
+
+<res type="Proposition" nom="Cof et Rec sont Σ₃-complets" id="cof-rec">
+<enonce><p>Pour tout $A\in\Sigma_3$, il existe des fonctions totales calculables injectives $h$ et $k$ telles que :</p>
+<ul>
+<li>$x\in A\iff W_{h(x)}$ est cofini ;</li>
+<li>$x\in A\iff W_{k(x)}$ est décidable.</li>
+</ul>
+<p>Avec les majorations ci-dessus, $\mathrm{Cof}$ et $\mathrm{Rec}$ sont $\Sigma_3$-complets (pour $\le_1$), et leurs complémentaires $\Pi_3$-complets.</p></enonce>
+<philo><p>Les deux constructions utilisent des <em>marqueurs mobiles</em> : on suit les éléments du complémentaire d’un ensemble en cours d’énumération, et l’on regarde lesquels finissent par se fixer. Qu’un marqueur bouge une infinité de fois est une information de niveau $\Pi_2$ ; qu’à partir d’un certain rang tous les marqueurs bougent une infinité de fois en est une de niveau $\Sigma_3$.</p></philo>
+<tech>
+<p><strong>Préliminaire.</strong> Soit $x\in A\iff\exists n\,P(x,n)$ avec $P\in\Pi_2$. La <a href="#fin-tot">proposition précédente</a>, appliquée au complémentaire de $\{\langle x,n\rangle:P(x,n)\}$, qui est $\Sigma_2$, donne $g$ totale calculable avec : $W_{g(x,n)}$ est infini si $P(x,n)$, fini sinon. On fixe $x$ et l’on note $V_n=W_{g(x,n)}$, $V_{n,s}$ l’ensemble des éléments énumérés en moins de $s$ pas. On dit que $V_n$ <em>grandit</em> au pas $s+1$ si $V_{n,s+1}\ne V_{n,s}$ : c’est le cas une infinité de fois si et seulement si $P(x,n)$.</p>
+<p>Les ensembles construits ci-dessous sont énumérés par un algorithme uniforme en $x$ ; par le <a href="#smn-injectif">s-m-n injectif</a>, on obtient les fonctions $h$, $k$ injectives.</p>
+<p><strong>Cof.</strong> On énumère $C=W_{h(x)}$ par pas, $C_0=\emptyset$. Au pas $s+1$, pour chaque $n\le s$ tel que $V_n$ grandit, on met dans $C$ le $n$-ième élément (en comptant à partir de $0$) du complémentaire de $C_s$, noté $a^s_n$ : c’est le <em>marqueur</em> $n$. Le complémentaire de $C_s$ est infini, donc $a^s_n$ existe toujours, et $a^s_0<a^s_1<\cdots$.</p>
+<ul>
+<li>Si $P(x,n)$, le complémentaire de $C$ a au plus $n$ éléments. Sinon, il aurait $n+1$ plus petits éléments $c_0<\dots<c_n$ ; à partir d’un certain pas, $C_s\cap[0,c_n]=C\cap[0,c_n]$, et alors $a^s_n=c_n$ ; comme $V_n$ grandit à une infinité de pas, $c_n$ serait mis dans $C$ : contradiction.</li>
+<li>Si $P(x,n)$ est faux pour tout $n$, chaque marqueur se fixe. En effet, $a^s_n$ ne change que si l’un des éléments $a^s_0,\dots,a^s_n$ est mis dans $C$, c’est-à-dire si l’un des $V_m$, $m\le n$, grandit, ce qui n’arrive qu’un nombre fini de fois. La limite $a_n$ n’est jamais mise dans $C$ (elle resterait sinon hors du complémentaire), et les $a_n$ sont distincts : le complémentaire de $C$ est infini.</li>
+</ul>
+<p>Donc $x\in A\iff W_{h(x)}$ est cofini.</p>
+<p><strong>Rec.</strong> Soit $C=W_{h(x)}$ comme ci-dessus et $a^s_e$ ses marqueurs. On construit $D=W_{k(x)}$, et l’on appelle <em>colonne</em> $e$ l’ensemble des $\langle e,y\rangle$ (couple de Cantor). La colonne $e$ porte une exigence de non-décidabilité, « $c_D\neq\varphi_e$ », avec un témoin $y_e$, choisi neuf (plus grand que tout nombre déjà apparu) au premier pas puis à chaque fois que $a_e$ bouge. Au pas $s+1$, pour chaque $e\le s$ :</p>
+<ul>
+<li>si $a^{s+1}_e\ne a^s_e$ (le marqueur $e$ bouge), on met dans $D$ tous les $\langle e,y\rangle$ avec $y\le s$ (on <em>remplit</em> la colonne jusqu’à $s$), et l’on choisit un nouveau témoin ;</li>
+<li>sinon, si $\varphi_{e,s}(\langle e,y_e\rangle)=0$ et si $\langle e,y_e\rangle\notin D_s$, on met $\langle e,y_e\rangle$ dans $D$.</li>
+</ul>
+<ul>
+<li><em>Si $x\in A$</em>, le complémentaire de $C$ a un nombre fini $N$ d’éléments $c_0<\dots<c_{N-1}$. Pour $e<N$, $a^s_e$ finit par valoir $c_e$ : la colonne $e$ n’est remplie qu’un nombre fini de fois, et reçoit au plus un témoin après le dernier remplissage ; elle est finie. Pour $e\ge N$, $a^s_e$ bouge une infinité de fois : s’il se fixait à partir d’un pas, $a^s_0,\dots,a^s_e$ se fixeraient aussi (un changement de l’un d’eux fait bouger $a^s_e$), et le complémentaire de $C$ aurait au moins $e+1\ge N+1$ éléments. La colonne $e$ est remplie jusqu’à $s$ pour une infinité de $s$ : elle contient tous les $\langle e,y\rangle$. Ainsi $D$ est la réunion d’un ensemble fini et des colonnes $e\ge N$ entières : $D$ est décidable.</li>
+<li><em>Si $x\notin A$</em>, le complémentaire de $C$ est infini, et chaque marqueur $a^s_e$ se fixe. Soit $s_e$ le dernier pas où $a_e$ bouge, et $y_e$ le témoin définitif, choisi au pas $s_e$ (ou au premier pas), donc $y_e>s_e$. Après $s_e$, la colonne $e$ n’est plus remplie, et $\langle e,y_e\rangle$ n’entre dans $D$ que par la seconde règle. Si $\varphi_e(\langle e,y_e\rangle)=0$, la seconde règle s’applique à un pas assez grand et $c_D(\langle e,y_e\rangle)=1$ ; si $\varphi_e(\langle e,y_e\rangle)$ est défini et non nul, $\langle e,y_e\rangle\notin D$ et $c_D(\langle e,y_e\rangle)=0$ ; dans tous les cas $c_D\ne\varphi_e$. Ceci pour tout $e$ : $D$ n’est pas décidable.</li>
+</ul>
+<p>Donc $x\in A\iff W_{k(x)}$ est décidable. On en déduit par exemple que $\mathrm{Rec}$ n’est pas $\Pi_3$ et que $\mathrm{Cof}\le_1\mathrm{Rec}$.</p>
+</tech>
+</res>
+
+<res type="Proposition" nom="Comp est Σ₄-complet (Yates)" id="comp-complet">
+<enonce><p>Pour tout $A\in\Sigma_4$, il existe une fonction totale calculable injective $f$ telle que $x\in A\iff W_{f(x)}\equiv_TK$. Avec la majoration ci-dessus, $\mathrm{Comp}$ est $\Sigma_4$-complet ; en particulier il n’est pas $\Sigma_3$.</p></enonce>
+<philo><p>C’est un argument de priorité à <em>injures infinies</em> : certaines exigences sont dérangées une infinité de fois, et ne s’en sortent qu’en <em>devinant</em> le comportement à l’infini des exigences plus prioritaires. On organise ces devinettes en un arbre, et l’on montre que le long d’un « chemin vrai » toutes les devinettes finissent par être justes.</p></philo>
+<tech>
+<p><strong>Mise en forme.</strong> Soit $x\in A\iff\exists n\,Q(x,n)$ avec $Q\in\Pi_3$. Par la <a href="#cof-rec">proposition précédente</a> appliquée au complémentaire de $Q$, il existe $h$ calculable avec : $Q(x,n)\iff W_{h(x,n)}$ est co-infini. On fixe $x$ et l’on note $C_n=W_{h(x,n)}$, et $a^n_y[s]$ le $y$-ième élément du complémentaire de $C_{n,s}$. Comme dans la proposition précédente : si $C_n$ est co-infini, chaque $a^n_y[s]$ ne change qu’un nombre fini de fois ; si son complémentaire a $N$ éléments, $a^n_y[s]$ se fixe pour $y<N$ et change une infinité de fois pour $y\ge N$. On construit, uniformément en $x$, deux ensembles semi-décidables $W$ et $E$ tels que : si $x\in A$, $K\le_TW$ ; si $x\notin A$, $E\not\le_TW$, donc $K\not\le_TW$ (car $E\le_TK$). Comme toujours $W\le_TK$, on aura $x\in A\iff W\equiv_TK$, et le s-m-n injectif donne $f$.</p>
+<p><strong>L’arbre.</strong> Les nœuds sont les suites finies d’entiers. Un nœud $\beta$ de longueur $2n$ est un nœud de <em>codage</em> pour $C_n$ ; ses successeurs sont les $\beta\,o$, $o\in\N$ (l’issue $o$ devine « le complémentaire de $C_n$ a $o$ éléments »). Un nœud $\alpha$ de longueur $2e+1$ est un nœud d’<em>incomplétude</em> pour l’exigence $P_e:\ c_E\ne\varphi^W_e$ ; il a un seul successeur $\alpha\,0$. On ordonne les nœuds par : $\gamma<\delta$ si $\gamma$ est un préfixe strict de $\delta$ ou si $\gamma$ est à gauche de $\delta$ (au premier indice où ils diffèrent, $\gamma$ a la plus petite issue). Chaque nœud de codage $\beta$ possède sa colonne $\{\langle\beta,z\rangle:z\in\N\}$ de $W$ (en codant $\beta$ par un entier), et des <em>marqueurs</em> $\gamma^\beta_y$, positions dans sa colonne. <em>Initialiser</em> un nœud, c’est effacer ses marqueurs (sans rien énumérer) ou son témoin ; un nœud qui en a besoin choisit des marqueurs ou un témoin <em>neufs</em>, plus grands que tout nombre déjà apparu.</p>
+<p><strong>Pas $s$.</strong> On construit un chemin $\delta_s$ de longueur $s$ en partant de la racine. Quand $\delta_s$ atteint un nœud, on dit que ce nœud est <em>visité</em>.</p>
+<ul>
+<li>Un nœud de codage $\beta$ (pour $C_n$) visité compare les $a^n_y$, $y<s$, à leurs valeurs lors de sa visite précédente. Soit $o$ le plus petit $y$ dont la valeur a changé, ou $o=s$ s’il n’y en a pas. Puis, pour chaque $y<s$ : si $y\ge o$, ou si $\gamma^\beta_y$ n’est pas défini, ou si $y$ est entré dans $K$ depuis la dernière visite, $\beta$ met l’ancienne position $\gamma^\beta_y$ (si elle existe) dans $W$ et donne à $\gamma^\beta_y$ une position neuve. Le chemin continue en $\beta\,o$.</li>
+<li>Un nœud d’incomplétude $\alpha$ (pour $P_e$) visité choisit un témoin neuf $z$ s’il n’en a pas. S’il est <em>satisfait</em> mais que $W$ a changé, depuis son action, au-dessous de l’usage $u$ enregistré, il redevient non satisfait et prend un témoin neuf. S’il n’est pas satisfait et si $\varphi^W_{e,s}(z)=0$ (pour l’état actuel de $W$), il met $z$ dans $E$, enregistre l’usage $u$, devient satisfait et initialise tous les nœuds $>\alpha$. Le chemin continue en $\alpha\,0$.</li>
+</ul>
+<p>À la fin du pas, on initialise tous les nœuds situés à droite de $\delta_s$. La construction est effective : $W$ et $E$ sont semi-décidables. Les nœuds de codage n’agissent sur $W$ que lorsqu’ils sont visités, et seulement en énumérant d’anciennes positions de leurs marqueurs ; les nœuds d’incomplétude n’agissent que sur $E$, et leurs témoins sont distincts.</p>
+<p><strong>Le chemin vrai.</strong> Définissons, tant que c’est possible, des nœuds $\tau_0\subset\tau_1\subset\cdots$ : $\tau_0$ est la racine ; si $\tau_{2n}$ est un nœud de codage pour $C_n$ et si le complémentaire de $C_n$ est fini à $N$ éléments, $\tau_{2n+1}=\tau_{2n}N$ ; si $\tau_{2e+1}$ est un nœud d’incomplétude, $\tau_{2e+2}=\tau_{2e+1}0$. Le chemin s’arrête au premier nœud de codage pour un $C_n$ co-infini. On montre, par récurrence le long de ce chemin, que chaque $\tau_i$ est visité une infinité de fois, que les nœuds à sa gauche ne sont visités qu’un nombre fini de fois, et qu’il n’est initialisé qu’un nombre fini de fois.</p>
+<ul>
+<li>Si $\tau_i=\beta$ est un nœud de codage pour $C_n$ de complémentaire fini à $N$ éléments : les $a^n_y$, $y<N$, ne changent qu’un nombre fini de fois, et $a^n_N$ une infinité de fois. Aux visites de $\beta$, l’issue est donc $<N$ un nombre fini de fois seulement, et égale à $N$ une infinité de fois : $\tau_{i+1}=\beta N$ est visité une infinité de fois, et les nœuds $\beta o$, $o<N$, et leurs descendants, un nombre fini de fois.</li>
+<li>Si $\tau_i=\alpha$ est un nœud d’incomplétude, $\alpha0$ est visité chaque fois que $\alpha$ l’est. Montrons que $\alpha$ n’agit qu’un nombre fini de fois. Après un pas $s_0$, $\alpha$ n’est plus initialisé et les nœuds à sa gauche ne sont plus visités. Une action de $\alpha$ au pas $s$, avec l’usage $u\le s$, n’est défaite que si $W$ change au-dessous de $u$. Qui peut le faire ? Pas les nœuds à gauche de $\alpha$ (plus visités), ni les nœuds $>\alpha$ (initialisés au pas $s$, ils ne choisiront plus que des positions neuves, $>u$). Restent les nœuds de codage $\beta\subset\alpha$, disons pour $C_n$ avec $\beta N\subseteq\alpha$, $N$ étant la taille du complémentaire. Au pas $s$, $\alpha$ est visité, donc $\beta$ avait l’issue $N$ : il venait de donner à tous les $\gamma^\beta_y$, $y\ge N$, des positions neuves, $>s\ge u$, et celles-ci ne feront que croître. Les seules énumérations de $\beta$ au-dessous de $u$ concernent donc les marqueurs $y<N$, qui ne bougent ou n’entrent dans $K$ qu’un nombre fini de fois au total. Il n’y a qu’un nombre fini d’actions défaites : après la dernière, ou bien $\alpha$ agit une dernière fois et reste satisfait, ou bien il garde un témoin $z$ sans jamais agir.</li>
+</ul>
+<p><strong>Si $x\notin A$</strong>, tous les $C_n$ sont cofinis, le chemin vrai est infini, et chaque $P_e$ est satisfait par le nœud $\alpha=\tau_{2e+1}$. Dans le premier cas ci-dessus, $z\in E$ et le calcul $\varphi^W_e(z)=0$ est préservé (par le <a href="indecidabilite.html#friedberg-muchnik">principe d’usage</a>), donc $\varphi^W_e(z)\ne1=c_E(z)$. Dans le second, $z\notin E$ ; si l’on avait $\varphi^W_e(z)=0$ avec un calcul de code $y$, à toute visite de $\alpha$ assez tardive, $W$ coïnciderait avec sa limite au-dessous de $y$, et $\alpha$ agirait : donc $\varphi^W_e(z)\ne0=c_E(z)$. Ainsi $E\not\le_TW$.</p>
+<p><strong>Si $x\in A$</strong>, soit $n_0$ le plus petit $n$ tel que $C_n$ soit co-infini. Le chemin vrai se termine en un nœud de codage $\beta=\tau_{2n_0}$, visité une infinité de fois et initialisé un nombre fini de fois (seuls les nœuds d’incomplétude $\alpha\subset\beta$, qui agissent un nombre fini de fois, et les nœuds à gauche de $\beta$, visités un nombre fini de fois, l’initialisent). Soit $s_1$ un pas après la dernière initialisation. Après $s_1$, les marqueurs de $\beta$ ne bougent que lorsque $a^{n_0}_y$ change ou que $y$ entre dans $K$, ce qui n’arrive qu’un nombre fini de fois pour chaque $y$ : chaque $\gamma^\beta_y$ se fixe. Pour décider si $y\in K$ avec l’oracle $W$ : on cherche une visite de $\beta$, au pas $s\ge s_1$, après laquelle aucune des positions $\gamma^\beta_0,\dots,\gamma^\beta_y$ n’est dans $W$ ; il en existe, puisque les marqueurs se fixent (et qu’après l’entrée de $y$ dans $K$, $\gamma^\beta_y$ reçoit une position neuve). Alors $y\in K\iff y\in K_s$ : si $y$ entrait dans $K$ plus tard, ou si l’un des $a^{n_0}_{y'}$, $y'\le y$, changeait, $\beta$ mettrait la position actuelle de $\gamma^\beta_y$ dans $W$ à sa visite suivante. Donc $K\le_TW$ (le pas $s_1$ est une donnée finie, ce qui est permis).</p>
+<p>On a donc $x\in A\iff W\equiv_TK$, ce qui conclut. (Ce résultat est dû à Yates, 1966 ; voir Soare, 1987, chapitre XII.)</p>
+</tech>
+</res>
+
+<res type="Proposition" nom="Le saut faible" id="saut-faible">
+<enonce><p>Pour $A\subseteq\N$, posons $H_A=\{x:W_x\cap A\ne\emptyset\}$. Si $A\in\Pi_n$ ($n\ge1$), alors $H_A\in\Sigma_{n+1}$ ; si $A$ est $\Pi_n$-complet, $H_A$ est $\Sigma_{n+1}$-complet. Par exemple $H_{\overline K}=\{x:W_x\not\subseteq K\}$ est $\Sigma_2$-complet, et en itérant ($A\mapsto H_{\overline{H_A}}$…) on obtient un ensemble complet à chaque niveau.</p></enonce>
+<philo><p>« Le programme $x$ s’arrête-t-il sur au moins un élément de $A$ ? » ajoute un « il existe » devant la question « $y\in A$ ? ». Si cette dernière est la plus difficile de son niveau, la nouvelle est la plus difficile du niveau suivant : on monte d’un étage en ne faisant qu’ajouter une recherche.</p></philo>
+<tech>
+<p><em>Majoration.</em> $x\in H_A\iff\exists y\,(y\in W_x\wedge y\in A)$ : la parenthèse est l’intersection d’un $\Sigma_1$ et d’un $\Pi_n$, tous deux $\Sigma_{n+1}$ par cumulativité, et le tout est $\Sigma_{n+1}$.</p>
+<p><em>Complétude.</em> Soit $C\in\Sigma_{n+1}$ : $x\in C\iff\exists y\,R(x,y)$ avec $R\in\Pi_n$, c’est-à-dire $\{\langle x,y\rangle:R(x,y)\}\in\Pi_n$. Comme $A$ est $\Pi_n$-complet, il existe $f$ calculable avec $R(x,y)\iff f(\langle x,y\rangle)\in A$. Par le <a href="#smn-injectif">s-m-n injectif</a>, il existe $g$ injective avec $\varphi_{g(x)}(z)\simeq\mu y\,[f(\langle x,y\rangle)=z]$, donc $W_{g(x)}=\{f(\langle x,y\rangle):y\in\N\}$. Alors</p>
+$$x\in C\iff\exists y\ f(\langle x,y\rangle)\in A\iff W_{g(x)}\cap A\ne\emptyset\iff g(x)\in H_A.$$
+<p>Exemple : $\overline K$ est $\Pi_1$-complet (dual de la complétude de $K$), donc $H_{\overline K}$ est $\Sigma_2$-complet. Le complémentaire d’un ensemble $\Sigma_{n+1}$-complet est $\Pi_{n+1}$-complet, ce qui permet d’itérer.</p>
+</tech>
+</res>
+
+<res type="Théorème" nom="Lemme de la limite (Shoenfield)" id="limite">
+<enonce><p>Un ensemble $A$ est $\Delta_2$ si et seulement si sa fonction caractéristique est la limite d’une suite calculable de fonctions : il existe $g$ calculable totale telle que, pour tout $x$, $\chi_A(x)=\lim_{s\to\infty}g(x,s)$ (la suite $g(x,0),g(x,1),\dots$ ne change de valeur qu’un nombre fini de fois).</p></enonce>
+<philo><p>Un ensemble $\Delta_2$ est un ensemble qu’on peut <em>apprendre à la limite</em> : on fait une suite de conjectures, on se trompe et on se corrige, mais à partir d’un certain moment on a la bonne réponse, sans jamais savoir que ce moment est arrivé. C’est un modèle de l’apprentissage et de la science empirique (E. M. Gold, 1967) : on converge vers la vérité sans pouvoir certifier qu’on l’a atteinte.</p></philo>
+<tech><p>Si $A\le_T K$ par une machine $M$ (Post (3)), soit $g(x,s)$ le résultat de $M$ sur $x$ lorsqu’on remplace l’oracle $K$ par son approximation $K_s=\{e:\varphi_e(e)\text{ s’arrête en moins de }s\text{ pas}\}$ (et 0 si ce calcul n’a pas fini en $s$ pas). Le calcul réel n’interroge qu’un nombre fini de valeurs de $K$, et les $K_s$ finissent par être corrects sur ces valeurs, donc $g(x,s)$ se stabilise sur $\chi_A(x)$. Réciproquement, si $\chi_A=\lim_s g$, alors $x\in A\iff\exists s\,\forall t>s\ g(x,t)=1$ ($\Sigma_2$) et de même $x\notin A$ est $\Sigma_2$, donc $A\in\Delta_2$.</p></tech>
+</res>
+
+<h2 id="au-dela">Au-delà</h2>
+
+<p>On peut <strong>relativiser</strong> toute la hiérarchie : en partant des ensembles décidables en $A$ au lieu des ensembles décidables, on obtient des classes $\Sigma^A_n$, $\Pi^A_n$, et le théorème de Post s’énonce avec $A^{(n)}$ à la place de $\emptyset^{(n)}$, par les mêmes preuves. La <strong>hiérarchie analytique</strong> autorise en plus des quantificateurs sur les <em>ensembles</em> d’entiers (logique du second ordre) ; tous les ensembles arithmétiques sont à son premier niveau, et pas réciproquement (<a href="#analytique">proposition ci-dessous</a>). À l’autre bout, la <strong>hiérarchie polynomiale</strong> de la théorie de la complexité ($\mathsf P$, $\mathsf{NP}$, $\mathsf{coNP}$, $\Sigma^p_2$…) reprend exactement le même schéma, avec des quantificateurs bornés polynomialement et des oracles en temps polynomial, pour classer des ensembles décidables selon le temps qu’il faut pour les décider (<a href="trois-approches.html">Trois approches du calcul</a>). L’analogue du théorème de Post y est démontré <a href="#hierarchie-polynomiale">ci-dessous</a>.</p>
+
+<res type="Proposition" nom="Les ensembles arithmétiques sont Δ¹₁, et pas réciproquement (Kleene)" id="analytique">
+<enonce><p>Un ensemble $A\subseteq\N$ est $\Sigma^1_1$ s’il existe une relation arithmétique $R$ (définie par une formule du premier ordre où figure une variable d’ensemble) telle que $x\in A\iff\exists X\subseteq\N\ R(x,X)$. Il est $\Pi^1_1$ si l’on a $\forall X$ à la place de $\exists X$, et $\Delta^1_1$ s’il est les deux. Alors tout ensemble arithmétique est $\Delta^1_1$, et l’ensemble</p>
+$$\emptyset^{(\omega)}=\{\langle n,x\rangle:x\in\emptyset^{(n)}\}$$
+<p>est $\Delta^1_1$ sans être arithmétique.</p></enonce>
+<tech>
+<p>Si $A$ est arithmétique, $x\in A\iff\exists X\,(x\in A)\iff\forall X\,(x\in A)$, avec une variable $X$ muette : $A$ est $\Delta^1_1$.</p>
+<p><strong>$\emptyset^{(\omega)}$ est $\Delta^1_1$.</strong> Un ensemble $Y$ code la suite de ses tranches $Y_i=\{z:\langle i,z\rangle\in Y\}$. Soit $J(Y,n)$ la formule « $Y_0=\emptyset$, et pour tout $i<n$ et tout $z$, $z\in Y_{i+1}\iff\exists y\ T^{Y_i}_1(z,z,y)$ ». Elle exprime que $Y_{i+1}=Y_i'$ pour $i<n$. Elle est arithmétique en $Y$ : $T^{Y_i}_1(z,z,y)$ dit que $y$ code un calcul de $\varphi_z(z)$ dont les réponses de l’oracle sont celles de $Y_i$, ce qui ne demande que des quantificateurs bornés sur les éléments de $Y$. Par récurrence sur $i\le n$, toute solution de $J(Y,n)$ vérifie $Y_i=\emptyset^{(i)}$, et il existe une solution. Donc</p>
+$$\langle n,x\rangle\in\emptyset^{(\omega)}\iff\exists Y\,\big(J(Y,n)\wedge x\in Y_n\big)\iff\forall Y\,\big(J(Y,n)\Rightarrow x\in Y_n\big).$$
+<p><strong>$\emptyset^{(\omega)}$ n’est pas arithmétique.</strong> S’il était $\Sigma_k$, l’ensemble $\emptyset^{(k+1)}=\{x:\langle k+1,x\rangle\in\emptyset^{(\omega)}\}$ le serait aussi (<a href="#clotures">clôture</a> par composition avec une fonction calculable), donc il serait $\Pi_{k+1}$, ce qui contredit le <a href="#hierarchie-stricte">corollaire</a> $\emptyset^{(k+1)}\notin\Pi_{k+1}$.</p>
+<p>La hiérarchie analytique continue au-delà : $\Sigma^1_n$ et $\Pi^1_n$, définis par $n$ alternances de quantificateurs d’ensembles, forment une hiérarchie stricte (Kleene, 1955), et $\Delta^1_1$ est exactement la classe des ensembles <em>hyperarithmétiques</em>, obtenus en itérant le saut le long des ordinaux récursifs (théorème de Suslin et Kleene). Ces deux résultats sont cités sans démonstration.</p>
+</tech>
+</res>
+
+<res type="Proposition" nom="La hiérarchie polynomiale et les oracles (Stockmeyer, 1976)" id="hierarchie-polynomiale">
+<enonce><p>On travaille sur les mots binaires. $\mathsf P$ est la classe des langages décidés en temps polynomial par une machine de Turing déterministe (<a href="machines-turing.html#temps-p-np">définition</a>), et $\mathsf{NP}^O$ celle des langages acceptés en temps polynomial par une machine non déterministe munie de l’oracle $O$ (une question à l’oracle compte pour un pas). Un langage $A$ est $\Sigma^p_k$ s’il existe un polynôme $p$ et une relation $R\in\mathsf P$ tels que</p>
+$$x\in A\iff\exists y_1\,\forall y_2\cdots Q y_k\ R(x,y_1,\dots,y_k),$$
+<p>où chaque $y_i$ parcourt les mots de longueur au plus $p(|x|)$. $\Pi^p_k$ est défini avec $\forall$ en tête, et $\Sigma^p_0=\mathsf P$. Alors $\Sigma^p_1=\mathsf{NP}$, et pour tout $k\ge0$,</p>
+$$\Sigma^p_{k+1}=\mathsf{NP}^{\Sigma^p_k},$$
+<p>où $\mathsf{NP}^{\mathcal C}$ est la réunion des $\mathsf{NP}^O$ pour $O\in\mathcal C$. C’est l’analogue exact du <a href="#post">théorème de Post</a>.</p></enonce>
+<tech>
+<p><strong>Préliminaires.</strong> Comme pour la hiérarchie arithmétique, des blocs de quantificateurs de même nature se contractent en un seul, en codant un $m$-uplet de mots par un mot de longueur polynomiale. Les classes $\Sigma^p_k$ et $\Pi^p_k$ sont donc closes par conjonction : on entrelace les blocs des deux formules, qui ont la même forme. Elles sont closes aussi par un quantificateur $\forall i\le m$, avec $m$ polynomial, placé devant une formule $\Pi^p_k$ : il s’ajoute au premier bloc. Enfin $\Pi^p_{k-1}\subseteq\Pi^p_k$, par des quantificateurs muets. Le cas $\Sigma^p_1=\mathsf{NP}$ est la caractérisation des machines non déterministes par certificats : on devine la suite des choix, et l’on vérifie le calcul en temps polynomial. C’est l’égalité ci-dessous pour $k=0$, puisqu’un oracle de $\mathsf P$ peut être remplacé par le calcul de ses réponses.</p>
+<p><strong>$\Sigma^p_{k+1}\subseteq\mathsf{NP}^{\Sigma^p_k}$.</strong> Soit $x\in A\iff\exists y\,B(x,y)$, avec $|y|\le p(|x|)$ et $B\in\Pi^p_k$. Le complémentaire $\overline B$ est $\Sigma^p_k$. La machine devine $y$, demande à l’oracle $\overline B$ si $(x,y)\in\overline B$, et accepte si la réponse est non.</p>
+<p><strong>$\mathsf{NP}^{\Sigma^p_k}\subseteq\Sigma^p_{k+1}$.</strong> Soit $N$ une machine non déterministe d’oracle $O\in\Sigma^p_k$, en temps $p$. On a $x\in L(N^O)$ si et seulement s’il existe un mot $c$, de longueur polynomiale, qui décrit les choix de $N$, la liste des questions $q_1,\dots,q_m$ posées et les réponses $b_1,\dots,b_m$, et tel que :</p>
+<ol>
+<li>$c$ décrit un calcul acceptant de $N$ sur $x$, quand les réponses de l’oracle sont $b_1,\dots,b_m$ (vérifiable en temps polynomial) ;</li>
+<li>pour tout $i$ tel que $b_i=1$, on a $q_i\in O$ ;</li>
+<li>pour tout $i$ tel que $b_i=0$, on a $q_i\notin O$.</li>
+</ol>
+<p>Écrivons $q\in O\iff\exists w\,C(q,w)$ avec $C\in\Pi^p_{k-1}$. On fait entrer dans le bloc existentiel de tête les témoins $w_i$ des questions de réponse positive. La condition 2 devient $\forall i\le m\,(b_i=1\Rightarrow C(q_i,w_i))$, qui est $\Pi^p_{k-1}$, et la condition 3 est $\Pi^p_k$. Toutes les longueurs sont polynomiales en $|x|$, puisque $|q_i|\le p(|x|)$. La conjonction de 1, 2 et 3 est donc $\Pi^p_k$, et $L(N^O)$ s’obtient en la précédant de $\exists(c,w_1,\dots,w_m)$ : il est $\Sigma^p_{k+1}$.</p>
+<p><strong>Ce qui ne se transpose pas.</strong> La preuve que la hiérarchie arithmétique est stricte repose sur une diagonalisation qui n’a pas d’analogue connu ici. On ne sait pas si $\Sigma^p_1\ne\Sigma^p_2$, ni même si $\mathsf P\ne\mathsf{NP}$. On sait seulement que si $\Sigma^p_k=\Pi^p_k$ pour un $k$, toute la hiérarchie s’effondre à ce niveau (résultat classique, non démontré ici).</p>
+</tech>
+</res>
+
+<!--EXERCICES-->
+<h2 id="exercices">Exercices</h2>
+
+<exo niveau="1" titre="Compter les quantificateurs" id="ex-ha-classer">
+<p>Placer dans la hiérarchie (donner une borne supérieure) : (a) $\{e:\varphi_e(0)=3\}$ ; (b) $\{e:W_e=\emptyset\}$ ; (c) $\{e:W_e\text{ est infini}\}$ ; (d) $\{e:\varphi_e\text{ est totale et constante}\}$.</p>
+<corrige>
+<p>On note $T(e,x,s)$ pour $T_1(\eta(e),x,s)$, prédicat récursif primitif, et $U$ la fonction de résultat.</p>
+<ul>
+<li>(a) $\exists s\,[T(e,0,s)\wedge U(s)=3]$ : $\Sigma_1$.</li>
+<li>(b) $\forall x\,\forall s\,\neg T(e,x,s)$, et deux quantificateurs de même nature se contractent en un seul par le codage des couples : $\Pi_1$.</li>
+<li>(c) $\forall n\,\exists x\,\exists s\,[x>n\wedge T(e,x,s)]$ : $\Pi_2$.</li>
+<li>(d) $\forall x\,\exists s\,\exists t\,[T(e,x,s)\wedge T(e,0,t)\wedge U(s)=U(t)]$ : $\Pi_2$.</li>
+</ul>
+<p>Ce sont des bornes supérieures ; pour (a), (b), (c) elles sont optimales (respectivement $\Sigma_1$-, $\Pi_1$- et $\Pi_2$-complets).</p>
+</corrige>
+</exo>
+
+<exo niveau="1" titre="Les niveaux s’emboîtent" id="ex-ha-emboitement">
+<p>Montrer que $\Sigma_n\cup\Pi_n\subseteq\Delta_{n+1}$.</p>
+<corrige>
+<p>Soit $A\in\Sigma_n$, défini par $\exists y_1\forall y_2\cdots R(x,\vec y)$. On peut ajouter des quantificateurs muets : $x\in A\iff\forall z\,\exists y_1\forall y_2\cdots R(x,\vec y)$ (forme $\Pi_{n+1}$), et $x\in A\iff\exists y_1\forall y_2\cdots Q y_n\,\overline Q z\ R(x,\vec y)$ (forme $\Sigma_{n+1}$, le quantificateur ajouté en dernier étant de nature opposée à $Q$). Donc $A\in\Sigma_{n+1}\cap\Pi_{n+1}=\Delta_{n+1}$. Même raisonnement pour $\Pi_n$.</p>
+</corrige>
+</exo>
+
+<exo niveau="2" titre="Fini et cofini" id="ex-ha-fin-cof">
+<p>Montrer que $\mathrm{Fin}=\{e:W_e\text{ fini}\}$ est $\Sigma_2$ et que $\mathrm{Cof}=\{e:W_e\text{ cofini}\}$ est $\Sigma_3$.</p>
+<corrige>
+<p>$W_e$ est fini s’il existe une borne au-delà de laquelle aucun calcul ne s’arrête : $e\in\mathrm{Fin}\iff\exists n\,\forall x\,\forall s\,[x>n\Rightarrow\neg T(e,x,s)]$, forme $\Sigma_2$ après contraction de $\forall x\forall s$.</p>
+<p>$W_e$ est cofini si, au-delà d’une borne, tout $x$ est dans $W_e$ : $e\in\mathrm{Cof}\iff\exists n\,\forall x\,[x>n\Rightarrow\exists s\,T(e,x,s)]$. La partie $\forall x\,\exists s$ est $\Pi_2$, précédée d’un $\exists$ : $\Sigma_3$. Ces bornes sont optimales (<a href="#fin-tot">Fin est $\Sigma_2$-complet</a>, <a href="#cof-rec">Cof est $\Sigma_3$-complet</a>).</p>
+</corrige>
+</exo>
+
+<exo niveau="3" titre="Ni Σ₁ ni Π₁" id="ex-ha-somme">
+<p>Soit $D=\{2x:x\in K\}\cup\{2x+1:x\notin K\}$. Montrer que $D\in\Delta_2$, mais que $D$ n’est ni $\Sigma_1$ ni $\Pi_1$.</p>
+<corrige>
+<p><em>$D\in\Delta_2$.</em> $y\in D\iff\big(y\text{ pair}\wedge\exists s\,T(y/2,y/2,s)\big)\vee\big(y\text{ impair}\wedge\forall s\,\neg T(\tfrac{y-1}2,\tfrac{y-1}2,s)\big)$. C’est une disjonction d’un énoncé $\Sigma_1$ et d’un énoncé $\Pi_1$ ; par l’exercice précédent, les deux sont $\Delta_2$, et $\Delta_2$ est clos par disjonction (<a href="#clotures">clôtures</a>). On peut aussi dire que $D\le_TK$, et appliquer le <a href="#post">théorème de Post</a>.</p>
+<p><em>Pas $\Sigma_1$.</em> Si $D$ était semi-décidable, $\overline K=\{x:2x+1\in D\}$ le serait aussi (on teste l’appartenance de $2x+1$ à $D$) : faux. <em>Pas $\Pi_1$.</em> Sinon $\overline D$ serait semi-décidable, et $\overline K=\{x:2x\in\overline D\}$ aussi. Ainsi $\Delta_2$ contient strictement $\Sigma_1\cup\Pi_1$.</p>
+</corrige>
+</exo>

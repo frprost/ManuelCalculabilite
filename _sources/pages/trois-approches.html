@@ -1,0 +1,79 @@
+<!--
+titre: Trois approches du calcul : actionnelle, fonctionnelle, logique
+court: Trois approches du calcul
+chapo: Modifier une mémoire, réécrire une expression, définir une fonction : trois manières de penser le calcul, à l’origine des trois grandes familles de langages de programmation.
+prerequis: motivations.html|Motivations
+-->
+
+<h2>Trois familles de modèles</h2>
+
+<p>Il existe plusieurs manières de spécifier un calcul. Trois familles dominent :</p>
+<ul>
+<li><strong>L’approche actionnelle</strong> : le calcul se fait en modifiant une mémoire au cours du temps ; le résultat est lu dans l’état final de la mémoire. Modèle canonique : la <a href="machines-turing.html">machine de Turing</a>.</li>
+<li><strong>L’approche fonctionnelle</strong> : le calcul transforme une expression en une autre, par des règles de réécriture, jusqu’à ce qu’aucune règle ne s’applique ; l’expression finale est le résultat. Modèles canoniques : le <a href="lambda-calcul.html">λ-calcul</a> et les systèmes de réécriture.</li>
+<li><strong>L’approche mathématique ou logique</strong> : on décrit quelles fonctions sont acceptables, par composition, récurrence et recherche, sans décrire d’exécution. Modèle canonique : les <a href="fonctions-recursives.html">fonctions récursives</a>.</li>
+</ul>
+<p>Ces trois familles sont à l’origine des langages <em>impératifs</em> (C, Python), <em>fonctionnels</em> (Lisp, OCaml, Haskell) et <em>logiques</em> (Prolog, Datalog). Les langages modernes mélangent ces influences, mais on les reconnaît encore. Le résultat central de la première partie de ce manuel est que ces trois approches calculent <a href="equivalence.html">exactement les mêmes fonctions</a>.</p>
+
+<h2>Approche actionnelle</h2>
+
+<p>C’est une approche à la fois très intuitive et très « technologique » : le calcul d’une fonction n’y est pas une activité primitive, mais un <em>effet de bord</em> de la modification d’une mémoire. Le modèle des machines de Turing (1936) repose sur un automate qui lit et écrit des symboles sur une bande. Turing l’a explicitement conçu en analysant ce que fait un humain qui calcule avec un crayon sur du papier quadrillé : il ne regarde qu’un nombre borné de cases à la fois, il n’a qu’un nombre fini d’« états d’esprit », et chaque action modifie une case ou déplace son attention d’une case.</p>
+
+<p>La représentation sous forme de bande n’a pas de signification particulière ; elle montre en revanche qu’il faut une étape d’interprétation non triviale entre l’activité interne d’une machine et la communication de ses résultats. Les périphériques (écran, imprimante, réseau) transforment les 0 et 1 de la mémoire en phénomènes perceptibles : une image n’est que l’affichage d’un gigantesque nombre décrivant, pour chaque pixel, trois intensités de rouge, vert et bleu.</p>
+
+<p>Cette approche a un intérêt majeur : elle est proche de ce qui se passe dans une machine réelle. La notion de temps de calcul y est réaliste, et c’est sur elle que reposent les classes de complexité. Elle a aussi un coût : on raisonne sur une traduction de la fonction plutôt que sur la fonction, ce qui rend les preuves de correction difficiles.</p>
+
+<res type="Proposition" nom="Coût de la simulation entre modèles actionnels" id="cout-simulation">
+<enonce>
+<p>(1) Une machine de Turing à $k$ bandes qui s’arrête en $t$ pas sur une entrée de longueur $n$ est simulée par une machine à une bande en $O\big((n+t)^2\big)$ pas, soit $O(t^2)$ si $t\ge n$.</p>
+<p>(2) Une machine à accès direct (modèle RAM, défini ci-dessous) qui exécute $t$ instructions sur une entrée de $n$ chiffres binaires est simulée par une machine de Turing à plusieurs bandes en $O\big(t^2(t+n)\big)$ pas, soit $O(t^3)$ si $t\ge n$.</p>
+<p>Ces surcoûts sont <em>polynomiaux</em>, en général pas constants.</p>
+</enonce>
+<philo>
+<p>Les modèles raisonnables de calcul ne diffèrent pas seulement par ce qu’ils calculent (ils calculent tous la même chose) mais par la vitesse, et cette différence reste « modérée » : un facteur polynomial. C’est ce qui donne un sens robuste à la distinction entre problèmes « faisables » (temps polynomial, classe <a href="machines-turing.html#temps-p-np">$\mathsf P$</a>) et « infaisables », indépendamment du modèle choisi. C’est la <em>thèse de Church-Turing étendue</em>, discutée au chapitre <a href="these-church.html">Thèse de Church</a> ; l’ordinateur quantique en est aujourd’hui le principal défi.</p>
+</philo>
+<tech>
+<p><strong>(1) $k$ bandes vers une.</strong> Une machine à $k$ bandes lit les $k$ symboles sous ses têtes et, selon son état, écrit $k$ symboles, déplace chaque tête d’une case à gauche, à droite ou pas du tout, et change d’état ; l’entrée est sur la première bande, les têtes au départ sur la case $0$. La machine à une bande $M'$ (à quintuplets, ce qui suffit, <a href="machines-turing.html#quintuplets">théorème</a>) utilise l’alphabet produit : le symbole d’une case est un $2k$-uplet donnant, pour chaque bande $i$, le symbole de la case $i$ et un drapeau « la tête $i$ est ici », plus un drapeau « extrémité gauche de la zone visitée ». Le blanc de $M'$ se lit comme le $2k$-uplet blanc sans drapeau.</p>
+<ul>
+<li><em>Préparation</em> : en un passage sur l’entrée, $M'$ remplace chaque symbole $a$ par le $2k$-uplet $(a,B,\dots,B)$ et pose les drapeaux des têtes et de l’extrémité sur la case $0$, puis revient : $O(n)$ pas.</li>
+<li><em>Un pas de $M$</em> : partant de l’extrémité gauche, $M'$ va à droite jusqu’à avoir rencontré les $k$ drapeaux de têtes, en mémorisant dans son état les $k$ symboles lus (il y en a un nombre fini). Elle connaît alors la transition de $M$. Elle revient vers la gauche jusqu’à l’extrémité ; en passant sur le drapeau de la tête $i$, elle écrit le nouveau symbole de la piste $i$ et déplace le drapeau : vers la gauche, sur la case où elle va de toute façon ; vers la droite, par un aller-retour d’une case. Si un drapeau sort de la zone par la gauche, le drapeau d’extrémité suit.</li>
+<li><em>Fin</em> : quand $M$ s’arrête, $M'$ remplace chaque $2k$-uplet par son symbole de première piste et place sa tête sur le drapeau de la tête $1$.</li>
+</ul>
+<p>Après $s$ pas de $M$, chaque tête est dans l’intervalle $[-s,\,n-1+s]$, de longueur $n+2s$ : chaque pas simulé coûte $O(n+t)$ pas de $M'$ (deux passages et au plus $2k$ allers-retours). Le total est $O(n)+t\cdot O(n+t)+O(n+t)=O\big((n+t)^2\big)$. C’est l’argument de Hartmanis et Stearns (1965).</p>
+<p><strong>(2) Machines à accès direct.</strong> Une RAM a des registres $R_0,R_1,R_2,\dots$ contenant des entiers naturels et un programme fini d’instructions : $R_i:=c$ (constante) ; $R_i:=R_j+R_k$ ; $R_i:=R_j\dot-R_k$ (soustraction tronquée) ; $R_i:=R_{R_j}$ et $R_{R_j}:=R_i$ (adressage indirect) ; « si $R_i=0$, aller à l’instruction $\ell$ » ; arrêt. Les entrées sont dans $R_1,\dots,R_p$ (de $n$ chiffres binaires en tout, avec $p\le n$), les autres registres valent $0$, le résultat est dans $R_0$. Chaque instruction compte pour un pas.</p>
+<p><em>Taille des nombres.</em> Soit $c_0$ le nombre de chiffres de la plus grande constante du programme. Une addition augmente d’au plus un le nombre de chiffres du plus grand registre, les autres instructions ne l’augmentent pas : après $t$ pas, tous les contenus, et donc toutes les adresses utilisées, ont au plus $b=n+c_0+t$ chiffres binaires.</p>
+<p><em>Simulation.</em> La machine de Turing $M$ a une bande « mémoire » qui contient une liste d’entrées $\#\,a\,{:}\,v$, adresse et contenu en binaire, une pour chaque registre non nul déjà écrit, et quelques bandes de travail. Le numéro de l’instruction courante est dans son état. Pour lire $R_a$, $M$ écrit $a$ sur une bande de travail et parcourt la mémoire en comparant chaque adresse à $a$, chiffre à chiffre ; si l’adresse est absente, $R_a=0$. Pour écrire $R_a:=v$, $M$ efface (en la marquant « morte ») l’éventuelle entrée d’adresse $a$ et ajoute $\#\,a\,{:}\,v$ à la fin de la liste : on n’a jamais à décaler la mémoire. Il y a au plus $p+t$ entrées, chacune de longueur $O(b)$, donc un parcours coûte $O\big((p+t)\,b\big)$. Une instruction demande un nombre borné de lectures et d’écritures, et une addition, une soustraction ou un test sur des nombres de $b$ chiffres, qui se font en $O(b)$ pas avec deux bandes. Le total est
+$$t\cdot O\big((p+t)\,b\big)=O\big(t\,(n+t)\,(n+t)\big),$$
+qui est $O\big(t^2(t+n)\big)$ quand $t\ge n$ et aussi, dans tous les cas, $O\big((n+t)^3\big)$. Avec (1), on passe à une seule bande au prix d’un carré. (Voir aussi Papadimitriou, <em>Computational Complexity</em>, 1994, théorème 2.5.) Si l’on autorise la multiplication en un pas, les nombres peuvent doubler de longueur à chaque pas ($R_0:=R_0\times R_0$ répété $t$ fois donne $2^t$ chiffres) : le surcoût n’est plus polynomial en $t$, et c’est pourquoi le modèle RAM « raisonnable » se limite à l’addition et à la soustraction, ou compte le coût des opérations selon la taille des nombres.</p>
+</tech>
+<techno>
+<p>Le phénomène est visible sur le <a href="equivalence.html#compilateur">compilateur du chapitre 6</a> : la machine de Turing qu’il produit pour la multiplication effectue des dizaines de milliers de pas pour calculer $4\times 4$, parce que chaque recopie d’un bloc de barres demande des allers-retours sur la bande. Un processeur fait la même multiplication en un cycle. L’écart ne vient pas seulement d’une constante : il croît avec la taille des nombres.</p>
+</techno>
+</res>
+
+<p>Paradoxalement, cette proximité avec le matériel est aussi une fragilité : un changement matériel (taille des mots machine, ordre des octets) peut modifier la signification d’un programme et introduire des erreurs qui ne sont pas des erreurs de raisonnement.</p>
+
+<h2>Approche fonctionnelle</h2>
+
+<p>Cette approche est à mi-chemin entre les machines et les définitions mathématiques. Le calcul y est une suite de transformations syntaxiques, comme celles que l’on apprend à l’école avec les identités remarquables : la règle $(a+b)^2 \to a^2+2ab+b^2$ transforme une expression en une expression équivalente. L’autre mécanisme de base est la <em>substitution</em> : la fonction $f$ est représentée par l’expression $x+1$ ; pour calculer $f(4)$, on remplace $x$ par $4$ puis on applique les règles de calcul.</p>
+
+<p>On n’y indique plus, à chaque instant, quelle opération effectuer. Pour évaluer $5+8+(4\times 5)$, on peut commencer par $5+8$ ou par $4\times 5$ : le résultat est le même, à condition que le système soit <em>confluent</em> (c’est un théorème pour le λ-calcul, voir <a href="lambda-calcul.html#confluence">Confluence</a>). Le programmeur spécifie <em>ce qu’il faut calculer</em>, pas <em>comment</em> : on parle de programmation <em>déclarative</em>.</p>
+
+<p>Un programme fonctionnel se prête mieux à l’analyse mathématique : une propriété vraie de chaque règle est un invariant du programme, et le raisonnement est <em>compositionnel</em>. En style impératif au contraire, les variables globales et les pointeurs font qu’un invariant vrai de deux blocs pris séparément peut être faux de leur combinaison : le point-virgule n’est pas commutatif.</p>
+
+<p>Le style fonctionnel manie aussi naturellement l’<em>ordre supérieur</em> : des programmes qui prennent ou rendent des programmes, comme un compilateur, ou une fonction qui applique une transformation à chaque élément d’une liste. En contrepartie, il masque des détails d’implantation importants : si $f(x)=t$ où $x$ apparaît un million de fois dans $t$, le coût de $f(u)$ dépend de la manière dont la substitution est réalisée, alors qu’en λ-calcul elle compte pour un seul pas de réduction.</p>
+
+<h2>Approche mathématique et logique</h2>
+
+<p>Cette approche formalise quelles fonctions sont acceptables plus qu’elle ne décrit un mécanisme. Son représentant principal est le formalisme des <a href="fonctions-recursives.html">fonctions récursives</a>, qui systématise la définition par récurrence : une fonction est bien définie si sa valeur en $0$ est donnée et si, connaissant $f(n)$, on sait calculer $f(n+1)$ par des opérations déjà admises. Les opérations de base sont très simples : constantes, ajout de 1, choix d’un argument, composition.</p>
+
+<p>Historiquement, la première version, aujourd’hui appelée <em>récursion primitive</em>, ne permet que des fonctions totales. On a montré qu’elle ne suffit pas : la <a href="ackermann.html">fonction d’Ackermann</a> est totale et calculable, mais n’est pas récursive primitive. L’extension décisive est la <em>minimisation non bornée</em> : chercher le plus petit $n$ tel que $g(n)=0$, en testant $g(0)$, $g(1)$, … La recherche peut ne jamais aboutir : c’est la version mathématique de la boucle <code>while</code>, et la source de la partialité, incontournable comme on l’a vu dans les <a href="motivations.html#diagonale-totale">motivations</a>.</p>
+
+<h3>Pour aller plus loin</h3>
+<ul>
+<li>Modèle actionnel : <a href="machines-turing.html">Machines de Turing</a></li>
+<li>Modèle fonctionnel : <a href="lambda-calcul.html">λ-calcul</a></li>
+<li>Modèle logique : <a href="fonctions-recursives.html">Fonctions récursives</a></li>
+<li>Équations diophantiennes et dixième problème de Hilbert : <a href="equations-diophantiennes.html">Équations diophantiennes</a></li>
+<li>Autres modèles (machines à compteurs, correspondance de Post, FRACTRAN) : <a href="autres-modeles.html">Autres modèles de calcul</a></li>
+</ul>

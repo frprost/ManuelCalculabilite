@@ -1,0 +1,155 @@
+<!--
+titre: Calculabilité
+court: Accueil
+chapo: Ce qu’une machine peut calculer, ce qu’aucune ne pourra jamais calculer, et pourquoi cela nous concerne tous. Une monographie autonome qui se lit à trois niveaux.
+-->
+
+<p class="auteurs"><strong>Frédéric Prost et Claude</strong></p>
+
+<h2>Avant-propos</h2>
+
+<p>Ce manuel a d’abord été rédigé en LaTeX. Le format de la page imprimée imposait un ordre de lecture unique, alors que le sujet s’y prête mal : la calculabilité intéresse aussi bien la personne qui programme et veut <em>voir</em> une machine de Turing calculer, que la mathématicienne qui veut une preuve correcte, ou le lecteur curieux qui veut comprendre ce que signifie, pour la vie de tous les jours, qu’un problème soit « indécidable ». Le format HTML permet de superposer ces lectures au lieu de les juxtaposer.</p>
+
+<p>Le texte est <strong>autonome</strong> : tout ce qui est utilisé est défini, soit dans le chapitre, soit dans les <a href="bases.html">annexes</a>. Il ne suppose aucune connaissance de programmation, mais il en donne beaucoup, et il ne suppose rien de plus en mathématiques que le raisonnement par récurrence.</p>
+
+<h2>Mode d’emploi : trois niveaux de lecture</h2>
+
+<p>Chaque résultat (définition, théorème, proposition) est présenté dans un cadre. Son énoncé est toujours visible ; en dessous, trois onglets donnent trois manières de le comprendre :</p>
+
+<div class="niveaux-intro">
+  <div class="philo"><h4>Philosophique</h4>Que signifie le résultat ? Pourquoi est-il surprenant, et qu’implique-t-il concrètement : pour l’informatique, pour la science, pour la vie courante ? Aucune formule n’y est indispensable.</div>
+  <div class="tech"><h4>Technique</h4>Des preuves mathématiques correctes et complètes dans leurs articulations, qui admettent seulement les constructions dont la réalisation est routinière (« on construit une machine qui… »).</div>
+  <div class="techno"><h4>Technologique</h4>Les constructions jusqu’au bout : programmes complets de machines de Turing, codages explicites, termes du λ-calcul. La plupart s’exécutent dans la page, et leurs résultats ont été testés automatiquement.</div>
+</div>
+
+<p>Le sélecteur en haut de chaque page choisit le niveau affiché partout ; l’onglet d’un cadre change seulement ce cadre. Le choix « Tout » affiche les trois niveaux l’un sous l’autre (c’est aussi ce qui s’imprime). Le choix est mémorisé par le navigateur.</p>
+
+<div class="encadre">
+<p><strong>Les simulateurs.</strong> Quatre outils sont intégrés au manuel et fonctionnent hors ligne : un simulateur de machines de Turing (au format de quadruplets du <a href="machines-turing.html">chapitre 3</a>), un <a href="equivalence.html#compilateur">compilateur</a> qui transforme une fonction récursive en une machine de Turing complète (souvent plusieurs milliers d’instructions) puis l’exécute, un <a href="castors-affaires.html">simulateur rapide de castors affairés</a> et un <a href="lambda-calcul.html">réducteur de λ-termes</a>.</p>
+
+
+</div>
+
+<h2 id="parcours">Parcours conseillés</h2>
+
+<p>Le manuel se lit dans l’ordre, mais ce n’est pas obligatoire. La page <a href="parcours.html">Parcours de lecture</a> détaille chaque itinéraire étape par étape, ainsi qu’un plan d’entraînement par les exercices.</p>
+
+<h3>Selon le public</h3>
+<div class="cartes">
+  <div class="carte"><h4><a href="parcours.html#decouverte">Découverte</a></h4><p style="margin:0">Deux heures, sans prérequis : de l’arrêt à l’incomplétude.</p></div>
+  <div class="carte"><h4><a href="parcours.html#licence">Cours de licence</a></h4><p style="margin:0">Les modèles, l’universalité, l’indécidabilité, avec exercices.</p></div>
+  <div class="carte"><h4><a href="parcours.html#master">Cours de master</a></h4><p style="margin:0">Hiérarchie, incomplétude, MRDP, logique, Kolmogorov, complexité.</p></div>
+  <div class="carte"><h4><a href="parcours.html#programmeurs">Pour programmeurs</a></h4><p style="margin:0">Rice, quines, langages totaux, Curry-Howard, SAT et SMT.</p></div>
+  <div class="carte"><h4><a href="parcours.html#mathematiciens">Pour mathématiciens</a></h4><p style="margin:0">Diophante, Presburger, Tarski, pavages, groupes, ZFC.</p></div>
+  <div class="carte"><h4><a href="parcours.html#philosophie">Philosophie des sciences</a></h4><p style="margin:0">Thèse de Church-Turing, physique et vivant, incomplétude.</p></div>
+  <div class="carte"><h4><a href="parcours.html#intelligence-artificielle">Calcul et IA</a></h4><p style="margin:0">Ce que la calculabilité dit de l’apprentissage et du contrôle.</p></div>
+</div>
+
+<h3>Fils thématiques</h3>
+<div class="cartes">
+  <div class="carte"><h4><a href="parcours.html#diagonale">La diagonale</a></h4><p style="margin:0">Un argument, dix théorèmes d’impossibilité.</p></div>
+  <div class="carte"><h4><a href="parcours.html#coder-un-calcul">Coder un calcul</a></h4><p style="margin:0">Du diagramme espace-temps aux pavages, matrices et équations.</p></div>
+  <div class="carte"><h4><a href="parcours.html#logique-fondements">Logique et fondements</a></h4><p style="margin:0">De la question de Hilbert à Curry-Howard.</p></div>
+  <div class="carte"><h4><a href="parcours.html#decidable-et-son-prix">Le décidable et son prix</a></h4><p style="margin:0">Décidable ne veut pas dire faisable.</p></div>
+  <div class="carte"><h4><a href="parcours.html#limites-physiques">Calcul et monde physique</a></h4><p style="margin:0">Gandy, Landauer, castors, gap spectral.</p></div>
+  <div class="carte"><h4><a href="parcours.html#histoire">Une histoire en dates</a></h4><p style="margin:0">De Leibniz (1703) à la primalité dans P (2002).</p></div>
+</div>
+
+<h2>Chapitres par thème</h2>
+<!--THEMES-->
+
+<h2>Index alphabétique des résultats</h2>
+<!--INDEX-ALPHA-->
+
+<h2 id="conventions">Conventions générales de notation</h2>
+
+<p>Cette liste rassemble les notations utilisées dans plusieurs chapitres, avec un lien vers l’endroit où chacune est définie. Les notations propres à une seule preuve sont introduites sur place.</p>
+
+<h3>Entiers, fonctions, ensembles</h3>
+<ul>
+  <li>$\N=\{0,1,2,\dots\}$ ; les variables $x,y,z,n,m,a,e$ désignent des entiers naturels sauf mention contraire, et $\vec x$ abrège $x_1,\dots,x_n$.</li>
+  <li>« Fonction » signifie par défaut <em>fonction partielle</em> de $\N^n$ dans $\N$ (<a href="bases.html#def-fonctions">définition</a>). On écrit $f(x)\conv$ si $f$ est définie en $x$, $f(x)\ind$ sinon ; $\mathrm{dom}\,f$ est l’ensemble de définition.</li>
+  <li>$e_1\simeq e_2$ (égalité de Kleene) : l’une des expressions est définie si et seulement si l’autre l’est, et elles ont alors la même valeur.</li>
+  <li>$x\monus y$ est la <em>différence propre</em> : $x-y$ si $x\ge y$, $0$ sinon.</li>
+  <li>$\chi_A$ (parfois $c_A$) est la fonction caractéristique de $A\subseteq\N$ : $1$ sur $A$, $0$ ailleurs. $\overline A=\N\setminus A$ est le complémentaire.</li>
+  <li>$x\mapsto e$, ou $\lambda x.e$, désigne la fonction qui à $x$ associe $e$ (<a href="bases.html#def-fonctions">notation anonyme</a>).</li>
+  <li>$p_1=2,p_2=3,p_3=5,\dots$ sont les nombres premiers (<a href="bases.html#premiers">définition</a>).</li>
+</ul>
+
+<h3>Machines de Turing</h3>
+<ul>
+  <li>États $q_0,q_1,\dots$, symboles $S_0,S_1,\dots$, avec $B=S_0$ (blanc) et $1=S_1$ (barre). Une machine $Z$ est un ensemble fini consistant de <strong>quadruplets</strong> $q_i\,S_j\,S_k\,q_l$, $q_i\,S_j\,R\,q_l$, $q_i\,S_j\,L\,q_l$ (<a href="machines-turing.html#def-mt">définition</a>) ; les <a href="machines-turing.html#quintuplets">quintuplets</a> écrivent et déplacent en un seul pas.</li>
+  <li>Une description instantanée est un mot $\alpha=\gamma\,q_i\,S_j\,\delta$ : la bande porte $\gamma S_j\delta$ et la tête lit $S_j$ ; $\alpha\vdash_Z\beta$ est un pas de calcul, $\mathrm{Res}_Z(\alpha)$ la description finale si le calcul s’arrête (<a href="machines-turing.html#def-pas">définition</a>).</li>
+  <li>$\overline x=1^{x+1}$ représente l’entier $x$ ; un $n$-uplet s’écrit $\overline{x_1}B\cdots B\overline{x_n}$ ; $\langle\alpha\rangle$ est le nombre de barres du mot $\alpha$ (<a href="machines-turing.html#codage-entrees">convention</a>).</li>
+  <li>$\Psi^{(n)}_Z$ est la fonction à $n$ arguments calculée par $Z$, $\mathcal T$ la classe des fonctions Turing-calculables (<a href="machines-turing.html#def-psi">définition</a>) ; avec un oracle $A$ : $Z^A$, $\Psi^{(n)}_{Z^A}$, $\mathcal T^A$ (<a href="machines-turing.html#def-oracle">définition</a>).</li>
+  <li>Machines de Radó (castors affairés) : états $A,B,C,\dots$ et état d’arrêt $H$, symboles $0$ (blanc) et $1$ ; $A0\to1RB$ se lit « en $A$, lisant $0$, écrire $1$, aller à droite, passer en $B$ ». $\Sigma(n)$ et $S(n)$ sont le plus grand nombre de $1$ et le plus grand nombre de pas des machines à $n$ états qui s’arrêtent (<a href="castors-affaires.html#def-rado">définition</a>).</li>
+</ul>
+
+<h3>Fonctions récursives et codages</h3>
+<ul>
+  <li>Fonctions de base : constantes $m^{(k)}$, successeur $S$, projections $A^{(k)}_i$. Schémas : substitution $\sigma[g,h_1,\dots,h_k]$, récursion primitive $\rho[g,h]$, avec $\rho[g,h](y+1,\vec x)=h\big(y,\rho[g,h](y,\vec x),\vec x\big)$ (récurrence sur le <em>premier</em> argument) ; $\RP$ est la classe des fonctions récursives primitives (<a href="fonctions-recursives.html#def-rp">définition</a>).</li>
+  <li>Minimisation : $\mu[g]$, ou $\mu y\,[g(\vec x,y)=0]$, le plus petit $y$ qui annule $g$, les valeurs précédentes étant définies ; $\mu y\,R(\vec x,y)$ pour un prédicat $R$ ; $\mu y<b$ pour la minimisation bornée. $\PR$ est la classe des fonctions récursives partielles (<a href="fonctions-recursives.html#def-mu">définition</a>).</li>
+  <li>$\langle x,y\rangle=\frac{(x+y)(x+y+1)}2+x$ est le codage de Cantor des couples, d’inverses $\pi_1,\pi_2$ ; $\langle x_1,\dots,x_n\rangle=\langle x_1,\langle x_2,\dots,x_n\rangle\rangle$ (<a href="fonctions-recursives.html#cantor-couple">proposition</a>). Le contexte distingue ce codage de $\langle\alpha\rangle$ (nombre de barres d’un mot).</li>
+  <li>Nombres de Gödel : $\gamma$ code chaque symbole par un entier impair, $\mathrm{gn}(a_1\cdots a_n)=\prod_kp_k^{\gamma(a_k)}$ code un mot, et une suite de mots $M_1,\dots,M_n$ est codée par $\prod_kp_k^{\mathrm{gn}(M_k)}$ (<a href="fonctions-recursives.html#godel">définition</a>). Pour les machines, $\gamma(R)=3$, $\gamma(L)=5$, $\gamma(S_i)=4i+9$, $\gamma(q_i)=4i+7$ (<a href="equivalence.html#godel-mt">définition</a>).</li>
+  <li>$T_n(z,\vec x,y)$ est le prédicat de Kleene et $U(y)$ la fonction de résultat : $\Psi^{(n)}_Z(\vec x)\simeq U(\mu y\,T_n(z,\vec x,y))$ (<a href="equivalence.html#forme-normale">forme normale</a>) ; $T^A_n$ avec oracle.</li>
+</ul>
+
+<h3>Indices et ensembles classiques</h3>
+<ul>
+  <li>$\eta(e)$ est le $e$-ième nombre de Gödel de machine dans l’ordre croissant ; $\varphi^{(k)}_e$ est la fonction à $k$ arguments calculée par la machine codée par $\eta(e)$, $\varphi_e=\varphi^{(1)}_e$, et $W_e=\mathrm{dom}\,\varphi_e$ (<a href="universalite.html#phi">notation</a>) ; $\varphi^A_e$, $W^A_e$ avec oracle ($\eta^\ast$ joue alors le rôle de $\eta$). L’entier $e$ est un <em>indice</em> ou <em>programme</em>.</li>
+  <li>$s^m_n$ désigne les fonctions du <a href="smn-recursion.html#smn">théorème s-m-n</a>.</li>
+  <li>$K=\{e:\varphi_e(e)\conv\}$ (arrêt diagonal), $H=K_0=\{\langle e,x\rangle:\varphi_e(x)\conv\}$ (<a href="indecidabilite.html#arret">théorème</a>).</li>
+  <li>$\mathrm{Tot}$, $\mathrm{Fin}$, $\mathrm{Inf}$, $\mathrm{Cof}$, $\mathrm{Rec}$, $\mathrm{Comp}$ : ensembles des indices $e$ tels que $\varphi_e$ est totale, $W_e$ est fini, infini, cofini, décidable, Turing-équivalent à $K$ (<a href="hierarchie-arithmetique.html#exemples-hierarchie">exemples classés</a>).</li>
+</ul>
+
+<h3>Réductions, degrés, hiérarchie</h3>
+<ul>
+  <li>$A\le_mB$ (<a href="indecidabilite.html#reduction">many-one</a>), $A\le_1B$ (<a href="hierarchie-arithmetique.html#un-complet">one-one</a>), $A\le_TB$ (<a href="hierarchie-arithmetique.html#def-turing">Turing</a>) ; $\equiv_m$, $\equiv_1$, $\equiv_T$ les équivalences associées, $\deg_T(A)$ le degré de Turing.</li>
+  <li>$A'=\{e:\varphi^A_e(e)\conv\}$ est le saut de $A$, $A^{(n)}$ le $n$-ième saut ; $\emptyset'$, le saut de l’ensemble vide, est $K$ lui-même (les machines à oracle $\emptyset$ calculent comme les machines sans oracle) (<a href="hierarchie-arithmetique.html#saut-complet">proposition</a>).</li>
+  <li>$\Sigma_n$, $\Pi_n$, $\Delta_n$ : classes de la hiérarchie arithmétique (<a href="hierarchie-arithmetique.html#def-hierarchie">définition</a>) ; $\Delta^1_1$ : ensembles hyperarithmétiques. Ne pas confondre avec $\Sigma$ (un alphabet) ni avec $\Sigma(n)$ (castor affairé).</li>
+</ul>
+
+<h3>λ-calcul</h3>
+<ul>
+  <li>$\mathrm{VL}(M)$ : variables libres ; $M[x:=N]$ : substitution ; $=_\alpha$ : α-équivalence ; $\to_\beta$ : un pas de β-réduction, $\twoheadrightarrow_\beta$ : sa clôture réflexive et transitive, $=_\beta$ : β-équivalence (<a href="lambda-calcul.html#def-beta">définition</a>). L’application associe à gauche ($MNP=(MN)P$).</li>
+  <li>$\mathbf n=\lambda f.\lambda x.f^n x$ est l’entier de Church (<a href="lambda-calcul.html#church">définition</a>).</li>
+  <li>Types simples $A\to B$ (la flèche associe à droite), contexte $\Gamma$, jugement de typage $\Gamma\vdash M:A$ (<a href="logique-types.html#lambda-type">définition</a>) ; $\mathbf N$, $\mathsf S$ et le récurseur $\mathsf R$ du Système T (<a href="logique-types.html#systeme-t">définition</a>). Le même signe $\vdash$ sert pour la démontrabilité : c’est la <a href="logique-types.html#curry-howard-thm">correspondance de Curry-Howard</a>.</li>
+  <li>Système F : $\forall\alpha.A$ (type polymorphe), $\Lambda\alpha.M$ (abstraction de type), $\mathrm{Nat}=\forall\alpha.(\alpha\to\alpha)\to\alpha\to\alpha$, dont les habitants sont encore notés $\mathbf n$ (<a href="logique-types.html#systeme-f">définition</a>). Ne pas confondre $\mathrm{Nat}$ (type de F) et $\mathbf N$ (type de base du Système T).</li>
+  <li>Le lambda-calcul et l’ensemble de l’arrêt partagent deux lettres : $\mathsf K=\lambda x.\lambda y.x$ et $\mathsf S$ sont des combinateurs, $K$ l’ensemble de l’arrêt ; $\Omega=(\lambda x.xx)(\lambda x.xx)$ est le terme sans forme normale, $\Omega$ (sans autre précision, à partir du chapitre 18) la constante de Chaitin. Le successeur $\mathsf S$ du Système T et la fonction de base $S$ des fonctions récursives sont la même idée.</li>
+</ul>
+
+<h3>Logique et incomplétude</h3>
+<ul>
+  <li>$\mathsf{PA}$ : arithmétique de Peano ; $\mathsf T\vdash\phi$ : $\phi$ est démontrable dans $T$ ; $\ulcorner\phi\urcorner$ : nombre de Gödel de la formule $\phi$ ; $\underline n$ : le terme $(\cdots(0+1)\cdots)+1$ qui représente $n$ ; $\mathrm{Prf}_{\mathsf T}$, $\mathrm{Prov}_{\mathsf T}$, $\mathrm{Coh}(\mathsf T)$ : prédicats de preuve, de prouvabilité et énoncé de cohérence, $\Box\phi$ abrégeant $\mathrm{Prov}_{\mathsf T}(\underline{\ulcorner\phi\urcorner})$ (<a href="incompletude.html#def-peano">définitions</a>, <a href="incompletude.html#derivabilite">conditions de dérivabilité</a>).</li>
+  <li>Formules bornées ($\Delta_0$) et formules $\Sigma_1$ (<a href="incompletude.html#delta0">définition</a>).</li>
+  <li>$\mathrm{Th}(\mathcal M)$ : ensemble des énoncés vrais dans la structure $\mathcal M$ ; $\mathrm{Th}(\N,+)$ : arithmétique de Presburger (<a href="theories-decidables.html#def-theorie">définition</a>).</li>
+</ul>
+
+<h3>Complexité de Kolmogorov et Ω</h3>
+<ul>
+  <li>$\{0,1\}^\ast$ : mots binaires ; $|w|$ : longueur ; $\varepsilon$ : mot vide ; l’entier $n$ est identifié au mot obtenu en écrivant $n+1$ en binaire sans son premier chiffre (ordre par longueur puis alphabétique) ; $\bar w=1^{|w|}0\,w$ : codage auto-délimitant (<a href="kolmogorov-omega.html#mots-entiers">convention</a>).</li>
+  <li>$C(x)$ : complexité de Kolmogorov, $\mathit{KP}(x)$ : complexité préfixe, $\Omega$ : probabilité d’arrêt de la machine universelle préfixe (<a href="kolmogorov-omega.html#def-c">définition</a>, <a href="kolmogorov-omega.html#def-omega">Ω</a>).</li>
+</ul>
+
+<h3>Complexité</h3>
+<ul>
+  <li>$\mathrm{DTIME}(t)$, $\mathrm{NTIME}(t)$, $\mathrm{DSPACE}(s)$, $\mathrm{NSPACE}(s)$ ; classes $\mathsf L$, $\mathsf{NL}$, $\mathsf P$, $\mathsf{NP}$, $\mathsf{PSPACE}$, $\mathsf{EXP}$ ; $\mathrm{co}\mathcal C$ : complémentaires (<a href="complexite.html#classes-usuelles">définition</a>). $A\le_pB$ : réduction polynomiale (<a href="complexite.html#reduction-polynomiale">définition</a>).</li>
+  <li>Classes probabilistes $\mathsf{RP}$, $\mathrm{co}\mathsf{RP}$, $\mathsf{BPP}$ (<a href="hasard-quantique.html#def-probabiliste">définition</a>) et quantique $\mathsf{BQP}$ (<a href="hasard-quantique.html#def-quantique">définition</a>) ; $|i\rangle$ (notation de Dirac) désigne l’état de base indexé par le mot $i\in\{0,1\}^n$, et $\mathbb C$ les nombres complexes.</li>
+  <li>$O$, $o$ : notations de Landau ; $\log_2$ : logarithme en base 2.</li>
+</ul>
+
+<h3>Équations diophantiennes</h3>
+<ul>
+  <li>Dans $D(\vec a,\vec x)=0$, les $\vec a$ sont les <em>paramètres</em> et les $\vec x$ les <em>inconnues</em> ; les inconnues parcourent $\N$ sauf mention contraire (<a href="equations-diophantiennes.html#def-diophantien">définition</a>).</li>
+</ul>
+
+<h3>Automates cellulaires</h3>
+<ul>
+  <li>Un automate élémentaire a deux états $0,1$ et le voisinage $(x_{i-1},x_i,x_{i+1})$ ; son <em>numéro de Wolfram</em> $\sum f(a,b,c)\,2^{4a+2b+c}$ l’identifie parmi les $256$ règles, d’où « règle 110 » (<a href="autres-modeles.html#def-automate-cellulaire">définition</a>, <a href="autres-modeles.html#classification-wolfram">classes de Wolfram</a>).</li>
+</ul>
+
+<h3>Mots et vocabulaire</h3>
+<ul>
+  <li>Les mots « calculable », « récursif », « Turing-calculable », « λ-définissable » désignent, une fois l’<a href="equivalence.html">équivalence des modèles</a> établie, la même classe de fonctions ; « décidable » et « récursif » sont synonymes pour les ensembles, ainsi que « semi-décidable » et « récursivement énumérable ».</li>
+  <li>La lettre $U$ a plusieurs usages, toujours précisés : fonction de résultat de la forme normale, <a href="universalite.html#universelle">fonction universelle</a>, machine universelle de la complexité de Kolmogorov, <a href="equations-diophantiennes.html#equation-universelle">équation universelle</a>, boîte noire $U_f$ et opérateurs unitaires du <a href="hasard-quantique.html#def-quantique">calcul quantique</a>.</li>
+</ul>

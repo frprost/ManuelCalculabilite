@@ -1,0 +1,267 @@
+<!--
+titre: Problèmes indécidables
+court: Indécidabilité
+chapo: Aucun programme ne peut décider si un programme quelconque s’arrête. De ce seul fait découle une foule d’impossibilités très concrètes, résumées par le théorème de Rice.
+prerequis: universalite.html|Universalité ; smn-recursion.html|Théorème s-m-n
+-->
+
+<h2>Le problème de l’arrêt</h2>
+
+<p>Le <a href="motivations.html#non-calculables">premier argument</a> de non-calculabilité était un argument de taille : il y a plus de fonctions que de programmes. Il est correct mais non constructif. Quelles fonctions, concrètement, ne sont pas calculables ? Le candidat le plus naturel est lié à la partialité : la seule manière pour un calcul de ne pas répondre est de ne pas s’arrêter. Peut-on prévoir, de l’extérieur, si un calcul s’arrêtera ?</p>
+
+<res type="Théorème" nom="Indécidabilité du problème de l’arrêt (Turing, 1936)" id="arret">
+<enonce>
+<p>L’ensemble $K=\{e\in\N:\varphi_e(e)\conv\}$ n’est pas décidable. Par conséquent l’ensemble $H=\{\langle e,x\rangle:\varphi_e(x)\conv\}$ (souvent noté $K_0$) ne l’est pas non plus : aucun programme ne prend en entrée un programme $e$ et une donnée $x$, s’arrête toujours, et répond correctement si $e$ s’arrête sur $x$.</p>
+</enonce>
+<philo>
+<p>Il n’existe pas, et il n’existera jamais, de logiciel qui examine n’importe quel programme et dise à coup sûr s’il finira par s’arrêter ou s’il bouclera indéfiniment. Ce n’est pas une question de puissance de calcul ou d’intelligence artificielle : c’est une impossibilité logique, du même type que l’impossibilité de construire un carré de même aire qu’un cercle à la règle et au compas.</p>
+<p>L’argument est celui du menteur. Si un « oracle d’arrêt » existait, on pourrait écrire un programme contrariant qui interroge l’oracle à son propre sujet et fait le contraire de ce qu’il prédit : s’il est prédit qu’il s’arrête, il boucle ; s’il est prédit qu’il boucle, il s’arrête. L’oracle se trompe forcément sur ce programme-là.</p>
+<p>Cela ne veut pas dire qu’on ne peut rien savoir : pour beaucoup de programmes particuliers on prouve qu’ils terminent, et des outils le font automatiquement. Cela veut dire qu’<em>aucune méthode unique</em> ne marche pour tous.</p>
+</philo>
+<tech>
+<p>Supposons $\chi_K$ calculable. La fonction</p>
+$$p(e)\simeq\begin{cases}0&\text{si }\chi_K(e)=0,\\ \ind&\text{si }\chi_K(e)=1\end{cases}$$
+<p>est alors calculable (calculer $\chi_K(e)$ ; s’il vaut 0, rendre 0, sinon entrer dans une boucle infinie). Soit $q$ un indice de $p$. Si $\varphi_q(q)\conv$, alors par définition $p(q)\ind$, c’est-à-dire $\varphi_q(q)\ind$ ; et si $\varphi_q(q)\ind$, alors $p(q)=0$, donc $\varphi_q(q)\conv$. Les deux cas sont contradictoires : $\chi_K$ n’est pas calculable.</p>
+<p>Pour $H$ : si $\chi_H$ était calculable, $\chi_K(e)=\chi_H(\langle e,e\rangle)$ le serait aussi.</p>
+</tech>
+<techno>
+<p>Le paradoxe, écrit comme un programme qui utilise son propre texte (ce qu’autorise le <a href="smn-recursion.html#kleene-parametres">théorème de récursion</a>) :</p>
+<pre><code>contrariant() :
+    moi := texte de ce programme          // théorème de récursion
+    si s_arrete(moi, entrée_vide) :
+        boucler pour toujours
+    sinon :
+        s'arrêter</code></pre>
+<p>Quelle que soit la fonction <code>s_arrete</code> proposée, pourvu qu’elle termine toujours, elle se trompe sur <code>contrariant</code>. L’argument donne même un contre-exemple <em>calculable</em> à partir du texte de <code>s_arrete</code> : l’impossibilité est constructive.</p>
+<p>Les simulateurs de ce manuel s’arrêtent après un nombre maximal de pas fixé : ils ne décident pas l’arrêt, ils l’<em>observent</em>, quand il a lieu avant la limite. C’est tout ce qu’un programme peut faire en général.</p>
+</techno>
+</res>
+
+<h2>Réductions</h2>
+
+<p>Le problème de l’arrêt semble très particulier. Il ne l’est pas : de nombreux problèmes s’y ramènent, par la technique de la <strong>réduction</strong>. Pour montrer qu’un problème $B$ est indécidable, on montre que si $B$ était décidable, l’arrêt le serait aussi.</p>
+
+<res type="Définition" nom="Réduction many-one" id="reduction">
+<enonce><p>$A\le_m B$ s’il existe une fonction calculable totale $f$ telle que, pour tout $x$, $x\in A\iff f(x)\in B$. Si $A\le_m B$ et $B$ est décidable, alors $A$ l’est : $\chi_A=\chi_B\circ f$. Donc si $A$ est indécidable et $A\le_m B$, $B$ est indécidable.</p></enonce>
+<philo><p>Réduire $A$ à $B$, c’est transformer toute question sur $A$ en une question sur $B$. Si l’on savait répondre aux questions sur $B$, on saurait répondre à celles sur $A$. Une réduction transporte la difficulté, comme un traducteur transporte le sens.</p></philo>
+</res>
+
+<res type="Proposition" nom="Quelques problèmes indécidables sur les programmes" id="exemples-indecidables">
+<enonce>
+<p>Les problèmes suivants sont indécidables :</p>
+<ol>
+<li>(Utilisation d’une variable) Étant donnés un programme $P$ sans entrée et une variable $v$, l’exécution de $P$ utilise-t-elle $v$ ?</li>
+<li>(Code mort) Une instruction donnée d’un programme sera-t-elle exécutée ?</li>
+<li>(Valeur en un point) Étant donné un programme $P$, a-t-on $P(12)=7$ ?</li>
+<li>(Totalité) Le programme $P$ s’arrête-t-il sur toutes ses entrées ?</li>
+<li>(Équivalence) Deux programmes calculent-ils la même fonction ?</li>
+</ol>
+</enonce>
+<philo>
+<p>Ces questions sont celles que posent tous les jours les outils de développement : détecter une variable inutile, supprimer du code mort, vérifier qu’une fonction renvoie la bonne valeur, qu’un programme ne se bloque jamais, qu’une optimisation ne change pas le comportement. Aucun outil ne peut y répondre parfaitement pour tous les programmes.</p>
+<p>Les outils réels font donc des compromis : ils répondent « je ne sais pas » dans certains cas (analyse statique « sûre », qui peut signaler de fausses alertes), ou ils ne traitent qu’une partie des langages, ou ils demandent l’aide d’un humain (assistants de preuve). Le code mort a une importance industrielle réelle : les logiciels évoluent pendant des décennies, souvent réécrits automatiquement, et des parties entières deviennent inutiles sans qu’on puisse toujours le détecter.</p>
+</philo>
+<tech>
+<p>(1) À partir de $P$ (sans entrée), choisir une variable $v$ absente de $P$ et former $P'=P;\ v:=v+1$. Alors $P'$ utilise $v$ si et seulement si $P$ s’arrête. L’application $P\mapsto(P',v)$ est calculable : c’est une réduction de l’arrêt sur entrée vide (indécidable, par une réduction immédiate depuis $H$) au problème (1). (2) est analogue : l’instruction $v:=v+1$ est atteinte si et seulement si $P$ s’arrête.</p>
+<p>(3) À partir d’un programme $Q$ et d’une donnée $w$, former le programme $P_{Q,w}$ qui, sur toute entrée $x$, exécute $Q$ sur $w$ puis renvoie 7. Alors $P_{Q,w}(12)=7$ si et seulement si $Q$ s’arrête sur $w$, et $(Q,w)\mapsto P_{Q,w}$ est calculable (s-m-n). (4) Avec le même $P_{Q,w}$ : il est total si et seulement si $Q$ s’arrête sur $w$. (5) Si l’équivalence était décidable, la totalité aussi (comparer $P_{Q,w}$ au programme constant 7).</p>
+</tech>
+<techno>
+<p>Le programme de la réduction (3), en pseudo-code. Il est obtenu à partir de $Q$ et $w$ par simple manipulation de texte, sans exécuter $Q$ :</p>
+<pre><code>P_{Q,w}(x) :
+    exécuter Q sur w        // peut ne jamais finir
+    renvoyer 7</code></pre>
+<p>Au niveau des machines de Turing, c’est la construction du <a href="smn-recursion.html#smn">théorème s-m-n</a> : effacer l’entrée, écrire $\overline w$, exécuter $Q$ (états renommés), puis effacer la bande et écrire 7 barres.</p>
+</techno>
+</res>
+
+<res type="Proposition" nom="Problèmes indécidables, preuves par réduction de K" id="exemples-reductions">
+<enonce>
+<p>Les ensembles d’indices suivants sont indécidables :</p>
+<ol>
+<li>$\mathrm{Cst}=\{x:\varphi_x$ est une fonction constante totale$\}$ ;</li>
+<li>$B=\{x:\varphi_x(4)=12\}$, et plus généralement $\{x:\varphi_x(a)=b\}$ pour tous $a,b$ ;</li>
+<li>$C=\{x:\varphi_x(23)\ind\}$ ;</li>
+<li>$\{\langle x,y,z\rangle:\varphi_x(y)=z\}$ : même en précisant la valeur attendue, l’arrêt reste indécidable ;</li>
+<li>$\{\langle x,y\rangle:\varphi_x=\varphi_y\}$ (équivalence de programmes) ;</li>
+<li>$\{x:\mathrm{Im}\,\varphi_x\text{ est infinie}\}$ et $\{x:y_0\in\mathrm{Im}\,\varphi_x\}$ pour tout $y_0$ fixé ;</li>
+<li>$\mathrm{Tot}=\{x:\varphi_x\text{ est totale}\}$.</li>
+</ol>
+<p>En revanche, pour un indice $x_0$ <em>fixé</em>, l’ensemble $\mathrm{Im}\,\varphi_{x_0}$ peut être décidable ou non selon $x_0$.</p>
+</enonce>
+<philo>
+<p>Toutes ces preuves suivent le même scénario : on fabrique, pour chaque $x$, un programme $h(x)$ qui commence par simuler $\varphi_x(x)$ et ne fait la « bonne chose » que si cette simulation s’arrête. Savoir ce que fait $h(x)$ revient alors à savoir si $\varphi_x(x)$ s’arrête. Une seule question indécidable, l’arrêt, contamine ainsi presque toutes les questions sur le comportement des programmes : c’est ce que le <a href="#rice-theoreme">théorème de Rice</a> rend systématique.</p>
+<p>La dernière remarque met en garde contre une intuition trop rapide : ce sont les questions posées sur un programme <em>quelconque</em> qui sont indécidables. Pour un programme fixé, la question peut être facile (si $\varphi_{x_0}$ est l’identité, $\mathrm{Im}\,\varphi_{x_0}=\N$) ou non (si $\varphi_{x_0}(x)=x$ pour $x\in K$ et diverge sinon, $\mathrm{Im}\,\varphi_{x_0}=K$).</p>
+</philo>
+<tech>
+<p>Soit $g(x,y)\simeq 12$ si $\varphi_x(x)\conv$, et $g(x,y)\ind$ sinon. La fonction $g$ est calculable (simuler $\varphi_x(x)$ ; si la simulation s’arrête, rendre 12). Soit $n$ un indice de $g$ ; par le théorème <a href="smn-recursion.html#smn">s-m-n</a>, $h(x)=s^1_1(n,x)$ est totale calculable et $\varphi_{h(x)}(y)=g(x,y)$. Ainsi :</p>
+<ul>
+<li>si $x\in K$, $\varphi_{h(x)}$ est la constante 12 ; si $x\notin K$, $\varphi_{h(x)}$ n’est définie nulle part. Donc $x\in K\iff h(x)\in\mathrm{Cst}\iff h(x)\in B\iff \langle h(x),4,12\rangle\in\{\langle x,y,z\rangle:\varphi_x(y)=z\}\iff h(x)\in\mathrm{Tot}$ : $K$ se réduit à (1), (2), (4) et (7) ;</li>
+<li>$x\notin K\iff h(x)\in C$ : c’est le complémentaire $\overline K$ qui se réduit à $C$, ce qui suffit, car $\overline K$ est indécidable dès que $K$ l’est ;</li>
+<li>si $y_0$ est un indice de la fonction nulle partout définie, $x\in K\iff\langle h'(x),y_0\rangle$ est dans l’ensemble (5), où $h'$ est construit de même avec la valeur 0 ;</li>
+<li>pour (6), on prend $\varphi_{h_2(x)}(y)\simeq y$ si $x\in K$, $\ind$ sinon : l’image est $\N$ (infinie, contient $y_0$) ou vide.</li>
+</ul>
+<p>Pour $\mathrm{Tot}$, on peut aussi donner une preuve directe par diagonalisation : si $f$ calculait la fonction caractéristique de $\mathrm{Tot}$, la fonction $g(0)=\mu y[f(y)=1]$, $g(x+1)=\mu y[f(y)=1\wedge y>g(x)]$ énumérerait les indices de fonctions totales, et $d(x)=\varphi_{g(x)}(x)+1$ serait totale calculable sans être aucune des $\varphi_{g(x)}$ (elle diffère de $\varphi_{g(x_0)}$ en $x_0$). En réalité $\mathrm{Tot}$ n’est même pas semi-décidable, ni de complémentaire semi-décidable : c’est un ensemble $\Pi_2$-complet (<a href="hierarchie-arithmetique.html">Hiérarchie arithmétique</a>).</p>
+</tech>
+</res>
+
+<h2 id="rice">Le théorème de Rice</h2>
+
+<res type="Théorème" nom="Théorème de Rice (1953)" id="rice-theoreme">
+<enonce>
+<p>Soit $\mathcal F$ un ensemble de fonctions calculables d’une variable, <em>non trivial</em> ($\mathcal F\neq\emptyset$ et $\mathcal F$ ne contient pas toutes les fonctions calculables). Alors l’ensemble $\{e:\varphi_e\in\mathcal F\}$ des indices des fonctions de $\mathcal F$ n’est pas décidable.</p>
+</enonce>
+<philo>
+<p>Toute propriété <em>du comportement</em> d’un programme (de la fonction qu’il calcule, et non de son texte) est indécidable, dès qu’elle n’est ni toujours vraie ni toujours fausse. « Ce programme renvoie-t-il toujours un nombre pair ? », « affiche-t-il un jour “bonjour” ? », « calcule-t-il la fonction de tri ? », « est-il un virus ? » (au sens d’un comportement donné) : aucune de ces questions n’admet de procédure de décision générale.</p>
+<p>Il faut lire précisément ce que le théorème interdit : une méthode <em>unique, automatique, toujours correcte et qui répond toujours</em>, valable pour <em>tous</em> les programmes. Il n’interdit pas de prouver qu’un programme particulier est correct : c’est le travail de la vérification formelle, qui a produit par exemple un compilateur C entièrement prouvé (CompCert) ou un noyau de système d’exploitation prouvé (seL4). Il n’interdit pas non plus les analyses approchées, qui répondent parfois « je ne sais pas ».</p>
+<p>Les antivirus le savent bien : ils reconnaissent des signatures connues et des comportements suspects, mais aucun ne peut garantir de détecter tous les programmes malveillants sans jamais accuser un programme sain.</p>
+<p>Le chapitre <a href="calculabilite-ia.html#synthese">Calculabilité et intelligence artificielle</a> en tire les conséquences pour une IA qui programmerait à partir d’une spécification, ou qu’on voudrait contrôler.</p>
+</philo>
+<tech>
+<p>Soit $\Theta$ la fonction partout indéfinie. Quitte à remplacer $\mathcal F$ par son complémentaire (ce qui ne change pas la décidabilité), on peut supposer $\Theta\notin\mathcal F$. Comme $\mathcal F\ne\emptyset$, choisissons $\psi\in\mathcal F$. Par s-m-n, il existe $f$ récursive totale telle que</p>
+$$\varphi_{f(e)}(x)\simeq\begin{cases}\psi(x)&\text{si }\varphi_e(e)\conv,\\ \ind&\text{sinon}\end{cases}$$
+<p>(calculer $\varphi_e(e)$, puis, s’il s’arrête, $\psi(x)$). Alors $\varphi_{f(e)}=\psi\in\mathcal F$ si $e\in K$, et $\varphi_{f(e)}=\Theta\notin\mathcal F$ si $e\notin K$. Donc $K\le_m\{e:\varphi_e\in\mathcal F\}$ par $f$, et ce dernier ensemble est indécidable.</p>
+</tech>
+<techno>
+<p>La réduction, en pseudo-code : étant donné $e$, on fabrique (sans l’exécuter) le programme</p>
+<pre><code>F_e(x) :
+    exécuter le programme e sur l'entrée e     // peut ne jamais finir
+    renvoyer psi(x)                            // psi : un exemple qui a la propriété</code></pre>
+<p>Il a la propriété si et seulement si $e\in K$. Un décideur de la propriété décide donc $K$.</p>
+<p>Le théorème ne parle que des propriétés <em>sémantiques</em>. Les propriétés <em>syntaxiques</em> sont souvent décidables : « le programme contient-il une boucle <code>while</code> ? », « a-t-il moins de 100 lignes ? », « est-il bien typé ? » (dans beaucoup de langages). C’est pourquoi les systèmes de types sont si utiles : ils remplacent une question sémantique indécidable par une question syntaxique décidable, au prix de rejeter certains programmes corrects.</p>
+</techno>
+</res>
+
+<h2>Liens avec la logique</h2>
+
+<res type="Proposition" nom="Un décideur de l’arrêt résoudrait la conjecture de Goldbach" id="goldbach">
+<enonce><p>La conjecture de Goldbach (tout entier pair $\ge4$ est somme de deux nombres premiers) est vraie si et seulement si un certain programme sans entrée, qui cherche un contre-exemple, ne s’arrête pas.</p></enonce>
+<philo>
+<p>Un oracle d’arrêt résoudrait d’un coup une foule de problèmes ouverts : Goldbach, l’hypothèse de Riemann (qui s’exprime aussi comme l’arrêt d’un programme), et en fait tout énoncé de la forme « il n’existe pas de contre-exemple vérifiable ». L’indécidabilité de l’arrêt n’est donc pas une curiosité de programmeur : elle est intimement liée à la difficulté des mathématiques elles-mêmes.</p>
+</philo>
+<tech>
+<p>Le programme teste successivement $x=4,6,8,\dots$ et s’arrête dès qu’il trouve un $x$ qui n’est <em>pas</em> somme de deux premiers. Chaque test est une recherche bornée (essayer tous les $p\le x$). Le programme s’arrête si et seulement si la conjecture est fausse. Plus généralement, tout énoncé de la forme $\forall x\,R(x)$ avec $R$ décidable (énoncé $\Pi_1$, voir <a href="hierarchie-arithmetique.html">Hiérarchie arithmétique</a>) équivaut au non-arrêt d’un programme.</p>
+</tech>
+<techno>
+<pre><code>x := 4
+tant que vrai :
+    décomposable := faux
+    pour p de 2 à x - 2 :
+        si premier(p) et premier(x - p) : décomposable := vrai
+    si non décomposable :
+        afficher x ; s'arrêter          // contre-exemple trouvé
+    x := x + 2</code></pre>
+<p>La conjecture a été vérifiée par ordinateur jusqu’à $4\times10^{18}$ (Oliveira e Silva, Herzog et Pardi, 2014) : ce programme n’a pas encore trouvé de contre-exemple, ce qui ne prouve rien.</p>
+</techno>
+</res>
+
+<h2 id="degres">Degrés d’indécidabilité</h2>
+
+<p>La distinction décidable/indécidable est plus fine qu’il n’y paraît : certains problèmes sont « plus indécidables » que d’autres. Le problème de l’arrêt est <em>complet pour les problèmes semi-décidables</em> : tout problème semi-décidable s’y réduit (voir <a href="semi-decidabilite.html">Semi-décidabilité</a>). Mais il existe des problèmes strictement plus difficiles, comme la totalité d’un programme, que même un oracle d’arrêt ne décide pas. La <a href="hierarchie-arithmetique.html">hiérarchie arithmétique</a> classe ces degrés selon la forme logique des énoncés.</p>
+
+<res type="Définition" nom="Hiérarchie des réductibilités" id="reductibilites">
+<enonce>
+<p>Pour $A,B\subseteq\N$, on définit, de la plus forte à la plus faible :</p>
+<ul>
+<li>$A\le_1 B$ (<em>one-one</em>) s’il existe $f$ totale calculable <em>injective</em> telle que $x\in A\iff f(x)\in B$ ;</li>
+<li>$A\le_m B$ (<em>many-one</em>) : même chose sans exiger l’injectivité (c’est la <a href="#reduction">réduction</a> utilisée dans ce chapitre) ;</li>
+<li>$A\le_{tt} B$ (<em>table de vérité</em>) : pour décider $x\in A$, on calcule une liste finie de questions $y_1,\dots,y_p$ et une formule booléenne, puis on évalue la formule sur les réponses « $y_j\in B$ ? » ;</li>
+<li>$A\le_T B$ (<em>Turing</em>) : $A$ est décidable par une machine munie d’un oracle pour $B$ (<a href="machines-turing.html#def-oracle">machine avec oracle</a>), qui peut poser ses questions de façon adaptative et en nombre non borné.</li>
+</ul>
+<p>On a $A\le_1B\Rightarrow A\le_mB\Rightarrow A\le_{tt}B\Rightarrow A\le_TB$, et aucune réciproque n’est vraie en général. Par exemple $\overline K\le_T K$ (on inverse la réponse de l’oracle), mais $\overline K\not\le_m K$ (sinon $\overline K$ serait semi-décidable). Deux ensembles one-one équivalents sont même récursivement isomorphes (<a href="hierarchie-arithmetique.html#myhill">théorème de Myhill</a>), et le niveau d’un problème dans la <a href="hierarchie-arithmetique.html#post">hiérarchie arithmétique</a> se mesure par ces réductions.</p>
+</enonce>
+<philo>
+<p>« $A$ se réduit à $B$ » veut dire « $A$ n’est pas plus difficile que $B$ » : savoir résoudre $B$ suffit pour résoudre $A$. Les différentes réductibilités précisent <em>comment</em> on a le droit de se servir de $B$ : une seule question posée à l’aveugle, plusieurs questions fixées à l’avance, ou un dialogue libre. Plus la règle est stricte, plus la hiérarchie des difficultés est fine.</p>
+<p>Post avait demandé en 1944 s’il existe des problèmes semi-décidables strictement entre « décidable » et « aussi difficile que l’arrêt ». Friedberg et Muchnik ont montré indépendamment (1956-1957) que oui (<a href="#friedberg-muchnik">théorème ci-dessous</a>), et même qu’il en existe deux, $A$ et $B$, incomparables : ni $A\le_TB$ ni $B\le_TA$. La difficulté des problèmes n’est pas une échelle linéaire.</p>
+</philo>
+</res>
+
+<res type="Théorème" nom="Friedberg (1957), Muchnik (1956) : il existe des degrés semi-décidables incomparables" id="friedberg-muchnik">
+<enonce><p>Il existe deux ensembles semi-décidables $A$ et $B$ tels que $A\not\le_TB$ et $B\not\le_TA$. En particulier, $A$ et $B$ ne sont ni décidables ni $T$-complets : ils sont de degré strictement compris entre celui de $\emptyset$ et celui de $K$, ce qui répond négativement au problème de Post.</p></enonce>
+<philo><p>La preuve invente la <em>méthode de priorité</em>, qui domine depuis la théorie des degrés. On construit $A$ et $B$ pas à pas, en satisfaisant une liste infinie d’exigences qui se contrarient : rendre $A$ différent de ce que calcule le programme $e$ avec $B$ pour oracle oblige à figer un morceau de $B$, alors que les autres exigences veulent ajouter des éléments à $B$. On les range par ordre de priorité : une exigence peut détruire le travail des moins prioritaires, qui recommencent, et l’on montre que chacune n’est dérangée qu’un nombre fini de fois.</p></philo>
+<tech>
+<p><strong>Notations.</strong> Pour un ensemble $X$, $\varphi^X_e$ est la $e$-ième fonction calculable relativement à $X$ (<a href="equivalence.html#enumeration-relative">énumération relative</a>), et $X\le_TY$ si et seulement si $c_X=\varphi^Y_e$ pour un $e$. On écrit $\varphi^X_{e,s}(x)=v$ s’il existe $y<s$ avec $T^X_1(\eta^\ast(e),x,y)$ et $U(y)=v$ ; ce $y$ (le code du calcul) est appelé l’<em>usage</em>. Par le <a href="equivalence.html#relatif">principe d’usage</a>, si $X$ et $Y$ ont les mêmes éléments inférieurs à $y$, alors $T^X_1(\eta^\ast(e),x,y)\iff T^Y_1(\eta^\ast(e),x,y)$ : le calcul ne dépend que de $X\cap[0,y[$.</p>
+<p><strong>Exigences.</strong> On construit $A=\bigcup_sA_s$ et $B=\bigcup_sB_s$, où $A_s,B_s$ sont des ensembles finis calculés au pas $s$, de façon à satisfaire, pour tout $e$ :</p>
+$$R_{2e}:\ c_A\ne\varphi^B_e,\qquad R_{2e+1}:\ c_B\ne\varphi^A_e.$$
+<p>$R_i$ est plus prioritaire que $R_j$ si $i<j$. Chaque $R_i$ possède à tout moment un <em>témoin</em> $x_i$, une <em>restriction</em> $r_i$ et un statut « satisfaite » ou non. <em>Initialiser</em> $R_i$, c’est lui donner pour témoin un nombre neuf (plus grand que tous les nombres déjà apparus dans la construction : éléments, témoins, restrictions, numéro du pas), pour restriction $0$, et le statut non satisfaite. Pour fixer les idées, on décrit $R_{2e}$ ; $R_{2e+1}$ s’en déduit en échangeant $A$ et $B$.</p>
+<p><strong>Construction.</strong> Au pas $0$, $A_0=B_0=\emptyset$ et l’on initialise $R_0$. Au pas $s+1$, on initialise $R_{s+1}$ ; puis on dit que $R_{2e}$, $2e\le s$, <em>demande à agir</em> si elle n’est pas satisfaite et si $\varphi^{B_s}_{e,s}(x_{2e})=0$. Si aucune exigence ne demande à agir, $A_{s+1}=A_s$ et $B_{s+1}=B_s$. Sinon, soit $R_i$ la plus prioritaire qui le demande, disons $i=2e$ : on pose $A_{s+1}=A_s\cup\{x_i\}$, $B_{s+1}=B_s$, la restriction $r_i$ devient l’usage du calcul, $R_i$ devient satisfaite, et l’on initialise toutes les $R_j$, $i<j\le s+1$.</p>
+<p>La construction est effective, donc $A$ et $B$ sont semi-décidables (on les énumère pas à pas). Un nombre n’entre dans $A$ ou dans $B$ que comme témoin de l’exigence qui agit, et les témoins sont tous distincts.</p>
+<p><strong>Lemme.</strong> Chaque $R_i$ n’agit qu’un nombre fini de fois, et elle est satisfaite au sens où $c_A\ne\varphi^B_e$ (pour $i=2e$).</p>
+<p>Par récurrence sur $i$. Soit $s_0\ge i$ un pas après lequel aucune $R_j$, $j<i$, n’agit plus (il existe par hypothèse de récurrence). Seules ces actions initialisent $R_i$ (en dehors de sa création au pas $i$) : soit $t_0\le s_0$ sa dernière initialisation. Après $t_0$, son témoin $x=x_i$ ne change plus.</p>
+<ul>
+<li><em>Si $R_i$ agit à un pas $s+1>t_0$.</em> Alors $x\in A$, et $\varphi^{B_s}_{e,s}(x)=0$ avec un usage $y=r_i$. Au même pas, toutes les $R_j$ moins prioritaires sont initialisées et reçoivent des témoins plus grands que $y$, et toute initialisation ultérieure leur en donnera de plus grands encore : elles ne mettront dans $B$ que des nombres $\ge y$. Les exigences plus prioritaires n’agissent plus après $s_0$ ; si $s<s_0$, aucune n’agit non plus entre $s+1$ et $s_0$, puisque $R_i$ n’est plus initialisée. Et $R_i$, désormais satisfaite, n’agit plus. Donc $B\cap[0,y[\;=B_s\cap[0,y[$, et par le principe d’usage $\varphi^B_e(x)=0\neq1=c_A(x)$. $R_i$ n’a agi qu’une fois après $t_0$.</li>
+<li><em>Si $R_i$ n’agit jamais après $t_0$.</em> Elle reste non satisfaite, et $x\notin A$, puisque seule $R_i$ peut y mettre son témoin. Supposons $\varphi^B_e(x)=0$, de calcul de code $y$. Comme $B$ est la réunion croissante des $B_s$, il existe $s_1>\max(s_0,y)$ tel que $B_{s}\cap[0,y[\;=B\cap[0,y[$ pour $s\ge s_1$, et alors $\varphi^{B_{s_1}}_{e,s_1}(x)=0$ : $R_i$ demande à agir au pas $s_1+1$. Aucune exigence plus prioritaire ne demande à agir après $s_0$ (la plus prioritaire de celles qui le demandent agit), donc $R_i$ agit : contradiction. Ainsi $\varphi^B_e(x)$ n’est pas défini ou diffère de $0=c_A(x)$.</li>
+</ul>
+<p>Dans les deux cas $c_A\ne\varphi^B_e$, et $R_i$ n’agit plus après un certain pas : la récurrence se poursuit. Toutes les exigences étant satisfaites, $A\not\le_TB$ et $B\not\le_TA$. Si $A$ était décidable, on aurait $A\le_TB$ ; si $A$ était $T$-complet, on aurait $B\le_TK\le_TA$, puisque $B$ est semi-décidable. De même pour $B$.</p>
+<p><strong>Relativisation.</strong> La même construction, où toutes les machines reçoivent en plus un oracle $C$ fixé (exigences $c_A\ne\varphi^{B\oplus C}_e$ et $c_B\ne\varphi^{A\oplus C}_e$, avec $X\oplus C=\{2x:x\in X\}\cup\{2x+1:x\in C\}$, et $A,B$ énumérés à l’aide de $C$), donne $A,B$ semi-décidables relativement à $C$ avec $A\not\le_TB\oplus C$ et $B\not\le_TA\oplus C$. Pour $C=\emptyset^{(n)}$, $A$ est $\Sigma_{n+1}$ (<a href="hierarchie-arithmetique.html#post">théorème de Post</a>) ; il n’est ni $\Sigma_n$ ni $\Pi_n$, sinon $A\le_T\emptyset^{(n)}\le_TB\oplus C$ ; et il n’est pas du degré de $\emptyset^{(n+1)}$, sinon $B\oplus C\le_T\emptyset^{(n+1)}\le_TA\le_TA\oplus C$.</p>
+</tech>
+</res>
+
+
+<h2 id="impossibilites">Trois impossibilités</h2>
+
+<p>Le polycopié de Boitet termine l’étude des problèmes insolubles par trois résultats qui ferment des portes que l’on aurait envie d’ouvrir.</p>
+
+<res type="Théorème" nom="Certaines fonctions partielles n’ont aucun prolongement calculable" id="sans-prolongement">
+<enonce><p>Il existe une fonction partielle calculable $\psi$ telle qu’aucune fonction totale calculable $f$ ne la prolonge (c’est-à-dire ne vérifie $f(x)=\psi(x)$ chaque fois que $\psi(x)\conv$).</p></enonce>
+<philo><p>On pourrait espérer « réparer » un programme qui boucle parfois en lui faisant rendre une valeur par défaut dans les cas où il ne s’arrête pas. C’est impossible en général : pour certains programmes, toute version qui s’arrête toujours donne forcément une réponse fausse quelque part où l’original répondait. La partialité n’est pas un défaut de présentation qu’un bon programmeur pourrait toujours éliminer.</p></philo>
+<tech><p>Soit $\psi(x)\simeq\varphi_x(x)+1$. Elle est calculable (fonction universelle). Si $f$ totale calculable la prolongeait, on aurait $f=\varphi_{x_0}$ pour un $x_0$ ; comme $f$ est totale, $\varphi_{x_0}(x_0)\conv$, donc $\psi(x_0)\conv$ et $\varphi_{x_0}(x_0)=f(x_0)=\psi(x_0)=\varphi_{x_0}(x_0)+1$ : contradiction.</p></tech>
+</res>
+
+<res type="Théorème" nom="Minimalité de la forme normale" id="forme-normale-minimale">
+<enonce><p>Dans la <a href="equivalence.html#forme-normale">forme normale de Kleene</a> $\varphi_e(x)\simeq U(\mu y\,T(e,x,y))$, on ne peut pas supprimer la fonction de sortie $U$ : il existe une fonction partielle calculable $\psi$ qui ne s’écrit pas $\psi(x)\simeq\mu y\,[f(x,y)=1]$ avec $f$ totale calculable.</p></enonce>
+<philo><p>Une recherche non bornée produit le <em>premier témoin</em> trouvé ; il faut encore, en général, un calcul pour en extraire la réponse. Une seule boucle « tant que » suffit pour tout programme, mais pas une boucle « tant que » qui rendrait directement son compteur.</p></philo>
+<tech><p>Soit $\psi(x)\simeq x$ si $x\in K$, et $\ind$ sinon ; elle est calculable. Si $\psi(x)\simeq\mu y[f(x,y)=1]$, alors pour $x\in K$ on a $\psi(x)=x$, donc $f(x,x)=1$ ; pour $x\notin K$, $\psi(x)\ind$, donc $f(x,y)\ne1$ pour tout $y$, en particulier $f(x,x)\neq1$. Ainsi $x\in K\iff f(x,x)=1$, et $K$ serait décidable.</p></tech>
+</res>
+
+<res type="Théorème" nom="On ne peut pas borner la durée des calculs" id="pas-de-delai">
+<enonce><p>Il n’existe pas de fonction totale calculable $f(x,y)$ telle que, pour tous $x,y$ : si $\varphi_x(y)\conv$, alors le calcul s’arrête en moins de $f(x,y)$ pas.</p></enonce>
+<philo><p>Les systèmes informatiques utilisent des <em>délais d’expiration</em> (<em>timeouts</em>) : passé un certain temps, on considère qu’un programme ne répondra plus. Ce théorème dit qu’aucun délai calculé à partir du programme et de ses données n’est sûr en général : on abandonnera toujours, pour certains programmes, un calcul qui aurait abouti un peu plus tard. Les <a href="castors-affaires.html">castors affairés</a> montrent à quel point ces durées peuvent être grandes.</p></philo>
+<tech><p>Le prédicat $m(x,y,w)$ : « $\varphi_x(y)$ s’arrête en moins de $w$ pas » est récursif primitif (on simule $w$ pas ; c’est une conséquence de la construction du prédicat de Kleene). Si $f$ existait, $\chi(x,y)=m(x,y,f(x,y))$ serait totale calculable et vaudrait 1 si et seulement si $\varphi_x(y)\conv$ : elle déciderait l’arrêt.</p></tech>
+<techno><p>C’est exactement la situation des simulateurs de ce manuel : le champ « pas max » est un délai d’expiration. La machine de l’exemple <a href="castors-affaires.html#valeurs-bb">Σ(5)</a> s’arrête après 47 176 870 pas ; avec un délai de 47 millions de pas, on conclurait à tort qu’elle boucle.</p></techno>
+</res>
+
+<!--EXERCICES-->
+<h2 id="exercices">Exercices</h2>
+
+<exo niveau="1" titre="Rice ou pas Rice ?" id="ex-ind-rice">
+<p>Parmi les ensembles suivants, lesquels sont décidables ? (a) $\{e:e\text{ est pair}\}$ ; (b) $\{e:\varphi_e(3)=5\}$ ; (c) l’ensemble des $e$ tels que la machine codée par $\eta(e)$ a moins de 10 états ; (d) l’ensemble des $e$ tels que $\varphi_e$ est la fonction nulle ; (e) l’ensemble des $e$ tels que le calcul de $\varphi_e(0)$ s’arrête en moins de 100 pas.</p>
+<corrige>
+<p>(a), (c) et (e) sont décidables ; (b) et (d) ne le sont pas.</p>
+<ul>
+<li>(a) : un test de parité. Ce n’est pas une propriété de la fonction $\varphi_e$ : deux indices d’une même fonction peuvent être l’un pair, l’autre impair. Le théorème de Rice ne s’applique pas.</li>
+<li>(c) : on décode $\eta(e)$ et l’on compte les états ; c’est une propriété du texte du programme, pas de la fonction calculée.</li>
+<li>(e) : on exécute au plus 100 pas, ce qui termine toujours. La propriété dépend du programme (un programme plus lent calcule la même fonction).</li>
+<li>(b) et (d) sont des ensembles d’indices $\{e:\varphi_e\in\mathcal F\}$ avec $\mathcal F$ non trivial : les fonctions qui valent 5 en 3, la seule fonction nulle. Le <a href="#rice-theoreme">théorème de Rice</a> s’applique.</li>
+</ul>
+<p>La leçon : Rice interdit de décider les propriétés <em>sémantiques</em> (de la fonction calculée), pas les propriétés <em>syntaxiques</em> ni les propriétés d’exécution bornée.</p>
+</corrige>
+</exo>
+
+<exo niveau="1" titre="L’arrêt sur 0" id="ex-ind-zero">
+<p>Montrer directement, par une réduction de $K$, que $\{e:\varphi_e(0)\conv\}$ n’est pas décidable.</p>
+<corrige>
+<p>La fonction $\psi(e,x)\simeq\varphi_e(e)$ (qui ignore $x$) est calculable. Par s-m-n, il existe $f$ récursive primitive avec $\varphi_{f(e)}(x)\simeq\varphi_e(e)$ pour tout $x$. Alors $e\in K\iff\varphi_e(e)\conv\iff\varphi_{f(e)}(0)\conv$. Donc $K\le_m\{e:\varphi_e(0)\conv\}$, qui est indécidable puisque $K$ l’est (<a href="#reduction">réduction</a>).</p>
+</corrige>
+</exo>
+
+<exo niveau="2" titre="Domaine infini" id="ex-ind-infini">
+<p>Montrer que $K\le_m\{e:W_e\text{ est infini}\}$ et $K\le_m\{e:\varphi_e\text{ est totale}\}$.</p>
+<corrige>
+<p>Avec le même $f$ que dans l’exercice précédent, $W_{f(e)}=\N$ si $e\in K$, et $W_{f(e)}=\emptyset$ sinon. Donc $e\in K\iff W_{f(e)}$ infini $\iff\varphi_{f(e)}$ totale : la même fonction réalise les deux réductions. Ces ensembles sont en fait strictement plus difficiles que $K$ (<a href="hierarchie-arithmetique.html#fin-tot">ils sont $\Pi_2$-complets</a>).</p>
+</corrige>
+</exo>
+
+<exo niveau="2" titre="Équivalence de programmes" id="ex-ind-equivalence">
+<p>Montrer que $\{\langle a,b\rangle:\varphi_a=\varphi_b\}$ n’est pas décidable.</p>
+<corrige>
+<p>Fixons un indice $z$ de la fonction nulle. L’application $a\mapsto\langle a,z\rangle$ est calculable et $\varphi_a=\varphi_z\iff\langle a,z\rangle\in\{\langle a,b\rangle:\varphi_a=\varphi_b\}$. Elle réduit donc $\{a:\varphi_a\text{ est la fonction nulle}\}$, indécidable par <a href="#rice-theoreme">Rice</a> (exercice 1, (d)), à l’équivalence. Ainsi aucun outil ne peut décider, en général, si une optimisation de programme préserve son comportement : les compilateurs n’appliquent que des transformations dont la correction est démontrée une fois pour toutes.</p>
+</corrige>
+</exo>
+
+<exo niveau="3" titre="Le plus grand résultat d’un petit programme" id="ex-ind-sigma">
+<p>Soit $\sigma(n)=\max\{\varphi_e(0):e\le n,\ \varphi_e(0)\conv\}$ (avec $\max\emptyset=0$). Montrer qu’aucune fonction calculable totale $f$ ne vérifie $f(n)\ge\sigma(n)$ pour tout $n$. On pourra utiliser le théorème de récursion.</p>
+<corrige>
+<p>Soit $f$ calculable totale. La fonction $\psi(e,x)=f(e)+1$ est calculable ; par le <a href="smn-recursion.html#kleene-parametres">théorème de récursion avec paramètres</a>, il existe $e$ tel que $\varphi_e(x)=f(e)+1$ pour tout $x$. En particulier $\varphi_e(0)\conv$ et $e\le e$, donc $\sigma(e)\ge\varphi_e(0)=f(e)+1>f(e)$ : $f$ ne majore pas $\sigma$ au point $e$.</p>
+<p>C’est une version, pour les indices, de la fonction du <a href="castors-affaires.html#sigma-non-calculable">castor affairé</a>. La preuve par récursion est remarquablement courte : le programme $e$ « connaît » son propre indice, calcule la borne prétendue, et la dépasse d’une unité.</p>
+</corrige>
+</exo>

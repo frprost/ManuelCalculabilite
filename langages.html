@@ -1,0 +1,408 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Frédéric Prost et Claude">
+<title>Indécidabilité en théorie des langages · Calculabilité</title>
+<link rel="stylesheet" href="assets/katex/katex.min.css">
+<link rel="stylesheet" href="assets/style.css">
+<script>try{var t=localStorage.getItem('calc-theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}document.documentElement.classList.add('js');</script>
+</head>
+<body>
+<header class="entete"><div class="entete-int">
+  <button type="button" class="btn-menu" aria-label="Sommaire">☰ Sommaire</button>
+  <a class="titre-site" href="index.html">Calculabilité <span>·</span> un manuel à trois niveaux</a>
+  <span class="selecteur-legende">Niveau de lecture :</span>
+  <div class="selecteur" role="group" aria-label="Niveau de lecture">
+    <button type="button" data-niveau="philo" title="Sens et implications">Philosophique</button>
+    <button type="button" data-niveau="tech" title="Preuves mathématiques">Technique</button>
+    <button type="button" data-niveau="techno" title="Constructions complètes, machines de Turing">Technologique</button>
+    <button type="button" data-niveau="tout" title="Afficher les trois niveaux">Tout</button>
+  </div>
+  <button type="button" class="btn-theme" aria-label="Changer de thème" title="Clair / sombre">◐</button>
+</div></header>
+<div class="page">
+<nav class="sommaire" aria-label="Sommaire"><ul><li><a href="index.html">Accueil et mode d’emploi</a></li></ul><h2>Entrer dans le sujet</h2><ol><li><a href="motivations.html"><span class="num">1</span>Motivations</a></li><li><a href="trois-approches.html"><span class="num">2</span>Trois approches du calcul</a></li></ol><h2>Modèles de calcul</h2><ol><li><a href="machines-turing.html"><span class="num">3</span>Machines de Turing</a></li><li><a href="fonctions-recursives.html"><span class="num">4</span>Fonctions récursives</a></li><li><a href="lambda-calcul.html"><span class="num">5</span>λ-calcul</a></li><li><a href="equivalence.html"><span class="num">6</span>Équivalence des modèles</a></li><li><a href="these-church.html"><span class="num">7</span>Thèse de Church-Turing</a></li></ol><h2>Théorèmes fondamentaux</h2><ol><li><a href="universalite.html"><span class="num">8</span>Universalité</a></li><li><a href="smn-recursion.html"><span class="num">9</span>s-m-n et récursion</a></li></ol><h2>Limites du calcul</h2><ol><li><a href="indecidabilite.html"><span class="num">10</span>Indécidabilité</a></li><li><a href="semi-decidabilite.html"><span class="num">11</span>Semi-décidabilité</a></li><li><a href="hierarchie-arithmetique.html"><span class="num">12</span>Hiérarchie arithmétique</a></li><li><a href="incompletude.html"><span class="num">13</span>Incomplétude</a></li><li><a href="equations-diophantiennes.html"><span class="num">14</span>Équations diophantiennes</a></li><li><a href="logique-types.html"><span class="num">15</span>Logique et types</a></li><li><a href="theories-decidables.html"><span class="num">16</span>Théories décidables</a></li><li><a href="mathematiques-indecidables.html"><span class="num">17</span>Mathématiques ordinaires</a></li><li><a href="kolmogorov-omega.html"><span class="num">18</span>Kolmogorov et Ω</a></li><li><a href="langages.html" aria-current="page"><span class="num">19</span>Langages et grammaires</a></li></ol><h2>Complexité</h2><ol><li><a href="complexite.html"><span class="num">20</span>Complexité</a></li><li><a href="hasard-quantique.html"><span class="num">21</span>Hasard et quantique</a></li></ol><h2>Études de cas</h2><ol><li><a href="ackermann.html"><span class="num">22</span>Fonction d’Ackermann</a></li><li><a href="castors-affaires.html"><span class="num">23</span>Castors affairés</a></li><li><a href="calculabilite-ia.html"><span class="num">24</span>Calculabilité et IA</a></li><li><a href="autres-modeles.html"><span class="num">25</span>Autres modèles</a></li></ol><h2>Annexes</h2><ol><li><a href="parcours.html">Parcours de lecture</a></li><li><a href="cantor.html">Diagonale de Cantor</a></li><li><a href="bases.html">Notions de base</a></li><li><a href="leibniz.html">Leibniz et le binaire</a></li><li><a href="bibliographie.html">Bibliographie</a></li></ol></nav>
+<main class="contenu">
+<h1>Indécidabilité en théorie des langages</h1>
+<p class="chapo">Réécrire des mots selon des règles fixes : c’est ce que font les grammaires, les systèmes formels et les compilateurs. C’est aussi un modèle de calcul universel, et la source de nombreuses questions indécidables sur les langages.</p>
+<div class="prerequis"><strong>Pré-requis</strong><a href="bases.html#mots">Mots et langages</a> · <a href="semi-decidabilite.html">Semi-décidabilité</a> · <a href="indecidabilite.html#reduction">Réductions</a></div>
+<nav class="toc-locale" aria-label="Dans ce chapitre"><strong>Dans ce chapitre</strong><ol><li><a href="#systemes">Systèmes de réécriture</a></li><li><a href="#post">Le problème de correspondance de Post</a></li><li><a href="#grammaires">Grammaires et automates</a></li><li><a href="#exercices">Exercices</a></li></ol></nav>
+
+
+<p>Ce chapitre reprend la partie C du polycopié de Christian Boitet (« Applications à la théorie des langages », elle-même inspirée du cours de Bernard Vauquois et des travaux de Post). On y transpose aux <em>mots</em> les résultats obtenus sur les entiers : un ensemble de mots est décidable, ou semi-décidable, si l’ensemble de leurs nombres de Gödel l’est (voir <a href="fonctions-recursives.html#godel">Codage de Gödel</a>).</p>
+
+<h2 id="systemes">Systèmes de réécriture</h2>
+
+<div class="resultat definition" id="systemes-combinatoires"><div class="entete-res"><div class="type">Définition</div><div class="nom">Productions et systèmes combinatoires</div></div>
+<div class="enonce">
+<p>Soit $A$ un alphabet fini et $\alpha,\beta\in A^+$ deux mots non vides.</p>
+<ul>
+<li>La <strong>production semi-thuéenne</strong> $\alpha\to\beta$ permet de réécrire $X$ en $Y$, noté $X\vdash Y$, lorsque $X=\varphi\alpha\psi$ et $Y=\varphi\beta\psi$ pour des mots $\varphi,\psi\in A^*$ : on remplace une occurrence de $\alpha$, <em>n’importe où</em> dans le mot.</li>
+<li>La <strong>production normale</strong> $\alpha\varphi\to\varphi\beta$ permet de réécrire $\alpha\varphi$ en $\varphi\beta$ : on efface $\alpha$ <em>au début</em> du mot et on écrit $\beta$ <em>à la fin</em>. Son inverse $\varphi\beta\to\alpha\varphi$ est dite <em>antinormale</em>.</li>
+<li>Un <strong>système combinatoire</strong> est un triplet $\Gamma=(A,S,P)$ formé d’un alphabet $A$, d’un mot $S\in A^+$ appelé <em>axiome</em> et d’un ensemble fini $P$ de productions. Il est <em>semi-thuéen</em> si ses productions sont semi-thuéennes, <em>thuéen</em> si de plus l’inverse $\beta\to\alpha$ de chaque production est dans $P$, <em>normal</em> si ses productions sont normales.</li>
+<li>Une <strong>preuve</strong> de $Y$ dans $\Gamma$ est une suite $S=X_1\vdash X_2\vdash\cdots\vdash X_n=Y$ ; on note alors $S\vdash^*_\Gamma Y$. Le <strong>langage</strong> de $\Gamma$ est l’ensemble de ses « théorèmes » : $L(\Gamma)=\{Y\in A^*: S\vdash^*_\Gamma Y\}$.</li>
+</ul>
+</div>
+<div class="niveau" data-niveau="philo">
+<p>Un système combinatoire est un jeu de patience sur les mots : on part d’un mot de départ et on applique des règles de remplacement, dans l’ordre que l’on veut. Les grammaires des linguistes, les systèmes formels des logiciens (axiomes et règles d’inférence) et les règles de réécriture des compilateurs sont des systèmes de ce genre. Le vocabulaire « preuve » et « théorème » n’est pas une métaphore : une démonstration mathématique formalisée est exactement une preuve dans un système combinatoire bien choisi.</p>
+<p>Axel Thue étudiait dès 1914 la question de savoir si deux mots sont équivalents par un jeu de règles réversibles ; Emil Post, dans les années 1920, voyait dans ces systèmes la forme la plus générale de tout procédé formel. C’est l’une des racines de la thèse de Church-Turing.</p>
+</div>
+<div class="niveau" data-niveau="tech">
+<p>Une production semi-thuéenne $\alpha\to\beta$ est une règle de <em>grammaire syntagmatique</em> (de type 0 dans la hiérarchie de Chomsky). Si $\Gamma=(A,S,P)$ est semi-thuéen et si $A$ est partagé en terminaux $T$ et non-terminaux $N$, la grammaire $G=(T,N,S',P\cup\{S'\to S\})$ engendre $L(G)=L(\Gamma)\cap T^*$.</p>
+<p>On peut aussi considérer des productions plus générales $\varphi\alpha\psi\beta\theta\to\varphi\bar\alpha\psi\bar\beta\theta$ ; elles n’ajoutent rien d’essentiel.</p>
+</div>
+<div class="niveau" data-niveau="techno">
+<p>Le système semi-thuéen d’alphabet $\{a,b\}$, d’axiome $ab$ et de production unique $ab\to aabb$ a pour langage $\{a^nb^n:n\ge1\}$ : une preuve de $aaabbb$ est $ab\vdash aabb\vdash aaabbb$ (la seconde étape réécrit le $ab$ central). Le système <em>normal</em> d’axiome $ab$ et de production $a\varphi\to\varphi ba$ produit $ab\vdash bba$ puis s’arrête (aucun mot ne commence plus par $a$).</p>
+</div>
+</div>
+
+<div class="resultat theoreme" id="langage-re"><div class="entete-res"><div class="type">Théorème</div><div class="nom">Le langage d’un système combinatoire est semi-décidable</div></div>
+<div class="enonce"><p>Pour tout système combinatoire $\Gamma$, le langage $L(\Gamma)$ est semi-décidable (récursivement énumérable).</p></div>
+<div class="niveau" data-niveau="philo"><p>On peut toujours <em>énumérer</em> les théorèmes d’un système formel : il suffit d’essayer toutes les preuves, par longueur croissante. C’est ce que ferait un démonstrateur automatique patient. Mais cette énumération ne permet pas de savoir qu’un mot n’est <em>pas</em> un théorème : on peut attendre indéfiniment. Le « problème du mot » d’un système, décider si $Y\in L(\Gamma)$, peut donc être indécidable ; c’est le cas pour l’arithmétique formelle (<a href="incompletude.html#entscheidung">théorème de Church et Turing</a>).</p></div>
+<div class="niveau" data-niveau="tech">
+<p>À chaque production $R_i$ on associe le prédicat numérique $r_i(x,y)$ : « $x$ et $y$ sont les nombres de Gödel de deux mots $X,Y$ avec $X\vdash Y$ par $R_i$ ». Il est récursif primitif : il suffit de chercher, par des quantificateurs bornés par $x$ et $y$, les nombres de Gödel de $\varphi$ et $\psi$, et de vérifier $x=\varphi*\alpha*\psi$, $y=\varphi*\beta*\psi$ où $*$ est la concaténation des codes. Alors, si $s=\mathrm{gn}(S)$,</p>
+$$x\in\mathrm{gn}(L(\Gamma))\iff\exists y\ \Big[\mathrm{GN}(y)\wedge \mathrm{Id}(1,y)=s\wedge \bigwedge_{n<|y|} r\big(\mathrm{Id}(n,y),\mathrm{Id}(n+1,y)\big)\wedge \mathrm{Id}(|y|,y)=x\Big],$$
+<p>où $y$ code la preuve et $r=r_1\vee\cdots\vee r_p$. C’est la projection d’un prédicat récursif, donc un ensemble semi-décidable (<a href="semi-decidabilite.html#projection">théorème de projection</a>).</p>
+</div>
+</div>
+
+<div class="resultat theoreme" id="semi-thue-universel"><div class="entete-res"><div class="type">Théorème</div><div class="nom">Universalité des systèmes semi-thuéens (Post, 1947)</div></div>
+<div class="enonce"><p>Pour tout ensemble semi-décidable $W\subseteq\N$, il existe un système semi-thuéen $\sigma$, sur un alphabet contenant $1$, tel que $m\in W$ si et seulement si le mot $hq_0\overline m h$ appartient au langage de $\sigma$. Plus généralement, tout langage semi-décidable $R\subseteq A^*$ est de la forme $L(\Gamma)\cap A^*$ pour un système semi-thuéen $\Gamma$ sur un alphabet plus grand : c’est le théorème selon lequel les grammaires de type 0 engendrent exactement les langages récursivement énumérables.</p></div>
+<div class="niveau" data-niveau="philo"><p>Réciproquement au théorème précédent : réécrire des mots est un modèle de calcul aussi puissant que les machines de Turing. Une configuration de machine est un mot, un pas de calcul est le remplacement d’un petit morceau de ce mot. Toute la calculabilité tient dans des règles de la forme « remplacer ceci par cela ».</p></div>
+<div class="niveau" data-niveau="tech">
+<p>Soit $Z$ une machine de Turing qui s’arrête exactement sur les codes des mots de $R$. On encadre les descriptions instantanées par un marqueur $h$, et l’on traduit chaque quadruplet par des productions qui réalisent le même pas sur le mot $h\,\gamma\,q_i\,S_j\,\delta\,h$ (tableau ci-contre, niveau technologique). Lorsque $Z$ s’arrête, des productions de « nettoyage » effacent la bande et produisent un mot fixe $h\,q'\,h$. Le système $\mathcal C_m(Z)$ d’axiome $hq_0\overline m h$ vérifie alors :</p>
+<ul>
+<li>tout mot dérivé est <em>standard</em> : de la forme $hWh$ avec un seul symbole d’état dans $W$ ;</li>
+<li>chaque mot standard a au plus un conséquent (le système est <em>monogène</em>, c’est le déterminisme de $Z$) ;</li>
+<li>$m\in W_z\iff hq_0\overline mh\vdash^* hq'h$.</li>
+</ul>
+<p>On « retourne » enfin le système : $\sigma(Z)=(A,\ hq'h,\ P^{-1})$, où $P^{-1}$ contient les inverses des productions. Alors $hq_0\overline mh\in L(\sigma(Z))\iff m\in W_z$ : on a transformé le <em>domaine</em> d’une machine en <em>langage</em> engendré, c’est-à-dire en image.</p>
+<p>Pour la forme générale, on fait travailler la machine directement sur les mots de $A^*$ (ses symboles contiennent les lettres de $A$), avec l’axiome $hq_0wh$ ; le système retourné engendre les mots $hq_0wh$ pour $w\in R$. On ajoute alors deux lettres de contrôle et des productions qui, à partir de $hq_0$, font traverser le mot à un marqueur qui efface $h$, $q_0$ et le $h$ final, la dernière production supprimant le marqueur sur la dernière lettre ; les mots de $A^*$ obtenus sont exactement ceux de $R$. (Les productions de ce chapitre ont des membres droits non vides : on efface donc en fusionnant le marqueur avec une lettre voisine, ce qui oblige à traiter à part le mot vide.)</p>
+</div>
+<div class="niveau" data-niveau="techno">
+<p>Traduction d’une machine à quadruplets (convention de ce manuel) en productions, pour toutes les lettres $S_k$ de l’alphabet de la machine :</p>
+<table>
+<tr><th>quadruplet</th><th>productions</th></tr>
+<tr><td>$q_i\,S_j\,S_k\,q_l$</td><td>$q_iS_j\to q_lS_k$</td></tr>
+<tr><td>$q_i\,S_j\,R\,q_l$</td><td>$q_iS_jS_k\to S_jq_lS_k$ ; $\ q_iS_jh\to S_jq_lS_0h$</td></tr>
+<tr><td>$q_i\,S_j\,L\,q_l$</td><td>$S_kq_iS_j\to q_lS_kS_j$ ; $\ hq_iS_j\to hq_lS_0S_j$</td></tr>
+<tr><td>aucun quadruplet $q_iS_j$</td><td>$q_iS_j\to qS_j$ (état « piège » $q$)</td></tr>
+<tr><td>nettoyage</td><td>$qS_j\to q$ ; $\ qh\to q'h$ ; $\ S_jq'\to q'$</td></tr>
+</table>
+<p>Les deux productions des déplacements prennent en charge le cas où la tête sort de la partie écrite : on ajoute alors un blanc $S_0$ contre le marqueur.</p>
+</div>
+</div>
+
+<div class="resultat theoreme" id="probleme-du-mot"><div class="entete-res"><div class="type">Théorème</div><div class="nom">Problème du mot indécidable (Post, Markov, 1947)</div></div>
+<div class="enonce">
+<ol>
+<li>Il existe un système semi-thuéen, et même un système thuéen, dont le problème du mot (« $Y\in L(\Gamma)$ ? ») est indécidable.</li>
+<li>Il existe un monoïde défini par un nombre fini de générateurs et de relations, et même par <em>deux</em> générateurs, dans lequel on ne peut pas décider si deux mots représentent le même élément.</li>
+</ol>
+</div>
+<div class="niveau" data-niveau="philo">
+<p>C’est le premier problème indécidable venu des mathématiques « ordinaires » et non de la logique : une question d’algèbre (deux expressions sont-elles égales compte tenu de règles de calcul données ?) qu’aucun algorithme ne tranche. Elle a été posée par Thue en 1914 et résolue négativement, indépendamment, par Post et par Andreï Markov en 1947. Le problème analogue pour les groupes (Novikov 1955, Boone 1958) est un des grands théorèmes du XX<sup>e</sup> siècle ; il est présenté, avec d’autres exemples (pavages, matrices, topologie), au chapitre <a href="mathematiques-indecidables.html">L’indécidable dans les mathématiques ordinaires</a>.</p>
+<p>Calculer avec des symboles selon des règles d’égalité, comme on le fait en algèbre au lycée, est donc un jeu dont on ne peut pas toujours prévoir l’issue.</p>
+</div>
+<div class="niveau" data-niveau="tech">
+<p>(1) On prend $z_0$ tel que $W_{z_0}=K$ : le problème du mot de $\sigma(z_0)$ est indécidable. Pour un système thuéen, on ajoute à $\sigma(z_0)$ les inverses de ses productions, ce qui donne les productions de $\mathcal C(z_0)$ et leurs inverses. Le langage ne change pas : dans une preuve <em>sans répétition</em> qui utiliserait une production ajoutée, considérons la première étape $X_{j-1}\vdash X_j$ qui le fait (ce n’est pas la toute première étape, car l’axiome $hq'h$ n’a pas de conséquent dans $\mathcal C(z_0)$) ; l’étape précédente $X_{j-2}\vdash X_{j-1}$ utilise une production de $\sigma$, donc $X_{j-1}$ aurait dans le système monogène $\mathcal C(z_0)$ deux conséquents différents, $X_{j-2}$ et $X_j$ : contradiction.</p>
+<p>(2) Un système thuéen de relations $g_i\leftrightarrow g'_i$ définit un monoïde $\Sigma(\Gamma)=A^*/\!\approx$, où $\approx$ est la plus petite congruence contenant les relations, et $S\vdash^*_\Gamma X\iff S\approx X$. Pour deux générateurs $B$ et $1$, on recode les lettres $a_i$ par $a_i^*=B1^{i}B$, et chaque relation $g\leftrightarrow g'$ par $h(g)\leftrightarrow h(g')$, où $h$ code un mot lettre par lettre. Dans un mot codé $h(w)$, une occurrence de $h(g)$ commence forcément au début d’un code : elle commence par $B1$, alors que le $B$ final d’un code est suivi d’un $B$ ou de rien. Elle recouvre donc des codes entiers, ceux d’une occurrence de $g$ dans $w$. Les étapes à partir de $h(w)$ sont ainsi exactement les images des étapes à partir de $w$, et elles mènent à des mots codés : $h(u)\approx h(v)$ dans le nouveau monoïde si et seulement si $u\approx v$ dans l’ancien, et le problème du mot reste indécidable.</p>
+<p>Exemples explicites : Tseitin (1958) a donné un monoïde à 5 générateurs et 7 relations dont le problème du mot est indécidable.</p>
+</div>
+</div>
+
+<div class="resultat theoreme" id="systemes-normaux"><div class="entete-res"><div class="type">Théorème</div><div class="nom">Systèmes normaux et alphabet à deux lettres</div></div>
+<div class="enonce"><p>Tout ensemble semi-décidable $R\subseteq A^*$ est de la forme $L(\Gamma)\cap A^*$ pour un système normal $\Gamma$ sur un alphabet plus grand. On peut même choisir $\Gamma$ sur un alphabet de deux symboles, à un codage récursif primitif des lettres près.</p></div>
+<div class="niveau" data-niveau="philo"><p>Les productions normales sont très pauvres : on ne lit que le <em>début</em> du mot et l’on n’écrit qu’à la <em>fin</em>, comme une file d’attente. Cela suffit encore à tout calculer. Ce résultat de Post sert de tremplin vers le problème de correspondance, qui n’est rien d’autre qu’un système normal « mis à plat ».</p></div>
+<div class="niveau" data-niveau="tech">
+<p>Soit $R\subseteq A^*$ semi-décidable. Par le <a href="#semi-thue-universel">théorème précédent</a>, $R=L(\Gamma_1)\cap A^*$ pour un système semi-thuéen $\Gamma_1=(V,S,P)$ sur un alphabet $V\supseteq A$, de productions $\alpha_i\to\beta_i$. On construit un système normal $\Gamma_2$ tel que $L(\Gamma_2)\cap V^*=L(\Gamma_1)$, donc $L(\Gamma_2)\cap A^*=R$.</p>
+<p><strong>Construction.</strong> On ajoute une copie « primée » $a'$ de chaque lettre $a\in V$, et l’on note $w'$ le mot $w$ dont toutes les lettres sont primées. L’axiome de $\Gamma_2$ est $S$, et ses productions sont, pour $a\in V$ et chaque $i$ :</p>
+$$a\theta\to\theta a'\ \ \text{(rotation)},\qquad \alpha_i\theta\to\theta\beta'_i\ \ \text{(application)},\qquad a'\theta\to\theta a\ \ \text{(démarquage)}.$$
+<p>On lit le mot comme un ruban circulaire : la rotation fait passer une lettre de l’avant à l’arrière en la marquant, et le démarquage fait de même en effaçant la marque.</p>
+<p><strong>Mots réguliers.</strong> Appelons <em>régulier</em> un mot de la forme $ZT'$ ou $Z'T$ avec $Z,T\in V^*$, et associons-lui le mot $TZ\in V^*$ (les deux formes coïncident quand $Z$ ou $T$ est vide, et donnent alors le même mot associé). Montrons que si $X$ est régulier et $X\vdash_{\Gamma_2}Y$, alors $Y$ est régulier, et son mot associé est égal à celui de $X$ ou s’en déduit par une étape de $\Gamma_1$.</p>
+<ul>
+<li>$X=ZT'$ avec $Z\neq\varepsilon$ : $X$ commence par une lettre non primée, donc seules la rotation et l’application s’appliquent, et l’antécédent $\alpha_i$ (sans prime) est forcément un préfixe de $Z$. La rotation de $Z=aZ_1$ donne $Z_1(Ta)'$, associé à $TaZ_1=TZ$. L’application, avec $Z=\alpha_iZ_1$, donne $Z_1(T\beta_i)'$, associé à $T\beta_iZ_1$ ; or $T\alpha_iZ_1\vdash_{\Gamma_1}T\beta_iZ_1$.</li>
+<li>$X=Z'T$ avec $Z\neq\varepsilon$ : seul le démarquage s’applique. Avec $Z=aZ_1$, il donne $Z_1'Ta$, associé à $TaZ_1=TZ$.</li>
+</ul>
+<p>L’axiome $S$ est régulier et associé à lui-même. Par récurrence sur la longueur des preuves, tout mot de $L(\Gamma_2)$ est régulier et son mot associé est dans $L(\Gamma_1)$. Un mot $w\in V^*$ (sans prime) est régulier de la forme $ZT'$ avec $Z=w$ et $T=\varepsilon$, associé à $w$ : donc $L(\Gamma_2)\cap V^*\subseteq L(\Gamma_1)$.</p>
+<p><strong>Réciproque.</strong> Une étape $\varphi\alpha_i\psi\vdash_{\Gamma_1}\varphi\beta_i\psi$ se simule dans $\Gamma_2$ : on fait tourner les lettres de $\varphi$ une à une, ce qui donne $\alpha_i\psi\varphi'$ ; on applique la règle : $\psi\varphi'\beta'_i$ ; on fait tourner $\psi$ : $\varphi'\beta'_i\psi'$ ; puis on démarque toutes les lettres, ce qui donne $\varphi\beta_i\psi$. Par récurrence, $L(\Gamma_1)\subseteq L(\Gamma_2)$. Toutes ces productions ont des antécédents et des conséquents non vides, comme l’exige la définition.</p>
+<p><strong>Deux lettres.</strong> Numérotons $c_1,\dots,c_r$ les lettres de l’alphabet de $\Gamma_2$ (lettres de $V$ et lettres primées) et codons $c_i$ par $c_i^*=B\,1^{i}B$, puis un mot lettre par lettre ($h(c_{i_1}\cdots c_{i_n})=c_{i_1}^*\cdots c_{i_n}^*$). Le système $\Gamma_3$ d’axiome $h(S)$ et de productions $h(\alpha)\theta\to\theta h(\beta)$, pour chaque production $\alpha\theta\to\theta\beta$ de $\Gamma_2$, est normal sur l’alphabet $\{B,1\}$. Les codes $c_i^*$ forment un code <em>préfixe</em> (aucun n’est préfixe d’un autre, puisqu’un code se termine au deuxième $B$) : un mot codé se décode de manière unique, et $h(\alpha)$ est un préfixe de $h(w)$ si et seulement si $\alpha$ est un préfixe de $w$ (on compare les codes un par un). Donc les étapes de $\Gamma_3$ à partir d’un mot $h(w)$ sont exactement les images des étapes de $\Gamma_2$ à partir de $w$, et par récurrence $L(\Gamma_3)=h(L(\Gamma_2))$. Ainsi $w\in R$ si et seulement si $w\in A^*$ et $h(w)\in L(\Gamma_3)$ : à ce codage près, $R$ est engendré par un système normal sur deux symboles. Comme $h$ et son inverse sont récursifs primitifs, la (semi-)décidabilité du problème du mot est préservée.</p>
+</div>
+</div>
+
+<h2 id="post">Le problème de correspondance de Post</h2>
+
+<div class="resultat theoreme" id="post-langages"><div class="entete-res"><div class="type">Théorème</div><div class="nom">Indécidabilité du problème de Post (1946)</div></div>
+<div class="enonce">
+<p>Étant données deux listes de mots non vides $(x)=(x_1,\dots,x_n)$ et $(y)=(y_1,\dots,y_n)$ sur un alphabet $V$ à deux lettres, on ne peut pas décider en général s’il existe une suite d’indices $i_1,\dots,i_r$ ($r\ge1$) telle que</p>
+$$x_{i_1}x_{i_2}\cdots x_{i_r}=y_{i_1}y_{i_2}\cdots y_{i_r}.$$
+<p>Ce problème est semi-décidable. Sur un alphabet à une seule lettre, il est décidable.</p>
+</div>
+<div class="niveau" data-niveau="philo">
+<p>Le problème de Post joue pour les mots le rôle que joue le problème de l’arrêt pour les programmes : c’est le problème indécidable « de référence » dont on part pour prouver, par réduction, l’indécidabilité de questions sur les grammaires et les langages. Il est présenté plus brièvement, sous forme de dominos, dans le chapitre <a href="autres-modeles.html#pcp">Autres modèles</a>.</p>
+<p>Une solution, si elle existe, peut être très longue : pour le deuxième exemple ci-dessous, qui n’a que quatre dominos, la plus courte solution trouvée par le simulateur en compte 66.</p>
+</div>
+<div class="niveau" data-niveau="tech">
+<p><strong>Semi-décidabilité.</strong> On essaie toutes les suites d’indices par longueur croissante. S’il existe une solution, il en existe une infinité (on peut la répéter), mais on ne sait jamais quand s’arrêter s’il n’y en a pas.</p>
+<p><strong>Une seule lettre.</strong> Si $x_i=a^{m_i}$ et $y_i=a^{n_i}$, une suite d’indices est une solution si et seulement si $\sum_k(m_{i_k}-n_{i_k})=0$ : l’ordre ne compte pas. Il existe donc une solution si et seulement si l’on a $m_i=n_i$ pour un $i$, ou bien $m_i>n_i$ et $m_j&lt;n_j$ pour deux indices $i,j$ : dans ce dernier cas, $n_j-m_j$ copies de $i$ et $m_i-n_i$ copies de $j$ conviennent ; et si toutes les différences $m_i-n_i$ sont non nulles et de même signe, aucune somme non vide n’est nulle. Ce critère se vérifie directement.</p>
+<p><strong>Réduction.</strong> On réduit le problème du mot d’un système semi-thuéen au problème de Post, en deux étapes. Le <em>problème de Post modifié</em> est le même problème, avec une liste de dominos $(x_1,y_1),\dots,(x_n,y_n)$ dont on impose que la solution commence par le premier.</p>
+<p><em>Étape 1 : du problème du mot au problème modifié.</em> Soit $\Gamma=(A,S,P)$ un système semi-thuéen dont le problème du mot est indécidable (<a href="#probleme-du-mot">théorème précédent</a>), de productions $\alpha_i\to\beta_i$ (mots non vides). Pour un mot $Y\in A^+$, on prend deux lettres nouvelles $\#$ et $\natural$ et les dominos (en haut / en bas) :</p>
+<ul>
+<li>le domino de départ $D_0=(\#\ /\ \#S\#)$ ;</li>
+<li>les dominos de copie $(a\ /\ a)$ pour $a\in A$, et le séparateur $(\#\ /\ \#)$ ;</li>
+<li>les dominos de règle $(\alpha_i\ /\ \beta_i)$ ;</li>
+<li>le domino final $F=(Y\#\natural\ /\ \natural)$.</li>
+</ul>
+<p>Si $S=w_0\vdash w_1\vdash\cdots\vdash w_n=Y$, on obtient une solution : on pose $D_0$, puis, pour chaque $k&lt;n$, on écrit $w_k$ en haut avec des dominos de copie et un domino de règle placé à l’endroit de la réécriture, ce qui écrit $w_{k+1}$ en bas, suivi du séparateur ; on termine par $F$. Le haut vaut $\#w_0\#w_1\#\cdots\#w_{n-1}\#\,Y\#\natural$ et le bas $\#w_0\#w_1\#\cdots\#w_n\#\natural$ : ce sont les mêmes mots.</p>
+<p>Réciproquement, soit une solution commençant par $D_0$. La lettre $\natural$ n’apparaît que dans $F$, une fois en haut et une fois en bas ; au premier emploi de $F$, ces deux occurrences sont à la même position du mot commun, donc la suite tronquée après ce premier $F$ est encore une solution, et l’on peut supposer que $F$ n’est employé qu’à la fin. Soient $T$ et $B$ les mots du haut et du bas avant $F$ : on a $T\,Y\#\natural=B\,\natural$, donc $B=T\,Y\#$. Comparons les nombres de $\#$ : les dominos autres que $D_0$ et $F$ en ont autant en haut qu’en bas, $D_0$ en a un de plus en bas, et $Y$ n’en contient pas ; donc $D_0$ n’est employé qu’une fois, au début. Les séparateurs découpent la suite des dominos en tranches ; la $j$-ième tranche écrit un mot $\tau_j\in A^*$ en haut et un mot $\sigma_j$ en bas, et $\tau_j\vdash^*\sigma_j$, puisque chaque domino de règle réécrit un facteur et que les facteurs sont disjoints. Si l’on a employé $r$ séparateurs,</p>
+$$\#S\#\sigma_1\#\sigma_2\#\cdots\#\sigma_{r+1}=B=T\,Y\#=\#\tau_1\#\tau_2\#\cdots\#\tau_{r+1}\,Y\#.$$
+<p>Les deux membres ont $r+2$ lettres $\#$, et le second se termine par $\#$ : donc $\sigma_{r+1}$ est vide, d’où $\tau_{r+1}$ aussi (un domino écrit des mots non vides en haut et en bas). En comparant les tranches entre les $\#$ successifs : $S=\tau_1$, $\sigma_j=\tau_{j+1}$ pour $j&lt;r$, et $\sigma_r=Y$ (si $r=0$, on obtient directement $S=Y$). Donc $S=\tau_1\vdash^*\sigma_1=\tau_2\vdash^*\cdots\vdash^*\sigma_r=Y$, et $Y\in L(\Gamma)$.</p>
+<p><em>Étape 2 : du problème modifié au problème de Post.</em> Pour un mot $w=a_1\cdots a_k$, notons $\overleftarrow w=\star a_1\star a_2\cdots\star a_k$ et $\overrightarrow w=a_1\star a_2\star\cdots a_k\star$, avec une lettre nouvelle $\star$. À la liste $(x_1,y_1),\dots,(x_n,y_n)$ on associe les dominos $(\overleftarrow{x_1}\ /\ \star\overrightarrow{y_1})$, $(\overleftarrow{x_i}\ /\ \overrightarrow{y_i})$ pour $1\le i\le n$, et $(\star\diamond\ /\ \diamond)$, où $\diamond$ est une autre lettre nouvelle. Une solution $1,i_2,\dots,i_r$ du problème modifié donne la solution « premier domino, $i_2,\dots,i_r$, domino final » : le haut et le bas valent tous deux $\star c_1\star c_2\cdots\star c_N\star\diamond$, où $c_1\cdots c_N$ est le mot commun. Réciproquement, dans une solution, le premier domino employé doit commencer par la même lettre en haut et en bas : c’est donc le premier de la liste (les autres commencent par $\star$ en haut et par une lettre de l’alphabet en bas). Il ne peut pas reparaître plus loin : il placerait deux $\star$ consécutifs en bas, ce qui n’arrive jamais en haut avant le $\diamond$. En tronquant après la première occurrence de $\diamond$, comme plus haut, puis en effaçant les $\star$ et le $\diamond$, on obtient une solution du problème modifié.</p>
+<p><em>Deux lettres.</em> On code la $j$-ième lettre de l’alphabet par $ab^j$. Ce codage $h$ est injectif sur les mots : dans $h(w)$, chaque lettre $a$ marque le début du code d’une lettre de $w$, ce qui permet de relire $w$. Donc $u=v$ si et seulement si $h(u)=h(v)$, et l’instance codée a une solution si et seulement si l’instance d’origine en a une.</p>
+<p>Comme le problème du mot de $\Gamma$ est indécidable, le problème de Post l’est aussi, même sur un alphabet à deux lettres. Le problème de Post reste indécidable pour 5 couples (Neary, 2015). Il est décidable pour 2 couples (Ehrenfeucht, Karhumäki et Rozenberg, 1982), et les cas de 3 et 4 couples sont ouverts. Les cas faciles sont traités dans la <a href="#post-decidable">proposition suivante</a>.</p>
+</div>
+<div class="niveau" data-niveau="techno">
+<p>Le simulateur cherche la solution la plus courte par un parcours en largeur des « surplus » (la partie du mot du haut ou du bas qui dépasse). Essayez le premier exemple, puis les deux autres.</p>
+<div class="pcp-widget" data-titre="Un premier exemple"><pre class="src">ba/bbaa
+babb/ba
+abb/ab
+aa/a
+bba/aba
+a/bab</pre></div>
+<div class="pcp-widget" data-titre="Une solution très longue" data-auto="non"><pre class="src">aab/a
+ab/abb
+ab/bab
+ba/aab</pre></div>
+<div class="pcp-widget" data-titre="Une instance sans solution"><pre class="src">ab/aba
+bba/aa
+aba/bab</pre></div>
+<p>Dans le dernier cas, la recherche s’arrête parce que l’ensemble des surplus accessibles est fini : on a une <em>preuve</em> d’absence de solution. En général, ce raisonnement ne marche pas, l’ensemble des surplus pouvant être infini.</p>
+</div>
+</div>
+
+<div class="resultat theoreme" id="post-decidable"><div class="entete-res"><div class="type">Proposition</div><div class="nom">Deux cas décidables du problème de Post</div></div>
+<div class="enonce"><p>Le problème de Post est décidable pour les instances à un seul couple, et pour les instances sur un alphabet à une seule lettre.</p></div>
+<div class="niveau" data-niveau="tech">
+<p><strong>Un couple $(x,y)$.</strong> Une solution est un $k\ge1$ avec $x^k=y^k$. En comparant les longueurs, on obtient $|x|=|y|$. Alors $x$ et $y$ sont deux préfixes de même longueur du même mot, donc $x=y$. Réciproquement, si $x=y$, $k=1$ convient. Il suffit donc de tester $x=y$.</p>
+<p><strong>Une lettre.</strong> Soit $x_i=a^{p_i}$ et $y_i=a^{q_i}$. Une suite non vide $i_1,\dots,i_r$ est une solution si et seulement si $\sum_j(p_{i_j}-q_{i_j})=0$. Il y a une solution si et seulement si l’on a $p_i=q_i$ pour un $i$, ou bien $p_i>q_i$ et $p_j&lt;q_j$ pour deux indices $i$ et $j$. Dans le premier cas, le couple $i$ seul convient. Dans le second, on prend $q_j-p_j$ fois le couple $i$ et $p_i-q_i$ fois le couple $j$. Réciproquement, si toutes les différences $p_i-q_i$ sont non nulles et de même signe, aucune somme non vide n’est nulle.</p>
+<p>Ce sont les seuls cas faciles. Pour deux couples, la décidabilité est un théorème difficile (Ehrenfeucht, Karhumäki et Rozenberg, 1982, une trentaine de pages ; simplifiée depuis par Halava, Harju et Hirvensalo, 2002). Pour cinq couples, l’indécidabilité vient d’une réduction de l’arrêt des systèmes de tag binaires (Neary, 2015). Ces deux résultats sont cités et ne sont pas démontrés ici.</p>
+</div>
+</div>
+
+<h2 id="grammaires">Grammaires et automates</h2>
+
+<p>On considère des langages sur un alphabet $A$ et leurs grammaires, classées par Chomsky : régulières, hors-contexte (algébriques, notées HC), sous-contexte (contextuelles, SC), et générales (type 0, qui engendrent exactement les langages semi-décidables d’après le <a href="#semi-thue-universel">théorème de Post</a> ci-dessus). Cette section établit les faits de base dont on a besoin : automates finis, lemme de l’étoile, automates à pile, et les problèmes décidables.</p>
+
+<div class="resultat definition" id="def-grammaires"><div class="entete-res"><div class="type">Définition</div><div class="nom">Grammaires</div></div>
+<div class="enonce">
+<p>Une <strong>grammaire</strong> $G=(T,N,S,P)$ est formée d’un alphabet terminal $T$, d’un alphabet non terminal $N$ disjoint, d’un symbole de départ $S\in N$ et d’un ensemble fini $P$ de règles $\alpha\to\beta$, où $\alpha$ est un mot non vide sur $T\cup N$ (en pratique, il contient un non-terminal). On dérive comme dans un système semi-thuéen ($\varphi\alpha\psi\Rightarrow\varphi\beta\psi$), et $L(G)=\{w\in T^*:S\Rightarrow^*w\}$.</p>
+<ul>
+<li>Type 0 : aucune restriction.</li>
+<li><strong>Sous-contexte</strong> (ou monotone) : $|\alpha|\le|\beta|$ pour toute règle, sauf éventuellement la règle $S\to\varepsilon$, autorisée si $S$ n’apparaît dans aucun membre droit.</li>
+<li><strong>Hors-contexte</strong> : chaque règle est de la forme $X\to\beta$ avec $X\in N$ et $\beta$ quelconque (éventuellement vide).</li>
+<li>Les langages <strong>réguliers</strong> sont ceux de l’annexe <a href="bases.html#def-mots">Mots et langages</a> : le plus petit ensemble de langages contenant $\emptyset$, $\{\varepsilon\}$, les $\{a\}$, et clos par union, concaténation et étoile.</li>
+</ul>
+<p>Pour une grammaire hors-contexte, une dérivation se représente par un <strong>arbre</strong> : la racine porte $S$, un nœud $X$ dont on applique la règle $X\to x_1\cdots x_k$ a pour fils $x_1,\dots,x_k$ (un seul fils $\varepsilon$ si $k=0$), et les feuilles lues de gauche à droite forment le mot dérivé.</p>
+</div>
+<div class="niveau" data-niveau="philo"><p>La forme « sous-contexte » $\varphi X\psi\to\varphi\beta\psi$ ($\beta$ non vide), d’où vient le nom, ne remplace qu’un symbole à la fois, dans un contexte donné. Elle définit les mêmes langages que les grammaires monotones (Kuroda, 1964) ; nous n’utilisons que la forme monotone, qui est plus commode.</p></div>
+</div>
+
+<div class="resultat theoreme" id="automates-finis"><div class="entete-res"><div class="type">Proposition</div><div class="nom">Automates finis et langages réguliers (Kleene, 1956)</div></div>
+<div class="enonce">
+<p>Un <strong>automate fini</strong> $\mathcal A=(E,A,\delta,e_0,F)$ a un ensemble fini d’états $E$, un état initial $e_0$, des états acceptants $F\subseteq E$ et des transitions $\delta\subseteq E\times(A\cup\{\varepsilon\})\times E$ ; il accepte $w$ s’il existe un chemin de $e_0$ à un état de $F$ dont les étiquettes forment $w$. Il est <em>déterministe</em> si $\delta$ est une fonction $E\times A\to E$.</p>
+<ol>
+<li>Un langage est régulier si et seulement s’il est accepté par un automate fini, et l’on passe effectivement de l’un à l’autre ; tout automate fini équivaut à un automate déterministe.</li>
+<li>Les langages réguliers sont clos par complémentaire et intersection.</li>
+<li>Pour des langages réguliers donnés par des expressions, les questions $w\in L$, $L=\emptyset$, $L$ fini, $L=A^*$, $L_1=L_2$, $L_1\subseteq L_2$, $L_1\cap L_2=\emptyset$ sont décidables.</li>
+</ol>
+</div>
+<div class="niveau" data-niveau="philo"><p>Un automate fini est un programme sans mémoire autre que son état : il lit le mot une seule fois, de gauche à droite. Comme il ne peut pas compter au-delà d’une borne fixée, ses questions se règlent toutes par l’examen d’un graphe fini.</p></div>
+<div class="niveau" data-niveau="tech">
+<p>(1) <em>Des expressions aux automates</em>, par induction : $\emptyset$, $\{\varepsilon\}$, $\{a\}$ ont des automates à un ou deux états ; pour l’union, on ajoute un nouvel état initial relié par $\varepsilon$ aux deux états initiaux ; pour la concaténation $L_1L_2$, on relie par $\varepsilon$ les états acceptants du premier automate à l’état initial du second ; pour l’étoile, on ajoute un nouvel état initial acceptant, relié par $\varepsilon$ à l’ancien, et l’on relie par $\varepsilon$ les états acceptants à l’ancien état initial. <em>Déterminisation</em> : les états du nouvel automate sont les parties de $E$ ; l’état initial est l’ensemble des états accessibles depuis $e_0$ par des $\varepsilon$ ; la lettre $a$ envoie une partie $X$ sur l’ensemble des états accessibles depuis $X$ par une transition $a$ entourée de $\varepsilon$ ; une partie est acceptante si elle rencontre $F$. Par récurrence sur $|w|$, la partie atteinte après la lecture de $w$ est l’ensemble des états accessibles par $w$ dans l’automate initial. <em>Des automates aux expressions</em> : numérotons les états $1,\dots,m$ et notons $L^k_{ij}$ l’ensemble des mots qui mènent de $i$ à $j$ en ne passant, entre les deux, que par des états $\le k$. Alors $L^0_{ij}$ est un ensemble fini de lettres (avec $\varepsilon$ si $i=j$), et $L^{k}_{ij}=L^{k-1}_{ij}\cup L^{k-1}_{ik}\big(L^{k-1}_{kk}\big)^*L^{k-1}_{kj}$ (on découpe le chemin à ses passages par $k$). Le langage de l’automate est l’union des $L^m_{e_0f}$, $f\in F$ : il est régulier.</p>
+<p>(2) Dans un automate déterministe, échanger états acceptants et non acceptants donne le complémentaire. Pour l’intersection, on fait marcher deux automates déterministes en parallèle (états couples, acceptants si les deux composantes le sont).</p>
+<p>(3) Avec un automate déterministe : $w\in L$ se décide en lisant $w$. $L=\emptyset$ si aucun état acceptant n’est accessible (parcours de graphe). En ne gardant que les états accessibles depuis $e_0$ et depuis lesquels un état acceptant est accessible, $L$ est infini si et seulement si ce graphe a un cycle : un cycle se parcourt autant de fois qu’on veut ; sans cycle, les chemins ont une longueur bornée. Enfin $L=A^*$ équivaut à $\overline L=\emptyset$, $L_1\subseteq L_2$ à $L_1\cap\overline{L_2}=\emptyset$, et $L_1=L_2$ aux deux inclusions ; on conclut par (2).</p>
+</div>
+</div>
+
+<div class="resultat theoreme" id="classes-chomsky"><div class="entete-res"><div class="type">Proposition</div><div class="nom">Inclusions entre les classes</div></div>
+<div class="enonce"><p>Tout langage régulier est hors-contexte. Tout langage hors-contexte est engendré par une grammaire hors-contexte qui est aussi sous-contexte, construite effectivement. Tout langage sous-contexte est de type 0.</p></div>
+<div class="niveau" data-niveau="tech">
+<p><em>Réguliers.</em> Par induction : $S\to\varepsilon$, $S\to a$, et pour $\emptyset$ une grammaire sans règle ; pour l’union, la concaténation et l’étoile de langages engendrés par des grammaires de départ $S_1,S_2$ (non-terminaux disjoints), on ajoute $S\to S_1\mid S_2$, $S\to S_1S_2$, ou $S\to S_1S\mid\varepsilon$.</p>
+<p><em>Hors-contexte.</em> Un non-terminal $X$ est <em>effaçable</em> si $X\Rightarrow^*\varepsilon$ ; l’ensemble des effaçables se calcule par saturation (on part des $X$ tels que $X\to\varepsilon$, et l’on ajoute $X$ dès qu’une règle $X\to\beta$ a un membre droit formé d’effaçables). On remplace chaque règle $X\to\beta$ par toutes les règles $X\to\beta'$, où $\beta'$ est obtenu en supprimant de $\beta$ certaines occurrences d’effaçables, avec $\beta'\ne\varepsilon$ ; on obtient les mêmes mots non vides (dans un arbre de dérivation, on supprime les sous-arbres qui ne produisent que $\varepsilon$, et réciproquement on les réintroduit). Si $\varepsilon\in L(G)$, on ajoute un nouveau départ $S'$ avec $S'\to S\mid\varepsilon$. Les règles obtenues sont monotones.</p>
+<p><em>Sous-contexte.</em> C’est un cas particulier.</p>
+</div>
+</div>
+
+<div class="resultat theoreme" id="lemme-etoile"><div class="entete-res"><div class="type">Théorème</div><div class="nom">Lemme de l’étoile pour les langages hors-contexte (Bar-Hillel, Perles, Shamir, 1961)</div></div>
+<div class="enonce"><p>Pour toute grammaire hors-contexte $G$, il existe un entier $p$, calculable à partir de $G$, tel que tout mot $w\in L(G)$ de longueur $|w|\ge p$ s’écrit $w=uvxyz$ avec $|vxy|\le p$, $vy\ne\varepsilon$, et $uv^kxy^kz\in L(G)$ pour tout $k\ge0$. En particulier $\{a^nb^nc^n:n\ge0\}$ n’est pas hors-contexte.</p></div>
+<div class="niveau" data-niveau="philo"><p>Une grammaire hors-contexte n’a pas de mémoire au-delà de la structure d’arbre : dans un mot assez long, un même non-terminal se répète le long d’une branche, et l’on peut « pomper » la partie qu’il engendre entre ses deux occurrences. Elle sait donc compter deux choses l’une contre l’autre ($a^nb^n$), pas trois.</p></div>
+<div class="niveau" data-niveau="tech">
+<p>Par la proposition précédente, on peut supposer que les seules règles à membre droit vide sont $S\to\varepsilon$, avec $S$ absent des membres droits ; seuls les mots non vides nous intéressent, et leurs arbres n’utilisent pas cette règle. Soit $m\ge2$ la plus grande longueur d’un membre droit et $N$ le nombre de non-terminaux ; posons $p=m^{N+1}$. Un arbre de hauteur $h$ (nombre d’arêtes du plus long chemin) a au plus $m^h$ feuilles.</p>
+<p>Soit $w\in L(G)$ avec $|w|\ge p$, et un arbre de $w$ ayant le moins de nœuds possible. Sa hauteur dépasse $N$. Prenons un chemin de longueur maximale de la racine à une feuille : parmi ses $N+1$ derniers nœuds non terminaux, deux portent le même non-terminal $X$ ; soit $U$ le plus haut et $D$ le plus bas. Le sous-arbre de $D$ produit un facteur $x$, celui de $U$ un facteur $vxy$, et $w=uvxyz$. Comme le chemin est de longueur maximale, le sous-arbre de $U$ est de hauteur au plus $N+1$, donc $|vxy|\le m^{N+1}=p$. Si $vy$ était vide, remplacer le sous-arbre de $U$ par celui de $D$ donnerait un arbre de $w$ plus petit : c’est exclu. Enfin, remplacer le sous-arbre de $D$ par une copie de celui de $U$, $k$ fois de suite, donne un arbre de $uv^{k+1}xy^{k+1}z$, et remplacer le sous-arbre de $U$ par celui de $D$ donne un arbre de $uxz$.</p>
+<p><em>Application.</em> Si $\{a^nb^nc^n\}$ était hors-contexte, avec la constante $p$, prenons $w=a^pb^pc^p$. Comme $|vxy|\le p$, le facteur $vxy$ ne rencontre pas à la fois les $a$ et les $c$. Si $v$ ou $y$ contient deux lettres différentes, $uv^2xy^2z$ n’est pas de la forme $a^*b^*c^*$. Sinon, le pompage augmente le nombre d’au plus deux des trois lettres, et $uv^2xy^2z$ n’a pas autant de $a$, de $b$ et de $c$.</p>
+</div>
+</div>
+
+<div class="resultat theoreme" id="decidables-grammaires"><div class="entete-res"><div class="type">Proposition</div><div class="nom">Problèmes décidables pour les grammaires</div></div>
+<div class="enonce"><p>L’appartenance $w\in L(G)$ est décidable pour les grammaires sous-contexte, donc pour les grammaires hors-contexte. Pour les grammaires hors-contexte, les questions « $L(G)=\emptyset$ ? » et « $L(G)$ est-il fini ? » sont décidables.</p></div>
+<div class="niveau" data-niveau="tech">
+<p><em>Appartenance.</em> Dans une grammaire monotone, une dérivation de $w\neq\varepsilon$ ne passe que par des mots de longueur au plus $|w|$ (sans la règle $S\to\varepsilon$). Ces mots sont en nombre fini ; on construit le graphe « $\gamma\Rightarrow\gamma'$ » sur eux et l’on cherche un chemin de $S$ à $w$. Le cas $w=\varepsilon$ se lit sur la présence de la règle $S\to\varepsilon$. Pour une grammaire hors-contexte, on passe d’abord à la grammaire monotone équivalente (<a href="#classes-chomsky">proposition</a>).</p>
+<p><em>Vide.</em> Un non-terminal est <em>productif</em> s’il engendre au moins un mot terminal. On calcule l’ensemble des productifs par saturation : $X$ est productif dès qu’une règle $X\to\beta$ a un membre droit formé de terminaux et de non-terminaux déjà reconnus productifs. Par récurrence sur la hauteur des arbres de dérivation, on obtient exactement les productifs, et $L(G)\neq\emptyset$ si et seulement si $S$ est productif.</p>
+<p><em>Finitude.</em> Avec la constante $p$ du <a href="#lemme-etoile">lemme de l’étoile</a> : $L(G)$ est infini si et seulement s’il contient un mot $w$ avec $p\le|w|<2p$. Si un tel mot existe, les mots $uv^kxy^kz$ sont tous distincts ($vy\ne\varepsilon$). Réciproquement, si $L(G)$ est infini, soit $w$ un mot le plus court de longueur $\ge p$ ; si l’on avait $|w|\ge2p$, le mot $uxz$ serait dans $L(G)$, de longueur $|w|-|vy|\ge|w|-p\ge p$ et plus court que $w$ : contradiction. Il reste un nombre fini de mots à tester.</p>
+</div>
+</div>
+
+<div class="resultat theoreme" id="automates-pile"><div class="entete-res"><div class="type">Proposition</div><div class="nom">Automates à pile et grammaires hors-contexte</div></div>
+<div class="enonce">
+<p>Un <strong>automate à pile</strong> a un ensemble fini d’états $E$, un état initial $e_0$, un alphabet de pile $\Delta$ avec un symbole initial $Z_0$, et des transitions $(e,a,Z)\to(e',\gamma)$ où $a\in A\cup\{\varepsilon\}$, $Z\in\Delta$, $\gamma\in\Delta^*$ : dans l’état $e$, avec $Z$ au sommet de la pile, il lit $a$, remplace $Z$ par $\gamma$ (le premier symbole de $\gamma$ au sommet) et passe dans l’état $e'$. Il accepte $w$ si, partant de $e_0$ avec la pile $Z_0$, il peut lire tout $w$ et vider sa pile. Un langage est hors-contexte si et seulement s’il est accepté par un automate à pile.</p>
+</div>
+<div class="niveau" data-niveau="tech">
+<p><em>Des grammaires aux automates.</em> Un seul état ; la pile contient au départ $S$ ; pour chaque règle $X\to\beta$, une transition $(e,\varepsilon,X)\to(e,\beta)$, et pour chaque lettre $a$, $(e,a,a)\to(e,\varepsilon)$. Par récurrence sur la longueur des calculs et des dérivations, l’automate, après avoir lu $u$, a la pile $\gamma$ si et seulement s’il existe une dérivation la plus à gauche $S\Rightarrow^*u\gamma$ : la pile est la partie non encore lue de la forme dérivée.</p>
+<p><em>Des automates aux grammaires.</em> On prend pour non-terminaux les triplets $[e\,Z\,e']$, qui doivent engendrer les mots $w$ tels que l’automate, partant de l’état $e$ avec $Z$ au sommet, peut lire $w$ et arriver dans l’état $e'$ en ayant exactement retiré $Z$ (sans toucher au reste de la pile). Pour chaque transition $(e,a,Z)\to(e_1,Y_1\cdots Y_k)$ et chaque choix d’états $e_2,\dots,e_{k+1}$, on met la règle $[e\,Z\,e_{k+1}]\to a\,[e_1Y_1e_2][e_2Y_2e_3]\cdots[e_kY_ke_{k+1}]$ (et $[e\,Z\,e_1]\to a$ si $k=0$), et $S\to[e_0Z_0e']$ pour tout $e'$. Par récurrence sur la longueur du calcul dans un sens, et sur celle de la dérivation dans l’autre, $[e\,Z\,e']\Rightarrow^*w$ si et seulement si l’automate peut lire $w$ de $e$ à $e'$ en retirant exactement $Z$ : le calcul se découpe selon les moments où $Y_1$, puis $Y_2$, …, sont retirés.</p>
+</div>
+</div>
+
+<h3 id="reductions-depuis-le-probleme-de-post">Réductions depuis le problème de Post</h3>
+
+<div class="resultat theoreme" id="langages-qx"><div class="entete-res"><div class="type">Proposition</div><div class="nom">Les langages Q(x) d’une instance de Post</div></div>
+<div class="enonce">
+<p>Soit $(x)=(x_1,\dots,x_n)$ une liste de mots non vides sur $A$, et $A'=\{b_1,\dots,b_n\}$ un alphabet de $n$ lettres nouvelles. On pose</p>
+$$Q(x)=\{\,b_{i_r}\cdots b_{i_2}b_{i_1}\,x_{i_1}x_{i_2}\cdots x_{i_r}\ :\ r\ge1,\ 1\le i_j\le n\,\}.$$
+<p>$Q(x)$ est hors-contexte, engendré par les $2n$ règles $S\to b_ix_i\mid b_iSx_i$, et non ambigu. Pour deux listes $(x),(y)$ de même longueur, le problème de Post a une solution si et seulement si $Q(x)\cap Q(y)\neq\emptyset$.</p>
+</div>
+<div class="niveau" data-niveau="philo"><p>Les lettres $b_i$ servent d’« étiquettes » : elles enregistrent, en miroir, la suite des dominos utilisés. Un mot commun à $Q(x)$ et $Q(y)$ est une même suite d’étiquettes suivie d’un même mot, c’est-à-dire une solution du problème de Post. Toute la difficulté du problème de Post se retrouve ainsi dans une question d’apparence anodine sur deux grammaires très simples.</p></div>
+<div class="niveau" data-niveau="tech"><p>Si $x_{i_1}\cdots x_{i_r}=y_{i_1}\cdots y_{i_r}$, le mot $b_{i_r}\cdots b_{i_1}x_{i_1}\cdots x_{i_r}$ est dans les deux langages. Réciproquement, un mot commun s’écrit $b_{i_r}\cdots b_{i_1}x_{i_1}\cdots x_{i_r}=b_{j_s}\cdots b_{j_1}y_{j_1}\cdots y_{j_s}$ ; comme les $b$ ne sont pas dans $A$, les préfixes sur $A'$ coïncident, d’où $r=s$ et $i_k=j_k$, puis $x_{i_1}\cdots x_{i_r}=y_{i_1}\cdots y_{i_r}$.</p></div>
+</div>
+
+<div class="resultat theoreme" id="indecidables-1"><div class="entete-res"><div class="type">Théorème</div><div class="nom">Premier groupe de problèmes indécidables</div></div>
+<div class="enonce">
+<p>Les problèmes suivants sont indécidables :</p>
+<ol>
+<li>étant données deux grammaires hors-contexte $G_1,G_2$, a-t-on $L(G_1)\cap L(G_2)=\emptyset$ ?</li>
+<li>étant donnée une grammaire sous-contexte $G$, le langage $L(G)$ est-il vide ?</li>
+<li>étant donnée une grammaire sous-contexte $G$, le langage $L(G)$ est-il infini ?</li>
+</ol>
+</div>
+<div class="niveau" data-niveau="philo"><p>Pour les grammaires hors-contexte, utilisées pour décrire la syntaxe des langages de programmation, on sait décider si un langage est vide ou infini, et si un mot donné en fait partie (c’est ce que fait un analyseur syntaxique). Mais dès qu’on combine deux grammaires, ou qu’on passe aux grammaires contextuelles, des questions toutes simples échappent à tout algorithme.</p></div>
+<div class="niveau" data-niveau="tech">
+<p>(1) découle de la proposition précédente, les deux langages $Q(x)$ et $Q(y)$ étant engendrés par des grammaires hors-contexte.</p>
+<p>(2) et (3). On réduit l’arrêt. À une machine $Z$ (au format de quadruplets) et un entier $x$, on associe la grammaire monotone $G_{Z,x}$ dont le seul terminal est une lettre $t$, et dont les non-terminaux sont $S$, le marqueur $h$, les états et les symboles de $Z$. Ses règles sont :</p>
+<ul>
+<li>$S\to h\,q_0\,1^{x+1}\,h$ (la configuration initiale) ;</li>
+<li>les productions de la <a href="#semi-thue-universel">traduction des quadruplets</a> (tableau du théorème de Post), qui sont toutes monotones ;</li>
+<li>le <em>rembourrage</em> $hY\to hS_0Y$ et $Yh\to YS_0h$ pour tout symbole $Y\ne h$ (on ajoute une case blanche à une extrémité de la partie écrite, ce qui ne change pas la configuration représentée) ;</li>
+<li>pour chaque couple $(q_i,S_j)$ sans quadruplet, $q_iS_j\to tt$ ; puis $tY\to tt$ et $Yt\to tt$ pour tout non-terminal $Y\ne S$.</li>
+</ul>
+<p>Tant qu’aucun $t$ n’est apparu, une forme dérivée est un mot $hWh$ avec un seul symbole d’état dans $W$ : chaque règle conserve cette forme, et elle représente une configuration atteinte par $Z$ à partir de l’entrée $\overline x$ (les règles de calcul font un pas, le rembourrage ne change rien). Un $t$ n’apparaît que par une règle $q_iS_j\to tt$, c’est-à-dire dans une configuration d’arrêt. Donc, si $Z$ ne s’arrête pas sur $\overline x$, $L(G_{Z,x})=\emptyset$. Si $Z$ s’arrête, on suit le calcul après $k$ rembourrages, quel que soit $k$, puis la règle d’arrêt et la propagation des $t$ transforment le mot en $t^{n_k}$, avec des longueurs $n_k$ toutes différentes : $L(G_{Z,x})$ est infini. Ainsi $L(G_{Z,x})$ est vide si $Z$ ne s’arrête pas sur $\overline x$ et infini sinon ; un algorithme pour (2) ou pour (3) déciderait l’arrêt.</p>
+</div>
+</div>
+
+<div class="resultat theoreme" id="langages-r"><div class="entete-res"><div class="type">Proposition</div><div class="nom">Les langages Q(x,y), Q′ et R(x,y)</div></div>
+<div class="enonce">
+<p>Soit $c$ une lettre nouvelle, $V=A\cup A'$, et $\tilde w$ le miroir du mot $w$. On pose</p>
+$$Q(x,y)=\{u\,c\,\tilde v: u\in Q(x),\ v\in Q(y)\},\qquad Q'=\{w\,c\,\tilde w: w\in V^*\},\qquad R(x,y)=\overline{Q'}\cup\overline{Q(x,y)}.$$
+<p>Alors $Q(x,y)$, $Q'$ et $R(x,y)$ sont hors-contexte, et : le problème de Post a une solution $\iff Q(x,y)\cap Q'\ne\emptyset\iff R(x,y)\ne(V\cup\{c\})^*$.</p>
+</div>
+<div class="niveau" data-niveau="tech">
+<p>On utilise les constructions faciles : si $L_1,L_2$ sont hors-contexte, $L_1\cup L_2$, $L_1L_2$ et le miroir $\widetilde{L_1}$ le sont (règles $S\to S_1\mid S_2$, $S\to S_1S_2$, et membres droits retournés), et les langages réguliers sont hors-contexte (<a href="#classes-chomsky">proposition</a>).</p>
+<ul>
+<li>$Q(x,y)=Q(x)\,\{c\}\,\widetilde{Q(y)}$ est hors-contexte, et $Q'$ est engendré par $S\to aSa$ ($a\in V$) et $S\to c$.</li>
+<li><em>Complémentaire de $Q'$</em> dans $(V\cup\{c\})^*$. Un mot sans $c$, ou avec au moins deux $c$, n’est pas dans $Q'$ (langages réguliers). Un mot $u\,c\,v$ avec $u,v\in V^*$ n’est pas dans $Q'$ si et seulement si $|u|>|v|$, ou $|u|<|v|$, ou $|u|=|v|$ et $u_i\neq v_{|v|+1-i}$ pour un $i$. Le premier cas est engendré par $S\to aSb\mid aP$, $P\to aP\mid c$ ($a,b\in V$), le deuxième symétriquement, et le troisième par $S\to aSb\mid aMb$ ($a\ne b$ dans la seconde règle), $M\to aMb\mid c$ : les couples de lettres engendrés ensemble sont exactement les couples de positions symétriques.</li>
+<li><em>Complémentaire de $Q(x)$</em> dans $V^*$. Un mot de $V^*$ qui n’est pas de la forme $\beta z$ avec $\beta\in A'^*$ et $z\in A^*$ contient une lettre de $A$ suivie plus loin d’une lettre de $A'$ : langage régulier $V^*AV^*A'V^*$. Pour $\beta=b_{i_r}\cdots b_{i_1}$, posons $X(\beta)=x_{i_1}\cdots x_{i_r}$ ; on a $\beta z\in Q(x)$ si et seulement si $\beta\ne\varepsilon$ et $z=X(\beta)$. Il reste donc le mot vide et le langage $K=\{\beta z:z\neq X(\beta)\}$. Notons $N_i$ l’ensemble des mots de $A^*$ qui ne se terminent pas par $x_i$ : c’est l’union des mots de longueur $<|x_i|$ et de $A^*F_i$, où $F_i$ est l’ensemble fini des mots de longueur $|x_i|$ différents de $x_i$, donc un langage régulier. Alors $K$ est engendré par $K\to b_iKx_i\mid b_iJ_i\mid P$, $J_i\to b_jJ_i\mid Z_i$, où $Z_i$ engendre $N_i$ et $P$ engendre $A^+$. En effet, si $\beta=b_i\beta'$, ou bien $z=z'x_i$, et alors $\beta z\in K$ si et seulement si $\beta'z'\in K$ (car $X(\beta)=X(\beta')x_i$) ; ou bien $z\in N_i$, et alors $z\ne X(\beta)$ quel que soit $\beta'$. Si $\beta=\varepsilon$, $z\neq\varepsilon$. Une récurrence sur $|\beta|$ conclut.</li>
+<li><em>Complémentaire de $Q(x,y)$</em> : les mots sans $c$ ou avec au moins deux $c$, les mots $u\,c\,v$ avec $u\notin Q(x)$, et les mots $u\,c\,v$ avec $\tilde v\notin Q(y)$, c’est-à-dire $v$ dans le miroir du complémentaire de $Q(y)$. C’est une union de langages hors-contexte.</li>
+</ul>
+<p>Donc $R(x,y)$ est hors-contexte. Enfin, un mot de $Q(x,y)\cap Q'$ est de la forme $b_{i_r}\cdots b_{i_1}x_{i_1}\cdots x_{i_r}\,c\,\widetilde{y_{j_1}\cdots y_{j_s}}\,b_{j_1}\cdots b_{j_s}$ et vaut son propre miroir autour de $c$ : $s=r$, $j_k=i_k$ et $x_{i_1}\cdots x_{i_r}=y_{i_1}\cdots y_{i_r}$, une solution du problème de Post. Réciproquement, une solution donne un tel mot. Et $R(x,y)=\overline{Q'\cap Q(x,y)}$ est tout $(V\cup\{c\})^*$ si et seulement si cette intersection est vide.</p>
+</div>
+</div>
+
+<div class="resultat theoreme" id="indecidables-2"><div class="entete-res"><div class="type">Théorème</div><div class="nom">Second groupe de problèmes indécidables</div></div>
+<div class="enonce">
+<p>Pour des grammaires hors-contexte $G,G_1,G_2$ et un langage régulier $E$, les problèmes suivants sont indécidables :</p>
+<ol>
+<li>$L(G_1)\cap L(G_2)$ est-il hors-contexte ?</li>
+<li>$G$ est-elle ambiguë ?</li>
+<li>$L(G)=A^*$ ? (autrement dit, le complémentaire de $L(G)$ est-il vide ?)</li>
+<li>$L(G)=E$ ? $\ L(G)\supseteq E$ ?</li>
+<li>le complémentaire de $L(G)$ est-il hors-contexte ?</li>
+<li>$L(G)$ est-il régulier ?</li>
+</ol>
+<p>On en déduit que l’équivalence de deux grammaires hors-contexte ($L(G_1)=L(G_2)$ ?) et l’inclusion sont indécidables.</p>
+</div>
+<div class="niveau" data-niveau="philo">
+<p>Ces résultats ont des conséquences très concrètes pour qui conçoit des langages de programmation ou des outils d’analyse de textes : aucun programme ne peut vérifier en général qu’une grammaire n’est pas ambiguë (qu’aucune phrase n’a deux analyses), ni que deux grammaires décrivent le même langage, ni simplifier une grammaire en automate fini quand c’est possible. Les générateurs d’analyseurs syntaxiques contournent la difficulté en se restreignant à des sous-classes (grammaires LL, LR) pour lesquelles ces vérifications deviennent possibles.</p>
+<p>Un résultat positif remarquable montre que la frontière est subtile : l’équivalence de deux automates à pile <em>déterministes</em> est décidable (Sénizergues, 1997, prix Gödel 2002).</p>
+</div>
+<div class="niveau" data-niveau="tech">
+<p>(1) Montrons que $I=Q(x,y)\cap Q'$, s’il n’est pas vide, n’est pas hors-contexte ; il est donc hors-contexte si et seulement s’il est vide, c’est-à-dire si le problème de Post n’a pas de solution. Un mot de $I$ s’écrit $\beta\,X\,c\,\tilde X\,\tilde\beta$, avec $\beta\in A'^+$, $X\in A^+$, $X=X(\beta)$ (notation de la proposition précédente). Si une suite $s$ est une solution, la suite $s$ répétée $n$ fois en est une, et donne un mot de $I$ dont la partie $X$ a une longueur $\ge n$. Supposons $I$ hors-contexte, de constante $p$ (<a href="#lemme-etoile">lemme de l’étoile</a>), et prenons un tel mot $w$ avec $|X|\ge p$, écrit $uvxyz$. Si $v$ ou $y$ contient $c$, ou deux lettres de blocs différents, $uv^2xy^2z$ n’a plus la forme $A'^+A^+cA^+A'^+$. Sinon : si $v$ et $y$ sont du même côté de $c$, le pompage allonge un côté sans l’autre, alors que les deux côtés d’un mot de $I$ ont la même longueur ; si $v$ est à gauche de $c$ et $y$ à droite, comme $|vxy|\le p\le|X|$, $v$ est dans le bloc $X$ et $y$ dans le bloc $\tilde X$, et $\beta$ n’est pas modifié : si $v\neq\varepsilon$, le nouveau bloc $X$ n’est plus égal à $X(\beta)$, et si $v=\varepsilon$, alors $y\ne\varepsilon$ et le côté droit n’est plus le miroir du côté gauche. Dans tous les cas $uv^2xy^2z\notin I$ : contradiction. (2) La grammaire $S\to X\mid Y$, $X\to b_ix_i\mid b_iXx_i$, $Y\to b_iy_i\mid b_iYy_i$ engendre $Q(x)\cup Q(y)$ ; comme $Q(x)$ et $Q(y)$ sont non ambigus, elle est ambiguë si et seulement si $Q(x)\cap Q(y)\neq\emptyset$. (3), (4) Avec une grammaire de $R(x,y)$ et $E=(V\cup\{c\})^*$, chacun de ces problèmes équivaut à « le problème de Post n’a pas de solution ». (5) Le complémentaire de $R(x,y)$ est $I$, hors-contexte si et seulement s’il est vide, par (1). (6) Les langages réguliers étant clos par complémentaire (<a href="#automates-finis">proposition</a>), $R(x,y)$ est régulier si et seulement si son complémentaire $I$ l’est. Si $I$ est vide, c’est le cas ; sinon $I$ n’est pas hors-contexte par (1), donc pas régulier, puisque tout langage régulier est hors-contexte.</p>
+</div>
+<div class="niveau" data-niveau="techno">
+<p>Récapitulatif (D : décidable, I : indécidable ; pour les langages de type 0, l’appartenance est seulement semi-décidable). Les cases D viennent des propositions sur les <a href="#automates-finis">automates finis</a> et sur les <a href="#decidables-grammaires">grammaires</a>. Les cases I de la colonne hors-contexte viennent des deux théorèmes ci-dessus ; elles valent aussi pour les colonnes suivantes, puisqu’une grammaire hors-contexte se transforme effectivement en grammaire sous-contexte équivalente (<a href="#classes-chomsky">inclusions</a>). Pour les grammaires sous-contexte, le vide et la finitude sont traités par le premier groupe ; l’appartenance aux langages de type 0 est indécidable par le <a href="#probleme-du-mot">problème du mot</a> (un système semi-thuéen $(A,S,P)$ est la grammaire $(A,\{S^{\prime}\},S^{\prime},P\cup\{S^{\prime}\to S\})$).</p>
+<table>
+<tr><th>question</th><th>régulier</th><th>hors-contexte</th><th>sous-contexte</th><th>type 0</th></tr>
+<tr><td>$w\in L$ ?</td><td>D</td><td>D</td><td>D</td><td>I</td></tr>
+<tr><td>$L=\emptyset$ ? $L$ fini ?</td><td>D</td><td>D</td><td>I</td><td>I</td></tr>
+<tr><td>$L=A^*$ ?</td><td>D</td><td>I</td><td>I</td><td>I</td></tr>
+<tr><td>$L_1=L_2$ ? $L_1\subseteq L_2$ ?</td><td>D</td><td>I</td><td>I</td><td>I</td></tr>
+<tr><td>$L_1\cap L_2=\emptyset$ ?</td><td>D</td><td>I</td><td>I</td><td>I</td></tr>
+<tr><td>$L$ régulier ?</td><td>(toujours)</td><td>I</td><td>I</td><td>I</td></tr>
+</table>
+</div>
+</div>
+
+<!--EXERCICES-->
+<h2 id="exercices">Exercices</h2>
+
+<p class="legende-exo">Niveaux : ★ application directe du cours, ★★ exercice standard, ★★★ approfondissement. Les corrections sont masquées : cliquer sur « Correction » pour les afficher.</p><div class="exercice" id="ex-lg-pcp"><div class="entete-exo"><span class="etoiles" title="niveau 1">★</span><span class="nom-exo">Exercice 1 — Résoudre une instance de Post</span></div><div class="corps-exo">
+<p>Trouver une solution de l’instance $(x)=(1,\ 10111,\ 10)$, $(y)=(111,\ 10,\ 0)$ du problème de correspondance de Post.</p>
+<details class="corrige"><summary>Correction</summary><div class="texte-corrige">
+<p>La suite d’indices $2,1,1,3$ convient : $x_2x_1x_1x_3=10111\cdot1\cdot1\cdot10=101111110$ et $y_2y_1y_1y_3=10\cdot111\cdot111\cdot0=101111110$. Le couple 3 ne peut pas commencer une solution ($10$ et $0$ diffèrent dès la première lettre) ; en partant du couple 2, le mot du haut a trois lettres d’avance ($111$) ; chaque couple 1 rend deux lettres au mot du bas, qui passe en tête d’une lettre après le second, et le couple 3 rétablit l’égalité. La recherche en largeur de toutes les suites d’indices est une semi-décision : elle trouve une solution s’il en existe une, et ne s’arrête pas sinon (<a href="#post-langages">théorème</a>).</p>
+</div></details>
+</div></div>
+
+<div class="exercice" id="ex-lg-anbn"><div class="entete-exo"><span class="etoiles" title="niveau 1">★</span><span class="nom-exo">Exercice 2 — Une grammaire et son langage</span></div><div class="corps-exo">
+<p>Soit $G$ la grammaire de règles $S\to aSb$ et $S\to\varepsilon$. Montrer que $L(G)=\{a^nb^n:n\ge0\}$.</p>
+<details class="corrige"><summary>Correction</summary><div class="texte-corrige">
+<p>Par récurrence sur la longueur de la dérivation, tout mot dérivé de $S$ est de la forme $a^nSb^n$ ou $a^nb^n$ : c’est vrai pour $S$ ($n=0$), et une règle appliquée à $a^nSb^n$ donne $a^{n+1}Sb^{n+1}$ ou $a^nb^n$. Les mots terminaux de $L(G)$ sont donc des $a^nb^n$. Inversement, $S\Rightarrow aSb\Rightarrow\cdots\Rightarrow a^nSb^n\Rightarrow a^nb^n$ ($n$ fois la première règle, puis la seconde). La grammaire est hors-contexte.</p>
+</div></details>
+</div></div>
+
+<div class="exercice" id="ex-lg-non-regulier"><div class="entete-exo"><span class="etoiles" title="niveau 2">★★</span><span class="nom-exo">Exercice 3 — aⁿbⁿ n’est pas régulier</span></div><div class="corps-exo">
+<p>Montrer qu’aucun automate fini n’accepte $\{a^nb^n:n\ge0\}$.</p>
+<details class="corrige"><summary>Correction</summary><div class="texte-corrige">
+<p>Supposons qu’un automate fini déterministe à $N$ états l’accepte. Les $N+1$ mots $a^0,a^1,\dots,a^N$ mènent l’automate dans $N+1$ états, dont deux coïncident (principe des tiroirs) : $a^i$ et $a^j$ mènent au même état, avec $i&lt;j$. Comme $a^ib^i$ est accepté, la lecture de $b^i$ depuis cet état mène à un état acceptant ; donc $a^jb^i$ est aussi accepté, alors que $i\ne j$. Contradiction. Un automate fini ne peut pas compter jusqu’à un entier arbitraire ; une grammaire hors-contexte le peut (exercice précédent), une machine de Turing aussi.</p>
+</div></details>
+</div></div>
+
+<div class="exercice" id="ex-lg-longueur"><div class="entete-exo"><span class="etoiles" title="niveau 2">★★</span><span class="nom-exo">Exercice 4 — Quand le problème du mot devient décidable</span></div><div class="corps-exo">
+<p>(a) Montrer que le problème du mot ($X\vdash^\ast Y$ ?) est décidable pour un système semi-thuéen dont toutes les productions $\alpha\to\beta$ vérifient $|\beta|\le|\alpha|$. (b) En déduire que l’appartenance d’un mot au langage d’une grammaire sous-contexte est décidable.</p>
+<details class="corrige"><summary>Correction</summary><div class="texte-corrige">
+<p>(a) Une réécriture ne fait jamais croître la longueur. Les mots accessibles depuis $X$ ont donc une longueur au plus $|X|$ : ils sont en nombre fini (au plus $\sum_{\ell\le|X|}|A|^\ell$). On les calcule tous par saturation (on part de $\{X\}$ et l’on ajoute les réécrits jusqu’à ce que l’ensemble ne change plus), puis l’on regarde si $Y$ en fait partie.</p>
+<p>(b) Dans une grammaire sous-contexte, $|\alpha|\le|\beta|$ : les dérivations ne raccourcissent jamais. Pour savoir si $w\in L(G)$, on applique (a) au système inverse ($\beta\to\alpha$), qui ne rallonge jamais : $S\Rightarrow^\ast w$ si et seulement si $w\vdash^\ast S$ dans le système inverse, et seuls des mots de longueur au plus $|w|$ interviennent (le cas $S\to\varepsilon$ se traite à part). C’est la raison pour laquelle les langages sous-contexte sont décidables, contrairement aux langages de type 0 (<a href="#probleme-du-mot">problème du mot</a>).</p>
+</div></details>
+</div></div>
+
+<div class="exercice" id="ex-lg-intersection"><div class="entete-exo"><span class="etoiles" title="niveau 3">★★★</span><span class="nom-exo">Exercice 5 — Les hors-contexte ne sont pas clos par intersection</span></div><div class="corps-exo">
+<p>Montrer que $L_1=\{a^nb^nc^m:n,m\ge0\}$ et $L_2=\{a^mb^nc^n:n,m\ge0\}$ sont hors-contexte, mais que $L_1\cap L_2$ ne l’est pas. En déduire que la classe des langages hors-contexte n’est pas close par complémentaire. Montrer aussi, avec le <a href="#lemme-etoile">lemme de l’étoile</a>, que $\{a^{n^2}:n\ge0\}$ n’est pas hors-contexte.</p>
+<details class="corrige"><summary>Correction</summary><div class="texte-corrige">
+<p>$L_1$ est engendré par $S\to TC$, $T\to aTb\mid\varepsilon$, $C\to cC\mid\varepsilon$, et $L_2$ de façon symétrique. Leur intersection est $\{a^nb^nc^n\}$, qui n’est pas hors-contexte (<a href="#lemme-etoile">lemme de l’étoile</a>).</p>
+<p>La classe est close par union : si $S_1$ et $S_2$ sont les symboles de départ de deux grammaires aux non-terminaux disjoints, on ajoute $S\to S_1\mid S_2$. Si elle était close par complémentaire, elle le serait par intersection, puisque $L_1\cap L_2=\overline{\overline{L_1}\cup\overline{L_2}}$ : contradiction.</p>
+<p>Pour $\{a^{n^2}\}$ : soit $p$ l’entier du lemme et $w=a^{p^2}$. Une décomposition $w=uvxyz$ avec $|vxy|\le p$ et $vy\ne\varepsilon$ donne, pour $k=2$, le mot $a^{p^2+m}$ où $m=|vy|$ vérifie $1\le m\le p$. Or $p^2&lt;p^2+m\le p^2+p<(p+1)^2$ : ce n’est pas un carré, et le mot n’est pas dans le langage. Contradiction.</p>
+</div></details>
+</div></div>
+
+<nav class="nav-chap"><a href="kolmogorov-omega.html"><small>← Précédent</small>Complexité de Kolmogorov et nombre Ω de Chaitin</a><a href="complexite.html" style="text-align:right"><small>Suivant →</small>Complexité : temps et espace de calcul</a></nav>
+<footer class="pied">Calculabilité — manuel à trois niveaux de lecture. Auteurs : Frédéric Prost et Claude. Texte sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" rel="license">CC BY-SA 4.0</a>, code sous licence MIT. Les mathématiques sont rendues par KaTeX (licence MIT), embarqué localement : le site se lit sans connexion.</footer>
+</main>
+</div>
+<script src="assets/katex/katex.min.js"></script>
+<script src="assets/katex/contrib/auto-render.min.js"></script>
+<script src="assets/turing.js"></script>
+<script src="assets/lambda.js"></script>
+<script src="assets/pcp.js"></script>
+<script src="assets/automates.js"></script>
+<script src="assets/niveaux.js"></script>
+<script src="assets/widgets.js"></script>
+</body>
+</html>

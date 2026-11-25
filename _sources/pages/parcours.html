@@ -1,0 +1,200 @@
+<!--
+titre: Parcours de lecture
+court: Parcours de lecture
+chapo: Le manuel peut se lire dans l’ordre, mais il n’y est pas obligé. Voici des itinéraires selon le public et selon les grands fils qui traversent les chapitres, avec, pour chaque étape, ce qu’on y vient chercher.
+-->
+
+<p>Chaque parcours est une liste ordonnée d’étapes. Une étape renvoie à un chapitre ou à un résultat précis ; il n’est pas nécessaire de lire tout le chapitre pour passer à la suivante. Le niveau conseillé se choisit avec le sélecteur en haut de page (philosophique, technique, technologique). Les chapitres techniques se terminent par des exercices corrigés, classés de une à trois étoiles.</p>
+
+<h2 id="par-public">Parcours selon le public</h2>
+
+<h3 id="decouverte">Découverte (deux heures)</h3>
+<p><em>Pour qui :</em> toute personne curieuse, sans prérequis. <em>Niveau conseillé :</em> philosophique.</p>
+<ol>
+<li><a href="motivations.html#non-calculables">Il existe des fonctions non calculables</a> : un argument de comptage, avant toute définition.</li>
+<li><a href="machines-turing.html#def-mt">Machines de Turing</a> (début) : ce qu’est un calcul, avec le simulateur.</li>
+<li><a href="indecidabilite.html#arret">Le problème de l’arrêt</a> : le premier problème qu’aucun programme ne résout.</li>
+<li><a href="castors-affaires.html#sigma-non-calculable">Les castors affairés</a> : de toutes petites machines dont on ne peut pas tout savoir.</li>
+<li><a href="mathematiques-indecidables.html#pavages">Paver le plan</a> : l’indécidable hors de l’informatique.</li>
+<li><a href="incompletude.html#godel1">Le théorème d’incomplétude</a> : ce que cela change pour les mathématiques.</li>
+</ol>
+
+<h3 id="licence">Cours de licence (un semestre)</h3>
+<p><em>Pour qui :</em> étudiants de licence en informatique ou en mathématiques. <em>Niveau conseillé :</em> technique.</p>
+<ol>
+<li>Chapitres 3 à 6 dans l’ordre : <a href="machines-turing.html">machines de Turing</a>, <a href="fonctions-recursives.html">fonctions récursives</a>, <a href="lambda-calcul.html">λ-calcul</a>, <a href="equivalence.html">équivalence des modèles</a>.</li>
+<li><a href="these-church.html#these">La thèse de Church-Turing</a>, pour savoir ce qu’on a démontré et ce qu’on admet.</li>
+<li><a href="universalite.html">Universalité</a>, puis <a href="smn-recursion.html">s-m-n et récursion</a>.</li>
+<li><a href="indecidabilite.html">Indécidabilité</a> (réductions, <a href="indecidabilite.html#rice-theoreme">théorème de Rice</a>) et <a href="semi-decidabilite.html">semi-décidabilité</a>.</li>
+<li><a href="langages.html#post">Le problème de correspondance de Post</a> et ses conséquences sur les grammaires.</li>
+<li>En parallèle, les exercices à une et deux étoiles de chacun de ces chapitres.</li>
+</ol>
+
+<h3 id="master">Cours de master</h3>
+<p><em>Pour qui :</em> la suite du parcours précédent. <em>Niveau conseillé :</em> technique.</p>
+<ol>
+<li><a href="hierarchie-arithmetique.html">La hiérarchie arithmétique</a> : classer les problèmes indécidables entre eux.</li>
+<li><a href="incompletude.html">L’incomplétude</a>, jusqu’au <a href="incompletude.html#godel2">second théorème</a> et au <a href="incompletude.html#entscheidung">problème de la décision</a>.</li>
+<li><a href="equations-diophantiennes.html#mrdp">Le théorème MRDP</a> : l’arithmétique la plus élémentaire est universelle.</li>
+<li><a href="logique-types.html">Logique et types</a>, puis <a href="theories-decidables.html">théories décidables</a>.</li>
+<li><a href="kolmogorov-omega.html">Complexité de Kolmogorov et nombre Ω</a>.</li>
+<li><a href="complexite.html">Complexité en temps et en espace</a>, jusqu’à <a href="complexite.html#cook-levin">Cook et Levin</a> et <a href="complexite.html#baker-gill-solovay">Baker, Gill et Solovay</a>, puis <a href="hasard-quantique.html">hasard, approximation et calcul quantique</a>.</li>
+<li>Les exercices à trois étoiles.</li>
+</ol>
+
+<h3 id="programmeurs">Pour programmeurs</h3>
+<p><em>Pour qui :</em> développeurs qui veulent savoir ce que la théorie dit de leur métier. <em>Niveau conseillé :</em> technologique.</p>
+<ol>
+<li><a href="trois-approches.html">Trois approches du calcul</a> : actionnelle (impérative), fonctionnelle, logique, et le <a href="trois-approches.html#cout-simulation">coût des simulations</a>.</li>
+<li><a href="lambda-calcul.html">Le λ-calcul</a>, avec le réducteur intégré.</li>
+<li><a href="equivalence.html#compilateur">Un compilateur vers les machines de Turing</a>.</li>
+<li><a href="smn-recursion.html#recursion">Quines et théorème de récursion</a> : un programme qui connaît son propre code.</li>
+<li><a href="indecidabilite.html#rice-theoreme">Le théorème de Rice</a> : pourquoi aucun analyseur statique n’est parfait.</li>
+<li><a href="logique-types.html#totaux">Langages totaux</a> et <a href="logique-types.html#curry-howard">Curry-Howard</a> : les types comme spécifications, les programmes comme preuves ; puis <a href="logique-types.html#systeme-f">le polymorphisme (Système F)</a> et <a href="logique-types.html#constructions">les assistants de preuve</a>.</li>
+<li><a href="theories-decidables.html#presburger">L’arithmétique de Presburger par automates</a>, la théorie derrière les solveurs SMT.</li>
+<li><a href="complexite.html#solveurs-sat">Les solveurs SAT</a> et <a href="calculabilite-ia.html#verification-spec">la vérification de programmes</a>.</li>
+<li><a href="hasard-quantique.html#miller-rabin">Algorithmes probabilistes</a> et <a href="hasard-quantique.html#deutsch">premiers algorithmes quantiques</a>, avec leurs simulations.</li>
+</ol>
+
+<h3 id="mathematiciens">Pour mathématiciens</h3>
+<p><em>Pour qui :</em> lecteurs à l’aise avec les démonstrations, qui veulent voir l’indécidable dans leur propre domaine. <em>Niveau conseillé :</em> technique.</p>
+<ol>
+<li><a href="fonctions-recursives.html">Les fonctions récursives</a> : le calcul défini sans machine, par des équations.</li>
+<li><a href="indecidabilite.html#arret">L’arrêt</a> et <a href="indecidabilite.html#reduction">les réductions</a> : la méthode de toutes les preuves qui suivent.</li>
+<li><a href="equations-diophantiennes.html">Les équations diophantiennes</a> : l’équation de Pell, MRDP, le polynôme des nombres premiers.</li>
+<li><a href="theories-decidables.html">Les théories décidables</a> : Presburger, Tarski, et ce qui les sépare de l’arithmétique.</li>
+<li><a href="mathematiques-indecidables.html">L’indécidable dans les mathématiques ordinaires</a> : matrices, pavages, zéros de fonctions, groupes, variétés.</li>
+<li><a href="indecidabilite.html#goldbach">Goldbach et l’arrêt</a>, puis <a href="hierarchie-arithmetique.html#exemples-hierarchie">classer les problèmes</a> : l’arrêt, la totalité, la finitude d’un domaine, chacun à son étage.</li>
+<li><a href="castors-affaires.html#castors-zfc">Les castors affairés et ZFC</a> : des entiers précis que la théorie des ensembles ne détermine pas.</li>
+</ol>
+
+<h3 id="philosophie">Philosophie des sciences</h3>
+<p><em>Pour qui :</em> lecteurs intéressés par la portée des résultats plus que par leurs preuves. <em>Niveau conseillé :</em> philosophique.</p>
+<ol>
+<li><a href="motivations.html">Motivations</a> : pourquoi définir le calcul.</li>
+<li><a href="these-church.html">La thèse de Church-Turing</a>, sa <a href="these-church.html#these-physique">version physique</a>, puis <a href="these-church.html#physique-vivant">la physique comme texte et le vivant</a> et <a href="these-church.html#conscience">la conscience</a>.</li>
+<li><a href="cantor.html#theorie-du-tout">Une théorie du tout est-elle possible ?</a></li>
+<li><a href="incompletude.html#godel1">L’incomplétude</a> et ses mauvaises interprétations.</li>
+<li><a href="kolmogorov-omega.html#chaitin">L’incomplétude selon Chaitin</a> : une théorie ne prouve pas plus d’information qu’elle n’en contient.</li>
+<li><a href="calculabilite-ia.html#bilan">Ce que la calculabilité dit de l’IA, et ce qu’elle ne dit pas</a>.</li>
+<li><a href="leibniz.html">Leibniz et le binaire</a> : le rêve d’un calcul universel, trois siècles avant.</li>
+</ol>
+
+<h3 id="intelligence-artificielle">Calcul et intelligence artificielle</h3>
+<p><em>Pour qui :</em> lecteurs qui viennent de l’apprentissage automatique. <em>Niveau conseillé :</em> philosophique, puis technique.</p>
+<ol>
+<li><a href="indecidabilite.html#rice-theoreme">Le théorème de Rice</a> : ce qu’on ne peut pas savoir d’un programme en le lisant.</li>
+<li><a href="calculabilite-ia.html#specifications">Programmer à partir d’une spécification</a> et <a href="calculabilite-ia.html#controle">contrôler une IA</a>.</li>
+<li><a href="kolmogorov-omega.html#c-non-calculable">La complexité de Kolmogorov n’est pas calculable</a>, puis <a href="calculabilite-ia.html#predicteur">aucun prédicteur n’apprend tout</a>.</li>
+<li><a href="calculabilite-ia.html#reseaux">Les réseaux de neurones comme modèles de calcul</a>.</li>
+<li><a href="complexite.html#landauer">Le prix physique d’une recherche exhaustive</a> et <a href="complexite.html#solveurs-sat">les solveurs SAT</a>.</li>
+<li><a href="logique-types.html#curry-howard">Curry-Howard</a> et <a href="logique-types.html#preuves-ia">la vérification en Lean des preuves produites par des IA</a>.</li>
+<li><a href="calculabilite-ia.html#lob">Le théorème de Löb</a> : une IA qui raisonne sur elle-même.</li>
+</ol>
+
+<h2 id="fils">Fils thématiques</h2>
+<p>Ces parcours suivent une idée à travers tout le manuel. Ils supposent connus les premiers chapitres (au moins le <a href="#decouverte">parcours découverte</a>).</p>
+
+<h3 id="diagonale">La diagonale</h3>
+<p>Un seul argument, celui de Cantor, démontre la plupart des théorèmes d’impossibilité du manuel. On le voit ici changer de costume.</p>
+<ol>
+<li><a href="cantor.html#cantor-reels">Cantor</a> : il y a plus de réels que d’entiers.</li>
+<li><a href="motivations.html#diagonale-totale">Aucun langage total ne capture tout le calculable</a>.</li>
+<li><a href="universalite.html#pas-universelle-totale">Pas de fonction universelle totale</a>.</li>
+<li><a href="indecidabilite.html#arret">L’arrêt</a>.</li>
+<li><a href="smn-recursion.html#kleene">Le théorème de récursion</a> : la diagonale devient un point fixe.</li>
+<li><a href="incompletude.html#diagonal">Le lemme diagonal de Gödel</a>.</li>
+<li><a href="logique-types.html#pas-interpreteur">Un langage total ne contient pas son interpréteur</a>.</li>
+<li><a href="kolmogorov-omega.html#c-non-calculable">Le paradoxe de Berry</a> et <a href="castors-affaires.html#sigma-non-calculable">les castors affairés</a>.</li>
+<li><a href="hierarchie-arithmetique.html#hierarchie-stricte">La hiérarchie arithmétique est stricte</a>.</li>
+<li><a href="these-church.html#physique-vivant">Toute théorie écrite du monde est dénombrable</a>.</li>
+</ol>
+
+<h3 id="coder-un-calcul">Coder un calcul</h3>
+<p>Pour montrer qu’une question est indécidable, on montre qu’elle sait décrire l’histoire d’un calcul. Ce parcours suit le diagramme espace-temps d’une machine de Turing à travers les domaines.</p>
+<ol>
+<li><a href="machines-turing.html#def-pas">Descriptions instantanées</a> : un calcul est une suite de mots.</li>
+<li><a href="equivalence.html#godel-mt">Nombres de Gödel des calculs</a> et <a href="equivalence.html#forme-normale">forme normale de Kleene</a>.</li>
+<li><a href="complexite.html#cook-levin">Cook et Levin</a> : le calcul devient une formule propositionnelle.</li>
+<li><a href="incompletude.html#entscheidung">Le problème de la décision</a> et <a href="logique-types.html#binaire">une relation binaire suffit</a> : le calcul devient un énoncé logique.</li>
+<li><a href="mathematiques-indecidables.html#pavage-origine">Les tuiles de Wang</a> : le calcul devient un pavage.</li>
+<li><a href="langages.html#probleme-du-mot">Le problème du mot</a> et <a href="autres-modeles.html#pcp">les dominos de Post</a> : le calcul devient une réécriture de mots.</li>
+<li><a href="mathematiques-indecidables.html#matrices-post">Les produits de matrices</a> : le calcul devient de l’algèbre linéaire.</li>
+<li><a href="autres-modeles.html#ac-simule-mt">Les automates cellulaires</a> et <a href="autres-modeles.html#regle-110">la règle 110</a> : le calcul devient une règle locale, le diagramme espace-temps se dessine tout seul.</li>
+<li><a href="autres-modeles.html#fractran">FRACTRAN</a> et <a href="mathematiques-indecidables.html#collatz-generalise">Collatz généralisé</a> : le calcul devient une itération arithmétique.</li>
+<li><a href="equations-diophantiennes.html#mrdp">MRDP</a> et <a href="mathematiques-indecidables.html#zeros-sinus">les zéros des fonctions</a> : le calcul devient une équation.</li>
+</ol>
+
+<h3 id="logique-fondements">Logique et fondements</h3>
+<p>De la question de Hilbert (peut-on mécaniser les mathématiques ?) à ses réponses.</p>
+<ol>
+<li><a href="bases.html#def-logique">Formules et vérité</a>, pour les notations.</li>
+<li><a href="incompletude.html#completude">Le théorème de complétude</a> : la vérité logique est semi-décidable.</li>
+<li><a href="incompletude.html#entscheidung">Le problème de la décision</a> : elle n’est pas décidable.</li>
+<li><a href="logique-types.html#frontiere">La frontière en logique</a> : propositionnel, monadique, une relation binaire.</li>
+<li><a href="incompletude.html#godel1">Les théorèmes d’incomplétude</a>, puis <a href="incompletude.html#rosser">Rosser</a>.</li>
+<li><a href="theories-decidables.html">Les théories décidables</a> : les cas où le rêve de Hilbert se réalise.</li>
+<li><a href="logique-types.html#curry-howard">Curry-Howard</a> et <a href="logique-types.html#coherence-normalisation">la cohérence par le calcul</a>.</li>
+<li><a href="logique-types.html#systeme-f">Le Système F</a>, <a href="logique-types.html#lambda-cube">le λ-cube</a> et <a href="logique-types.html#constructions">le calcul des constructions</a>, jusqu’à Lean et Rocq.</li>
+<li><a href="kolmogorov-omega.html#omega-theorie">Une théorie ne connaît qu’un nombre fini de chiffres de Ω</a>.</li>
+</ol>
+
+<h3 id="decidable-et-son-prix">Le décidable et son prix</h3>
+<p>Savoir qu’un problème est décidable n’est que le début : encore faut-il pouvoir payer le calcul.</p>
+<ol>
+<li><a href="langages.html#post-decidable">Deux cas décidables du problème de Post</a> et <a href="langages.html#decidables-grammaires">les problèmes décidables sur les grammaires</a>.</li>
+<li><a href="logique-types.html#propositionnel">Le calcul propositionnel</a> : décidable et $\mathrm{co}\mathsf{NP}$-complet.</li>
+<li><a href="complexite.html#hierarchies">Les théorèmes de hiérarchie</a> : il existe des problèmes décidables arbitrairement difficiles ; et <a href="complexite.html#baker-gill-solovay">pourquoi la diagonale ne tranche pas P contre NP</a>.</li>
+<li><a href="complexite.html#jeux-pspace">Les jeux et l’espace polynomial</a>.</li>
+<li><a href="hasard-quantique.html#miller-rabin">Le hasard</a> (primalité, identités polynomiales) et <a href="hasard-quantique.html#approximation">l’approximation</a> : contourner la difficulté, ou pas.</li>
+<li><a href="theories-decidables.html#presburger">Presburger</a> (au moins doublement exponentiel) et <a href="theories-decidables.html#tarski">Tarski</a>.</li>
+<li><a href="ackermann.html">La fonction d’Ackermann</a> : calculable, mais au-delà de toute récursion primitive.</li>
+<li><a href="complexite.html#landauer">Le principe de Landauer</a> : la limite physique d’une énumération.</li>
+<li><a href="calculabilite-ia.html#reluplex">Vérifier un réseau de neurones</a> : décidable, mais difficile.</li>
+<li><a href="hasard-quantique.html#paysage-quantique">Ce que le calcul quantique change, et ce qu’il ne change pas</a>.</li>
+</ol>
+
+<h3 id="limites-physiques">Calcul et monde physique</h3>
+<ol>
+<li><a href="these-church.html#gandy">Le théorème de Gandy</a> : les machines discrètes à causalité locale ne dépassent pas Turing.</li>
+<li><a href="autres-modeles.html#automates-cellulaires">Les automates cellulaires</a> : une physique jouet, locale et parallèle, qui calcule tout (<a href="autres-modeles.html#regle-110">règle 110</a>).</li>
+<li><a href="these-church.html#these-physique">La thèse physique et la thèse étendue</a>.</li>
+<li><a href="hasard-quantique.html#hasard-calculable">Le hasard</a> et <a href="hasard-quantique.html#quantique-calculable">le calcul quantique</a> ne dépassent pas Turing ; <a href="hasard-quantique.html#shor">Shor</a> et <a href="hasard-quantique.html#grover">Grover</a> changent le coût.</li>
+<li><a href="complexite.html#physique">Ce que coûte une recherche exhaustive</a>, avec Landauer.</li>
+<li><a href="castors-affaires.html#valeurs-bb">Les valeurs connues des castors affairés</a> et <a href="kolmogorov-omega.html#omega-castors">un Ω jouet</a> : jusqu’où le calcul réel peut aller.</li>
+<li><a href="calculabilite-ia.html#automate-reseau">Une machine à mémoire bornée est un automate fini</a>.</li>
+<li><a href="mathematiques-indecidables.html#groupes-topologie">Le gap spectral indécidable</a> : l’indécidable dans un modèle de physique.</li>
+<li><a href="these-church.html#physique-vivant">La physique est un texte, le vivant n’est pas un plan</a>.</li>
+</ol>
+
+<h3 id="histoire">Une histoire en dates</h3>
+<p>Les résultats dans l’ordre où ils sont apparus.</p>
+<ol>
+<li>1703 : <a href="leibniz.html">Leibniz</a> publie son arithmétique binaire.</li>
+<li>1891 : <a href="cantor.html#cantor-reels">l’argument diagonal de Cantor</a>.</li>
+<li>1900 : Hilbert pose son <a href="equations-diophantiennes.html">dixième problème</a>.</li>
+<li>1931 : <a href="incompletude.html#godel1">Gödel</a> démontre l’incomplétude.</li>
+<li>1936 : <a href="lambda-calcul.html">Church</a> et <a href="machines-turing.html">Turing</a> définissent le calcul et résolvent <a href="incompletude.html#entscheidung">le problème de la décision</a> ; c’est la naissance de la <a href="these-church.html#these">thèse de Church-Turing</a>.</li>
+<li>1946–1947 : Post, avec <a href="autres-modeles.html#pcp">les dominos</a>, puis Post et Markov, avec <a href="langages.html#probleme-du-mot">le problème du mot</a>, trouvent les premiers problèmes indécidables « combinatoires ».</li>
+<li>1955–1958 : <a href="mathematiques-indecidables.html#groupes-topologie">le problème du mot dans les groupes</a> (Novikov, Boone).</li>
+<li>1956–1957 : <a href="indecidabilite.html#friedberg-muchnik">Friedberg et Muchnik</a> résolvent le problème de Post sur les degrés.</li>
+<li>1958 : <a href="logique-types.html#systeme-t">le Système T de Gödel</a>.</li>
+<li>1961–1966 : <a href="mathematiques-indecidables.html#pavage-origine">Wang et Berger</a> étudient les pavages ; en 1962, Radó définit <a href="castors-affaires.html">les castors affairés</a>.</li>
+<li>1965–1975 : <a href="kolmogorov-omega.html">Kolmogorov, Solomonoff et Chaitin</a> fondent la théorie algorithmique de l’information.</li>
+<li>1969–1980 : <a href="logique-types.html#curry-howard">Howard</a> formule la correspondance entre preuves et programmes.</li>
+<li>1970 : <a href="equations-diophantiennes.html#mrdp">Matiyasevich</a> achève la solution négative du dixième problème.</li>
+<li>1971 : <a href="complexite.html#cook-levin">Cook</a> définit la NP-complétude ; en 1975, <a href="complexite.html#baker-gill-solovay">Baker, Gill et Solovay</a> montrent que les oracles ne la tranchent pas.</li>
+<li>1972 : <a href="logique-types.html#systeme-f">Girard</a> introduit le Système F ; en 1988, Coquand et Huet définissent <a href="logique-types.html#lambda-cube">le calcul des constructions</a>.</li>
+<li>1976–1980 : <a href="hasard-quantique.html#miller-rabin">le test de primalité de Miller et Rabin</a>.</li>
+<li>1985 : <a href="hasard-quantique.html#deutsch">Deutsch</a> définit la machine de Turing quantique ; en 1994, <a href="hasard-quantique.html#shor">Shor</a> factorise en temps polynomial quantique.</li>
+<li>2002 : <a href="hasard-quantique.html#miller-rabin">la primalité est dans P</a> (Agrawal, Kayal, Saxena).</li>
+</ol>
+
+<h2 id="s-entrainer">S’entraîner</h2>
+<p>Les exercices sont rangés à la fin de chaque chapitre technique. Une étoile : application directe du cours. Deux étoiles : une idée à trouver. Trois étoiles : un raisonnement complet, souvent un résultat de la littérature. Les corrections sont masquées ; on les ouvre en cliquant.</p>
+<ul>
+<li>Modèles de calcul : <a href="machines-turing.html#exercices">machines de Turing</a>, <a href="fonctions-recursives.html#exercices">fonctions récursives</a>, <a href="lambda-calcul.html#exercices">λ-calcul</a>, <a href="equivalence.html#exercices">équivalence</a>.</li>
+<li>Théorèmes fondamentaux : <a href="universalite.html#exercices">universalité</a>, <a href="smn-recursion.html#exercices">s-m-n et récursion</a>.</li>
+<li>Limites du calcul : <a href="indecidabilite.html#exercices">indécidabilité</a>, <a href="semi-decidabilite.html#exercices">semi-décidabilité</a>, <a href="hierarchie-arithmetique.html#exercices">hiérarchie arithmétique</a>, <a href="incompletude.html#exercices">incomplétude</a>, <a href="equations-diophantiennes.html#exercices">équations diophantiennes</a>, <a href="logique-types.html#exercices">logique et types</a>, <a href="theories-decidables.html#exercices">théories décidables</a>, <a href="mathematiques-indecidables.html#exercices">mathématiques ordinaires</a>, <a href="kolmogorov-omega.html#exercices">Kolmogorov et Ω</a>, <a href="langages.html#exercices">langages</a>.</li>
+<li>Complexité et études de cas : <a href="complexite.html#exercices">complexité</a>, <a href="ackermann.html#exercices">Ackermann</a>, <a href="castors-affaires.html#exercices">castors affairés</a>, <a href="calculabilite-ia.html#exercices">IA</a>, <a href="autres-modeles.html#exercices">autres modèles</a>.</li>
+</ul>
