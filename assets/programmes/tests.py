@@ -106,6 +106,35 @@ for nom, dec in arret.CANDIDATS.items():
     verifier("arrêt " + nom, rep != (etat == "arrêt"))
 print("   conforme, %.1f s" % (time.time() - t))
 
+t = section("7. Deux piles, deux compteurs, dominos de Post, logique")
+import glob
+import piles
+import compteurs
+import post
+import logique_post
+ici = os.path.dirname(os.path.abspath(__file__))
+for f in sorted(glob.glob(os.path.join(ici, "exemples", "*.tm"))):
+    M = Machine.depuis_fichier(f)
+    nom = os.path.basename(f)[:-3]
+    for a in [(0,), (2,), (1, 1), (2, 1)]:
+        try:
+            M.executer(*a, max_pas=3000)
+        except Exception:
+            continue
+        piles.comparer(M, *a)
+        compteurs.comparer(M, *a, deux=(nom != "multiplication"))
+        d, noms = post.dominos_modifies(M, *a)
+        s = post.solution_depuis_calcul(M, d, noms, *a)
+        verifier("post modifié %s %s" % (nom, a), post.est_solution(d, s, premier=0))
+        verifier("post %s %s" % (nom, a), post.est_solution(post.vers_ordinaire(d), post.solution_ordinaire(s, len(d))))
+D3 = [(("a",), ("b", "a", "a")), (("a", "b"), ("a", "a")), (("b", "b", "a"), ("b", "b"))]
+sol = post.chercher(D3)
+verifier("recherche de Post", post.est_solution(D3, sol))
+f = logique_post.deduction(D3, sol)
+verifier("déduction de Floyd", f[-1][0] == f[-1][1])
+verifier("modèle des mots", post.est_solution(D3, logique_post.modele_des_mots(D3, 8)))
+print("   11 machines, %.1f s" % (time.time() - t))
+
 print()
 print("Tout est conforme." if not echecs else "%d échecs." % len(echecs))
 raise SystemExit(1 if echecs else 0)

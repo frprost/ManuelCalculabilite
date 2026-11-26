@@ -63,6 +63,10 @@
 <tr><td><code>universelle.py</code></td><td>Une fonction universelle $U(e,x)$ écrite avec les six briques, puis, en la compilant, une machine de Turing universelle (environ 30 millions de quadruplets).</td><td><a href="universalite.html">Universalité</a></td></tr>
 <tr><td><code>recursion.py</code></td><td>Le théorème s-m-n sur les machines de Turing ; le point fixe de Kleene ; un programme qui affiche son propre texte.</td><td><a href="smn-recursion.html">s-m-n et récursion</a></td></tr>
 <tr><td><code>arret.py</code></td><td>L’argument diagonal exécuté : quatre « décideurs de l’arrêt » candidats, et le programme qui met chacun en défaut.</td><td><a href="indecidabilite.html">Indécidabilité</a></td></tr>
+<tr><td><code>piles.py</code></td><td>Automates à deux piles : la traduction d’une machine de Turing, les deux piles jouant les deux moitiés de la bande, vérifiée pas à pas.</td><td><a href="autres-modeles.html#piles">Autres modèles</a></td></tr>
+<tr><td><code>compteurs.py</code></td><td>Machines à compteurs : la bande rangée dans deux nombres (en binaire pour les blancs et les barres), puis deux compteurs seulement grâce aux nombres premiers ; un interpréteur qui exécute des machines de 10<sup>27</sup> pas.</td><td><a href="autres-modeles.html#compteurs-bande">Autres modèles</a></td></tr>
+<tr><td><code>post.py</code></td><td>Le problème de correspondance de Post : la liste de dominos d’une machine de Turing, la solution tirée de son calcul, et une recherche en largeur.</td><td><a href="autres-modeles.html#pcp-turing">Autres modèles</a></td></tr>
+<tr><td><code>logique_post.py</code></td><td>Des dominos à la logique : un énoncé avec une relation et une fonction binaires, valide si et seulement si les dominos ont une solution (format TPTP pour les démonstrateurs automatiques).</td><td><a href="logique-types.html#floyd">Logique et types</a></td></tr>
 <tr><td><code>tests.py</code></td><td>Vérifie toutes les affirmations précédentes.</td><td></td></tr>
 </table>
 
@@ -77,7 +81,11 @@ python3 lambda_calcul.py --compiler fact 3
 python3 universelle.py
 python3 universelle.py --machine
 python3 recursion.py
-python3 arret.py</code></pre>
+python3 arret.py
+python3 piles.py exemples/addition.tm 1 1 --trace
+python3 compteurs.py exemples/addition.tm 2 1
+python3 post.py
+python3 logique_post.py</code></pre>
 
 <p>La syntaxe des termes est celle du chapitre <a href="fonctions-recursives.html">Fonctions récursives</a> : <code>C(k,m)</code> pour la constante $m^{(k)}$, <code>S</code>, <code>A(k,i)</code> pour $A^{(k)}_i$, <code>sigma[g, h1, ..., hk]</code>, <code>rho[g, h]</code>, <code>mu[g]</code> ; les lettres grecques σ, ρ, μ sont acceptées, ainsi que les noms de la bibliothèque (<code>python3 recursives.py --liste</code>).</p>
 

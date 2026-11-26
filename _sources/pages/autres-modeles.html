@@ -79,6 +79,58 @@ prerequis: equivalence.html|Équivalence des modèles ; indecidabilite.html|Ind�
 </tech>
 </res>
 
+<res type="Théorème" nom="Deux compteurs simulent directement une bande (Minsky, 1961)" id="compteurs-bande">
+<enonce>
+<p>Soit $Z$ une machine de Turing dont l’alphabet a $b\ge2$ symboles, numérotés de $0$ à $b-1$, le blanc portant le numéro $0$. Si la tête est en $p$ sur la bande $\tau$, posons</p>
+$$d=\sum_{i\ge0}c\big(\tau(p+i)\big)\,b^i,\qquad g=\sum_{i\ge0}c\big(\tau(p-1-i)\big)\,b^i,$$
+<p>où $c(s)$ est le numéro du symbole $s$ (ces sommes sont finies). On peut construire, à partir de $Z$, une machine à trois compteurs $g,d,t$ qui, partant de $(g,d,t)=(g_0,d_0,0)$, s’arrête si et seulement si $Z$ s’arrête à partir de la configuration correspondante, et alors avec $(g,d)$ égal au codage de la configuration finale et $t=0$. Puis une machine à deux compteurs qui, partant de $(2^{g_0}3^{d_0},0)$, fait de même avec $(2^g3^d,0)$.</p>
+</enonce>
+<philo>
+<p class="en-clair"><strong>En clair.</strong> Le ruban d’une machine de Turing peut être rangé dans deux nombres : l’un pour ce qui est à gauche de la tête, l’autre pour la case lue et ce qui est à sa droite. Une machine qui ne sait qu’ajouter 1, retirer 1 et tester zéro peut alors imiter la machine de Turing pas à pas.</p>
+<p>L’idée est celle de l’écriture des nombres. Un ruban qui ne contient que des blancs et des barres s’écrit comme une suite de 0 et de 1, c’est-à-dire comme un nombre en binaire. Le chiffre des unités du nombre de droite est la case lue : pour la lire, il suffit de savoir si le nombre est pair ou impair. Avancer la tête d’une case vers la droite, c’est retirer ce chiffre au nombre de droite (le diviser par 2) et l’ajouter au nombre de gauche (le multiplier par 2 et ajouter le chiffre). Diviser et multiplier par 2 se font avec des additions et des soustractions de 1 répétées, en s’aidant d’un troisième compteur pour le brouillon.</p>
+<p>Il reste à passer de trois compteurs à deux. On range les trois nombres dans un seul, grâce aux nombres premiers : le triplet (5, 2, 0) devient 2<sup>5</sup> × 3<sup>2</sup> × 5<sup>0</sup> = 288. Ajouter 1 au deuxième nombre, c’est multiplier par 3 ; tester s’il est nul, c’est regarder si 288 est divisible par 3. Le second compteur sert de brouillon pour ces multiplications et divisions. Le prix est vertigineux : pour additionner 2 et 1, la machine à deux compteurs fait un nombre de pas de 28 chiffres.</p>
+</philo>
+<tech>
+<p>On écrit des <em>fragments</em> : des morceaux de programme qui commencent à une étiquette et finissent par un saut vers une étiquette « fin ». Un saut inconditionnel vers $j$ s’écrit $\mathrm{DEC}(z,j,j)$ sur un compteur $z$ jamais modifié, qui vaut toujours $0$.</p>
+<ul>
+<li>$\mathrm{TRANS}(x,y,m)$, qui fait $y:=y+m\,x$ et $x:=0$ : l’instruction $\mathrm{DEC}(x,\cdot,\text{fin})$ suivie de $m$ fois $\mathrm{INC}(y)$, avec retour au $\mathrm{DEC}$.</li>
+<li>$\mathrm{AJOUT}(x,r)$, qui fait $x:=x+r$ pour une constante $r$ : $r$ instructions $\mathrm{INC}(x)$.</li>
+<li>$\mathrm{DIV}(x,y,b)$, qui fait $y:=y+\lfloor x/b\rfloor$, $x:=0$, et sort vers l’une de $b$ étiquettes selon le reste : les instructions $D_1,\dots,D_b$, où $D_k=\mathrm{DEC}(x,D_{k+1},R_{k-1})$ et où $D_{b+1}$ est $\mathrm{INC}(y)$ suivi d’un retour en $D_1$. Si $x=qb+r$ avec $r<b$, la machine fait $q$ tours complets, puis le $\mathrm{DEC}$ de $D_{r+1}$ échoue et l’on sort en $R_r$.</li>
+</ul>
+<p><strong>Trois compteurs.</strong> Pour chaque état $q$ de $Z$, le fragment $\mathrm{Lire}_q$ est $\mathrm{DIV}(d,t,b)$ : à la sortie $R_r$, la case lue est le symbole $s$ de numéro $r$, $d=0$ et $t$ contient le reste de la bande à droite, $\lfloor d/b\rfloor$. Selon le quadruplet qui commence par $q\,s$ :</p>
+<table>
+<tr><th>quadruplet</th><th>fragment (après $\mathrm{Lire}_q$, sortie $R_r$)</th><th>effet</th></tr>
+<tr><td>$q\,s\,s'\,q'$</td><td>$\mathrm{TRANS}(t,d,b)$, $\mathrm{AJOUT}(d,c(s'))$, aller à $\mathrm{Lire}_{q'}$</td><td>$d:=b\lfloor d/b\rfloor+c(s')$</td></tr>
+<tr><td>$q\,s\,R\,q'$</td><td>$\mathrm{TRANS}(g,d,b)$, $\mathrm{AJOUT}(d,r)$, $\mathrm{TRANS}(d,g,1)$, $\mathrm{TRANS}(t,d,1)$</td><td>$g:=bg+r$, $d:=\lfloor d/b\rfloor$</td></tr>
+<tr><td>$q\,s\,L\,q'$</td><td>$\mathrm{TRANS}(t,d,b)$, $\mathrm{AJOUT}(d,r)$ ; $\mathrm{DIV}(g,t,b)$, sortie $R_{r'}$ ; $\mathrm{TRANS}(t,g,1)$, $\mathrm{TRANS}(d,t,b)$, $\mathrm{AJOUT}(t,r')$, $\mathrm{TRANS}(t,d,1)$</td><td>$g:=\lfloor g/b\rfloor$, $d:=bd+(g\bmod b)$</td></tr>
+<tr><td>aucun</td><td>$\mathrm{TRANS}(t,d,b)$, $\mathrm{AJOUT}(d,r)$, arrêt</td><td>$d$ est rétabli</td></tr>
+</table>
+<p>Chaque ligne transforme le codage $(g,d)$ de la configuration en celui de la configuration suivante, avec $t=0$ avant et après : aller à droite retire le chiffre des unités de $d$ et le place en unités de $g$, ce qui décale la bande d’une case ; aller à gauche fait l’inverse ; écrire change le chiffre des unités de $d$. Comme le blanc vaut $0$, les blancs ajoutés aux bords ne changent pas les nombres. La machine à trois compteurs (plus $z$) s’arrête donc exactement quand $Z$ s’arrête, avec le codage de la configuration finale. Pour une machine dont l’alphabet est $\{B,1\}$, on a $b=2$ : $g$ et $d$ sont les deux moitiés de la bande lues comme des nombres en binaire.</p>
+<p><strong>Deux compteurs.</strong> On applique à cette machine l’<a href="#compteurs">étape 2</a> du théorème précédent : le contenu $(g,d,t,z)$ est rangé dans $A=2^g3^d5^t7^z$, $B$ valant $0$ entre deux fragments ; $\mathrm{INC}$ d’un compteur devient une multiplication de $A$ par le nombre premier correspondant, $\mathrm{DEC}$ une division avec examen du reste. Les sauts $\mathrm{DEC}(z,j,j)$ deviennent simplement $\mathrm{DEC}(B,j,j)$, puisque $B=0$. Comme $z$ et $t$ valent $0$ au départ et à l’arrêt, la machine part de $2^{g_0}3^{d_0}$ et s’arrête sur $2^g3^d$.</p>
+<p><strong>Coût.</strong> Un pas de $Z$ coûte un nombre de pas proportionnel à $g+d$, donc exponentiel en la longueur de la bande, pour trois compteurs ; un $\mathrm{INC}$ à trois compteurs coûte un nombre de pas proportionnel à $A$ pour deux compteurs, d’où une seconde exponentielle. C’est le prix du codage, et le <a href="#schroeppel">théorème de Schroeppel</a> montre qu’on ne peut pas s’en passer.</p>
+</tech>
+<techno>
+<p>Pour l’addition $2+1$ (bande $111B11$, donc $d_0=1+2+4+16+32=55$ en binaire lu à partir de la case $0$) :</p>
+<pre><code>$ python3 compteurs.py exemples/addition.tm 2 1
+Machine de Turing : 5 quadruplets, 6 pas, résultat 3.
+Trois compteurs (base 2) : 83 instructions ; départ (g, d, t) = (0, 55, 0) ; 492 pas.
+Deux compteurs : 902 instructions ; départ A = 2^0 3^55 (27 chiffres) ; 3163345499250309688368905610 pas (28 chiffres).
+Les trois exécutions donnent la même bande finale.</code></pre>
+</techno>
+</res>
+
+<atelier titre="deux compteurs, en Python">
+<p>Le fichier <code>compteurs.py</code> des <a href="programmes.html">programmes à télécharger</a> réalise les deux étapes. Une classe <code>Assembleur</code> écrit un programme à étiquettes ; ses méthodes <code>transferer</code>, <code>ajouter</code> et <code>diviser</code> sont les fragments TRANS, AJOUT et DIV du niveau technique.</p>
+<inclure fichier="assets/programmes/compteurs.py" de="    # ---- fragments" a="G, D, T, Z = 0, 1, 2, 3" titre="Les fragments" ouvert="1"/>
+<p>La traduction d’une machine de Turing en trois compteurs suit le tableau ligne par ligne :</p>
+<inclure fichier="assets/programmes/compteurs.py" de="def trois_compteurs(machine):" a="def valeurs_initiales(codes, b, args):" titre="Machine de Turing → trois compteurs" ouvert="1"/>
+<p>Puis le passage à deux compteurs, par les nombres premiers :</p>
+<inclure fichier="assets/programmes/compteurs.py" de="def deux_compteurs(programme, k):" a="# --------------------------------------------------------------------------- vérification" titre="Trois compteurs → deux compteurs" ouvert="1"/>
+<h4>Exécuter une machine qui fait 10<sup>27</sup> pas</h4>
+<p>Une machine à deux compteurs passe presque tout son temps dans de petites boucles : « tant que A n’est pas nul, retirer 1 à A et ajouter 3 à B ». L’interpréteur reconnaît ces boucles (une suite de <code>DEC</code> d’un même compteur et d’<code>INC</code> d’autres compteurs qui revient à son point de départ) et en exécute tous les tours d’un coup, par une division et une multiplication. Le résultat est exactement celui de l’exécution pas à pas, et le nombre de pas compté est le vrai. La fonction <code>comparer</code> exécute la machine de Turing, la machine à trois compteurs et la machine à deux compteurs, et vérifie que les trois bandes finales coïncident ; <code>tests.py</code> le fait pour les onze machines d’exemple.</p>
+<inclure fichier="assets/programmes/compteurs.py"/>
+</atelier>
+
 <h2>Automates à pile</h2>
 
 <clair>
@@ -92,8 +144,39 @@ prerequis: equivalence.html|Équivalence des modèles ; indecidabilite.html|Ind�
 <p class="en-clair"><strong>En clair.</strong> Un automate muni d’une seule pile ne peut pas tout calculer. Avec deux piles, il le peut.</p>
 <p>Une pile est une mémoire dont on ne voit que le dessus, comme une pile d’assiettes. Elle suffit pour vérifier des parenthèses, pas pour comparer trois quantités. Deux piles placées dos à dos forment un ruban de Turing : ce qui est à gauche de la tête est dans la première pile, ce qui est à droite dans la seconde, et déplacer la tête revient à faire passer une assiette d’une pile à l’autre. La frontière de l’universalité passe entre « une » et « deux ».</p>
 </philo>
-<tech><p>Simulation d’une bande par deux piles : la pile gauche contient les cases à gauche de la tête (sommet = case voisine), la pile droite la case lue et les suivantes. Un déplacement à droite dépile à droite et empile à gauche. Les automates à une pile acceptent exactement les langages hors-contexte (<a href="langages.html#automates-pile">démonstration</a>), et le <a href="langages.html#lemme-etoile">lemme de l’étoile</a> montre que $a^nb^nc^n$ n’est pas hors-contexte. Les problèmes sur les automates à pile restent partiellement décidables (le vide d’un langage hors-contexte est <a href="langages.html#decidables-grammaires">décidable</a>), mais l’<em>équivalence</em> de deux automates à pile non déterministes, ou l’universalité d’une grammaire, sont <a href="langages.html#indecidables-2">indécidables</a> (on passe des grammaires aux automates et inversement de façon effective).</p></tech>
+<tech>
+<p><strong>Automates à deux piles.</strong> Un tel automate est donné par un ensemble fini d’états $Q$, un état initial $q_0$, un alphabet de pile $\Gamma$ et une table <em>partielle</em> $\delta$ qui, à un triplet $(q,g,d)\in Q\times(\Gamma\cup\{\bot\})^2$ (l’état et les sommets des piles $G$ et $D$, $\bot$ désignant une pile vide), associe $(\pi_G,\pi_D,w_G,w_D,q')$ : dépiler ou non $G$, dépiler ou non $D$ (seulement si elle n’est pas vide), empiler le mot $w_G$ sur $G$ et $w_D$ sur $D$, passer dans l’état $q'$. L’automate s’arrête quand $\delta$ n’est pas définie.</p>
+<p><strong>Construction.</strong> Soit $Z$ une machine à quadruplets, d’alphabet $\Gamma\ni B$. L’automate $A_Z$ a les états de $Z$ et, pour chaque quadruplet $q\,s\,a\,q'$, chaque $g\in\Gamma\cup\{\bot\}$ et chaque $d\in\{s\}$ (ou $d\in\{B,\bot\}$ si $s=B$, une pile vide se lisant comme un blanc), la transition $\delta(q,g,d)$ suivante, où $\pi_D$ signifie « dépiler $D$ si $d\ne\bot$ » :</p>
+<table>
+<tr><th>quadruplet</th><th>action sur les piles</th></tr>
+<tr><td>$q\,s\,s'\,q'$ (écrire)</td><td>$\pi_D$, empiler $s'$ sur $D$</td></tr>
+<tr><td>$q\,s\,R\,q'$</td><td>$\pi_D$, empiler $s$ sur $G$ (sauf si $s=B$ et $g=\bot$)</td></tr>
+<tr><td>$q\,s\,L\,q'$</td><td>dépiler $G$ si $g\ne\bot$ ; $\pi_D$ ; empiler sur $D$ le mot $s\,\hat g$, où $\hat g=g$ si $g\ne\bot$ et $\hat g=B$ sinon (le $s$ est omis si $s=B$ et $d=\bot$)</td></tr>
+</table>
+<p><strong>Invariant.</strong> Disons que $(q,G,D)$ <em>représente</em> la configuration de $Z$ d’état $q$, de bande $\tau$ et de tête en $p$ si, lue depuis le sommet et complétée par des blancs, $D$ est la suite $\tau(p),\tau(p+1),\dots$ et $G$ la suite $\tau(p-1),\tau(p-2),\dots$. La configuration initiale de $Z$ est représentée par $(q_0,\varnothing,D_0)$, où $D_0$ contient la bande, la case $0$ au sommet. Supposons que $(q,G,D)$ représente $(q,\tau,p)$. Le sommet de $D$ est $\tau(p)$, ou $\bot$ si $\tau(p)=B$ et que $D$ est vide ; donc $\delta(q,g,d)$ est définie si et seulement si $Z$ a un quadruplet commençant par $q\,\tau(p)$, et les deux s’arrêtent ensemble. Sinon, on vérifie cas par cas que le résultat représente la configuration suivante : écrire remplace le sommet de $D$ ; aller à droite fait passer $\tau(p)$ du sommet de $D$ au sommet de $G$, et le nouveau sommet de $D$ est $\tau(p+1)$ ; aller à gauche ramène $\tau(p-1)$ (le sommet de $G$, ou un blanc) au-dessus de $\tau(p)$ sur $D$. Par récurrence, l’automate fait un pas pour chaque pas de $Z$, et s’arrête avec la même bande. Il a au plus $2(|\Gamma|+1)$ transitions par quadruplet.</p>
+<p><strong>Une pile ne suffit pas.</strong> Un automate à une pile qui lit son entrée de gauche à droite reconnaît exactement les langages hors-contexte (<a href="langages.html#automates-pile">démonstration</a>), et le <a href="langages.html#lemme-etoile">lemme de l’étoile</a> montre que $\{a^nb^nc^n\}$ n’en est pas un. Avec deux piles, on recopie d’abord l’entrée sur $D$, puis l’on simule une machine de Turing qui décide ce langage. Les problèmes sur les automates à pile restent en partie décidables (le vide d’un langage hors-contexte l’est, <a href="langages.html#decidables-grammaires">proposition</a>), mais l’équivalence de deux automates à pile non déterministes est <a href="langages.html#indecidables-2">indécidable</a>.</p>
+</tech>
+<techno>
+<p>Trace de l’automate traduit de l’addition (<code>exemples/addition.tm</code>), sur l’entrée $1+1$. La pile $G$ est écrite de bas en haut, son sommet contre la barre verticale ; la pile $D$ de haut en bas, son sommet contre l’autre barre. La case lue est donc toujours juste à droite du milieu.</p>
+<pre><code>$ python3 piles.py exemples/addition.tm 1 1 --trace
+Machine de Turing : 5 quadruplets ; automate à deux piles : 21 transitions.
+  q0     G = [|   |1 1 B 1 1] = D
+  q1     G = [|   |B 1 B 1 1] = D
+  q2     G = [|   |1 B 1 1] = D
+  q2     G = [1|   |B 1 1] = D
+  q3     G = [1 B|   |1 1] = D
+  q4     G = [1 B|   |B 1] = D
+Entrée [1, 1] : les deux exécutions coïncident pendant 5 pas ; résultat 2 barres, soit 2.</code></pre>
+</techno>
 </res>
+
+<atelier titre="la traduction en automate à deux piles, en Python">
+<p>Le fichier <code>piles.py</code> contient un interpréteur d’automates à deux piles et la traduction du niveau technique. Une pile est une liste Python dont le dernier élément est le sommet.</p>
+<inclure fichier="assets/programmes/piles.py" de="def depuis_turing(machine):" a="def piles_initiales(*args):" titre="Machine de Turing → automate à deux piles" ouvert="1"/>
+<p>La fonction <code>comparer</code> fait avancer côte à côte la machine et l’automate, et vérifie après chaque pas que la bande reconstituée à partir des deux piles est celle de la machine : c’est l’invariant de la démonstration, contrôlé à chaque pas.</p>
+<inclure fichier="assets/programmes/piles.py"/>
+</atelier>
+
 
 <h2>Problème de correspondance de Post</h2>
 
@@ -113,8 +196,55 @@ prerequis: equivalence.html|Équivalence des modèles ; indecidabilite.html|Ind�
 <tech><p>La preuve complète est donnée au chapitre <a href="langages.html#post-langages">Langages et grammaires</a> : on réduit le problème du mot d’un système semi-thuéen, lui-même indécidable par une réduction de l’arrêt, au problème de Post modifié (dont la solution doit commencer par un domino imposé), puis celui-ci au problème de Post. Les dominos sont conçus pour que la seule manière d’égaliser le haut et le bas soit d’écrire, en haut, la suite des mots d’une dérivation, le bas ayant toujours un mot d’avance ; le rattrapage n’est possible que si la dérivation atteint le mot cherché. Le problème est semi-décidable (on essaie toutes les suites par longueur croissante), donc $\Sigma_1$-complet. Il est décidable pour deux dominos, indécidable à partir de cinq (Neary, 2015).</p></tech>
 <techno>
 <p>Exemple : dominos $\frac{a}{baa}$, $\frac{ab}{aa}$, $\frac{bba}{bb}$. La suite $3,2,3,1$ donne en haut $bba\cdot ab\cdot bba\cdot a=bbaabbbaa$ et en bas $bb\cdot aa\cdot bb\cdot baa=bbaabbbaa$ : c’est une solution.</p>
+<div class="pcp-widget" data-titre="L’exemple"><pre class="src">a/baa
+ab/aa
+bba/bb</pre></div>
 </techno>
 </res>
+
+<res type="Théorème" nom="Des machines de Turing aux dominos de Post" id="pcp-turing">
+<enonce>
+<p>À toute machine $Z$ (à quadruplets) et toute entrée $\vec x$, on associe effectivement une liste de dominos $\mathcal D_{Z,\vec x}$ qui a une solution si et seulement si $Z$ s’arrête sur $\vec x$. Par conséquent le problème de Post est indécidable, et même $\Sigma_1$-complet.</p>
+</enonce>
+<philo>
+<p class="en-clair"><strong>En clair.</strong> Pour n’importe quel programme, on peut fabriquer un jeu de dominos qui a une solution exactement quand le programme s’arrête. La solution, quand elle existe, écrit tout le calcul du programme, étape après étape.</p>
+<p>Les dominos sont conçus pour qu’on n’ait pas le choix. Le premier domino écrit en bas l’état de départ de la machine. Pour rattraper le bas, il faut le recopier en haut, et les seuls dominos qui le permettent écrivent en bas, en même temps, l’étape suivante du calcul. Le bas garde donc toujours une étape d’avance : c’est comme recopier une page en ayant toujours la ligne suivante à écrire en dessous.</p>
+<p>Le haut ne peut rattraper le bas qu’à la toute fin : des dominos spéciaux, qui ne servent que lorsque la machine s’est arrêtée, « mangent » le ruban une case à la fois jusqu’à ce que les deux lignes aient la même longueur. Si la machine ne s’arrête jamais, ces dominos ne servent jamais, et le bas garde éternellement son avance : il n’y a pas de solution. Savoir si un jeu de dominos a une solution, ce serait donc savoir si un programme s’arrête.</p>
+</philo>
+<tech>
+<p>Les mots sont écrits sur l’alphabet formé des symboles $\Gamma$ de $Z$, de ses états, d’un séparateur $\#$ et d’une lettre $H$ (« arrêté »). Une configuration d’état $q$, de tête sur la case contenant $s$, s’écrit $u\,q\,s\,v$ ($u$ et $v$ mots de $\Gamma$, éventuellement entourés de blancs). On construit d’abord une liste <em>modifiée</em>, dont la solution doit commencer par le premier domino (on note un domino $\frac{\text{haut}}{\text{bas}}$) :</p>
+<ol>
+<li>départ : $\frac{\#}{\#\,B\,q_0\,w\,\#}$, où $q_0w$ est la configuration initiale (le blanc ajouté devant est inoffensif) ;</li>
+<li>copie : $\frac{a}{a}$ pour $a\in\Gamma$ ; séparateurs : $\frac{\#}{\#}$ et $\frac{\#}{B\,\#}$ (ajouter un blanc à droite de la configuration en cours d’écriture) ;</li>
+<li>pour chaque quadruplet : $q\,s\,s'\,q'$ donne $\frac{q\,s}{q'\,s'}$ ; $q\,s\,R\,q'$ donne $\frac{q\,s}{s\,q'}$ ; $q\,s\,L\,q'$ donne $\frac{c\,q\,s}{q'\,c\,s}$ pour chaque $c\in\Gamma$, et, au bord gauche, $\frac{\#\,q\,s}{\#\,q'\,B\,s}$ et $\frac{\#\,q\,s}{B\,\#\,q'\,B\,s}$ ;</li>
+<li>arrêt : $\frac{q\,s}{H\,s}$ pour chaque couple $(q,s)$ qui ne commence aucun quadruplet ;</li>
+<li>effacement : $\frac{a\,H}{H}$ et $\frac{H\,a}{H}$ pour $a\in\Gamma$ ; fin : $\frac{H\,\#\,\#}{\#}$.</li>
+</ol>
+<p><strong>Si $Z$ s’arrête, il y a une solution.</strong> Soit $C_0,C_1,\dots,C_n$ le calcul, $C_n$ une configuration d’arrêt. On écrit le mot $\#C_0\#C_1\#\cdots\#C_n\#C'_n\#E_1\#\cdots\#E_m\#H\#\#$, où $C'_n$ est $C_n$ dont l’état est remplacé par $H$, et où chaque $E_{j+1}$ s’obtient en effaçant une lettre voisine de $H$ dans $E_j$, jusqu’à $H$ seul. Chaque configuration est complétée par les blancs nécessaires (un blanc à droite quand la tête arrive au bout, à gauche quand elle doit y aller). Ce mot s’obtient en haut et en bas avec la même suite de dominos : le domino de départ, puis, pour chaque configuration du haut, des copies et un domino de règle, d’arrêt ou d’effacement qui écrivent en bas la configuration suivante, séparées par un domino séparateur ; enfin $\frac{\#}{\#}$ et le domino de fin.</p>
+<p><strong>S’il y a une solution, $Z$ s’arrête.</strong> Considérons une solution, qui commence par le domino de départ, et suivons la lecture simultanée du haut et du bas. Montrons par récurrence que, chaque fois que le haut a écrit $\#C_0\#\cdots\#C_k$ (avec des configurations éventuellement complétées de blancs), le bas a écrit exactement $\#C_0\#\cdots\#C_k\#C_{k+1}$, où $C_{k+1}$ suit $C_k$ dans le calcul de $Z$, ou bien $C_k$ contient $H$. Le haut doit recopier $C_k$, qui contient une seule lettre d’état, précédée de lettres de $\Gamma$ (ou de $\#$) et suivie d’une lettre de $\Gamma$ (sinon aucun domino ne convient). Les lettres de $\Gamma$ ne peuvent être couvertes que par des copies ; la lettre d’état $q$, avec la lettre $s$ qui la suit, ne peut l’être que par le domino du quadruplet qui commence par $q\,s$ (il y en a au plus un, puisque $Z$ est déterministe), ou par un domino d’arrêt si ce quadruplet n’existe pas. Le bas reçoit donc la configuration suivante. Or, dans tous les dominos sauf les effacements et le domino de fin, le bas est au moins aussi long que le haut : tant qu’aucun $H$ n’apparaît, le bas garde au moins une configuration d’avance, et la solution ne peut pas se terminer. Un $H$ n’apparaît en bas que par un domino d’arrêt, quand le haut recopie une configuration d’arrêt de $Z$ : la machine s’arrête.</p>
+<p><strong>Liste ordinaire.</strong> L’<a href="langages.html#post-langages">astuce des étoiles</a> (étape 2 de la démonstration du chapitre Langages) transforme la liste modifiée en une liste ordinaire qui a une solution si et seulement si la liste modifiée en a une commençant par le premier domino. Le problème est semi-décidable (on essaie toutes les suites par longueur croissante), donc $\Sigma_1$-complet par la <a href="semi-decidabilite.html#k-complet">complétude de l’arrêt</a>.</p>
+</tech>
+<techno>
+<p>Pour l’addition $1+1$ (machine <code>exemples/addition.tm</code>), la liste modifiée a 20 dominos et la solution construite à partir du calcul en emploie 71. Le mot commun écrit les configurations successives, puis l’effacement :</p>
+<pre><code>$ python3 post.py
+Problème modifié : 20 dominos ; solution de 71 dominos, vérifiée.
+Mot commun : # B q0 1 1 B 1 1 # B q1 B 1 B 1 1 # B B q2 1 B 1 1 # B B 1 q2 B 1 1
+             # B B 1 B q3 1 1 # B B 1 B q4 B 1 # B B 1 B H B 1 # B B 1 H B 1 # …
+Problème de Post ordinaire : 22 dominos ; solution de 72 dominos, vérifiée.</code></pre>
+<p>Pour la machine à un seul quadruplet <code>q0 1 B q1</code>, la recherche en largeur aveugle (sans connaître le calcul) retrouve une solution de 13 dominos parmi les 14 de la liste : <code>python3 post.py --chercher</code>.</p>
+</techno>
+</res>
+
+<atelier titre="des machines aux dominos, en Python">
+<p>Le fichier <code>post.py</code> fabrique la liste de dominos d’une machine, construit la solution à partir du calcul, la vérifie, puis passe à la liste ordinaire. Un mot est un tuple de lettres, chaque lettre étant une chaîne : un symbole, un nom d’état, <code>#</code> ou <code>H</code>.</p>
+<inclure fichier="assets/programmes/post.py" de="def dominos_modifies(machine, *args):" a="def solution_depuis_calcul(" titre="La liste de dominos d’une machine" ouvert="1"/>
+<p>La solution se construit configuration par configuration, exactement comme dans la première moitié de la démonstration :</p>
+<inclure fichier="assets/programmes/post.py" de="def solution_depuis_calcul(" a="def vers_ordinaire(dominos):" titre="La solution, à partir du calcul" ouvert="1"/>
+<p>Le fichier contient aussi une recherche en largeur (<code>chercher</code>), qui ne garde que l’« avance » d’un côté sur l’autre : c’est la semi-décision du problème. Elle trouve les solutions des petits exemples du chapitre, mais elle ne peut jamais conclure qu’il n’y en a pas. Le <a href="#pcp">simulateur</a> plus haut, et ceux du chapitre <a href="langages.html#post-langages">Langages</a>, permettent de faire la même recherche dans le navigateur.</p>
+<inclure fichier="assets/programmes/post.py"/>
+</atelier>
+<p class="philo-aussi">Le jeu de dominos se traduit à son tour en logique : voir <a href="logique-types.html#floyd">du problème de Post à la logique</a>, au chapitre Logique et types.</p>
+
 
 <h2 id="diophantiennes">Équations diophantiennes</h2>
 

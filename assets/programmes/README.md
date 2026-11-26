@@ -25,6 +25,10 @@ Sous Windows, remplacer `python3` par `py` ou `python`. Le script vérifie toute
 | `universelle.py` | fonction universelle U(e, x), puis machine de Turing universelle obtenue en la compilant | Universalité |
 | `recursion.py` | théorème s-m-n sur les machines ; point fixe de Kleene ; quine | s-m-n et récursion |
 | `arret.py` | l’argument diagonal exécuté contre plusieurs « décideurs » candidats | Indécidabilité |
+| `piles.py` | automates à deux piles : traduction d’une machine de Turing, vérifiée pas à pas | Autres modèles |
+| `compteurs.py` | la bande dans deux nombres, puis deux compteurs par les nombres premiers | Autres modèles |
+| `post.py` | les dominos de Post d’une machine de Turing, et la solution tirée du calcul | Autres modèles |
+| `logique_post.py` | des dominos à un énoncé logique avec une relation et une fonction binaires | Logique et types |
 | `tests.py` | vérification de l’ensemble | |
 
 ## Exemples
@@ -40,6 +44,10 @@ python3 universelle.py
 python3 universelle.py --machine
 python3 recursion.py
 python3 arret.py
+python3 piles.py exemples/addition.tm 1 1 --trace
+python3 compteurs.py exemples/addition.tm 2 1
+python3 post.py
+python3 logique_post.py
 ```
 
 Chaque fichier commence par un commentaire qui explique ses conventions et son utilisation ; `python3 fichier.py` sans argument l’affiche.

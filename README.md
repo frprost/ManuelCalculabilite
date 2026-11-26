@@ -2,7 +2,7 @@
 
 Auteurs : **Frédéric Prost et Claude**.
 
-**Version 2.** Les trois niveaux sont plus contrastés : le niveau philosophique est un récit autonome lisible avec le bac (il remplace les énoncés formels), le niveau technique est inchangé, et le niveau technologique contient des « ateliers » avec les constructions complètes et des programmes Python téléchargeables (`assets/programmes/`, archive `assets/programmes.zip`).
+**Version 2.** Les trois niveaux sont plus contrastés : le niveau philosophique est un récit autonome lisible avec le bac (il remplace les énoncés formels), le niveau technique est inchangé, et le niveau technologique contient des « ateliers » avec les constructions complètes et des programmes Python téléchargeables (`assets/programmes/`, archive `assets/programmes.zip`). C’est la version principale du manuel. Elle ajoute les automates à deux piles, les machines à deux compteurs (bande codée dans deux nombres) et la réduction des machines de Turing aux dominos de Post, puis à la logique avec une relation et une fonction binaires.
 
 Ce qu’une machine peut calculer, ce qu’aucune ne pourra jamais calculer, et pourquoi cela nous concerne tous. Le manuel est un site HTML statique : chaque résultat se lit à trois niveaux (l’énoncé, une explication intuitive, la démonstration complète), avec des programmes et des simulations exécutables.
 

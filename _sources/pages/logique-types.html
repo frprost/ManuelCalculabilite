@@ -51,10 +51,49 @@ prerequis: incompletude.html#entscheidung|Problème de la décision ; lambda-cal
 <p>La même idée revient partout dans ce manuel : pavages du plan, dominos de Post, équations en nombres entiers. Chaque fois qu’un langage sait décrire un quadrillage où chaque case dépend de ses voisines, il sait imiter un calcul, et il hérite de son indécidabilité.</p>
 </philo>
 <tech>
-<p>La réduction du <a href="incompletude.html#entscheidung">théorème de Church et Turing</a> utilise exactement ce codage : les relations binaires $Q_i(t,h)$ (« à l’instant $t$, état $q_i$, tête en $h$ ») et $C_j(t,u)$ (« à l’instant $t$, la case $u$ contient $S_j$ »), plus $E$ et $L$ pour l’égalité et l’ordre des cases, une constante $o$ et les fonctions $s,p$ (successeur, prédécesseur). Les symboles de fonction ne sont pas indispensables : on peut les remplacer par leurs graphes, des relations binaires, en ajoutant des axiomes qui disent que ces relations sont fonctionnelles et totales ; c’est une transformation classique, que l’on ne détaille pas ici.</p>
+<p>La réduction du <a href="incompletude.html#entscheidung">théorème de Church et Turing</a> utilise exactement ce codage : les relations binaires $Q_i(t,h)$ (« à l’instant $t$, état $q_i$, tête en $h$ ») et $C_j(t,u)$ (« à l’instant $t$, la case $u$ contient $S_j$ »), plus $E$ et $L$ pour l’égalité et l’ordre des cases, une constante $o$ et les fonctions $s,p$ (successeur, prédécesseur). Les symboles de fonction ne sont pas indispensables : on peut les remplacer par leurs graphes, des relations binaires, en ajoutant des axiomes qui disent que ces relations sont fonctionnelles et totales ; c’est une transformation classique, que l’on ne détaille pas ici. Une réduction plus courte, qui passe par le problème de Post et n’emploie qu’une relation binaire, une fonction binaire et des constantes, est démontrée en entier <a href="#floyd">juste après</a>.</p>
 <p>Comparaison avec le <a href="#monadique">cas monadique</a> : la réduction a besoin de parler de couples (instant, case), ce que des prédicats unaires ne permettent pas. On sait par ailleurs (résultats cités) que la logique monadique reste décidable avec l’égalité, et que des classes d’énoncés définies par la forme de leurs quantificateurs sont décidables (préfixe $\exists^\ast\forall^\ast$, Bernays et Schönfinkel, 1928) ou indécidables (préfixe $\forall\exists\forall$, Kahr, Moore et Wang, 1962).</p>
 </tech>
 </res>
+
+<res type="Théorème" nom="Du problème de Post à la logique : une relation et une fonction binaires suffisent (Floyd)" id="floyd">
+<enonce>
+<p>Soit $\mathcal D=\big(\frac{u_1}{v_1},\dots,\frac{u_k}{v_k}\big)$ une liste de dominos sur un alphabet $\Lambda$. Le langage $\mathcal L$ a une constante $e$, une constante $\underline a$ pour chaque lettre $a\in\Lambda$, un symbole de fonction <em>binaire</em> $c$ et un symbole de relation <em>binaire</em> $P$. Pour un terme $x$ et un mot $w=a_1\cdots a_n$, notons $x\cdot w$ le terme $c(\cdots c(c(x,\underline{a_1}),\underline{a_2})\cdots,\underline{a_n})$. Posons</p>
+$$\varphi_{\mathcal D}\;=\;\Big[\bigwedge_{i=1}^kP(e\cdot u_i,\,e\cdot v_i)\ \wedge\ \forall x\,\forall y\,\Big(P(x,y)\Rightarrow\bigwedge_{i=1}^kP(x\cdot u_i,\,y\cdot v_i)\Big)\Big]\ \Rightarrow\ \exists z\,P(z,z).$$
+<p>Alors $\varphi_{\mathcal D}$ est valide si et seulement si $\mathcal D$ a une solution. Par conséquent, la validité des énoncés de $\mathcal L$ n’est pas décidable, et, en composant avec la <a href="autres-modeles.html#pcp-turing">réduction des machines aux dominos</a>, on obtient pour toute machine $Z$ et toute entrée $\vec x$ un énoncé de $\mathcal L$ valide si et seulement si $Z$ s’arrête sur $\vec x$.</p>
+</enonce>
+<philo>
+<p class="en-clair"><strong>En clair.</strong> Le jeu de dominos de Post se traduit en une phrase logique qui n’utilise qu’une relation entre deux objets et une opération sur deux objets. La phrase est toujours vraie exactement quand le jeu a une solution. Comme on ne peut pas décider si un jeu de dominos a une solution, on ne peut pas non plus décider si une telle phrase est toujours vraie.</p>
+<p>La phrase dit, en substance : « si chaque domino est une paire possible, et si l’on peut toujours prolonger une paire possible par un domino, alors il existe une paire possible dont les deux côtés sont égaux ». L’opération à deux places est « ajouter une lettre au bout d’un mot » ; la relation à deux places est « ces deux mots peuvent être le haut et le bas d’une suite de dominos ». La phrase est toujours vraie quand le jeu a une solution, puisqu’on peut alors l’écrire. Si le jeu n’a pas de solution, il existe un monde où la phrase est fausse : le monde des mots eux-mêmes.</p>
+<p>On retrouve la frontière déjà rencontrée : avec des propriétés d’objets isolés, tout est décidable ; dès qu’on peut relier <em>deux</em> objets, on peut écrire un calcul. Les dominos, les machines à deux piles et les machines à deux compteurs sont trois façons de voir le même phénomène : deux mémoires reliées suffisent pour tout calculer, et une relation à deux places suffit pour tout décrire.</p>
+</philo>
+<tech>
+<p>Le terme $e\cdot w$ ne dépend que du mot $w$, et $(x\cdot w)\cdot w'=x\cdot ww'$ (c’est le même terme, par définition).</p>
+<p><strong>Si $\mathcal D$ a une solution, $\varphi_{\mathcal D}$ est valide.</strong> Soit $\mathcal M$ une structure qui satisfait les hypothèses de $\varphi_{\mathcal D}$. Par récurrence sur $m\ge1$, pour toute suite $i_1,\dots,i_m$, $\mathcal M$ satisfait $P(e\cdot u_{i_1}\cdots u_{i_m},\ e\cdot v_{i_1}\cdots v_{i_m})$ : pour $m=1$ c’est une des premières hypothèses ; pour passer de $m$ à $m+1$, on applique la seconde hypothèse avec $x=e\cdot u_{i_1}\cdots u_{i_m}$, $y=e\cdot v_{i_1}\cdots v_{i_m}$. Si $i_1,\dots,i_m$ est une solution, les deux mots sont égaux, donc les deux termes sont le même terme $t$, et $\mathcal M$ satisfait $P(t,t)$, donc $\exists z\,P(z,z)$. Ainsi $\varphi_{\mathcal D}$ est vraie dans toute structure.</p>
+<p><strong>Si $\varphi_{\mathcal D}$ est valide, $\mathcal D$ a une solution.</strong> Considérons la structure des mots $\mathcal M_{\mathcal D}$ : son domaine est l’ensemble $\Lambda^*$ des mots, $e$ est le mot vide, $\underline a$ est le mot d’une lettre $a$, $c(x,y)$ est la concaténation $xy$, et $P(x,y)$ est vrai si et seulement s’il existe $m\ge1$ et $i_1,\dots,i_m$ avec $x=u_{i_1}\cdots u_{i_m}$ et $y=v_{i_1}\cdots v_{i_m}$. Dans $\mathcal M_{\mathcal D}$, le terme $x\cdot w$ s’interprète comme le mot $xw$ ; les hypothèses de $\varphi_{\mathcal D}$ y sont vraies (une suite d’un domino, puis le prolongement d’une suite par un domino), et la conclusion $\exists z\,P(z,z)$ y est vraie si et seulement si $\mathcal D$ a une solution. Si $\varphi_{\mathcal D}$ est valide, elle est vraie dans $\mathcal M_{\mathcal D}$, et $\mathcal D$ a une solution.</p>
+<p><strong>Conséquences.</strong> $\mathcal D\mapsto\varphi_{\mathcal D}$ est calculable ; comme le problème de Post est indécidable, la validité dans $\mathcal L$ l’est aussi, et elle est $\Sigma_1$-complète puisqu’elle est semi-décidable (<a href="incompletude.html#completude">complétude</a>). Les constantes ne sont pas indispensables : $\underline a$ et $e$ peuvent être remplacés par des variables quantifiées universellement en tête de l’énoncé, car la démonstration n’utilise que le fait que les termes $e\cdot w$ et $e\cdot w'$ sont égaux lorsque $w=w'$. On peut aussi remplacer la fonction $c$ par des fonctions unaires $f_a(x)=c(x,\underline a)$, une par lettre : c’est la forme originale de la réduction (Floyd, publiée dans le manuel de Manna, 1974). Résultats cités pour information : une seule relation binaire, sans autre symbole, suffit à l’indécidabilité (Kalmár, 1936) ; en revanche, la logique dont le seul symbole est une fonction unaire est décidable (Ehrenfeucht, 1959), et il faut deux fonctions unaires, ou une fonction binaire, pour retrouver l’indécidabilité.</p>
+</tech>
+<techno>
+<p>Pour les dominos $\frac{a}{baa},\frac{ab}{aa},\frac{bba}{bb}$ (lettres $a=\ell_0$, $b=\ell_1$), le programme écrit l’énoncé et, à partir de la solution $3,2,3,1$, la chaîne de faits qui le démontre :</p>
+<pre><code>$ python3 logique_post.py
+Énoncé, avec une fonction binaire c :
+  [ P(c(e,l0), c(c(c(e,l1),l0),l0)) ∧ P(c(c(e,l0),l1), c(c(e,l0),l0)) ∧ … ∧ ∀x ∀y ( P(x, y) → … ) ] → ∃z P(z, z)
+Solution trouvée dans le modèle des mots : [3, 2, 3, 1]
+  P(c(c(c(e,l1),l1),l0), c(c(e,l1),l1))
+  …
+  P(c(c(c(c(c(c(c(c(c(e,l1),l1),l0),l0),l1),l1),l1),l0),l0), c(c(c(c(c(c(c(c(c(e,l1),l1),l0),l0),l1),l1),l1),l0),l0))
+Le dernier fait est P(t, t) : l’énoncé est démontré.</code></pre>
+<p>L’option <code>--tptp</code> écrit l’énoncé au format TPTP, que lisent les démonstrateurs automatiques comme E ou Vampire ; <code>--machine exemples/successeur.tm 0</code> enchaîne les deux réductions : machine, dominos, énoncé.</p>
+</techno>
+</res>
+
+<atelier titre="l’énoncé de Floyd, en Python">
+<p>Le fichier <code>logique_post.py</code> écrit l’énoncé $\varphi_{\mathcal D}$ (avec la fonction binaire $c$, ou avec des fonctions unaires), la déduction de $P(t,t)$ à partir d’une solution, et explore le modèle des mots.</p>
+<inclure fichier="assets/programmes/logique_post.py" de="def terme(x, mot, binaire, noms):" a="def modele_des_mots(dominos, profondeur):" titre="L’énoncé et la déduction" ouvert="1"/>
+<p>Enchaîné avec <code>post.py</code>, il donne, pour la machine du successeur sur l’entrée $0$, un énoncé de 1 442 caractères, valide puisque la machine s’arrête, et une déduction de 11 étapes : <code>python3 logique_post.py --machine exemples/successeur.tm 0</code>.</p>
+<inclure fichier="assets/programmes/logique_post.py"/>
+</atelier>
+
 
 <res type="Remarque" nom="Validité, validité finie, théories décidables" id="paysage-logique">
 <enonce><p>Résultats cités pour information, sauf le premier point.</p>

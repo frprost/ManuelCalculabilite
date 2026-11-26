@@ -324,6 +324,69 @@ $$\mathrm{ACC}(u,v,i)\iff\exists w\ \big[\mathrm{ACC}(u,w,i-1)\wedge\mathrm{ACC}
 </res>
 
 <!--EXERCICES-->
+<h2 id="vp-vnp">Actualité : VP ≠ VNP, une preuve produite par des IA (novembre 2026)</h2>
+
+<clair>
+<p><strong>Section rédigée le 26 novembre 2026, trois jours après les annonces.</strong> Elle décrit un résultat très récent, qui n’a pas encore été relu par des mathématiciens. Dans ce domaine, la situation évolue très vite : chaque remarque est donc datée, et ce qui est écrit ici pourra être dépassé dans quelques semaines.</p>
+<p>La question P = NP a une cousine « algébrique », posée par Leslie Valiant en 1979 : on ne calcule plus avec des 0 et des 1, mais avec des additions et des multiplications de nombres. Deux formules se ressemblent beaucoup : le <em>déterminant</em> d’un tableau de nombres, qu’on apprend à calculer en première année d’université, et le <em>permanent</em>, qui s’écrit presque pareil, avec des signes + partout. Le déterminant se calcule vite ; pour le permanent, on ne connaît que des méthodes très lentes. Valiant a conjecturé qu’il n’existe pas de méthode rapide. Le 23 novembre 2026, deux laboratoires d’intelligence artificielle ont publié, à quelques heures d’intervalle, une démonstration de cette conjecture.</p>
+</clair>
+
+<res type="Définition" nom="Circuits arithmétiques, VP, VNP, permanent" id="def-vp-vnp">
+<enonce>
+<p>Fixons un corps $\mathbb K$. Un <strong>circuit arithmétique</strong> est un graphe orienté sans cycle dont les sources sont étiquetées par des variables $x_1,\dots,x_n$ ou des constantes de $\mathbb K$, et dont les autres sommets sont des portes $+$ ou $\times$ ; il calcule un polynôme. Sa <strong>taille</strong> est son nombre de sommets. Une famille de polynômes $(f_n)$ est <strong>p-bornée</strong> si le nombre de variables et le degré de $f_n$ sont bornés par un polynôme en $n$.</p>
+<ul>
+<li>$\mathsf{VP}$ est la classe des familles p-bornées calculées par des circuits de taille polynomiale en $n$.</li>
+<li>$\mathsf{VNP}$ est la classe des familles $f_n(\vec x)=\sum_{\vec e\in\{0,1\}^{m(n)}}g_n(\vec x,\vec e)$, où $(g_n)$ est dans $\mathsf{VP}$ et $m(n)$ est polynomial : une somme exponentielle de valeurs d’un polynôme facile, l’analogue algébrique de « il existe un témoin ».</li>
+<li>Le <strong>déterminant</strong> et le <strong>permanent</strong> d’une matrice $m\times m$ de variables $X=(x_{ij})$ sont
+$$\det X=\sum_{\sigma\in\mathfrak S_m}\varepsilon(\sigma)\prod_{i=1}^m x_{i\sigma(i)},\qquad \operatorname{per}X=\sum_{\sigma\in\mathfrak S_m}\prod_{i=1}^m x_{i\sigma(i)}.$$</li>
+</ul>
+<p>Le déterminant est dans $\mathsf{VP}$ (par des algorithmes sans division, comme celui de Berkowitz, 1984). Valiant (1979) a montré que, si la caractéristique de $\mathbb K$ n’est pas $2$, le permanent est <strong>$\mathsf{VNP}$-complet</strong> pour les projections : toute famille de $\mathsf{VNP}$ s’obtient à partir du permanent d’une matrice de taille polynomiale en remplaçant ses entrées par des variables ou des constantes. Il a conjecturé que $\mathsf{VP}\ne\mathsf{VNP}$, c’est-à-dire que le permanent n’a pas de circuits de taille polynomiale. (Définitions et résultats classiques, cités pour information.)</p>
+</enonce>
+<philo>
+<p class="en-clair"><strong>En clair.</strong> On mesure la difficulté d’une formule algébrique par le nombre minimal d’additions et de multiplications qu’il faut pour la calculer. VP rassemble les formules qui se calculent avec un nombre raisonnable d’opérations ; VNP celles qui s’écrivent comme une somme d’un nombre gigantesque de termes faciles. Le permanent est la formule la plus difficile de VNP.</p>
+<p>Le déterminant et le permanent sont des sommes de produits, une pour chaque façon de choisir un nombre par ligne et par colonne dans le tableau ; pour un tableau de 20 lignes, il y a plus de deux milliards de milliards de termes. Le déterminant affecte à la moitié des termes un signe moins, et ces signes permettent de grandes simplifications : la méthode du pivot, apprise au lycée pour résoudre des systèmes, le calcule en quelques milliers d’opérations. Le permanent n’a pas de signes moins, et toutes les astuces connues échouent. Compter certaines configurations en physique, ou compter les façons de former des couples dans un groupe, revient à calculer un permanent.</p>
+</philo>
+</res>
+
+<res type="Résultat annoncé" nom="VP ≠ VNP (preuves publiées par Anthropic et OpenAI le 23 novembre 2026, non encore relues)" id="vp-ne-vnp">
+<enonce>
+<p><strong>Énoncé annoncé.</strong> Sur tout corps de caractéristique différente de $2$, le permanent $m\times m$ n’a pas de circuit arithmétique de taille polynomiale ; plus précisément, il demande des circuits de taille $2^{\Omega((\log m)^{4/3})}$ (preuve d’Anthropic). En particulier $\mathsf{VP}\ne\mathsf{VNP}$.</p>
+<p><strong>Statut au 26 novembre 2026.</strong> Résultat annoncé, accompagné de démonstrations formelles en Lean, mais relu par aucun mathématicien ; aucune publication dans une revue. À lire avec ce statut : ce n’est pas encore un théorème accepté par la communauté.</p>
+</enonce>
+<philo>
+<p class="en-clair"><strong>En clair.</strong> Deux intelligences artificielles, l’une d’Anthropic et l’autre d’OpenAI, ont produit chacune une démonstration du fait que le permanent ne se calcule pas avec un nombre raisonnable d’opérations. Les démonstrations sont écrites dans un langage que l’ordinateur vérifie, mais aucun humain ne les a encore lues en entier.</p>
+<p><strong>Ce qui s’est passé (23 et 24 novembre 2026).</strong> Le 23 novembre, Anthropic a déposé sur sa page publique de code un article, une démonstration formelle et une note qui indique que le résultat « a été découvert par un modèle Claude de recherche interne », que l’article et la démonstration formelle ont été écrits par des IA, et qu’« aucun mathématicien humain n’a vérifié la preuve ». Quelques heures plus tard, OpenAI a déposé à son tour un article intitulé « VP et VNP sont différents », avec une borne un peu plus faible, en indiquant avoir obtenu le résultat dès le 6 novembre. Le 24 novembre, le spécialiste Lance Fortnow a parlé du « résultat de complexité le plus important de l’année », et Scott Aaronson a jugé que les démonstrations formelles dépassent le niveau d’exigence habituel d’une revue.</p>
+<p><strong>Pourquoi on peut y croire, et pourquoi il faut rester prudent (26 novembre 2026).</strong> La démonstration formelle a été vérifiée par Lean, un logiciel de vérification de démonstrations du type décrit au chapitre <a href="logique-types.html#preuves-ia">Logique et types</a>. C’est la situation idéale décrite au chapitre <a href="calculabilite-ia.html#proposer-verifier">Calculabilité et IA</a> : la machine qui cherche n’a pas besoin d’être crue, seul le vérificateur compte. Mais le vérificateur contrôle seulement que la démonstration prouve l’énoncé <em>tel qu’il est écrit dans Lean</em>. Il faut encore que des humains s’assurent que cet énoncé formel dit bien ce que l’on croit, et la note d’Anthropic prévient elle-même que rien ne vérifie automatiquement ce point. C’est exactement la limite de la <a href="calculabilite-ia.html#specification">spécification</a>.</p>
+<p><strong>Ce que cela ne dit pas.</strong> Le résultat ne règle pas la question P = NP. Les circuits arithmétiques n’ont droit qu’à l’addition et à la multiplication ; un ordinateur ordinaire peut faire bien d’autres choses (comparer, tester, aller chercher un chiffre précis), et rien n’empêche a priori qu’il calcule le permanent plus vite. Fortnow conclut que P contre NP « reste hors de portée, pour l’homme comme pour la machine ».</p>
+</philo>
+<tech>
+<p><strong>Les deux preuves (d’après les dépôts et les comptes rendus du 24 novembre 2026).</strong> La borne d’Anthropic est $2^{\Omega((\log m)^{4/3})}$ pour le permanent en caractéristique différente de $2$ (en caractéristique $2$, où le permanent coïncide avec le déterminant, l’énoncé porte sur le polynôme des cycles hamiltoniens) ; celle de l’article d’OpenAI du 23 novembre est $2^{\Omega((\log m)^{5/4})}$, et un second manuscrit d’OpenAI, déposé le 24 novembre, annonce des bornes plus fortes. Ces bornes sont plus que polynomiales mais moins qu’exponentielles : la meilleure borne supérieure connue reste de l’ordre de $2^m$ (formule de Ryser). Selon Fortnow, la preuve d’Anthropic utilise une variante du spectre asymptotique de Strassen et distingue deux cas, l’un traité par un argument de rang, l’autre par diagonalisation ; elle n’utilise pratiquement pas de géométrie algébrique, et son lien avec le programme de la complexité géométrique (GCT) n’est pas clair. Aaronson note que les techniques des deux preuves semblent proches.</p>
+<p><strong>La vérification.</strong> Le dépôt d’Anthropic contient un fichier d’énoncé qui n’utilise que la bibliothèque Mathlib, la démonstration, et un script qui fait revérifier le tout par un second noyau indépendant ; seuls les trois axiomes standard de Lean doivent apparaître. Une annexe de l’article fait correspondre chaque énoncé du texte à son énoncé Lean. OpenAI présente ses manuscrits comme des « données de recherche brutes » plutôt que des articles achevés. Au 26 novembre 2026, aucune vérification indépendante ligne à ligne n’a été publiée.</p>
+<p><strong>Conséquence booléenne.</strong> Comme le rappelle Fortnow, l’analogue booléen de $\mathsf{VP}\ne\mathsf{VNP}$ serait que les fonctions de $\#\mathsf P$ n’ont pas de circuits booléens de taille polynomiale et de profondeur $O(\log^2 n)$, ce qui est plus faible que $\mathsf{NP}\not\subseteq\mathsf P/\mathrm{poly}$ ; et le résultat algébrique n’entraîne même pas cet analogue, puisque les circuits arithmétiques n’ont pas accès aux opérations booléennes.</p>
+</tech>
+<techno>
+<p><strong>Sources primaires (consultées le 26 novembre 2026).</strong></p>
+<ul>
+<li>Anthropic, dépôt <code>anthropics/formal-math</code>, dossier <code>vp-vnp</code> (GitHub, 23 novembre 2026) : article, formalisation Lean, note de statut.</li>
+<li>OpenAI, « VP and VNP are different », dépôt <code>openai/math</code>, dossier <code>preprints</code> (GitHub, 23 novembre 2026), et le fichier <code>history.md</code> du même dépôt.</li>
+<li>L. Fortnow, « VP ≠ VNP », <em>Computational Complexity</em> (blog), 24 novembre 2026.</li>
+<li>S. Aaronson, <em>Shtetl-Optimized</em> (blog), 24 novembre 2026.</li>
+</ul>
+<p>Pour vérifier soi-même la démonstration formelle : installer Lean et Mathlib à la version indiquée dans le dépôt, puis lancer la compilation et le script de vérification fournis. La partie la plus importante est la lecture humaine du fichier d’énoncé, pour s’assurer qu’il formalise bien la conjecture de Valiant.</p>
+</techno>
+</res>
+
+<res type="Remarque" nom="Pourquoi dater ces remarques" id="vp-vnp-dates">
+<enonce>
+<p>Les remarques de cette section sont datées parce qu’elles décrivent un état des connaissances qui change de semaine en semaine : vérifications indépendantes, corrections éventuelles, nouvelles bornes, publication dans une revue. Elles seront mises à jour à mesure que la communauté se prononcera.</p>
+</enonce>
+<philo>
+<p class="en-clair"><strong>En clair.</strong> Une démonstration mathématique ne devient un théorème accepté qu’après avoir été lue et contrôlée par d’autres. Pour ce résultat, ce travail commence à peine : c’est pourquoi chaque remarque porte sa date.</p>
+<p>L’épisode illustre aussi une nouveauté. Jusqu’ici, la vérification par ordinateur venait après la découverte humaine, pour confirmer. Ici, la découverte et la démonstration formelle viennent toutes deux d’une machine, et c’est la lecture humaine qui arrive en dernier. Les théorèmes de ce manuel garantissent que la vérification d’une démonstration formelle est mécanique et sûre ; ils ne disent rien de la question « ce que la machine a démontré est-il bien ce que nous voulions savoir ? », qui reste une affaire humaine.</p>
+</philo>
+</res>
+
+
 <h2 id="exercices">Exercices</h2>
 
 <exo niveau="1" titre="Clique et ensemble indépendant" id="ex-cx-clique">
