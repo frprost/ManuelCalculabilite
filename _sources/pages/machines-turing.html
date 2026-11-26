@@ -2,10 +2,22 @@
 titre: Machines de Turing
 court: Machines de Turing
 chapo: Un automate fini, une tête de lecture, une bande sans fin : le modèle le plus simple et le plus mécanique du calcul, défini ici formellement et exécutable dans la page.
+chapo_clair: Un ruban de cases, une tête qui lit une case à la fois, quelques règles : la machine imaginée par Alan Turing en 1936 pour décrire ce que fait une personne qui calcule. Elle paraît dérisoire ; elle sait pourtant tout calculer.
 prerequis: bases.html#mots|Alphabets et mots ; bases.html#entiers|Entiers
 -->
 
+<clair>
+<p>En 1936, le mathématicien anglais Alan Turing se pose une question simple en apparence : <em>que fait exactement une personne qui calcule ?</em> Elle a une feuille, un crayon, et elle suit des règles. À chaque instant, elle regarde un endroit de sa feuille, se souvient de l’étape où elle en est, écrit ou efface un signe, puis porte son regard un peu plus loin. Rien d’autre.</p>
+<p>Turing retient seulement cela et imagine une machine qui en est la caricature : un ruban découpé en cases, une tête qui lit une case à la fois, et une petite liste d’instructions. Ce chapitre montre que cette machine dérisoire sait additionner, soustraire, multiplier, comparer. Les chapitres suivants montreront qu’elle sait en réalité tout calculer, ce qui fait d’elle le meilleur outil pour démontrer ce qu’on <em>ne peut pas</em> calculer.</p>
+</clair>
+
 <h2>Une machine très simple</h2>
+
+<clair>
+<p>Imaginons un ruban de papier très long, découpé en cases. Chaque case est vide ou porte un trait. Au-dessus du ruban, une tête de lecture regarde une seule case. La machine possède aussi un petit cadran qui indique son « état », c’est-à-dire l’étape du travail où elle en est, comme le marque-page d’une recette.</p>
+<p>Le programme est une liste de règles de la forme : « si tu es à l’étape 3 et que tu vois un trait, efface-le et passe à l’étape 4 ». Une règle ne fait qu’une seule chose : écrire dans la case, ou bien se déplacer d’une case à gauche, ou d’une case à droite. Quand aucune règle ne s’applique, la machine s’arrête. C’est tout.</p>
+</clair>
+
 
 <p>Pour modéliser ce que fait un calculateur humain, Alan Turing a proposé en 1936 un modèle mathématique très simple. Il en existe de nombreuses variantes, toutes équivalentes du point de vue de ce qu’elles calculent ; nous suivons la présentation à <em>quadruplets</em> de Martin Davis (<em>Computability and Unsolvability</em>, 1958). Une machine est constituée de trois éléments :</p>
 <ol>
@@ -14,7 +26,7 @@ prerequis: bases.html#mots|Alphabets et mots ; bases.html#entiers|Entiers
 <li>un <strong>programme</strong> : une liste finie d’instructions, les quadruplets.</li>
 </ol>
 
-<figure>
+<figure class="philo-aussi">
 <svg viewBox="0 0 560 170" role="img" aria-label="Schéma d’une machine de Turing : une bande de cases, une tête dans l’état q pointant sur une case contenant 1, et un programme.">
   <g font-family="ui-monospace, Menlo, monospace" font-size="18" fill="currentColor">
     <g stroke="currentColor" stroke-width="1.2" fill="none">
@@ -46,6 +58,11 @@ q1 B R q0</pre></div>
 
 <h2>Définition formelle</h2>
 
+<clair>
+<p>Pour pouvoir raisonner sur ces machines comme sur des objets mathématiques, il faut les décrire sans aucune ambiguïté. Une machine, c’est une liste finie de règles ; un moment de son calcul, c’est une « photographie » qui indique ce qu’il y a sur le ruban, où est la tête et à quelle étape on en est.</p>
+</clair>
+
+
 <res type="Définition" nom="Machine de Turing" id="def-mt">
 <enonce>
 <p>On fixe deux ensembles infinis dénombrables disjoints : les <em>états</em> $Q=\{q_0,q_1,\dots\}$ et les <em>symboles</em> $S=\{S_0,S_1,\dots\}$, ainsi que deux marques $L,R\notin Q\cup S$. On note $B=S_0$ (le <em>blanc</em>) et $1=S_1$ (la <em>barre</em>, parfois notée $|$).</p>
@@ -53,7 +70,11 @@ q1 B R q0</pre></div>
 $$ q_i\,S_j\,S_k\,q_l \qquad q_i\,S_j\,R\,q_l \qquad q_i\,S_j\,L\,q_l $$
 <p>qui est <strong>consistant</strong> : deux quadruplets distincts de $P_Z$ ne commencent jamais par le même couple $q_i\,S_j$.</p>
 </enonce>
-<philo><p>Tout est fini : l’alphabet effectivement utilisé, les états, le programme. Seule la bande est sans limite, mais à chaque instant elle ne porte qu’un nombre fini de symboles non blancs : c’est la « finitude non bornée » des <a href="motivations.html">motivations</a>. La consistance est la forme mathématique du déterminisme : à chaque situation correspond au plus une action.</p></philo>
+<philo>
+<p class="en-clair"><strong>En clair.</strong> Une machine de Turing est une liste finie de règles. Chaque règle dit : « à telle étape, si tu lis tel signe, fais telle action (écrire un signe, aller à gauche, aller à droite), puis passe à telle étape ». Deux règles ne peuvent pas commencer de la même façon : à chaque instant, il y a au plus une chose à faire.</p>
+<p>Tout est fini dans cette machine : le nombre de signes, le nombre d’étapes, le nombre de règles. Seul le ruban est sans limite, mais à chaque instant il ne porte qu’un nombre fini de signes. C’est l’image d’une personne qui calcule avec une mémoire limitée mais qui peut toujours prendre une feuille de brouillon supplémentaire.</p>
+<p>La machine ne comprend rien à ce qu’elle fait. Elle n’a pas d’intuition, pas d’initiative. C’est précisément ce qui la rend précieuse : si l’on démontre qu’une telle machine peut résoudre un problème, alors le problème peut être résolu sans aucune intelligence, de façon purement mécanique.</p>
+</philo>
 <tech><p>On note $E_Z\subset Q$ et $S_Z\subset S$ les ensembles (finis) d’états et de symboles qui apparaissent dans $P_Z$. Fixer d’avance des ensembles « canoniques » $Q$ et $S$ permet de dire que l’ensemble de toutes les machines est dénombrable, et de les coder par des entiers (chapitre <a href="equivalence.html#godel-mt">Équivalence</a>).</p></tech>
 <techno><p>Dans le simulateur, un programme s’écrit un quadruplet par ligne, par exemple <code>q0 1 B q1</code> ; les symboles sont des mots quelconques (<code>B</code>, <code>1</code>, <code>X</code>…), et <code>L</code>, <code>R</code> sont réservés aux déplacements. Le simulateur refuse un programme non consistant.</p></techno>
 </res>
@@ -68,7 +89,10 @@ $$ q_i\,S_j\,S_k\,q_l \qquad q_i\,S_j\,R\,q_l \qquad q_i\,S_j\,L\,q_l $$
 </ol>
 <p>$\alpha$ est <strong>terminale</strong> si aucun quadruplet de $P_Z$ ne commence par $q_i\,S_j$. Un <strong>calcul</strong> est une suite finie $\alpha_1\vdash_Z\alpha_2\vdash_Z\dots\vdash_Z\alpha_p$ où $\alpha_p$ est terminale ; on note $\alpha_p=\mathrm{Res}_Z(\alpha_1)$, la <em>résultante</em>. Si aucun calcul ne part de $\alpha_1$, $\mathrm{Res}_Z(\alpha_1)$ est indéfinie.</p>
 </enonce>
-<philo><p>Une description instantanée est une photographie complète de la machine : rien d’autre n’influence la suite. Le calcul est un film image par image, et la règle qui fait passer d’une image à la suivante est purement locale : elle ne regarde que l’état et la case lue.</p></philo>
+<philo>
+<p class="en-clair"><strong>En clair.</strong> À chaque instant, l’état complet de la machine tient en une ligne : le contenu du ruban, la position de la tête et l’étape en cours. Un calcul est la suite de ces lignes, chacune obtenue à partir de la précédente en appliquant la seule règle possible.</p>
+<p>On peut comparer cela à un film : chaque ligne est une image, et une règle simple permet de dessiner l’image suivante. Rien d’autre n’intervient, ni le hasard, ni le passé. Si l’on connaît une image, on connaît toute la suite du film. C’est cette propriété qui permettra plus tard de vérifier un calcul ligne par ligne, comme on vérifie une addition posée.</p>
+</philo>
 <tech>
 <p>Les descriptions qui ne diffèrent que par des blancs ajoutés aux extrémités décrivent la même situation, comme $3$, $3{,}0$ et $3{,}00$ désignent le même nombre ; on raisonne sur la description <em>minimale</em>. Comme $P_Z$ est consistant, une description a au plus un successeur : la relation $\vdash_Z$ est fonctionnelle, et $\mathrm{Res}_Z$ est une fonction partielle.</p>
 </tech>
@@ -77,10 +101,20 @@ $$ q_i\,S_j\,S_k\,q_l \qquad q_i\,S_j\,R\,q_l \qquad q_i\,S_j\,L\,q_l $$
 
 <h2>Fonctions calculées</h2>
 
+<clair>
+<p>Pour qu’une machine calcule avec des nombres, il faut convenir d’une manière de les écrire sur le ruban. On choisit la plus primitive : le nombre 3 s’écrit avec des bâtons, comme on compte sur ses doigts ou comme un prisonnier compte les jours sur un mur. On place les nombres de départ sur le ruban, on lance la machine, et quand elle s’arrête on compte les traits : c’est le résultat.</p>
+<p>Une machine peut aussi ne jamais s’arrêter. Dans ce cas, il n’y a pas de résultat. Cette possibilité, qui ressemble à un défaut, est en fait au cœur de tout le sujet.</p>
+</clair>
+
+
 <res type="Convention" nom="Codage des entiers sur la bande" id="codage-entrees">
 <enonce>
 <p>L’entier $x$ est représenté par le mot $\overline{x}=1^{x+1}$ ($x+1$ barres). Un $n$-uplet $(x_1,\dots,x_n)$ est représenté par $\overline{x_1}\,B\,\overline{x_2}\,B\cdots B\,\overline{x_n}$. Pour un mot $\alpha$, on note $\langle\alpha\rangle$ le nombre de barres qu’il contient.</p>
 </enonce>
+<philo>
+<p class="en-clair"><strong>En clair.</strong> Le nombre 0 s’écrit avec un bâton, le nombre 1 avec deux bâtons, le nombre 2 avec trois bâtons, et ainsi de suite. Quand il y a plusieurs nombres, on les sépare par une case vide. Le résultat, à la fin, est simplement le nombre total de bâtons restés sur le ruban.</p>
+<p>Pourquoi un bâton de plus ? Sans lui, le nombre 0 serait une case vide, et deux cases vides consécutives ne permettraient plus de savoir où s’arrêtent les données. Cette écriture en bâtons est très lente (un milliard s’écrit avec un milliard de bâtons), mais la lenteur n’a pas d’importance ici : on cherche à savoir ce qui est calculable, pas ce qui est rapide.</p>
+</philo>
 <tech><p>On met $x+1$ barres et non $x$ pour distinguer l’argument $0$ de l’absence d’argument : la bande de $(0,0)$ est <code>1 B 1</code>, celle de $()$ est toute blanche. En sortie au contraire, on compte les barres sans décalage : $\langle\alpha\rangle=y$ code $y$. Cette dissymétrie, héritée de Davis, simplifie la machine du successeur (voir ci-dessous) ; d’autres conventions sont possibles et donnent la même classe de fonctions.</p></tech>
 </res>
 
@@ -90,15 +124,62 @@ $$ q_i\,S_j\,S_k\,q_l \qquad q_i\,S_j\,R\,q_l \qquad q_i\,S_j\,L\,q_l $$
 $$\Psi^{(n)}_Z(x_1,\dots,x_n)\simeq\big\langle \mathrm{Res}_Z\big(q_0\,\overline{x_1}B\cdots B\overline{x_n}\big)\big\rangle,$$
 <p>indéfinie lorsque la résultante l’est. Une fonction $f:\N^n\to\N$ est <strong>Turing-calculable</strong> s’il existe $Z$ telle que $f=\Psi^{(n)}_Z$. On note $\mathcal T$ cette classe.</p>
 </enonce>
-<philo><p>La machine démarre dans l’état $q_0$, la tête sur la première barre de l’entrée. Si elle ne s’arrête jamais, la fonction n’a pas de valeur en ce point : la non-terminaison est la seule manière, pour une machine, de « ne pas répondre ». Tout arrêt, au contraire, produit une réponse.</p></philo>
+<philo>
+<p class="en-clair"><strong>En clair.</strong> Une machine définit une fonction : on écrit les nombres de départ, on lance la machine, et si elle s’arrête, le nombre de bâtons restants est la réponse. Une fonction est dite « calculable par une machine de Turing » s’il existe une machine qui la calcule ainsi.</p>
+<p>Si la machine ne s’arrête jamais, il n’y a pas de réponse pour ces nombres de départ : la fonction n’est pas définie à cet endroit. Ce n’est pas une erreur de conception. Les fonctions « partielles », qui n’ont pas de valeur partout, sont le prix à payer pour avoir un modèle qui calcule tout ce qui est calculable. Le chapitre sur les <a href="motivations.html">motivations</a> explique pourquoi on ne peut pas y échapper.</p>
+</philo>
 <tech><p>Une même machine calcule une fonction pour chaque arité $n$. Une même fonction est calculée par une infinité de machines (on peut toujours ajouter des instructions inutiles, par exemple portant sur un état jamais atteint).</p></tech>
 <techno><p>Les exemples de la section suivante sont tous exécutables. Le résultat affiché est $\langle\alpha\rangle$, le nombre total de barres à l’arrêt, comme dans la définition.</p></techno>
 </res>
 
+<atelier titre="simuler une machine de Turing en Python">
+<p>Le simulateur complet tient en une soixantaine de lignes utiles : c’est le fichier <code>machines.py</code> des <a href="programmes.html">programmes à télécharger</a>. Voici son cœur, qui réalise exactement la relation $\alpha\vdash_Z\beta$ de la <a href="#def-pas">définition</a>. La bande est un dictionnaire qui associe un symbole à chaque case non blanche ; la table des quadruplets est indexée par le couple (état, symbole lu), ce qui rend l’exigence de consistance (au plus un quadruplet par couple) visible dans la structure même des données.</p>
+<pre><code>class Machine:
+    def __init__(self, quadruplets, etat_initial="q0"):
+        self.table = {}
+        for q in quadruplets:                       # q = (état, lu, action, nouvel état)
+            if (q[0], q[1]) in self.table:
+                raise MachineNonConsistante(q)
+            self.table[(q[0], q[1])] = q
+
+    def pas(self, c):                               # c : bande, position, état
+        lu = c.bande.get(c.position, "B")
+        q = self.table.get((c.etat, lu))
+        if q is None:
+            return False                            # aucun quadruplet : arrêt
+        if q[2] == "L":   c.position -= 1
+        elif q[2] == "R": c.position += 1
+        elif q[2] == "B": c.bande.pop(c.position, None)
+        else:             c.bande[c.position] = q[2]
+        c.etat = q[3]
+        return True</code></pre>
+<p>La configuration initiale réalise la <a href="#codage-entrees">convention d’entrée</a> (bloc de $x_j+1$ barres, un blanc entre deux blocs, tête sur la première barre, état $q_0$) et le résultat est le nombre de barres à l’arrêt, $\langle\mathrm{Res}_Z(\cdot)\rangle$. Pour exécuter une machine écrite dans un fichier (un quadruplet par ligne) et afficher chaque description instantanée :</p>
+<pre><code>python3 machines.py exemples/addition.tm 2 3 --trace
+q0 1 1 1 B 1 1 1 1
+q1 B 1 1 B 1 1 1 1
+q2 1 1 B 1 1 1 1
+1 q2 1 B 1 1 1 1
+...
+arrêt après 6 pas, 5 barres : résultat 5</code></pre>
+<p>Toutes les machines de ce chapitre sont dans le dossier <code>exemples/</code> de l’archive.</p>
+</atelier>
+
+
 <h2 id="exemples">Exemples de programmes</h2>
+
+<clair>
+<p>Voici des machines réelles, de quelques règles chacune. On peut les faire fonctionner dans la page : le bouton « Pas » avance d’une règle à la fois, et l’on voit la tête se déplacer et les traits apparaître ou disparaître.</p>
+<p>La machine de l’addition est un bon premier exemple. Pour ajouter 2 et 3, on écrit trois traits, une case vide, puis quatre traits (chaque nombre est écrit avec un trait de plus que sa valeur, pour que le nombre zéro soit visible). La machine efface un trait au début de chaque paquet : il en reste cinq. Elle ne « sait » pas ce qu’est une addition ; elle applique cinq règles, et le résultat est juste.</p>
+<p>La soustraction montre un phénomène plus inquiétant. Si l’on demande à la première machine de calculer 2 moins 4, elle tourne indéfiniment : elle ne sait pas répondre, et elle ne s’arrête pas. Une seconde machine, à peine différente, répond 0 dans ce cas.</p>
+</clair>
+
 
 <res type="Exemple" nom="Le successeur" id="ex-succ">
 <enonce><p>La machine $P=\{\,q_0\,B\,B\,q_0\,\}$ calcule $x\mapsto x+1$.</p></enonce>
+<philo>
+<p class="en-clair"><strong>En clair.</strong> Pour ajouter 1 à un nombre, il suffit… de ne rien faire. Le nombre $x$ est écrit avec $x+1$ bâtons ; si la machine s’arrête tout de suite, il reste $x+1$ bâtons, c’est-à-dire la réponse $x+1$.</p>
+<p>Cet exemple presque comique montre que le choix de la façon d’écrire les données fait une partie du travail. C’est vrai aussi en informatique réelle : un bon format de données simplifie énormément les programmes.</p>
+</philo>
 <tech><p>Sur l’entrée $\overline{x}$, la tête lit une barre dans l’état $q_0$ ; aucun quadruplet ne commence par $q_0\,1$, la machine s’arrête immédiatement, et la bande porte $x+1$ barres. (Le quadruplet $q_0BBq_0$ ne sert qu’à rendre $P$ non vide ; il ne s’exécute jamais.)</p></tech>
 <techno><div class="tm-widget" data-args="3"><pre class="src">q0 B B q0</pre></div></techno>
 </res>
@@ -106,6 +187,10 @@ $$\Psi^{(n)}_Z(x_1,\dots,x_n)\simeq\big\langle \mathrm{Res}_Z\big(q_0\,\overline
 <res type="Exemple" nom="L’addition" id="ex-add">
 <enonce><p>La machine suivante calcule $(x,y)\mapsto x+y$ : elle efface la première barre de chaque argument.</p>
 $$q_0\,1\,B\,q_1\quad q_1\,B\,R\,q_2\quad q_2\,1\,R\,q_2\quad q_2\,B\,R\,q_3\quad q_3\,1\,B\,q_4$$</enonce>
+<philo>
+<p class="en-clair"><strong>En clair.</strong> Pour additionner deux nombres écrits en bâtons, la machine efface un bâton au début de chacun des deux paquets. Il reste exactement le total voulu.</p>
+<p>La machine n’a aucune notion d’addition. Elle exécute cinq règles. Pourtant, quels que soient les deux nombres, elle donne la bonne réponse. C’est toute l’idée d’un algorithme : une méthode aveugle mais sûre, qui marche dans tous les cas.</p>
+</philo>
 <tech><p>Sur $1^{x+1}B1^{y+1}$ : la première barre est effacée ($q_0\to q_1$), la tête traverse le reste du premier bloc ($q_2$), franchit le séparateur ($q_2\to q_3$) et efface la première barre du second bloc ($q_3\to q_4$). Il reste $x+y$ barres ; l’état $q_4$ n’a pas d’instruction, la machine s’arrête. Le résultat n’a pas besoin d’être d’un seul bloc, puisqu’on compte toutes les barres.</p></tech>
 <techno><div class="tm-widget" data-args="2, 3"><pre class="src">q0 1 B q1
 q1 B R q2
@@ -119,7 +204,10 @@ q3 1 B q4</pre></div></techno>
 $$\begin{aligned}&q_0\,1\,B\,q_0\quad q_0\,B\,R\,q_1\quad q_1\,1\,R\,q_1\quad q_1\,B\,R\,q_2\quad q_2\,1\,R\,q_2\quad q_2\,B\,L\,q_3\quad q_3\,1\,B\,q_3\quad q_3\,B\,L\,q_4\\ &q_4\,1\,L\,q_5\quad q_5\,1\,L\,q_5\quad q_5\,B\,L\,q_6\quad q_6\,B\,R\,q_8\quad q_6\,1\,L\,q_7\quad q_7\,1\,L\,q_7\quad q_7\,B\,R\,q_0\quad q_8\,B\,B\,q_8\end{aligned}$$
 <p>En remplaçant le dernier quadruplet par $q_8\,B\,R\,q_9$ et $q_9\,1\,B\,q_8$ (effacer ce qui reste du second bloc), on obtient la <strong>soustraction propre</strong> $x\monus y=\max(x-y,0)$, totale.</p>
 </enonce>
-<philo><p>C’est le premier exemple de ce manuel où la partialité apparaît naturellement : une machine qui « ne sait pas quoi répondre » ne s’arrête pas. La version totale est obtenue en décidant d’une réponse par défaut ($0$), ce qui est possible ici mais pas toujours (voir <a href="indecidabilite.html#sans-prolongement">fonctions sans prolongement calculable</a>).</p></philo>
+<philo>
+<p class="en-clair"><strong>En clair.</strong> Pour calculer $x-y$, la machine retire un bâton à chaque paquet, à tour de rôle, jusqu’à ce que le second soit épuisé. Si le premier paquet s’épuise d’abord (quand $x$ est plus petit que $y$), la première version tourne en rond pour toujours ; la seconde version répond 0.</p>
+<p>C’est le premier exemple du manuel où une machine ne s’arrête pas parce qu’elle n’a pas de réponse à donner. Une machine qui « boucle » n’est pas forcément mal écrite : elle peut exprimer qu’une question n’a pas de réponse. Toute la difficulté du sujet viendra de ce qu’on ne peut pas toujours savoir à l’avance si une machine va s’arrêter.</p>
+</philo>
 <tech>
 <p>On part de $q_0\,1^{m+1}B1^{n+1}$. Une itération de la boucle efface la première barre du premier bloc, va au bout du second ($q_1,q_2$), efface sa dernière barre ($q_3$), puis revient : si le second bloc est vide, l’état $q_4$ lit un blanc et la machine s’arrête ; sinon on revient au premier bloc ($q_5$) et l’on teste s’il est vide ($q_6$) ; s’il ne l’est pas, on retourne à son début ($q_7$) et l’on recommence. Après $k$ itérations il reste $m+1-k$ et $n+1-k$ barres ; l’arrêt a lieu pour $k=n+1$, avec $m-n$ barres, si $m\ge n$.</p>
 </tech>
@@ -163,6 +251,10 @@ q9 1 B q8</pre></div>
 
 <res type="Exemple" nom="Les fonctions constantes" id="ex-const">
 <enonce><p>Pour tout $k$ et tout $m$, la fonction constante $m^{(k)}:(x_1,\dots,x_k)\mapsto m$ est Turing-calculable.</p></enonce>
+<philo>
+<p class="en-clair"><strong>En clair.</strong> Une machine peut ignorer ses données et toujours répondre le même nombre : elle efface tout, puis écrit autant de bâtons qu’il le faut.</p>
+<p>Ce cas paraît sans intérêt, mais il sert de brique de base : pour construire des machines compliquées, on assemble des machines simples, et « écrire tel nombre » est l’une d’elles.</p>
+</philo>
 <tech><p>La machine efface tous les blocs d’arguments (un blanc suivi d’un blanc signale la fin de l’entrée), puis écrit $m$ barres. Pour $k=0$ la bande est blanche dès le départ et la phase d’effacement s’arrête aussitôt.</p>
 </tech>
 <techno>
@@ -182,6 +274,10 @@ v2 1 R w3</pre></div></techno>
 
 <res type="Exemple" nom="Le choix d’argument (projections)" id="ex-proj">
 <enonce><p>Pour $1\le i\le k$, la projection $A^{(k)}_i:(x_1,\dots,x_k)\mapsto x_i$ est Turing-calculable.</p></enonce>
+<philo>
+<p class="en-clair"><strong>En clair.</strong> Une machine peut garder un seul de ses nombres de départ, par exemple le deuxième, et effacer les autres.</p>
+<p>C’est l’opération la plus banale qui soit, mais elle permet de réordonner et de choisir les données. Les briques de base du chapitre suivant (garder un nombre, ajouter 1, écrire une constante) sont exactement celles-ci.</p>
+</philo>
 <tech><p>On traite les blocs l’un après l’autre, avec un groupe d’états par bloc (il y a $k$ blocs, nombre fixé) : le bloc $i$ perd sa première barre et est conservé, les autres sont effacés. Il reste $x_i$ barres.</p>
 </tech>
 <techno>
@@ -203,6 +299,12 @@ c3 B R b4</pre></div></techno>
 <p>Ces machines sont écrites à la main. Le chapitre <a href="equivalence.html">Équivalence des modèles</a> montre comment <em>construire automatiquement</em> une machine pour toute fonction récursive ; la page contient un compilateur qui le fait réellement.</p>
 
 <h2 id="bibliotheque-commune">Une bibliothèque commune aux trois modèles</h2>
+
+<clair>
+<p>Les mêmes fonctions (successeur, addition, multiplication, factorielle, comparaison…) sont programmées dans ce chapitre avec des machines de Turing, dans le chapitre suivant avec des formules, et dans le chapitre sur le λ-calcul avec des fonctions qui s’appliquent à d’autres fonctions. Comparer les trois versions d’une même fonction est la meilleure façon de voir que ces trois façons de calculer, très différentes en apparence, reviennent au même.</p>
+<p>Les petites machines s’écrivent à la main en une vingtaine de règles. Pour les fonctions plus compliquées, comme la puissance, on laisse un programme fabriquer la machine à partir de la formule : il en écrit plusieurs milliers de règles. Le détail est au niveau technologique.</p>
+</clair>
+
 <p>Les mêmes douze fonctions sont définies dans les trois modèles de ce manuel (voir aussi les chapitres <a href="fonctions-recursives.html#bibliotheque-commune">Fonctions récursives</a> et <a href="lambda-calcul.html#bibliotheque-commune">λ-calcul</a>). Les plus simples sont calculées par des machines écrites à la main, dont on démontre la correction par un <em>invariant</em> : une description de la bande et de l’état, vraie au début de chaque tour de boucle. Pour la puissance, la factorielle et le quotient, on utilise la machine produite par le <a href="equivalence.html#rec-turing">compilateur</a> à partir de la définition récursive : c’est le lien le plus direct entre les deux modèles. Toutes les machines ont été testées par simulation, la sortie étant comparée à la spécification (entrées jusqu’à 5 ou 7 selon les cas).</p>
 <table class="table-trois">
 <tr><th>Fonction</th><th>Spécification</th><th>Récursive</th><th>Turing</th><th>λ-calcul</th></tr>
@@ -361,12 +463,18 @@ d1 B B z</pre></div><p>La machine compilée depuis la définition récursive :</
 
 <h2 id="ensembles-predicats">Fonctions, ensembles, prédicats, langages</h2>
 
+<clair>
+<p>Calculer un nombre, répondre par oui ou par non à une question, trier des phrases correctes et incorrectes : ces trois activités semblent différentes. Elles sont en fait interchangeables. Une question à laquelle on répond par oui ou non, c’est une fonction qui vaut 1 ou 0. Une phrase, c’est une suite de lettres qu’on peut numéroter. Le manuel passe donc librement d’un langage à l’autre.</p>
+</clair>
+
+
 <res type="Proposition" nom="Quatre façons équivalentes de parler du calculable" id="quatre-presentations">
 <enonce>
 <p>On peut présenter la calculabilité par des <em>fonctions</em> (de $\N^n$ dans $\N$), par des <em>ensembles</em> (un ensemble $A\subseteq\N$ est décidable si sa fonction caractéristique $\chi_A$ est Turing-calculable), par des <em>prédicats</em> (une propriété $p$ des entiers est décidable si la fonction qui vaut $1$ quand $p(x)$ est vrai et $0$ sinon est calculable) ou par des <em>langages</em> (un langage $L\subseteq\Sigma^*$ est décidable si une machine qui lit un mot $w$ répond en un temps fini si $w\in L$). Ces quatre présentations sont équivalentes, au sens où chacune se traduit dans les autres par des codages calculables.</p>
 </enonce>
 <philo>
-<p>« Calculer une fonction », « reconnaître une propriété », « trier les mots corrects des mots incorrects » : trois métiers en apparence différents (le comptable, le juge, le correcteur orthographique) qui sont en fait le même. La clé est qu’on peut toujours coder plusieurs nombres par un seul, et un mot par un nombre : poser une question oui/non sur des objets finis revient à calculer une fonction à valeurs dans $\{0,1\}$, et inversement calculer $f$ revient à répondre aux questions « $f(x)$ vaut-il $y$ ? ».</p>
+<p class="en-clair"><strong>En clair.</strong> Calculer une fonction, décider si un nombre a une propriété, reconnaître si une phrase est bien formée : ce sont trois façons de dire la même chose. Ce qui est calculable dans un langage l’est dans les autres.</p>
+<p>Un comptable qui calcule, un juge qui tranche par oui ou par non, un correcteur qui repère les fautes font, du point de vue de la calculabilité, le même métier. Cela permet d’énoncer les résultats sous la forme la plus naturelle : on parlera de « problèmes » (une question, une réponse oui ou non) plutôt que de fonctions dès qu’il s’agira d’impossibilité.</p>
 </philo>
 <tech>
 <p><strong>Codage des couples.</strong> La bijection de <a href="cantor.html">Cantor</a> $\langle x,y\rangle=\tfrac12\big((x+y)^2+3x+y\big)$ et ses inverses $\pi_1,\pi_2$ sont récursives primitives ; en l’itérant on code tout $n$-uplet par un entier. Ensembles et prédicats sont donc la même chose (un prédicat est la fonction caractéristique de l’ensemble des $x$ qui le vérifient), et un ensemble de $n$-uplets se ramène à un ensemble d’entiers.</p>
@@ -378,6 +486,11 @@ d1 B B z</pre></div><p>La machine compilée depuis la définition récursive :</
 
 <h2>Machines avec oracle</h2>
 
+<clair>
+<p>Un oracle, dans la Grèce antique, répondait aux questions que personne d’autre ne savait trancher. En calculabilité, on imagine une machine qui peut, à certains moments, poser une question à un tel oracle et recevoir la bonne réponse instantanément. C’est une expérience de pensée : elle permet de mesurer combien un problème est difficile, en se demandant ce qu’on saurait faire de plus si on savait le résoudre.</p>
+</clair>
+
+
 <p>Pour étudier les degrés d’indécidabilité (chapitre <a href="hierarchie-arithmetique.html">Hiérarchie arithmétique</a>), on autorise une machine à interroger un ensemble $A\subseteq\N$ fixé, une « boîte noire » qui répond instantanément à la question « $n\in A$ ? ».</p>
 
 <res type="Définition" nom="Machine de Turing avec oracle" id="def-oracle">
@@ -386,7 +499,10 @@ d1 B B z</pre></div><p>La machine compilée depuis la définition récursive :</
 $$\alpha\vdash_{Z^A}\gamma\,q_k\,S_j\,\delta \text{ si } \langle\alpha\rangle\in A,\qquad \alpha\vdash_{Z^A}\gamma\,q_l\,S_j\,\delta \text{ si } \langle\alpha\rangle\notin A.$$
 <p>On définit comme plus haut $\Psi^{(n)}_{Z^A}$ et la classe $\mathcal T^A$ des fonctions $A$-calculables. On démontre que $\mathcal T^A=P^A$, les fonctions récursives relativement à $A$ (<a href="equivalence.html#relatif">équivalence relative</a>).</p>
 </enonce>
-<philo><p>Un oracle est une hypothèse : « si l’on savait répondre à telle question impossible, que pourrait-on calculer de plus ? ». On découvre ainsi que l’impossible a des degrés : même avec un oracle pour le problème de l’arrêt, il reste des questions sans réponse.</p></philo>
+<philo>
+<p class="en-clair"><strong>En clair.</strong> Une machine avec oracle est une machine ordinaire qui a le droit, à certains moments, de poser une question du type « ce nombre a-t-il telle propriété ? » et de recevoir la bonne réponse sans effort.</p>
+<p>Personne ne construira jamais une telle machine si l’oracle répond à une question impossible. Mais l’expérience de pensée est féconde : elle permet de comparer des problèmes impossibles entre eux. On découvrira qu’il existe des impossibilités plus ou moins graves, comme il existe des infinis plus ou moins grands.</p>
+</philo>
 <tech><p>La machine pose la question sur le nombre de barres présentes sur la bande ; le contenu de la bande n’est pas modifié, seul l’état suivant dépend de la réponse. Une machine sans quadruplet d’oracle calcule la même fonction pour tout $A$ : $\mathcal T\subseteq\mathcal T^A$, et $\mathcal T^A=\mathcal T$ si $A$ est calculable (on remplace chaque question à l’oracle par le calcul de $\chi_A$).</p>
 </tech>
 </res>
@@ -395,7 +511,10 @@ $$\alpha\vdash_{Z^A}\gamma\,q_k\,S_j\,\delta \text{ si } \langle\alpha\rangle\in
 <enonce>
 <p>Pour tout $A\subseteq\N$, la fonction caractéristique $\chi_A$ est $A$-calculable : $\chi_A\in\mathcal T^A$.</p>
 </enonce>
-<philo><p>C’est presque une tautologie, mais elle fixe le sens du mot : un oracle est une réponse donnée gratuitement, et ce qui coûte, c’est seulement le travail autour de la question. Elle montre aussi que la hiérarchie des degrés est « pleine » : n’importe quel ensemble, aussi compliqué soit-il, devient calculable dès qu’on se le donne comme oracle.</p></philo>
+<philo>
+<p class="en-clair"><strong>En clair.</strong> Si l’on a le droit de demander à un oracle « ce nombre est-il dans l’ensemble ? », alors on sait évidemment dire si un nombre est dans l’ensemble.</p>
+<p>C’est presque une évidence, mais elle fixe le sens du mot : un oracle donne gratuitement la réponse à sa question. Tout ensemble, même le plus compliqué, devient facile si on se le donne comme oracle. La question intéressante est donc : qu’est-ce qu’un oracle permet d’obtenir <em>d’autre</em> ?</p>
+</philo>
 <tech>
 <p>La question porte sur $\langle\alpha\rangle$, le nombre de barres de la bande. Sur l’entrée $\overline x=1^{x+1}$, il y a $x+1$ barres : on en efface d’abord une, puis on interroge l’oracle, qui reçoit exactement $x$ ; on efface ensuite tout le bloc, et l’on écrit une barre si et seulement si la réponse était positive. La machine $Z$ suivante convient :</p>
 $$\begin{array}{llll}
@@ -429,6 +548,11 @@ def psi(x, A):
 
 <h2 id="variantes">Variantes du modèle : universalité externe</h2>
 
+<clair>
+<p>On peut imaginer bien des variantes de la machine : un ruban infini d’un seul côté, plusieurs rubans, plusieurs têtes, une feuille quadrillée au lieu d’un ruban, des règles qui écrivent et se déplacent en même temps. Toutes calculent exactement les mêmes choses. Seule la vitesse change. Cette robustesse est la première raison de penser que la machine de Turing a capturé quelque chose de fondamental, et pas seulement un modèle parmi d’autres.</p>
+</clair>
+
+
 <p>On distingue trois formes d’universalité des machines de Turing : l’universalité <em>externe</em> (modifier raisonnablement le modèle ne change pas ce qu’il calcule, ci-dessous), l’universalité <em>interne</em> (une seule machine simule toutes les autres, voir <a href="universalite.html">Universalité</a>) et l’universalité <em>en termes de modèles de calcul</em> (la <a href="these-church.html">thèse de Church-Turing</a>).</p>
 
 <p>On peut donner plus de capacités à la machine : écrire <em>et</em> se déplacer en un seul pas (quintuplets, c’est le modèle des <a href="castors-affaires.html">castors affairés</a>), plusieurs bandes, plusieurs têtes sur une même bande, un programme non déterministe, ou une combinaison de tout cela. On peut aussi lui en retirer : bande infinie d’un seul côté, alphabet réduit à $\{B,1\}$, nombre d’états borné une fois pour toutes (il suffit d’une <a href="universalite.html#universelle">machine universelle</a>). Pour chacun de ces modèles on reprend le même schéma (descriptions instantanées, pas de calcul, résultante, fonction calculée), et l’on obtient exactement la classe $T$ des fonctions Turing-calculables. Les simulations changent le temps de calcul d’un facteur au plus polynomial (voir <a href="trois-approches.html#cout-simulation">Coût de la simulation</a>), mais jamais l’ensemble des fonctions calculables. Voici le cas le plus simple traité en détail.</p>
@@ -437,7 +561,10 @@ def psi(x, A):
 <enonce>
 <p>Une <strong>machine à quintuplets</strong> (ou « mobile ») est un ensemble fini consistant de quintuplets $q_i\,S_j\,S_k\,X\,q_l$ avec $X\in\{L,R,I\}$ : en lisant $S_j$ dans l’état $q_i$, elle écrit $S_k$, se déplace à gauche, à droite ou reste immobile ($I$), et passe dans l’état $q_l$. En définissant de la même manière descriptions instantanées, calculs et fonctions calculées $\Psi^{(n)}$, on obtient une classe $T_m$ de fonctions, et $T_m=T$.</p>
 </enonce>
-<philo><p>Que la machine fasse une ou deux choses par pas ne change rien à ce qu’elle peut calculer : seulement au nombre de pas. C’est le cas le plus simple d’un phénomène général. Dès qu’on sait <em>compiler</em> les programmes d’un modèle dans un autre, les deux modèles ont la même puissance ; toute l’équivalence des modèles de calcul repose sur des compilateurs de ce genre.</p></philo>
+<philo>
+<p class="en-clair"><strong>En clair.</strong> Une machine qui, à chaque étape, écrit un signe <em>et</em> se déplace ne calcule rien de plus qu’une machine qui fait l’un ou l’autre. Elle va seulement deux fois plus vite.</p>
+<p>C’est le premier exemple d’un fait général : les détails de la définition ne comptent pas. Changer les règles du jeu change la vitesse, jamais la frontière entre ce qui se calcule et ce qui ne se calcule pas.</p>
+</philo>
 <tech>
 <p>$T\subseteq T_m$ : une machine à quadruplets est une machine à quintuplets qui n’utilise qu’une partie de ses possibilités. On remplace $q_i\,S_j\,S_k\,q_l$ par $q_i\,S_j\,S_k\,I\,q_l$, et $q_i\,S_j\,X\,q_l$ ($X=L,R$) par $q_i\,S_j\,S_j\,X\,q_l$. Une récurrence sur la longueur des calculs montre que les deux machines ont les mêmes résultantes.</p>
 <p>$T_m\subseteq T$ : un quintuplet $q_i\,S_j\,S_k\,I\,q_l$ devient le quadruplet $q_i\,S_j\,S_k\,q_l$. Pour $q_i\,S_j\,S_k\,X\,q_l$ avec $X=L$ ou $R$, il faut d’abord écrire, puis se déplacer, en passant par un état intermédiaire <em>nouveau</em> $r$, propre à ce quintuplet : $q_i\,S_j\,S_k\,r$ et $r\,S_k\,X\,q_l$. La machine obtenue est consistante, et chaque pas de la machine à quintuplets est simulé par un ou deux pas.</p>
@@ -452,6 +579,19 @@ B 1 1 r4     r4 1 R h      # B 1 1 R h</code></pre>
 </techno>
 </res>
 
+<atelier titre="la traduction quintuplets vers quadruplets">
+<p>La démonstration se programme en quelques lignes (fonction <code>quintuplets_vers_quadruplets</code> de <code>machines.py</code>) : chaque quintuplet $q\,s\,s'\,X\,q'$ devient deux quadruplets reliés par un état neuf $m$, propre à ce quintuplet. Dans l’état $m$, le symbole lu est forcément $s'$, celui qu’on vient d’écrire ; un seul quadruplet suffit donc pour le déplacement.</p>
+<pre><code>def quintuplets_vers_quadruplets(quintuplets):
+    quads = []
+    for k, (q, s, ecrit, dep, q2) in enumerate(quintuplets):
+        m = "%s_%s_%d" % (q, s, k)          # état intermédiaire neuf
+        quads.append((q, s, ecrit, m))       # 1. écrire
+        quads.append((m, ecrit, dep, q2))    # 2. se déplacer
+    return Machine(quads, quintuplets[0][0])</code></pre>
+<p>Le nombre de pas est au plus doublé ; le nombre d’états augmente du nombre de quintuplets. (Le déplacement immobile $I$ se traite en omettant le second quadruplet et en renommant $m$ en $q'$.)</p>
+</atelier>
+
+
 <res type="Proposition" nom="Ce qui fait perdre l’universalité" id="restrictions">
 <enonce>
 <p>Certaines restrictions, en revanche, font perdre des fonctions calculables :</p>
@@ -464,7 +604,10 @@ B 1 1 r4     r4 1 R h      # B 1 1 R h</code></pre>
 <p>Les trois premiers points sont démontrés ci-dessous. Le dernier demande la théorie des langages algébriques : il est démontré plus loin (<a href="langages.html#automates-pile">automates à pile et grammaires</a>, <a href="langages.html#lemme-etoile">lemme de l’étoile</a>), et rien dans les chapitres intermédiaires n’en dépend.</p>
 <p>En revanche, le hasard n’ajoute rien : une machine probabiliste dont la réponse est correcte avec une probabilité supérieure à $1/2$ ne calcule que des fonctions calculables.</p>
 </enonce>
-<philo><p>Ce qui fait la puissance des machines de Turing n’est donc ni la taille de l’alphabet, ni le nombre d’états, ni la richesse des instructions : c’est la possibilité de revenir sur ce qui a été écrit, dans une mémoire non bornée. Retirez l’une de ces deux choses et l’on tombe dans des modèles strictement plus faibles, mais dont on peut décider beaucoup de propriétés (voir le récapitulatif du chapitre <a href="langages.html#indecidables-2">Langages et grammaires</a>).</p></philo>
+<philo>
+<p class="en-clair"><strong>En clair.</strong> Certaines restrictions, en revanche, font perdre de la puissance : une tête qui ne peut aller que vers la droite, un ruban qui ne peut pas être réécrit, une machine qui ne dispose que d’un seul signe.</p>
+<p>Ce qui fait la force de la machine n’est donc ni son vocabulaire, ni le nombre de ses étapes : c’est la possibilité de revenir en arrière relire ce qu’elle a écrit, c’est-à-dire de disposer d’une mémoire de brouillon sans limite fixée d’avance.</p>
+</philo>
 <tech>
 <p><strong>Tête à sens unique.</strong> Supposons que la machine n’ait aucun quadruplet de déplacement à gauche. Une case quittée n’est donc jamais relue. Quand la tête arrive sur une case dans l’état $q$ et y lit $s$, la machine applique sur place des quadruplets d’écriture, de façon déterministe, jusqu’à ce que : elle parte à droite dans un état $q'$, ou s’arrête, ou boucle sur place (un couple (état, symbole) se répète). Notons $\delta(q,s)\in E\cup\{\text{arrêt},\text{boucle}\}$ ce résultat, qui ne dépend que de $q$ et $s$. Sur l’entrée $w=s_1\cdots s_\ell$, l’état en quittant la case $j$ est donc obtenu en lisant $w$ avec l’automate fini déterministe de fonction de transition $\delta$ (les deux résultats $\text{arrêt}$ et $\text{boucle}$ étant absorbants). Après l’entrée, la tête ne lit plus que des blancs, et la suite d’états $q,\delta(q,B),\delta(\delta(q,B),B),\dots$ atteint l’arrêt en au plus $|E|$ cases ou ne l’atteint jamais. L’ensemble des entrées sur lesquelles la machine s’arrête est donc reconnu par un automate fini : il est régulier (reconnu par un automate fini ; ces langages sont étudiés au chapitre <a href="langages.html#automates-finis">Langages et grammaires</a>, mais l’argument qui suit n’en a pas besoin). Pour des entrées $\overline x=1^{x+1}$, un automate fini sur une lettre a une suite d’états ultimement périodique, donc l’ensemble des $x$ sur lesquels la machine s’arrête est ultimement périodique : une telle machine ne semi-décide pas, par exemple, l’ensemble décidable des carrés, dont les écarts croissent.</p>
 <p><strong>Machines probabilistes.</strong> Une machine probabiliste a, pour chaque couple (état, symbole), zéro, un ou deux quadruplets ; quand il y en a deux, elle tire à pile ou face, indépendamment à chaque pas. Elle <em>calcule</em> $f$ si, pour tout $x$, la probabilité de s’arrêter avec le résultat $f(x)$ dépasse $1/2$ quand $f(x)$ est défini, et si, quand $f(x)$ n’est pas défini, aucun résultat n’a une probabilité supérieure à $1/2$. Une telle $f$ est calculable. Notons $P(x,y)$ la probabilité de s’arrêter avec le résultat $y$, et $P_s(x,y)$ la somme des $2^{-c}$ sur les calculs qui s’arrêtent en au plus $s$ pas avec le résultat $y$, $c$ étant le nombre de tirages du calcul. Ces calculs sont des événements disjoints, en nombre fini pour chaque $s$, donc $P_s(x,y)$ est un rationnel calculable, croissant en $s$, de limite $P(x,y)$. L’algorithme cherche, pour $s=0,1,2,\dots$ et $y\le s$, un couple avec $P_s(x,y)>1/2$, et répond $y$. Si $f(x)$ est défini, $P(x,f(x))>1/2$, donc un tel couple existe ; et toute réponse $y$ vérifie $P(x,y)\ge P_s(x,y)>1/2$, d’où $y=f(x)$, car deux résultats différents ne peuvent pas avoir chacun une probabilité supérieure à $1/2$. Si $f(x)$ n’est pas défini, aucun couple ne convient et l’algorithme ne s’arrête pas. Réciproquement, une machine déterministe est une machine probabiliste qui ne tire jamais.</p>
@@ -476,6 +619,11 @@ B 1 1 r4     r4 1 R h      # B 1 1 R h</code></pre>
 
 <h2 id="temps">Temps de calcul</h2>
 
+<clair>
+<p>Savoir qu’un calcul est possible ne suffit pas : encore faut-il qu’il se termine avant la fin de l’univers. Le nombre d’étapes d’une machine donne une mesure honnête du temps de calcul. Cette mesure sépare les problèmes que l’on sait résoudre rapidement de ceux pour lesquels on sait seulement vérifier vite une solution proposée.</p>
+</clair>
+
+
 <res type="Définition" nom="Temps de calcul, classes P et NP" id="temps-p-np">
 <enonce>
 <p>Le <strong>temps</strong> d’un calcul est son nombre de pas (<a href="#def-pas">pas de calcul</a>). Une machine (à une ou plusieurs bandes) travaille <strong>en temps $t(n)$</strong> si, sur toute entrée de longueur $n$, elle s’arrête en au plus $t(n)$ pas. On travaille ici sur des mots (par exemple les entiers écrits en binaire), car la longueur de l’écriture unaire $1^{x+1}$ est exponentielle en celle de l’écriture binaire.</p>
@@ -483,7 +631,10 @@ B 1 1 r4     r4 1 R h      # B 1 1 R h</code></pre>
 <p>Une machine <strong>non déterministe</strong> peut avoir plusieurs quadruplets pour un même couple (état, symbole) ; elle <em>accepte</em> une entrée si <em>l’un au moins</em> de ses calculs possibles s’arrête dans un état acceptant. $\mathsf{NP}$ est la classe des langages acceptés par une machine non déterministe dont tous les calculs, sur une entrée de longueur $n$, ont au plus $p(n)$ pas.</p>
 <p>De façon équivalente, $L\in\mathsf{NP}$ si et seulement s’il existe un polynôme $q$ et un langage $R\in\mathsf P$ (de couples codés) tels que $x\in L\iff\exists y\ \big(|y|\le q(|x|)\wedge(x,y)\in R\big)$ : $y$ est un <strong>certificat</strong> que l’on vérifie rapidement. Un langage $L\in\mathsf{NP}$ est <strong>NP-complet</strong> si tout langage de $\mathsf{NP}$ s’y réduit par une fonction calculable en temps polynomial.</p>
 </enonce>
-<philo><p>$\mathsf P$ rassemble les problèmes que l’on sait <em>résoudre</em> rapidement, $\mathsf{NP}$ ceux dont on sait <em>vérifier</em> rapidement une solution proposée. Savoir si les deux classes sont égales est la question ouverte la plus célèbre de l’informatique. Grâce aux simulations polynomiales entre modèles (<a href="trois-approches.html#cout-simulation">coût des simulations</a>), ces classes ne dépendent pas du modèle raisonnable choisi.</p></philo>
+<philo>
+<p class="en-clair"><strong>En clair.</strong> Le temps d’un calcul est son nombre d’étapes. On range dans une même famille, appelée P, les problèmes que l’on sait résoudre rapidement, et dans une autre, appelée NP, ceux dont on sait vérifier rapidement une solution qu’on nous propose.</p>
+<p>Trouver la solution d’une grille de sudoku géante est difficile ; vérifier qu’une grille remplie est correcte est facile. La grande question ouverte de l’informatique, « P est-il égal à NP ? », demande si cette différence est réelle ou si nous manquons seulement d’astuce. Un prix d’un million de dollars attend qui la résoudra.</p>
+</philo>
 <tech><p><strong>Équivalence des deux définitions.</strong> Si $N$ est non déterministe en temps $p$, avec au plus $d$ choix par pas, un calcul est déterminé par la suite de ses choix, un mot $y$ de longueur $p(n)$ sur $\{1,\dots,d\}$ (codé en binaire). La relation « le calcul de $N$ sur $x$ guidé par les choix $y$ accepte » se vérifie en simulant $p(|x|)$ pas : elle est dans $\mathsf P$. Réciproquement, si $x\in L\iff\exists y\,(|y|\le q(|x|)\wedge(x,y)\in R)$ et si $R$ est décidé en temps $r$, une machine non déterministe écrit un mot $y$ de longueur au plus $q(|x|)$ en choisissant chaque lettre, puis exécute la machine de $R$ : tous ses calculs ont au plus $O(q(n)+r(n+q(n)))$ pas, ce qui est polynomial. Que des problèmes NP-complets existent (par exemple la satisfaisabilité des formules propositionnelles) est le théorème de Cook et Levin (1971), démontré au chapitre <a href="complexite.html#cook-levin">Complexité</a>, qui étudie aussi l’espace de calcul et les autres classes.</p></tech>
 </res>
 

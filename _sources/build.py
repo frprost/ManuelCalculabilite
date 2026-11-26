@@ -8,7 +8,7 @@ Chaque page source (_sources/pages/*.html) commence par un en-tête :
     chapo: ...        (facultatif)
     prerequis: a.html|Libellé ; b.html|Libellé   (facultatif)
     -->
-Balises de commodité reconnues dans le corps :
+Balises de commodité reconnues dans le corps (version 2 : aussi <clair>, <atelier titre="...">, <inclure fichier="..."/> et l’en-tête chapo_clair, philo_tout) :
     <res type="Théorème" nom="..." id="..."> <enonce>..</enonce>
          <philo>..</philo> <tech>..</tech> <techno>..</techno> </res>
     <err>..</err>  (correction de l'ébauche)    <preuve>..</preuve>
@@ -62,6 +62,7 @@ PAGES = [
     ("cantor.html", "Annexes"),
     ("bases.html", "Annexes"),
     ("leibniz.html", "Annexes"),
+    ("programmes.html", "Annexes"),
     ("errata.html", "Annexes"),
     ("bibliographie.html", "Annexes"),
 ]
@@ -105,6 +106,28 @@ def echapper_maths(corps):
                   lambda m: re.sub(r"<(?=[A-Za-z/!])", "&lt;", m.group(0)), corps, flags=re.S)
 
 
+def inclure(m):
+    """<inclure fichier="assets/programmes/x.py" de="..." a="..." titre="..."/> : code source recopié tel quel."""
+    a = m.group(1)
+    chemin = attr(a, "fichier")
+    with open(os.path.join(os.path.dirname(ICI), chemin), encoding="utf-8") as f:
+        lignes = f.read().split("\n")
+    de, jusqu = attr(a, "de"), attr(a, "a")
+    if de:
+        i = next(k for k, l in enumerate(lignes) if de in l)
+        j = next((k for k in range(i + 1, len(lignes)) if jusqu and jusqu in lignes[k]), len(lignes))
+        lignes = lignes[i:j]
+    while lignes and not lignes[-1].strip():
+        lignes.pop()
+    import textwrap
+    texte = html.escape(textwrap.dedent("\n".join(lignes)), quote=False)
+    nom = os.path.basename(chemin)
+    titre = attr(a, "titre") or ("Code complet de <code>%s</code>" % nom if not de else "Extrait de <code>%s</code>" % nom)
+    ouvert = " open" if attr(a, "ouvert") else ""
+    return ('<details class="source"%s><summary>%s (%d lignes) · <a href="%s" download>télécharger le fichier</a></summary>'
+            '<pre><code>%s</code></pre></details>' % (ouvert, titre, len(lignes), chemin, texte))
+
+
 def transformer(corps, page, index_res):
     if DIFFUSION:
         corps = re.sub(r"<err(?:\s[^>]*)?>.*?</err>\s*", "", corps, flags=re.S)
@@ -114,6 +137,7 @@ def transformer(corps, page, index_res):
         corps = re.sub(r"<diffusion>.*?</diffusion>", "", corps, flags=re.S)
         corps = corps.replace("<brouillon>", "").replace("</brouillon>", "")
     corps = echapper_maths(corps)
+    corps = re.sub(r"<inclure\b([^>]*)/>", inclure, corps)
     def res(m):
         a = m.group(1)
         typ, nom, ident = attr(a, "type") or "Théorème", attr(a, "nom"), attr(a, "id")
@@ -121,8 +145,13 @@ def transformer(corps, page, index_res):
             ident = slug(nom)
         index_res.append((nom, typ, page, ident))
         cls = "definition" if typ in TYPES_DEF else "theoreme"
+        if attr(a, "sansphilo"):
+            cls += " sans-philo"
         return ('<div class="resultat %s" id="%s"><div class="entete-res"><div class="type">%s</div>'
                 '<div class="nom">%s</div></div>' % (cls, ident, typ, nom))
+    corps = re.sub(r"<res\b([^>]*)>(.*?)</res>",
+                   lambda m: "<res%s>%s</res>" % (m.group(1) if "<philo>" in m.group(2) else m.group(1) + ' sansphilo="1"', m.group(2)),
+                   corps, flags=re.S)
     corps = re.sub(r"<res\b([^>]*)>", res, corps)
     corps = corps.replace("</res>", "</div>")
     corps = re.sub(r"<enonce>", '<div class="enonce">', corps)
@@ -131,6 +160,12 @@ def transformer(corps, page, index_res):
     corps = re.sub(r"</(enonce|philo|tech|techno)>", "</div>", corps)
     corps = re.sub(r"<err((?:\s[^>]*)?)>", lambda m: '<div class="erreur-ebauche" data-src="%s">' % (attr(m.group(1) or "", "src") or "ebauche"), corps).replace("</err>", "</div>")
     corps = re.sub(r"<preuve>", '<div class="preuve">', corps).replace("</preuve>", "</div>")
+    # récits propres à un niveau : <clair> (philosophique seul), <atelier titre="..."> (technologique seul)
+    corps = corps.replace("<clair>", '<div class="seulement philo clair">').replace("</clair>", "</div>")
+    corps = re.sub(r'<atelier(?:\s+titre="([^"]*)")?>',
+                   lambda m: '<div class="seulement techno atelier">' + (
+                       '<div class="atelier-titre">Atelier technologique — %s</div>' % m.group(1) if m.group(1) else ""),
+                   corps).replace("</atelier>", "</div>")
     # exercices : <exo niveau="1|2|3" titre="..." id="..."> énoncé <corrige>...</corrige> </exo>
     compteur = [0]
     def exo(m):
@@ -194,7 +229,9 @@ def gabarit(meta, corps, toc, nom, precedent, suivant, sommaire):
     if suivant:
         nav += '<a href="%s" style="text-align:right"><small>Suivant →</small>%s</a>' % suivant
     nav += "</nav>"
-    chapo = '<p class="chapo">%s</p>' % meta["chapo"] if meta.get("chapo") else ""
+    chapo = '<p class="chapo%s">%s</p>' % (" pas-philo" if meta.get("chapo_clair") else "", meta["chapo"]) if meta.get("chapo") else ""
+    if meta.get("chapo_clair"):
+        chapo += '<p class="chapo seulement philo">%s</p>' % meta["chapo_clair"]
     return """<!doctype html>
 <html lang="fr">
 <head>
@@ -209,7 +246,7 @@ def gabarit(meta, corps, toc, nom, precedent, suivant, sommaire):
 <body>
 <header class="entete"><div class="entete-int">
   <button type="button" class="btn-menu" aria-label="Sommaire">☰ Sommaire</button>
-  <a class="titre-site" href="index.html">Calculabilité <span>·</span> un manuel à trois niveaux</a>
+  <a class="titre-site" href="index.html">Calculabilité <span>·</span> un manuel à trois niveaux <span class="version">version 2</span></a>
   <span class="selecteur-legende">Niveau de lecture :</span>
   <div class="selecteur" role="group" aria-label="Niveau de lecture">
     <button type="button" data-niveau="philo" title="Sens et implications">Philosophique</button>
@@ -221,7 +258,7 @@ def gabarit(meta, corps, toc, nom, precedent, suivant, sommaire):
 </div></header>
 <div class="page">
 <nav class="sommaire" aria-label="Sommaire">{sommaire}</nav>
-<main class="contenu">
+<main class="contenu{classe_main}">
 <h1>{titre}</h1>
 {chapo}
 {prereq}
@@ -242,7 +279,7 @@ def gabarit(meta, corps, toc, nom, precedent, suivant, sommaire):
 </body>
 </html>
 """.format(tete_titre=html.escape(tete_titre), titre=titre, chapo=chapo, prereq=prereq, toc=toc_html,
-           corps=corps, nav=nav, sommaire=sommaire,
+           corps=corps, nav=nav, sommaire=sommaire, classe_main=" philo-tout" if meta.get("philo_tout") else "",
            credit="Auteurs : Frédéric Prost et Claude." if DIFFUSION else "Auteurs : Frédéric Prost et Claude. Première version HTML d’après l’ébauche de Frédéric Prost (2020), les notes de cours (2021) et le polycopié de Ch. Boitet, complétée et vérifiée.")
 
 
@@ -290,7 +327,26 @@ def collecter_errata(sources, metas):
     return '<p><strong>%d corrections</strong> : %s.</p>' % (total, ", ".join(resume)) + h
 
 
+def archiver_programmes():
+    """assets/programmes.zip : le dossier des programmes Python, prêt à télécharger."""
+    import zipfile
+    src = os.path.join(os.path.dirname(ICI), "assets", "programmes")
+    if not os.path.isdir(src):
+        return
+    dest = os.path.join(SITE, "assets", "programmes.zip")
+    os.makedirs(os.path.dirname(dest), exist_ok=True)
+    with zipfile.ZipFile(dest, "w", zipfile.ZIP_DEFLATED) as z:
+        for racine, dossiers, fichiers in os.walk(src):
+            dossiers[:] = sorted(d for d in dossiers if d != "__pycache__")
+            for f in sorted(fichiers):
+                if f.endswith((".py", ".tm", ".md")):
+                    chemin = os.path.join(racine, f)
+                    z.write(chemin, os.path.join("programmes", os.path.relpath(chemin, src)))
+        z.write(os.path.join(os.path.dirname(ICI), "LICENSE-CODE"), "programmes/LICENSE-CODE")
+
+
 def construire():
+    archiver_programmes()
     metas = {}
     sources = {}
     for nom, _ in PAGES:

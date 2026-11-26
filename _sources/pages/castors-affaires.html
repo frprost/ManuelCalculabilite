@@ -2,16 +2,32 @@
 titre: Les castors affairés
 court: Castors affairés
 chapo: Quelle est la plus longue tâche qu’une machine à n états peut accomplir avant de s’arrêter ? Une question concrète, une fonction qui croît plus vite que toute fonction calculable, et des valeurs connues seulement jusqu’à n = 5.
+chapo_clair: Parmi toutes les machines de Turing à $n$ états qui finissent par s’arrêter, laquelle travaille le plus longtemps ? Une question de jeu, une fonction qui grandit plus vite que tout ce qu’on peut calculer, et des valeurs connues seulement pour $n\le5$.
 prerequis: machines-turing.html|Machines de Turing ; indecidabilite.html|Problème de l’arrêt ; incompletude.html|Incomplétude ; bases.html#zfc|La théorie ZFC
 -->
 
+<clair>
+<p>En 1962, le mathématicien hongrois Tibor Radó a proposé un concours : écrire, avec un nombre d’états fixé, une machine de Turing qui part d’un ruban vide, finit par s’arrêter, et écrit le plus de 1 possible avant. Ces machines s’appellent les « castors affairés », parce qu’elles travaillent dur avant de s’arrêter.</p>
+<p>Pour 2 états, le record est 4 ; pour 3 états, 6 ; pour 4 états, 13 ; pour 5 états, la valeur n’a été établie qu’en 2024, par une collaboration en ligne de chercheurs et d’amateurs, avec une démonstration vérifiée par ordinateur. Pour 6 états, on sait seulement que le record dépasse une tour de puissances de 10 d’une hauteur vertigineuse. Ce chapitre montre qu’aucun programme ne peut calculer ces records en général.</p>
+</clair>
+
 <h2>Le problème</h2>
+
+<clair>
+<p>Avec $n$ états, il n’y a qu’un nombre fini de machines possibles. Certaines s’arrêtent, d’autres tournent pour toujours. Parmi celles qui s’arrêtent, l’une écrit le plus de 1 : c’est le record $\Sigma(n)$. La question paraît innocente ; elle est l’une des plus profondes de la calculabilité.</p>
+</clair>
+
 
 <p>Le problème des castors affairés (<em>busy beavers</em>), proposé par Tibor Radó en 1962, donne une fonction non calculable très concrète, qui ne parle pas d’indices de machines mais de machines réelles : parmi toutes les machines de Turing à $n$ états qui, lancées sur une bande blanche, finissent par s’arrêter, laquelle écrit le plus de symboles ?</p>
 
 <p>À première vue la question semble soluble : il y a un nombre fini de machines à $n$ états ; il suffit de les lancer toutes et de garder le meilleur résultat. Mais certaines ne s’arrêtent jamais, et l’on ne peut pas savoir, en général, si une machine qui tourne encore finira par s’arrêter avec un meilleur score. C’est de là que vient l’incalculabilité. La preuve, elle, n’est pas une réduction au problème de l’arrêt : elle montre directement que la fonction croît plus vite que toute fonction calculable.</p>
 
 <h2>Le modèle de Radó</h2>
+
+<clair>
+<p>Les machines du concours ont deux symboles (0 et 1) et, à chaque étape, écrivent un symbole, se déplacent et changent d’état. On peut les faire tourner dans la page avec un simulateur rapide.</p>
+</clair>
+
 
 <res type="Définition" nom="Machines de Radó et fonctions Σ et S" id="def-rado">
 <enonce>
@@ -22,6 +38,10 @@ prerequis: machines-turing.html|Machines de Turing ; indecidabilite.html|Problè
 </ul>
 <p>Une machine qui atteint $\Sigma(n)$ s’appelle un <strong>castor affairé</strong>.</p>
 </enonce>
+<philo>
+<p class="en-clair"><strong>En clair.</strong> On regarde toutes les machines de Turing qui ont un nombre d’étapes fixé, par exemple 5, n’écrivent que 0 ou 1, et démarrent sur un ruban vide. Parmi celles qui finissent par s’arrêter, on cherche la championne : celle qui écrit le plus de 1, ou celle qui fait le plus de pas avant de s’arrêter.</p>
+<p>Le mathématicien hongrois Tibor Radó a inventé ce concours en 1962 sous le nom de « castor affairé » : une machine qui s’agite le plus longtemps possible avant de s’arrêter. Le nombre de machines de chaque taille est fini, donc il y a bien une championne. La trouver est une tout autre affaire.</p>
+</philo>
 <tech>
 <p>Écrire et se déplacer à chaque pas ne change rien du point de vue de la calculabilité (on simule un pas « sur place » par un aller-retour), mais change les valeurs précises de $\Sigma$ et $S$, qui dépendent toujours du modèle exact. Il y a $(4(n+1))^{2n}$ machines à $n$ états : chacune des $2n$ transitions choisit un symbole (2 choix), une direction (2) et un état d’arrivée ($n+1$, en comptant $H$). Pour les énumérations du niveau technologique, on emploie aussi des <em>tables partielles</em>, où certaines transitions manquent : une machine qui atteint une transition manquante s’arrête. Une table partielle représente toutes ses complétions qui font le même calcul.</p>
 </tech>
@@ -29,6 +49,10 @@ prerequis: machines-turing.html|Machines de Turing ; indecidabilite.html|Problè
 
 <res type="Exemple" nom="Une machine à 3 états et le calcul de Σ(3)" id="exemple-rado">
 <enonce><p>La machine $A0\to1RB$, $A1\to1LC$, $B0\to1LA$, $B1\to1RB$, $C0\to1LB$, $C1\to1RH$ s’arrête après 13 pas avec six 1 sur la bande. On a $\Sigma(3)=6$ et $S(3)=21$.</p></enonce>
+<philo>
+<p class="en-clair"><strong>En clair.</strong> Voici la machine championne à trois étapes : elle s’arrête après 13 pas en laissant six 1 sur le ruban.</p>
+<p>On peut la suivre à la main avec le simulateur de la page. Pour être sûr qu’elle est championne, il faut examiner toutes les autres machines à trois étapes, et prouver que celles qui ne s’arrêtent pas ne s’arrêteront vraiment jamais. C’est faisable à cette taille, mais cela devient très vite un travail énorme.</p>
+</philo>
 <tech>
 <p>La trace de l’exécution (l’état, entre crochets, est écrit devant le symbole lu ; trace produite par le simulateur) :</p>
 <pre class="no-math">[A] 0 ⊢ 1 [B] 0 ⊢ [A] 1 1 ⊢ [C] 0 1 1 ⊢ [B] 0 1 1 1 ⊢ [A] 0 1 1 1 1 ⊢ 1 [B] 1 1 1 1
@@ -66,11 +90,17 @@ C 1 1 L A</pre></div>
 
 <h2>Incalculabilité</h2>
 
+<clair>
+<p>Si l’on savait calculer le record, on saurait résoudre le problème de l’arrêt : pour savoir si une machine à $n$ états s’arrête, il suffirait de la laisser tourner un peu plus longtemps que le record. C’est impossible, donc le record n’est pas calculable. Il grandit même plus vite que n’importe quelle fonction calculable.</p>
+</clair>
+
+
 <res type="Théorème" nom="Σ croît plus vite que toute fonction calculable (Radó, 1962)" id="sigma-non-calculable">
 <enonce><p>Pour toute fonction calculable totale $f:\N\to\N$, on a $\Sigma(N)>f(N)$ pour tout $N$ assez grand. En particulier $\Sigma$ n’est pas calculable, et $S$ non plus.</p></enonce>
 <philo>
-<p>Ce n’est pas seulement que $\Sigma$ soit difficile à calculer : elle croît plus vite que tout ce qu’un programme peut calculer, plus vite que l’exponentielle, que la fonction d’Ackermann, que n’importe quelle fonction qu’on puisse décrire par un algorithme. Pourtant chacune de ses valeurs est un entier bien déterminé.</p>
-<p>Connaître $\Sigma(n)$ ou $S(n)$ serait d’ailleurs un super-pouvoir : connaissant $S(n)$, on déciderait l’arrêt de toutes les machines à $n$ états (on les lance pendant $S(n)$ pas ; celles qui ne se sont pas arrêtées ne s’arrêteront jamais). Comme de nombreuses conjectures mathématiques (Goldbach, Riemann) s’expriment par l’arrêt d’une machine de taille modeste, connaître $S$ pour quelques dizaines ou centaines d’états les résoudrait toutes.</p>
+<p class="en-clair"><strong>En clair.</strong> Le record grandit plus vite que n’importe quelle fonction qu’un programme sait calculer.</p>
+<p>Ce n’est pas seulement que le record soit difficile à trouver. Il grandit plus vite que les puissances, plus vite que la fonction d’Ackermann, plus vite que toute fonction qu’on puisse décrire par un programme. Pourtant chaque record est un nombre entier bien précis.</p>
+<p>Connaître ces records serait un super-pouvoir. Si l’on savait que le record de pas pour les machines à 30 étapes est tel nombre, on saurait décider l’arrêt de toutes ces machines : on les ferait tourner ce nombre de pas, et celles qui tournent encore ne s’arrêteront jamais. Or beaucoup de grandes conjectures mathématiques, comme celle de Goldbach, reviennent à savoir si une certaine machine de taille modeste s’arrête.</p>
 </philo>
 <tech>
 <p>Soit $f$ calculable totale. Posons $F(x)=\sum_{i=0}^{x}\big(f(i)+i^2\big)$. $F$ est calculable, strictement croissante, et $F(x)\ge f(x)$, $F(x)\ge x^2$. Soit $M_F$ une machine de Radó à $n$ états qui, partant de $x$ barres consécutives (tête sur la première), s’arrête en laissant ces $x$ barres, un blanc, puis $F(x)$ barres, tête sur la première du résultat, et qui ne visite jamais les cases à gauche de son entrée (on peut toujours l’exiger : une bande infinie d’un seul côté calcule les mêmes fonctions).</p>
@@ -83,6 +113,11 @@ Ainsi $\Sigma(N)>f(N)$ pour tout $N$ assez grand. Si $\Sigma$ était calculable,
 </res>
 
 <h2>Valeurs connues</h2>
+
+<clair>
+<p>Établir chaque valeur demande d’examiner toutes les machines, et de démontrer, une par une, que celles qui ne s’arrêtent pas ne s’arrêteront jamais. Le travail explose avec le nombre d’états, et à partir d’un certain rang il devient impossible même en principe.</p>
+</clair>
+
 
 <res type="Proposition" nom="Valeurs de Σ et S connues en 2026" id="valeurs-bb">
 <enonce>
@@ -98,8 +133,9 @@ Ainsi $\Sigma(N)>f(N)$ pour tout $N$ assez grand. Si $\Sigma$ était calculable,
 <p>($10\uparrow\uparrow15$ désigne une tour de quinze 10 : $10^{10^{\cdot^{\cdot^{10}}}}$. $2\uparrow\uparrow\uparrow5=2\uparrow\uparrow(2\uparrow\uparrow65\,536)$ est une tour de 2 dont la hauteur est elle-même une tour de 65 536 deux. « Revérifié ici » renvoie aux vérifications exhaustives décrites au niveau technologique : dans l’<a href="#exemple-rado">exemple à 3 états</a> pour $n\le3$, et ci-dessous pour $n=4$.)</p>
 </enonce>
 <philo>
-<p>Il a fallu soixante ans et une collaboration internationale assistée par ordinateur pour déterminer $S(5)$. Pour $n=6$, on connaît des machines qui s’arrêtent après un nombre de pas qui défie toute écriture, et il reste des machines dont on ne sait pas si elles s’arrêtent ; certaines simulent des problèmes proches de la conjecture de Collatz. Il est vraisemblable qu’on ne connaîtra jamais $\Sigma(6)$.</p>
-<p>Au-delà, la logique elle-même s’en mêle : il existe un rang $n$ à partir duquel les valeurs de $S$ et de $\Sigma$ ne sont plus démontrables dans la théorie des ensembles usuelle ZFC (pour $S$, on sait que ce rang est inférieur à 800) (<a href="#castors-zfc">théorème ci-dessous</a>).</p>
+<p class="en-clair"><strong>En clair.</strong> On connaît les records jusqu’aux machines à 5 étapes. Le dernier, 47 176 870 pas, a été établi en 2024.</p>
+<p>Il a fallu soixante ans et une collaboration internationale d’amateurs et de chercheurs, aidés par ordinateur, pour régler le cas des machines à 5 étapes. Pour 6 étapes, on connaît des machines qui s’arrêtent après un nombre de pas impossible à écrire, et d’autres dont on ignore si elles s’arrêtent ; certaines ressemblent à la suite de Syracuse. Il est probable qu’on ne connaîtra jamais le record à 6 étapes.</p>
+<p>Au-delà, la logique elle-même intervient : à partir d’une certaine taille (on sait qu’elle est inférieure à 800), même les axiomes des mathématiques ne permettent plus de démontrer la valeur du record (<a href="#castors-zfc">théorème ci-dessous</a>).</p>
 </philo>
 <tech><
 <p><strong>Ce qu’il faut pour établir une valeur.</strong> Établir $S(n)=k$ demande deux choses. La borne inférieure $S(n)\ge k$ se prouve en exhibant une machine à $n$ états et en la simulant jusqu’à son arrêt au pas $k$ : c’est un calcul fini. La borne supérieure demande, pour chacune des machines à $n$ états (il y en a $(4n+4)^{2n}$, un nombre fini), soit de la simuler jusqu’à son arrêt, qui a alors lieu en au plus $k$ pas, soit de <em>démontrer</em> qu’elle ne s’arrête jamais. Pour $\Sigma(n)$, on compte en plus les symboles 1 sur la bande des machines qui s’arrêtent. Pour chaque $n$, la valeur est donc atteinte par un nombre fini de vérifications et de preuves ; mais aucun algorithme ne fournit ces preuves pour tous les $n$, sans quoi $S$ serait calculable, ce qu’exclut le <a href="#sigma-non-calculable">théorème de Radó</a>. Le <a href="#castors-zfc">théorème qui suit</a> va plus loin : à partir d’un certain rang, certaines de ces preuves de non-arrêt n’existent même pas dans ZFC.</p>
@@ -150,7 +186,10 @@ E 1 0 L A</pre></div>
 
 <res type="Théorème" nom="Les valeurs de S et Σ échappent à ZFC à partir d’un certain rang" id="castors-zfc">
 <enonce><p>Supposons ZFC cohérente. Il existe un entier $N$ tel que, pour tout $n\ge N$ et tout entier $k$, ZFC ne démontre pas l’énoncé « $S(n)=k$ ». Il en va de même pour $\Sigma$, avec un autre entier $N'$.</p></enonce>
-<philo><p>Il ne s’agit pas seulement de valeurs trop grandes pour être calculées. Au-delà d’un certain nombre d’états, aucune démonstration, dans la théorie qui sert de fondement aux mathématiques, ne peut établir la valeur. La raison est simple : connaître $S(n)$, c’est savoir décider l’arrêt de toutes les machines à $n$ états, et l’une d’elles cherche une contradiction dans ZFC. Le nombre <a href="kolmogorov-omega.html#omega-arret">Ω de Chaitin</a> joue le même rôle sous une forme comprimée : ses $n$ premiers chiffres décident l’arrêt de tous les programmes de longueur au plus $n$.</p></philo>
+<philo>
+<p class="en-clair"><strong>En clair.</strong> À partir d’un certain nombre d’étapes, les axiomes sur lesquels reposent toutes les mathématiques ne permettent plus de démontrer la valeur exacte du record, même en principe.</p>
+<p>Il ne s’agit pas seulement de nombres trop grands pour être calculés. Aucune démonstration ne pourra les établir. La raison est simple : connaître le record, c’est savoir quelles machines de cette taille s’arrêtent. Or on peut construire une machine de taille modeste qui cherche une contradiction dans les mathématiques et s’arrête si elle en trouve une. Savoir qu’elle ne s’arrête pas, ce serait démontrer que les mathématiques ne se contredisent pas, ce qu’elles ne peuvent pas faire elles-mêmes (<a href="incompletude.html#godel2">second théorème d’incomplétude</a>). Le nombre <a href="kolmogorov-omega.html#omega-arret">Ω de Chaitin</a> contient la même information sous forme comprimée.</p>
+</philo>
 <tech>
 <p>Les axiomes de <a href="bases.html#zfc">ZFC</a> forment un ensemble décidable. Il existe donc une machine de Radó $M$ qui énumère toutes les démonstrations formelles dans ZFC, et qui s’arrête dès qu’elle en trouve une de $0\ne0$. Soit $N$ son nombre d’états. ZFC démontre « $M$ ne s’arrête pas $\iff$ ZFC est cohérente » : c’est la traduction de la définition de $M$. Pour $n\ge N$, on ajoute à $M$ des états inaccessibles et l’on obtient une machine à $n$ états qui se comporte comme $M$.</p>
 <p>Supposons que ZFC démontre $S(n)=k$. Par définition de $S$, ZFC démontre alors que $M$, si elle s’arrête, s’arrête en au plus $k$ pas.</p>

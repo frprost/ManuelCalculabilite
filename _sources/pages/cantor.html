@@ -2,16 +2,24 @@
 titre: L’argument diagonal de Cantor
 court: Diagonale de Cantor
 chapo: Il y a « plus » de nombres réels que d’entiers. La technique de la preuve, la diagonalisation, est l’arme principale de toute la calculabilité.
+chapo_clair: Il y a « plus » de nombres à virgule que de nombres entiers : on ne peut pas les numéroter tous. La méthode de la démonstration, la diagonale, est l’arme principale de toute la calculabilité.
 prerequis: bases.html#fonctions|Injections, surjections, bijections
 -->
 
 <h2>Les réels ne sont pas dénombrables</h2>
 
+<clair>
+<p>Supposons qu’on ait numéroté tous les nombres compris entre 0 et 1, écrits avec leurs décimales. Fabriquons un nouveau nombre : sa première décimale diffère de celle du premier nombre de la liste, sa deuxième de celle du deuxième, et ainsi de suite. Ce nouveau nombre diffère de chaque nombre de la liste : la liste n’était pas complète. On ne peut donc pas numéroter tous les réels. Le même argument, appliqué aux programmes, montre qu’il existe des fonctions qu’aucun programme ne calcule.</p>
+</clair>
+
+
 <res type="Théorème" nom="Non-dénombrabilité de ℝ (Cantor, 1891)" id="cantor-reels">
 <enonce><p>Il n’existe pas de bijection entre $\N$ et $\R$ (ni même de surjection de $\N$ sur $\R$).</p></enonce>
 <philo>
-<p>L’infini a des tailles. On peut numéroter les entiers, les fractions, les mots, les programmes : ces ensembles sont « dénombrables ». On ne peut pas numéroter les nombres réels : toute liste en oublie. La preuve est une construction très simple, la <em>diagonale</em> : on fabrique un nombre qui diffère du premier de la liste par la première décimale, du deuxième par la deuxième, et ainsi de suite.</p>
-<p>Ce procédé, qui semble un jeu, est le moteur de presque tous les résultats d’impossibilité de ce manuel : existence de fonctions non calculables, indécidabilité de l’arrêt, incomplétude, fonction d’Ackermann, hiérarchie arithmétique.</p>
+<p class="en-clair"><strong>En clair.</strong> On ne peut pas faire une liste numérotée de tous les nombres réels (les nombres à virgule, avec autant de décimales qu’on veut). Il y en a strictement plus que de nombres entiers.</p>
+<p>L’infini n’a pas qu’une seule taille. On peut numéroter les entiers, les fractions, les mots d’un dictionnaire, les programmes : on dit que ces ensembles sont <em>dénombrables</em>. Les réels, eux, ne le sont pas : toute liste en oublie.</p>
+<p>La preuve tient en une idée, la <em>diagonale</em>. Supposons qu’on ait une liste de nombres entre 0 et 1. On fabrique un nouveau nombre en changeant la première décimale du premier, la deuxième décimale du deuxième, la troisième du troisième, et ainsi de suite. Ce nombre n’est égal à aucun de ceux de la liste, puisqu’il diffère de chacun en au moins une décimale. La liste était donc incomplète.</p>
+<p>Ce petit procédé, qui ressemble à un jeu, est le moteur de presque toutes les impossibilités de ce manuel : l’existence de fonctions qu’aucun programme ne calcule, le problème de l’arrêt, les théorèmes d’incomplétude de Gödel.</p>
 </philo>
 <tech>
 <p>Il suffit de montrer qu’aucune suite $(x_i)_{i\ge0}$ de réels de $]0,1[$ ne les contient tous, car $]0,1[$ est en bijection avec $\R$ : $t\mapsto\tan\big(\pi(t-\tfrac12)\big)$ est une bijection de $]0,1[$ sur $\R$ (composée de $t\mapsto\pi(t-\frac12)$, bijection de $]0,1[$ sur $]-\frac\pi2,\frac\pi2[$, et de la tangente, bijection de $]-\frac\pi2,\frac\pi2[$ sur $\R$, dont la réciproque est l’arc tangente).</p>
@@ -39,12 +47,12 @@ $$y_j=\begin{cases}5&\text{si }x_{j-1,j}\neq5,\\ 4&\text{si }x_{j-1,j}=5.\end{ca
 <res type="Argument" nom="Il y a plus de phénomènes que d’explications" id="argument-theorie">
 <enonce><p>Toute explication s’écrit, donc les explications forment un ensemble dénombrable. Si les phénomènes à expliquer forment un ensemble non dénombrable, certains phénomènes n’ont pas d’explication.</p></enonce>
 <philo>
-<p>L’argument repose sur deux prémisses. (1) Une explication est un texte fini lié au phénomène qu’elle explique : la mécanique de Newton s’instancie différemment pour la chute de chaque objet. (2) Une explication est elle-même un phénomène du monde : elle est écrite sur du papier, prononcée, enregistrée dans une mémoire. Puisque les explications sont dénombrables, on peut parler de « l’explication numéro $n$ », et poser des questions comme « existe-t-il un lien entre l’explication $i$ et l’ensemble d’explications $E$ ? », pour chaque partie $E\subseteq\N$. Ces questions, en nombre non dénombrable, sont des phénomènes ; il y a donc plus de phénomènes que d’explications.</p>
-<p><strong>Discussion.</strong> L’argument montre bien qu’<em>une théorie qui expliquerait chaque fait individuellement par un texte propre</em> est impossible si les faits sont en nombre non dénombrable. Mais deux objections le fragilisent :</p>
+<p class="en-clair"><strong>En clair.</strong> Une explication s’écrit avec un alphabet, en un texte fini. On peut donc numéroter toutes les explications possibles. Si les phénomènes à expliquer sont plus nombreux que les entiers, certains n’auront jamais d’explication.</p>
+<p>L’argument a de l’allure, mais il faut le discuter. Deux objections l’affaiblissent.</p>
 <ul>
-<li>Il y a une tension interne : si toute question est un phénomène inscrit dans le monde (prémisse 2), elle s’écrit elle-même par un texte fini, et les questions sont alors dénombrables. Les « questions » indexées par des parties arbitraires $E\subseteq\N$ ne sont pas, pour la plupart, formulables : on ne peut pas les poser.</li>
-<li>Une théorie scientifique n’explique pas les phénomènes un par un : une loi finie couvre une infinité, même non dénombrable, de cas (la loi de la chute des corps vaut pour chaque valeur réelle de la hauteur). L’argument de cardinalité ne s’applique pas tel quel.</li>
+<li>Une question qu’on ne peut même pas formuler n’est pas vraiment une question. Or les questions que l’on peut poser s’écrivent, elles aussi, en textes finis : elles sont donc en nombre dénombrable, comme les explications.</li>
+<li>Une loi scientifique n’explique pas les faits un par un. La loi de la chute des corps tient en une ligne et vaut pour toutes les hauteurs possibles, qui sont en nombre infini et même non dénombrable.</li>
 </ul>
-<p>Une version plus solide passe par la calculabilité plutôt que par la cardinalité : si une théorie est un système formel (ses prédictions sont dérivées mécaniquement), alors il existe des questions <em>formulables</em> dans son langage, par exemple sur l’arrêt de certains processus, auxquelles elle ne peut pas répondre (<a href="incompletude.html#godel1">théorème d’incomplétude</a>). Des physiciens ont exhibé des questions de ce type pour des systèmes physiques précis : Cubitt, Pérez-García et Wolf (2015) ont montré que l’existence d’un « trou spectral » pour certains modèles quantiques est indécidable.</p>
+<p>Une version plus solide de l’idée passe par le calcul plutôt que par le nombre. Si une théorie est un système dont on tire les prédictions de façon mécanique, il existe des questions qu’on peut <em>écrire</em> dans son langage et auxquelles elle ne pourra jamais répondre : c’est le <a href="incompletude.html#godel1">théorème d’incomplétude</a>. Ce n’est pas qu’une curiosité de logicien : en 2015, trois physiciens (Cubitt, Pérez-García et Wolf) ont montré qu’une question précise sur certains matériaux quantiques n’a pas de réponse calculable.</p>
 </philo>
 </res>

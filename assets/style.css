@@ -151,6 +151,19 @@ html.js.tout .niveau[data-niveau="tech"] { background: var(--tech-fond); }
 html.js.tout .niveau[data-niveau="techno"] { background: var(--techno-fond); border-radius: 0 0 10px 10px; }
 
 /* Passages de récit réservés à certains niveaux */
+/* Version 2 : au niveau philosophique, seul le récit écrit pour ce niveau est affiché
+   (titres de sections, récits <clair>, résultats munis d'un niveau philosophique, figures marquées). */
+html.js.n-philo .contenu:not(.philo-tout) > :not(h1):not(h2):not(.chapo):not(.auteurs):not(.seulement):not(.resultat):not(.nav-chap):not(.pied):not(.philo-aussi):not(.toc-locale) { display: none; }
+html.js.n-philo .contenu:not(.philo-tout) > .resultat.sans-philo, html.js.n-philo .contenu > .pas-philo, html.js.n-philo .contenu > h2#exercices, html.js.n-philo .toc-locale li:has(a[href="#exercices"]) { display: none; }
+html.js .resultat.vue-philo > .enonce { display: none; }
+.clair { font-size: 1.04em; }
+.clair > :last-child { margin-bottom: 0; }
+.atelier { border: 1px solid var(--techno); border-left: 6px solid var(--techno); border-radius: 10px; padding: 12px 16px; margin: 22px 0; background: var(--techno-fond); }
+.atelier-titre { font-family: var(--sans); font-size: 13px; font-weight: 650; text-transform: uppercase; letter-spacing: .06em; color: var(--techno); margin-bottom: 8px; }
+.atelier pre { max-height: 32em; overflow: auto; }
+.en-clair { font-weight: 500; }
+.titre-site .version { font-size: 12px; font-weight: 600; border: 1px solid currentColor; border-radius: 9px; padding: 0 6px; margin-left: 6px; opacity: .75; }
+.telechargement { display: inline-block; font-family: var(--sans); font-weight: 650; padding: 8px 14px; border-radius: 8px; background: var(--techno); color: #fff !important; text-decoration: none; }
 html.js .seulement { display: none; }
 html.js.n-philo .seulement.philo, html.js.n-tech .seulement.tech, html.js.n-techno .seulement.techno, html.js.tout .seulement { display: block; }
 
@@ -254,3 +267,7 @@ details.corrige { margin: 8px 0 6px; border-top: 1px dashed var(--trait); paddin
 details.corrige > summary { font-weight: 600; }
 details.corrige[open] > summary { margin-bottom: 6px; }
 .texte-corrige { overflow-x: auto; }
+
+details.source { margin: 12px 0; border: 1px solid var(--trait); border-radius: 8px; background: var(--fond); }
+details.source > summary { cursor: pointer; padding: 8px 12px; font-family: var(--sans); font-size: 14px; }
+details.source pre { margin: 0; max-height: 40em; overflow: auto; border-radius: 0 0 8px 8px; }

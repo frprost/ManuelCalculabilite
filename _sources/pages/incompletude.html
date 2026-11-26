@@ -2,16 +2,30 @@
 titre: Calcul et logique : incomplétude et problème de la décision
 court: Incomplétude
 chapo: L’indécidabilité de l’arrêt entraîne en quelques lignes les théorèmes de Gödel et la réponse négative au problème de la décision de Hilbert.
+chapo_clair: En 1931, Kurt Gödel a montré qu’aucun système d’axiomes ne peut démontrer toutes les vérités sur les nombres entiers. Avec l’impossibilité de prévoir l’arrêt des programmes, ce théorème devient presque évident.
 prerequis: semi-decidabilite.html|Semi-décidabilité ; bases.html#logique|Logique des prédicats
 -->
 
+<clair>
+<p>Au début du XX<sup>e</sup> siècle, le grand mathématicien David Hilbert rêvait de mettre les mathématiques à l’abri de tout doute : écrire une fois pour toutes une liste d’axiomes, des vérités de départ, d’où l’on pourrait déduire mécaniquement toutes les vérités mathématiques, et démontrer que cette liste ne mène jamais à une contradiction. Il espérait même une méthode mécanique capable de dire, pour tout énoncé, s’il est démontrable.</p>
+<p>Kurt Gödel en 1931, puis Alonzo Church et Alan Turing en 1936, ont montré que ce rêve est irréalisable. Ce chapitre explique pourquoi, en s’appuyant sur ce que nous savons déjà : si l’on pouvait tout démontrer sur les nombres, on pourrait prévoir l’arrêt des programmes, ce qui est impossible.</p>
+</clair>
+
 <h2>Le langage de l’arithmétique</h2>
+
+<clair>
+<p>Pour parler des nombres entiers, on utilise un langage très pauvre : des variables, zéro, « plus un », l’addition, la multiplication, l’égalité, « et », « ou », « non », « il existe », « pour tout ». La première découverte est que ce langage d’école primaire suffit à décrire n’importe quel calcul : « le programme numéro $e$ s’arrête » se traduit en une phrase sur les nombres.</p>
+</clair>
+
 
 <p>On considère les formules du premier ordre construites avec les variables, les constantes $0,1$, les opérations $+$ et $\times$, l’égalité, les connecteurs $\neg,\wedge,\vee,\Rightarrow$ et les quantificateurs $\forall,\exists$ portant sur les entiers (voir l’annexe <a href="bases.html#logique">Logique des prédicats</a>). Un énoncé est une formule sans variable libre ; il est <em>vrai</em> s’il est vrai dans $\N$ avec l’addition et la multiplication usuelles. On note $\underline n$ le terme $(\cdots((0+1)+1)\cdots)+1$ ($n$ fois $+1$), qui désigne l’entier $n$.</p>
 
 <res type="Définition" nom="Formules bornées et formules Σ₁" id="delta0">
 <enonce><p>Les formules <strong>bornées</strong> (ou $\Delta_0$) sont construites à partir des égalités $t_1=t_2$ par les connecteurs et les quantificateurs bornés $\exists x<t$ et $\forall x<t$ ($x$ ne figurant pas dans le terme $t$). Une formule <strong>$\Sigma_1$</strong> est de la forme $\exists y\,\theta$ avec $\theta$ bornée. Une relation $R\subseteq\N^k$ est <strong>$\Sigma_1$</strong> s’il existe une formule $\Sigma_1$ $\phi(x_1,\dots,x_k)$ telle que $R(\vec n)$ si et seulement si $\phi(\underline{n_1},\dots,\underline{n_k})$ est vrai. Une fonction partielle est $\Sigma_1$ si son graphe $\{(\vec x,y):f(\vec x)=y\}$ l’est. On écrit $x\le t$ pour $x<t+1$.</p><p>Les relations $\Sigma_1$ sont exactement les ensembles semi-décidables, c’est-à-dire la classe $\Sigma_1$ de la <a href="hierarchie-arithmetique.html#def-hierarchie">hiérarchie arithmétique</a>. Une formule bornée se décide en examinant tous les cas, donc une relation $\Sigma_1$ est semi-décidable. La réciproque est la <a href="#representabilite">proposition de représentabilité</a> ci-dessous.</p></enonce>
-<philo><p>Une formule bornée ne parle que d’un nombre fini de cas, qu’on peut tous examiner : sa vérité se calcule. Une formule $\Sigma_1$ affirme l’existence d’un témoin, qu’on reconnaîtra si on le rencontre : c’est exactement la forme d’un énoncé « le programme finit par s’arrêter ».</p></philo>
+<philo>
+<p class="en-clair"><strong>En clair.</strong> Une phrase sur les nombres qui ne parle que d’un nombre limité de cas (« tous les nombres inférieurs à 100 sont… ») peut être vérifiée par un calcul. Une phrase de la forme « il existe un nombre tel que… », suivie d’une telle vérification, peut être confirmée en trouvant ce nombre.</p>
+<p>Les premières sont l’équivalent logique des boucles « répéter $n$ fois », les secondes des recherches qui peuvent ne jamais finir.</p>
+</philo>
 </res>
 
 <res type="Lemme" nom="Clôture des relations Σ₁" id="sigma1-clotures">
@@ -31,7 +45,10 @@ prerequis: semi-decidabilite.html|Semi-décidabilité ; bases.html#logique|Logiq
 <li>La relation $\beta(c,d,i)=r$ est définie par une formule bornée.</li>
 <li>Pour toute suite finie $a_0,\dots,a_n$ d’entiers, il existe $c,d$ tels que $\beta(c,d,i)=a_i$ pour tout $i\le n$.</li>
 </ol></enonce>
-<philo><p>Avec seulement l’addition et la multiplication, on peut parler de suites finies de longueur quelconque : deux nombres suffisent à les coder. C’est ce qui permet à l’arithmétique de l’école de parler de calculs entiers, qui sont des suites de configurations.</p></philo>
+<philo>
+<p class="en-clair"><strong>En clair.</strong> Avec seulement l’addition et la multiplication, on peut coder une liste finie de nombres, de n’importe quelle longueur, par deux nombres.</p>
+<p>C’est une astuce arithmétique ingénieuse de Gödel, qui utilise les restes de divisions. Elle permet de parler de suites de calcul, donc de programmes, dans le langage des nombres.</p>
+</philo>
 <tech>
 <p>(1) $\beta(c,d,i)=r\iff r<1+(i+1)\times d\ \wedge\ \exists q\le c\ \big(c=q\times(1+(i+1)\times d)+r\big)$.</p>
 <p>(2) Soit $s=\max(n,a_0,\dots,a_n)+1$, $d=s!$ et $m_i=1+(i+1)d$ pour $i\le n$.</p>
@@ -46,7 +63,10 @@ prerequis: semi-decidabilite.html|Semi-décidabilité ; bases.html#logique|Logiq
 
 <res type="Proposition" nom="Les fonctions récursives et les ensembles semi-décidables sont définissables dans l’arithmétique" id="representabilite">
 <enonce><p>Toute fonction récursive (partielle) est $\Sigma_1$. Par conséquent, pour tout ensemble semi-décidable $A$, il existe une formule $\exists y\,\theta(x,y)$, avec $\theta$ bornée, telle que $n\in A$ si et seulement si $\exists y\,\theta(\underline n,y)$ est vrai. En particulier, il existe une formule $\Sigma_1$ $\kappa(x)$ telle que $e\in K\iff\kappa(\underline e)$ est vrai, et la relation $z=x^y$ est $\Sigma_1$ : l’exponentiation est définissable avec $+$ et $\times$.</p></enonce>
-<philo><p>L’arithmétique élémentaire, celle de l’école, suffit à parler de tous les calculs : « le programme $e$ s’arrête » se traduit en un énoncé sur les nombres entiers. Les mathématiques contiennent l’informatique, comme l’informatique contient les mathématiques (une preuve est un texte, donc une donnée).</p></philo>
+<philo>
+<p class="en-clair"><strong>En clair.</strong> Tout ce qu’un programme calcule peut se dire par une phrase sur les nombres entiers écrite avec l’addition et la multiplication.</p>
+<p>L’arithmétique de l’école suffit à parler de tous les calculs. Par conséquent, toute difficulté sur les programmes devient une difficulté sur les nombres.</p>
+</philo>
 <tech>
 <p>Par induction sur la définition de $f$ (<a href="fonctions-recursives.html#def-mu">fonctions récursives</a>), en utilisant le <a href="#sigma1-clotures">lemme de clôture</a> à chaque étape.</p>
 <ul>
@@ -64,13 +84,16 @@ Si cette formule est vraie, la suite $a_i=\beta(c,d,i)$ vérifie $a_0=g(\vec x)$
 
 <h2>Le théorème d’incomplétude</h2>
 
+<clair>
+<p>Supposons qu’un système d’axiomes démontre toutes les phrases vraies sur les nombres, et rien de faux. Pour savoir si un programme s’arrête, il suffirait alors de chercher, parmi toutes les démonstrations possibles, une démonstration de « il s’arrête » ou une démonstration de « il ne s’arrête pas » ; l’une des deux finirait par apparaître. On saurait donc résoudre le problème de l’arrêt. C’est impossible : un tel système n’existe pas.</p>
+</clair>
+
+
 <res type="Théorème" nom="Premier théorème d’incomplétude (forme calculatoire)" id="godel1">
 <enonce><p>Soit $\mathsf T$ une théorie de l’arithmétique dont les axiomes forment un ensemble décidable (on peut vérifier mécaniquement qu’un texte est une preuve) et qui est <em>correcte</em> (elle ne démontre que des énoncés vrais). Alors il existe un énoncé vrai que $\mathsf T$ ne démontre pas. On peut même le choisir de la forme « le programme $e$ ne s’arrête pas sur $e$ ».</p></enonce>
 <philo>
-<p>Aucun système d’axiomes, aussi riche soit-il, ne permet de démontrer toutes les vérités sur les nombres entiers. Il y aura toujours des énoncés vrais mais indémontrables, et l’on peut en exhiber : ce sont des affirmations de non-terminaison de programmes. La vérité mathématique dépasse toute formalisation.</p>
-<p>Le lien avec le calcul est direct : si un système démontrait toutes les vérités, on pourrait décider l’arrêt des programmes en cherchant mécaniquement une preuve de « $e$ s’arrête » ou de « $e$ ne s’arrête pas ». Comme l’arrêt est indécidable, une telle complétude est impossible.</p>
-<p>Ce théorème a souvent été mal interprété. Il ne dit pas que « tout est relatif », ni que les mathématiques sont incohérentes, ni que l’esprit humain dépasse les machines. Ce dernier argument (Lucas, Penrose) suppose que nous savons, de notre propre système de pensée, qu’il est cohérent ; rien ne le garantit, et un humain qui « voit » la vérité d’un énoncé de Gödel le fait en raisonnant dans un système plus fort, qui a lui aussi ses énoncés indémontrables. Le <a href="calculabilite-ia.html#lob">théorème de Löb</a> précise ce point : un système qui raisonne dans une théorie ne peut pas démontrer que ses propres démonstrations sont fiables.</p>
-<p>Le chapitre sur la <a href="kolmogorov-omega.html">complexité de Kolmogorov</a> donne une forme quantitative de ce théorème : une théorie ne peut démontrer qu’un mot est complexe que jusqu’à une borne fixée par la taille de ses axiomes (<a href="kolmogorov-omega.html#chaitin">théorème de Chaitin</a>), et elle ne détermine qu’un nombre fini de chiffres du nombre <a href="kolmogorov-omega.html#omega-theorie">Ω</a>.</p>
+<p class="en-clair"><strong>En clair.</strong> Pour tout système d’axiomes sur les nombres dont on peut vérifier mécaniquement les démonstrations, et qui ne démontre rien de faux, il existe des phrases vraies qu’il ne démontre pas.</p>
+<p>Aucun système d’axiomes, aussi riche soit-il, ne capture toutes les vérités sur les nombres entiers. On peut ajouter la phrase manquante comme nouvel axiome ; le nouveau système aura à son tour des vérités qu’il ne démontre pas. Ce n’est pas un défaut de tel ou tel système : c’est une limite de toute démarche purement mécanique. La vérité mathématique dépasse toujours ce qu’un ensemble fixe de règles peut en atteindre.</p>
 </philo>
 <tech>
 <p>Comme les axiomes de $\mathsf T$ sont décidables, l’ensemble des théorèmes de $\mathsf T$ est semi-décidable (on énumère toutes les preuves). Considérons $B=\{e: \mathsf T\vdash\neg\kappa(\underline e)\}$, qui est semi-décidable. Par correction de $\mathsf T$, $B\subseteq\overline K$. Comme $\overline K$ n’est pas semi-décidable (<a href="semi-decidabilite.html#kbar">corollaire</a>), $B\neq\overline K$ : il existe $e\in\overline K\setminus B$, c’est-à-dire tel que $\neg\kappa(\underline e)$ est vrai ($e$ ne s’arrête pas sur $e$) mais non démontrable dans $\mathsf T$.</p>
@@ -90,6 +113,11 @@ Si cette formule est vraie, la suite $a_i=\beta(c,d,i)$ vérifie $a_0=g(\vec x)$
 
 <h2 id="peano">L’arithmétique de Peano et le second théorème</h2>
 
+<clair>
+<p>Gödel a démontré davantage : un système d’axiomes raisonnable ne peut pas démontrer sa propre cohérence, c’est-à-dire le fait qu’il ne mène jamais à une contradiction. Cette section en donne la démonstration complète pour l’arithmétique de Peano, le système d’axiomes usuel pour les nombres entiers.</p>
+</clair>
+
+
 <p>Le second théorème parle de ce qu’une théorie démontre <em>sur elle-même</em>. Il faut donc fixer un système de preuve et une théorie précise, et vérifier que la théorie sait raisonner sur ses propres preuves. C’est l’objet des lemmes qui suivent.</p>
 
 <res type="Définition" nom="Preuves, arithmétique de Peano, prédicat de prouvabilité" id="def-peano">
@@ -101,12 +129,18 @@ $$\mathrm{Prov}_{\mathsf T}(f)=\exists p\ \mathrm{Prf}_{\mathsf T}(p,f),\qquad \
 <p>On définit l’axiome de $\mathsf T$ par une disjonction « axiome de $\mathsf{PA}$ ou autre axiome », de sorte que $\mathsf{PA}$ démontre trivialement que tout axiome de $\mathsf{PA}$ est un axiome de $\mathsf T$.</p>
 <p><strong>Formules Σ.</strong> Dans ce qui suit, une formule Σ est construite à partir des formules $t_1=t_2$ et $\neg(t_1=t_2)$ par $\wedge$, $\vee$, $\exists x$, $\exists x<t$ et $\forall x<t$. Toutes les formules écrites dans la <a href="#representabilite">proposition de définissabilité</a> sont de cette forme (avant la mise sous forme $\exists y\,\theta$, qui n’est plus nécessaire) ; en particulier $\mathrm{Prov}_{\mathsf T}$ est une formule Σ.</p>
 </enonce>
-<philo><p>Une preuve est un texte, donc un nombre ; « être une preuve » est une propriété vérifiable mécaniquement, donc exprimable en arithmétique. Une théorie qui parle des nombres parle ainsi, sans le vouloir, de ses propres démonstrations.</p></philo>
+<philo>
+<p class="en-clair"><strong>En clair.</strong> Une démonstration est un texte qui suit des règles précises ; on peut donc la coder par un nombre, et « être une démonstration » devient une propriété des nombres qu’un calcul vérifie. L’arithmétique de Peano est le système d’axiomes usuel pour les entiers, avec le raisonnement par récurrence.</p>
+<p>Une théorie qui parle des nombres peut ainsi parler de ses propres démonstrations, sans le savoir.</p>
+</philo>
 </res>
 
 <res type="Lemme" nom="Σ-complétude" id="sigma-complet">
 <enonce><p>Tout énoncé Σ vrai est démontrable dans $\mathsf{PA}$. De plus, tout énoncé borné est démontrable dans $\mathsf{PA}$ s’il est vrai, et réfutable s’il est faux.</p></enonce>
-<philo><p>Pour démontrer qu’un calcul s’arrête, il suffit de l’exécuter et d’écrire la trace : $\mathsf{PA}$ sait vérifier les calculs finis. Les vérités difficiles sont les autres, les énoncés de non-terminaison.</p></philo>
+<philo>
+<p class="en-clair"><strong>En clair.</strong> L’arithmétique de Peano démontre toutes les phrases vraies de la forme « il existe un nombre tel que… (vérification simple) ».</p>
+<p>Pour démontrer qu’un calcul s’arrête, il suffit de l’exécuter et d’écrire toutes ses étapes. Ce sont les phrases « pour tout… » qui échappent.</p>
+</philo>
 <tech>
 <p>(a) <em>Calculs.</em> Par récurrence sur $n$ (dans le métalangage), $\mathsf{PA}\vdash\underline m+\underline n=\underline{m+n}$ : pour $n=0$, c’est l’axiome $x+0=x$ ; puis $\underline m+(\underline n+1)=(\underline m+\underline n)+1=\underline{m+n}+1$, qui est le terme $\underline{m+n+1}$. De même $\mathsf{PA}\vdash\underline m\times\underline n=\underline{mn}$. Par induction sur un terme clos $t$ de valeur $n$, $\mathsf{PA}\vdash t=\underline n$.</p>
 <p>(b) <em>Différences.</em> Si $m<n$, $\mathsf{PA}\vdash\neg(\underline m=\underline n)$, par récurrence sur $m$ : $\underline n$ est de la forme $\underline k+1$, et l’on utilise $\neg(x+1=0)$ pour $m=0$, puis $x+1=y+1\Rightarrow x=y$ et l’hypothèse de récurrence.</p>
@@ -125,7 +159,10 @@ $$\mathrm{Prov}_{\mathsf T}(f)=\exists p\ \mathrm{Prf}_{\mathsf T}(p,f),\qquad \
 
 <res type="Lemme" nom="Lemme diagonal" id="diagonal">
 <enonce><p>Pour toute formule $\psi(x)$ à une variable libre, il existe un énoncé $G$ tel que $\mathsf{PA}\vdash G\Leftrightarrow\psi(\underline{\ulcorner G\urcorner})$.</p></enonce>
-<philo><p>C’est la version logique du <a href="smn-recursion.html#kleene">théorème de récursion</a> : un énoncé peut parler de son propre code, comme un programme peut connaître son propre texte. Avec $\psi(x)=$ « $x$ n’est pas démontrable », on obtient un énoncé qui dit « je ne suis pas démontrable ».</p></philo>
+<philo>
+<p class="en-clair"><strong>En clair.</strong> Pour toute propriété des phrases, on peut écrire une phrase qui affirme d’elle-même qu’elle a cette propriété.</p>
+<p>C’est la version logique des programmes qui connaissent leur propre texte. Avec la propriété « ne pas être démontrable », on obtient la phrase de Gödel : « je ne suis pas démontrable ». Si elle était démontrable, elle serait fausse, et le système démontrerait une fausseté ; elle n’est donc pas démontrable, et c’est précisément ce qu’elle dit : elle est vraie.</p>
+</philo>
 <tech><p>Soit $\mathrm{sb}(m,n)$ le code de la formule obtenue en remplaçant, dans la formule de code $m$, la variable $x$ par $\underline n$ ; $\mathrm{sb}$ est récursive primitive. Posons $\delta(x)=\exists y\,\big(\phi_{\mathrm{sb}}(x,x,y)\wedge\psi(y)\big)$, $m=\ulcorner\delta\urcorner$ et $G=\delta(\underline m)$. Alors $\mathrm{sb}(m,m)=\ulcorner G\urcorner=g$, et, par le <a href="#pa-rp">lemme précédent</a>, $\mathsf{PA}\vdash\forall y\,\big(\phi_{\mathrm{sb}}(\underline m,\underline m,y)\Leftrightarrow y=\underline g\big)$. Donc $\mathsf{PA}\vdash G\Leftrightarrow\exists y\,(y=\underline g\wedge\psi(y))\Leftrightarrow\psi(\underline g)$.</p></tech>
 </res>
 
@@ -136,7 +173,10 @@ $$\mathrm{Prov}_{\mathsf T}(f)=\exists p\ \mathrm{Prf}_{\mathsf T}(p,f),\qquad \
 <li>$\mathsf{PA}\vdash\Box(\phi\Rightarrow\psi)\Rightarrow(\Box\phi\Rightarrow\Box\psi)$ ;</li>
 <li>$\mathsf{PA}\vdash\sigma\Rightarrow\Box\sigma$ pour tout énoncé Σ $\sigma$ ; en particulier $\mathsf{PA}\vdash\Box\phi\Rightarrow\Box\Box\phi$.</li>
 </ol></enonce>
-<philo><p>Ces trois propriétés disent que $\mathsf{PA}$ sait, à propos de $\mathsf T$, ce que nous savons nous-mêmes : qu’une preuve existante est une preuve (1), qu’on peut enchaîner deux preuves (2), et qu’un calcul qui aboutit peut être vérifié (3).</p></philo>
+<philo>
+<p class="en-clair"><strong>En clair.</strong> L’arithmétique de Peano « sait » sur les démonstrations ce que nous savons nous-mêmes : qu’une démonstration écrite est une démonstration, qu’on peut combiner deux démonstrations, et qu’elle peut vérifier ses propres démonstrations.</p>
+<p>Ces trois propriétés sont les seuls ingrédients du second théorème de Gödel.</p>
+</philo>
 <tech>
 <p><strong>Notations.</strong> Pour une formule $\phi(\vec x)$, soit $s_\phi(\vec n)=\ulcorner\phi(\underline{\vec n})\urcorner$, fonction récursive primitive (substitution des numéraux $\underline{n_j}$, de code $\mathrm{num}(n_j)$, aux variables). On note $\Box\phi(\dot{\vec x})$ la formule $\exists f\,\big(\phi_{s_\phi}(\vec x,f)\wedge\mathrm{Prov}_{\mathsf T}(f)\big)$ ; pour $\phi$ close, c’est $\Box\phi$. La relation récursive primitive « $p$ est une preuve de $f$ » est définie, par une formule $\mathrm{Prf}_{\mathsf T}$, comme : $\mathrm{lh}(p)\ge1$, le dernier terme de $p$ est $f$, et pour tout $i<\mathrm{lh}(p)$, le terme $(p)_i$ est un axiome, ou bien il existe $j,k<i$ avec $(p)_k=\mathrm{imp}((p)_j,(p)_i)$ (<em>modus ponens</em>), ou bien il existe $j<i$ et une variable $v$ avec $(p)_i=\mathrm{gen}(v,(p)_j)$ (généralisation) ; $\mathrm{imp}(a,b)$ est le code de $\phi\Rightarrow\psi$ si $a,b$ sont ceux de $\phi,\psi$, et ainsi de suite.</p>
 <p><strong>(F) Calcul symbolique dans PA.</strong> $\mathsf{PA}$ démontre les équations de définition des fonctions récursives primitives (<a href="#pa-rp">lemme</a>), donc toutes les identités qui s’obtiennent en dépliant ces définitions un nombre fini de fois, et, par récurrence, des identités avec variables comme $\mathrm{num}(y+1)=\ulcorner\cdot+1\urcorner(\mathrm{num}(y))$ (le numéral de $y+1$ est celui de $y$ suivi de $+1$), « $\mathrm{num}(y)$ est un terme clos », $s_{\phi\Rightarrow\psi}(\vec x)=\mathrm{imp}(s_\phi(\vec x),s_\psi(\vec x))$, ou les longueurs et termes d’une concaténation de suites : $\mathrm{lh}(p\frown q)=\mathrm{lh}(p)+\mathrm{lh}(q)$, $(p\frown q)_i=(p)_i$ si $i<\mathrm{lh}(p)$ et $(p\frown q)_{\mathrm{lh}(p)+i}=(q)_i$ si $i<\mathrm{lh}(q)$. De même, $\mathsf{PA}$ démontre que $\mathrm{Prf}_{\mathsf T}(p,f)$ équivaut à la conjonction des clauses qui définissent les preuves. Ce sont les seuls faits sur le codage dont on se sert ci-dessous.</p>
@@ -162,7 +202,10 @@ $$\mathrm{Prov}_{\mathsf T}(f)=\exists p\ \mathrm{Prf}_{\mathsf T}(p,f),\qquad \
 
 <res type="Théorème" nom="Second théorème d’incomplétude (Gödel, 1931)" id="godel2">
 <enonce><p>Soit $\mathsf T$ une théorie qui contient $\mathsf{PA}$ et dont l’ensemble des axiomes est récursif primitif. Si $\mathsf T$ est cohérente, alors $\mathsf T$ ne démontre pas l’énoncé $\mathrm{Coh}(\mathsf T)$ qui exprime sa propre cohérence.</p></enonce>
-<philo><p>Un système ne peut pas garantir sa propre fiabilité de l’intérieur. Pour prouver qu’une théorie est cohérente, il faut une théorie plus forte, dont la cohérence est encore moins assurée. C’est la fin du programme de Hilbert, qui voulait fonder les mathématiques en prouvant leur cohérence par des moyens élémentaires.</p></philo>
+<philo>
+<p class="en-clair"><strong>En clair.</strong> Un système d’axiomes raisonnable qui contient l’arithmétique ne peut pas démontrer qu’il ne mène jamais à une contradiction, à moins justement d’être contradictoire.</p>
+<p>Un système ne peut pas garantir sa propre fiabilité de l’intérieur. Pour prouver qu’une théorie est cohérente, il faut une théorie plus forte, dont la cohérence est encore plus douteuse. C’est la fin du programme de Hilbert : les mathématiques ne peuvent pas se fonder elles-mêmes de façon absolument certaine. Elles ne s’en portent pas plus mal ; elles reposent, comme toute connaissance, sur une confiance raisonnée.</p>
+</philo>
 <tech>
 <p>Par le <a href="#diagonal">lemme diagonal</a> appliqué à $\psi(x)=\neg\mathrm{Prov}_{\mathsf T}(x)$, il existe $G$ avec $\mathsf{PA}\vdash G\Leftrightarrow\neg\Box G$ : « je ne suis pas démontrable dans $\mathsf T$ ».</p>
 <p>(i) $\mathsf T\nvdash G$. Sinon, par la condition 1, $\mathsf T\vdash\Box G$, et, comme $\mathsf T\vdash G\Rightarrow\neg\Box G$, $\mathsf T\vdash\neg\Box G$ : $\mathsf T$ serait incohérente.</p>
@@ -184,7 +227,10 @@ $$\mathrm{Prov}_{\mathsf T}(f)=\exists p\ \mathrm{Prf}_{\mathsf T}(p,f),\qquad \
 <li>(Gödel, 1931) Si $\mathsf T$ est <em>ω-cohérente</em>, c’est-à-dire s’il n’existe pas de formule $\phi(x)$ telle que $\mathsf T\vdash\exists x\,\phi(x)$ et $\mathsf T\vdash\neg\phi(\underline n)$ pour tout $n$, alors l’énoncé $G$ du second théorème n’est ni démontrable ni réfutable dans $\mathsf T$.</li>
 <li>(Rosser, 1936) Si $\mathsf T$ est seulement cohérente, il existe un énoncé $R$ qui n’est ni démontrable ni réfutable dans $\mathsf T$.</li>
 </ol></enonce>
-<philo><p>La correction (« tout ce que $\mathsf T$ démontre est vrai ») est une hypothèse sémantique forte, qu’on ne peut pas vérifier de l’intérieur. Gödel l’affaiblit en une condition syntaxique, l’ω-cohérence ; Rosser montre qu’il suffit que la théorie ne se contredise pas. Son énoncé dit : « si l’on me démontre, on m’a réfuté plus tôt ». Il compare les longueurs des preuves au lieu de parler seulement de leur existence.</p></philo>
+<philo>
+<p class="en-clair"><strong>En clair.</strong> Pour obtenir l’incomplétude, il suffit de supposer que le système n’est pas contradictoire ; inutile de supposer qu’il ne démontre que des vérités.</p>
+<p>Cette version, due à Barkley Rosser (1936), affaiblit l’hypothèse au minimum : un système cohérent qui contient l’arithmétique laisse toujours des questions sans réponse.</p>
+</philo>
 <tech>
 <p>Rappelons que $\mathrm{Prf}_{\mathsf T}(p,f)$ définit une relation récursive primitive : par le <a href="#pa-rp">lemme</a> sur les fonctions récursives primitives, pour tous entiers $p,f$, $\mathsf{PA}$ démontre $\mathrm{Prf}_{\mathsf T}(\underline p,\underline f)$ si c’est vrai et sa négation sinon. Une théorie ω-cohérente est cohérente (une théorie incohérente démontre tout).</p>
 <p>(1) $\mathsf T\nvdash G$ par le point (i) de la preuve du second théorème (qui n’utilise que la cohérence). Supposons $\mathsf T\vdash\neg G$, donc $\mathsf T\vdash\Box G$, c’est-à-dire $\mathsf T\vdash\exists p\ \mathrm{Prf}_{\mathsf T}(p,\underline{\ulcorner G\urcorner})$. Comme $G$ n’a pas de preuve, chaque énoncé $\mathrm{Prf}_{\mathsf T}(\underline n,\underline{\ulcorner G\urcorner})$ est faux, donc réfutable dans $\mathsf{PA}\subseteq\mathsf T$ : $\mathsf T$ n’est pas ω-cohérente.</p>
@@ -200,6 +246,11 @@ où $\mathrm{neg}(\underline{\ulcorner R\urcorner})$ s’écrit à l’aide de l
 
 <h2>Le problème de la décision</h2>
 
+<clair>
+<p>Hilbert posait une dernière question : existe-t-il une méthode mécanique qui dise, pour tout énoncé logique, s’il est toujours vrai ? Turing a inventé ses machines précisément pour y répondre, et la réponse est non.</p>
+</clair>
+
+
 <p>On considère ici le calcul des prédicats <em>sans égalité</em>, sur un langage dénombrable quelconque : des constantes, des symboles de fonction et des symboles de relation. Un énoncé est <strong>valide</strong> s’il est vrai dans toute structure (tout domaine non vide, toute interprétation des symboles). Tout énoncé s’écrit, de façon effective, sous <em>forme normale négative</em> : sans $\Rightarrow$, la négation ne portant que sur des formules atomiques (on pousse les négations vers l’intérieur avec les lois de De Morgan et $\neg\forall=\exists\neg$). Un énoncé $\phi$ est valide si et seulement si la forme normale négative de $\neg\phi$ n’a pas de modèle.</p>
 
 <res type="Théorème" nom="Complétude des tableaux (Gödel, 1929, sous la forme de Beth et Smullyan)" id="completude">
@@ -214,7 +265,10 @@ où $\mathrm{neg}(\underline{\ulcorner R\urcorner})$ s’écrit à l’aide de l
 <p>Une branche est <strong>fermée</strong> si elle contient une formule atomique et sa négation ; un tableau est fermé si toutes ses branches le sont.</p>
 <p><em>Théorème.</em> $\Gamma$ n’a pas de modèle si et seulement s’il admet un tableau fermé, et l’on peut alors en trouver un par une construction systématique fixée. Par conséquent, l’ensemble des énoncés valides est semi-décidable.</p>
 </enonce>
-<philo><p>Si un énoncé est vrai dans toutes les interprétations possibles, il existe une preuve finie qui le montre, et une machine peut la trouver en les essayant toutes. Ce que Gödel montre en 1929, deux ans avant l’incomplétude, c’est que la logique elle-même est complète : seules les théories qui parlent des entiers échappent à toute axiomatisation. La recherche de preuve en logique est donc un problème semi-décidable, comme l’arrêt.</p></philo>
+<philo>
+<p class="en-clair"><strong>En clair.</strong> Si un énoncé logique est vrai dans toutes les situations imaginables, il en existe une démonstration, et une machine peut la trouver en essayant toutes les démonstrations possibles.</p>
+<p>Ce théorème de Gödel (1929), à ne pas confondre avec l’incomplétude, est rassurant : la logique elle-même ne laisse rien échapper. Mais la recherche ne s’arrête que si l’énoncé est vrai ; s’il ne l’est pas, elle peut durer toujours.</p>
+</philo>
 <tech>
 <p><strong>Correction.</strong> Si $\Gamma$ a un modèle $\mathcal M$, tout tableau pour $\Gamma$ a une branche dont tous les énoncés sont vrais dans une extension de $\mathcal M$ (qui interprète les constantes de réserve utilisées). C’est vrai au départ, et chaque règle le préserve : pour (β), l’un de $A$, $B$ est vrai ; pour (γ), $A[x:=t]$ est vrai puisque $\forall x\,A$ l’est ; pour (δ), on interprète la constante nouvelle $c$ par un témoin de $\exists x\,A$. Une telle branche n’est pas fermée.</p>
 <p><strong>Construction systématique.</strong> Énumérons $t_0,t_1,\dots$ les termes clos du langage augmenté des constantes de réserve. À l’étape $n$, sur chaque branche non fermée, on applique la règle de chaque énoncé présent : une seule fois au total pour α, β et δ ; et, pour chaque énoncé $\forall x\,A$, on ajoute les $A[x:=t_k]$ pour tous les $k\le n$ (ceux qui ne sont pas déjà là). On arrête de prolonger une branche dès qu’elle est fermée. Chaque étape est finie.</p>
@@ -235,7 +289,10 @@ où $\mathrm{neg}(\underline{\ulcorner R\urcorner})$ s’écrit à l’aide de l
 
 <res type="Théorème" nom="Théorème de Church et Turing (1936)" id="entscheidung">
 <enonce><p>Il n’existe pas d’algorithme qui décide si un énoncé du calcul des prédicats du premier ordre est universellement valide (vrai dans toutes les interprétations), et cela même sans égalité. L’<em>Entscheidungsproblem</em> de Hilbert et Ackermann a une réponse négative. L’ensemble des énoncés valides est semi-décidable, mais non décidable.</p></enonce>
-<philo><p>C’était l’objectif de l’article de Turing de 1936, et la raison pour laquelle il a inventé ses machines : pour démontrer qu’il n’existe pas de « machine à démontrer » universelle, il fallait d’abord dire ce qu’est une machine. Le rêve de Leibniz, résoudre toute controverse par un calcul (« <em>Calculemus !</em> »), est impossible dans sa forme générale. L’ordinateur est né d’un théorème d’impossibilité. Le chapitre <a href="logique-types.html#frontiere">Logique et types</a> précise où passe la frontière : le calcul propositionnel et la logique des propriétés à une place sont décidables, et une seule relation à deux places suffit à tout rendre indécidable. Le chapitre <a href="theories-decidables.html">Théories décidables</a> présente au contraire des théories que l’on sait décider, comme l’addition des entiers ou les nombres réels.</p></philo>
+<philo>
+<p class="en-clair"><strong>En clair.</strong> Il n’existe pas de méthode mécanique qui dise, pour tout énoncé logique, s’il est vrai dans toutes les situations.</p>
+<p>C’est la question que Hilbert appelait le « problème de la décision », et c’est pour y répondre que Turing a inventé ses machines en 1936. Il n’existe pas de « machine à démontrer » qui tranche toutes les questions : le raisonnement mathématique ne se réduit pas à un calcul qui finit toujours.</p>
+</philo>
 <tech>
 <p>À toute machine $Z$ (au format de quadruplets) et tout entier $x$, on associe effectivement un énoncé $\phi_{Z,x}$, valide si et seulement si $Z$ s’arrête sur l’entrée $\overline x$. Un décideur de la validité déciderait donc l’arrêt, ce qui est impossible ; et la semi-décidabilité est le <a href="#completude">théorème de complétude</a>.</p>
 <p><strong>Le langage.</strong> Une constante $o$, deux symboles de fonction $s$ et $p$ (successeur et prédécesseur), deux relations binaires $E$ (« même case ») et $L$ (« à gauche de »), et, pour chaque état $q_i$ et chaque symbole $S_j$ de $Z$, deux relations binaires : $Q_i(t,h)$, « à l’instant $t$, la machine est dans l’état $q_i$, la tête en $h$ », et $C_j(t,u)$, « à l’instant $t$, la case $u$ contient $S_j$ ». On note $[z]$, pour $z\in\mathbb Z$, le terme $s^z(o)$ si $z\ge0$ et $p^{-z}(o)$ si $z<0$. Les instants seront les termes $s^k(o)$.</p>

@@ -2,9 +2,15 @@
 titre: Motivations et remarques préliminaires
 court: Motivations
 chapo: Avant toute définition formelle, quelques remarques suffisent à voir que la notion de calcul est plus subtile qu’il n’y paraît : il faudra coder, accepter la partialité, et renoncer à tout calculer.
+chapo_clair: Avant de définir quoi que ce soit, trois remarques montrent que l’idée de « calcul » est plus subtile qu’il n’y paraît : savoir qu’une réponse existe n’est pas savoir la calculer, un langage où tout programme s’arrête ne peut pas tout calculer, et il existe forcément des fonctions qu’aucun programme ne calcule.
 -->
 
 <h2>Pourquoi une théorie du calcul ?</h2>
+
+<clair>
+<p>Nous savons tous, depuis l’école primaire, ce qu’est un calcul : une suite d’opérations faites selon des règles, sans réfléchir, jusqu’à obtenir un résultat. Les ordinateurs ne font rien d’autre, à une vitesse prodigieuse. Il est naturel de se demander s’il y a des questions auxquelles aucun calcul ne peut répondre. Pour y répondre, il faut d’abord dire précisément ce qu’est un calcul ; c’est l’objet de la calculabilité.</p>
+</clair>
+
 
 <p>Même si les mathématiques peuvent paraître obscures, voire magiques, une partie de l’activité mathématique est automatisable et ne demande ni imagination ni créativité. Les abaques, les bouliers, les machines à calculer mécaniques de Schickard (1623), de Pascal (1642) ou de Leibniz (1673) sont des perfectionnements successifs d’objets dont le but est de calculer. La question se pose alors naturellement : <em>existe-t-il une limite à ce qui est calculable automatiquement, et si oui, laquelle ?</em></p>
 
@@ -17,6 +23,11 @@ chapo: Avant toute définition formelle, quelques remarques suffisent à voir qu
 <p>Remarquons enfin que toute production scientifique peut être vue comme le résultat d’un seul logiciel : un éditeur de texte. Livres, vidéos, enregistrements peuvent être numérisés, c’est-à-dire transformés en une suite de 0 et de 1. La science se retrouve ainsi plongée à l’intérieur d’une partie d’elle-même, l’informatique. Cette remarque n’est pas sans rapport avec la démonstration des théorèmes d’incomplétude de Gödel, qui reposent sur cette technique d’<em>internalisation</em> des mathématiques en elles-mêmes au moyen de l’arithmétisation (voir le chapitre <a href="incompletude.html">Incomplétude</a>). Elle suggère que les limites de la calculabilité s’imposent à tout discours structuré, donc à toutes les sciences.</p>
 
 <h2>Notion intuitive d’algorithme</h2>
+
+<clair>
+<p>Un algorithme est une recette : une suite finie d’instructions précises, qu’on peut suivre sans rien comprendre, et qui produit un résultat. La recette de la division posée en est un. Les exemples qui suivent montrent que cette idée simple cache des pièges.</p>
+</clair>
+
 
 <p>Avant d’étudier ce qui est calculable de manière automatique, il faut préciser ce qu’on entend par une « méthode non ambiguë et effective ». Sans rien formaliser encore, quatre remarques encadrent déjà la future définition.</p>
 
@@ -56,9 +67,10 @@ $$f_2(x)=\begin{cases}1 &\text{si les décimales de }\pi\text{ contiennent un bl
 <p>On ne sait pas aujourd’hui si $f_1$ est calculable. En revanche, <strong>$f_2$ est calculable</strong>, bien que personne ne sache la calculer.</p>
 </enonce>
 <philo>
-<p>Ces deux fonctions sont parfaitement définies : pour chaque $x$, la réponse existe, inscrite dans les décimales de $\pi$. Certaines valeurs se calculent même : $f_1(1)=1$ car la quatrième décimale est un 5 entouré d’un 1 et d’un 9 ; $f_1(2)=1$ car le bloc « 55 » apparaît aux décimales 130 et 131 (<code>…44609<u>55</u>05822…</code>), et $f_1(3)=1$ grâce au bloc « 555 » des décimales 177 à 179 (<code>…2110<u>555</u>96446…</code>).</p>
-<p>Le cas de $f_2$ est vertigineux. On peut <em>prouver</em> qu’il existe un programme très simple qui la calcule, mais on ne peut pas dire lequel. Il y a là une distinction que la vie courante connaît bien : savoir qu’une réponse existe n’est pas la connaître. Un enquêteur peut être certain que le coupable est l’une des trois personnes présentes sans savoir laquelle.</p>
-<p>La calculabilité ne mesure donc pas notre connaissance actuelle, mais l’existence d’une méthode. Et l’exemple montre déjà un lien profond entre calcul et logique : savoir <em>effectivement</em> calculer $f_2$ revient exactement à démontrer un théorème sur les décimales de $\pi$.</p>
+<p class="en-clair"><strong>En clair.</strong> On fabrique deux fonctions à partir des décimales du nombre π (3,14159…). Pour chaque nombre entier, leur valeur est bien fixée, une fois pour toutes. Pourtant, pour l’une d’elles, on sait qu’un programme très court la calcule, sans savoir lequel.</p>
+<p>Prenons la question : « trouve-t-on quelque part dans les décimales de π une suite d’au moins dix 5 à la suite ? ». La réponse est oui ou non, même si personne ne la connaît. Pour certains cas, on a vérifié : un 5 isolé apparaît dès la quatrième décimale, deux 5 côte à côte apparaissent vers la cent-trentième, trois 5 vers la cent-soixante-dix-septième.</p>
+<p>Le raisonnement sur la seconde fonction est étonnant. Ou bien il existe dans π des suites de 5 aussi longues qu’on veut, et alors la réponse est toujours « oui » ; ou bien il existe une longueur maximale, et alors la réponse est « oui » jusqu’à cette longueur puis « non » ensuite. Dans les deux cas, un programme de quelques lignes donne la bonne réponse. Mais on ne sait pas lequel de ces programmes est le bon.</p>
+<p>C’est la différence entre <em>savoir qu’une réponse existe</em> et <em>connaître la réponse</em>. Un enquêteur peut être sûr que le coupable est l’une des trois personnes présentes dans la pièce sans savoir laquelle. La calculabilité s’intéresse à l’existence d’une méthode, pas à ce que nous savons aujourd’hui. Et l’exemple montre déjà que calculer et démontrer sont liés : pour savoir quel programme est le bon, il faudrait démontrer un théorème sur π.</p>
 </philo>
 <tech>
 <p>Deux cas seulement sont possibles.</p>
@@ -96,10 +108,10 @@ f2(x) = 1                      f2(x) = si x ≤ K alors 1 sinon 0</code></pre>
 <p>Soit un formalisme de programmes $P_0, P_1, P_2,\dots$ énumérables effectivement, dont chacun calcule une fonction <em>totale</em> $f_n:\N\to\N$, et tel qu’on puisse exécuter $P_n$ sur une entrée donnée. Alors la fonction $g(n)=f_n(n)+1$ est intuitivement calculable et totale, mais n’est calculée par aucun $P_i$.</p>
 </enonce>
 <philo>
-<p>C’est une version mathématique du paradoxe du menteur (« je mens ») : on fabrique un objet qui contredit sa propre description. Si l’on dresse la liste de toutes les fonctions calculables par des programmes qui s’arrêtent toujours, on peut toujours en fabriquer une nouvelle qui diffère de la première en un point, de la deuxième en un autre point, et ainsi de suite : elle n’est dans la liste nulle part.</p>
-<p>La leçon est surprenante : un langage de programmation <em>sûr</em>, où tout programme termine, est nécessairement <em>incomplet</em>. Pour calculer tout ce qui est calculable, il faut accepter des programmes qui, parfois, ne s’arrêtent pas. C’est le prix de la complétude. Les langages de programmation généralistes acceptent ce prix ; certains assistants de preuve (Coq, aujourd’hui Rocq, Agda, Lean) font le choix inverse : tous leurs programmes terminent, et ils renoncent donc à exprimer certaines fonctions calculables.</p>
-<p>« Ne pas avoir de réponse » devient alors une catégorie à part entière, et elle est asymétrique : si un programme s’arrête, on finit par le savoir ; s’il ne s’arrête pas, on peut attendre sans jamais savoir. La vie juridique connaît cette asymétrie : c’est à l’accusation d’établir la culpabilité, et en l’absence de preuve le résultat par défaut est l’innocence. Si l’absence d’alibi suffisait à condamner, l’ignorance deviendrait une arme absolue. Le tiers exclu (« ou bien vrai, ou bien faux ») ne laisse pas de place à cette absence de réponse ; la calculabilité montre qu’elle est un phénomène central de toute pensée structurée.</p>
-<p>On peut le dire autrement : <em>la connaissance ne commute pas avec la négation</em>. « Savoir que le programme ne s’arrête pas » et « ne pas savoir qu’il s’arrête » sont deux états très différents. Le second est la situation normale de celui qui attend un résultat ; le premier demande une preuve, que rien ne garantit de pouvoir trouver. Toute la suite du manuel, du <a href="indecidabilite.html#arret">problème de l’arrêt</a> aux <a href="semi-decidabilite.html">ensembles semi-décidables</a>, précise cette différence.</p>
+<p class="en-clair"><strong>En clair.</strong> Imaginons un langage de programmation où tout programme finit toujours par s’arrêter. Il existe alors forcément une fonction qu’on sait calculer à la main mais qu’aucun programme de ce langage ne calcule. Pour pouvoir tout calculer, il faut accepter des programmes qui, parfois, tournent sans fin.</p>
+<p>Le raisonnement ressemble au paradoxe du menteur. Faisons la liste de tous les programmes du langage : le premier, le deuxième, le troisième… Fabriquons une nouvelle fonction ainsi : pour le nombre 1, on fait tourner le premier programme et on ajoute 1 à sa réponse ; pour le nombre 2, on fait tourner le deuxième et on ajoute 1 ; et ainsi de suite. Cette fonction se calcule sans difficulté, puisque chaque programme s’arrête. Mais elle diffère du premier programme en 1, du deuxième en 2, du troisième en 3 : elle ne figure nulle part dans la liste.</p>
+<p>La leçon est surprenante : un langage <em>sûr</em>, où rien ne peut tourner en rond, est forcément <em>incomplet</em>. Les langages de programmation courants (Python, C, Java) acceptent le risque de la boucle infinie pour pouvoir tout calculer. Certains logiciels qui vérifient des démonstrations, comme Rocq (ancien Coq), Agda ou Lean, font le choix inverse : tous leurs programmes s’arrêtent, et ils renoncent à certaines fonctions.</p>
+<p>Il apparaît alors une troisième réponse, à côté de « oui » et de « non » : « pas encore de réponse ». Elle n’est pas symétrique. Si un programme s’arrête, on finit par le voir ; s’il ne s’arrête pas, on peut attendre éternellement sans jamais en être sûr. La justice connaît cette dissymétrie : on doit prouver la culpabilité, et faute de preuve on reste présumé innocent. Ne pas savoir qu’une chose est vraie n’est pas la même chose que savoir qu’elle est fausse. Toute la suite du manuel, du <a href="indecidabilite.html#arret">problème de l’arrêt</a> aux <a href="semi-decidabilite.html">ensembles semi-décidables</a>, explore cette différence.</p>
 </philo>
 <tech>
 <p>$g$ est calculable : pour calculer $g(n)$, on énumère les programmes jusqu’à obtenir $P_n$ (c’est le $(n+1)$<sup>e</sup> de la liste, puisque la numérotation commence à 0), on l’exécute sur $n$ (il s’arrête par hypothèse) et on ajoute 1. Elle est totale.</p>
@@ -119,8 +131,9 @@ q0 B R q0</pre></div>
 <res type="Théorème" nom="Existence de fonctions non calculables" id="non-calculables">
 <enonce><p>Quel que soit le formalisme de programmes retenu (alphabet fini, programmes finis), il existe des fonctions de $\N$ dans $\N$, et même de $\N$ dans $\{0,1\}$, qui ne sont calculées par aucun programme.</p></enonce>
 <philo>
-<p>C’est une question de taille, pas de technique. Il y a « autant » de programmes que d’entiers, mais il y a « beaucoup plus » de fonctions. Aucun progrès technologique ne comblera cet écart : il ne dépend pas des machines, mais de ce qu’est une description finie.</p>
-<p>L’argument est non constructif : il prouve que des fonctions non calculables existent sans en montrer une. Le chapitre <a href="indecidabilite.html">Indécidabilité</a> en exhibera une, très naturelle : décider si un programme s’arrête.</p>
+<p class="en-clair"><strong>En clair.</strong> Il existe des fonctions qu’aucun programme, écrit dans n’importe quel langage, ne sait calculer. La raison est simple : il y a beaucoup plus de fonctions que de programmes.</p>
+<p>Un programme est un texte fini. On peut ranger tous les textes possibles dans une liste : d’abord ceux d’une lettre, puis ceux de deux lettres, et ainsi de suite. Les programmes se numérotent donc comme les entiers 1, 2, 3… En revanche, les fonctions qui à chaque entier associent 0 ou 1 sont des suites infinies de 0 et de 1, et Cantor a montré qu’on ne peut pas les numéroter toutes (voir l’<a href="cantor.html">annexe sur Cantor</a>). Il reste donc forcément des fonctions sans programme.</p>
+<p>C’est une affaire de nombre, pas de technique : aucun progrès des ordinateurs ne comblera cet écart, car il vient de ce qu’est une description finie. Le raisonnement prouve que de telles fonctions existent sans en montrer une seule. Le chapitre <a href="indecidabilite.html">Indécidabilité</a> en donnera une très concrète : savoir si un programme finira par s’arrêter.</p>
 </philo>
 <tech>
 <p>Un programme est un mot fini sur un alphabet fini $\Sigma$. L’ensemble $\Sigma^*$ des mots est dénombrable : on énumère les mots par longueur croissante, et à longueur égale par ordre alphabétique. L’ensemble des fonctions calculables est donc au plus dénombrable.</p>

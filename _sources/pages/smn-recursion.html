@@ -2,10 +2,21 @@
 titre: Théorème s-m-n et théorème de récursion
 court: s-m-n et récursion
 chapo: Spécialiser un programme, composer des programmes, et surtout : écrire des programmes qui connaissent leur propre texte. Le théorème de récursion de Kleene donne une forme mathématique à l’auto-référence.
+chapo_clair: Fabriquer un programme à partir d’un autre, et surtout écrire des programmes qui connaissent leur propre texte : deux théorèmes de Kleene qui expliquent les compilateurs, les virus informatiques et les programmes qui s’affichent eux-mêmes.
 prerequis: universalite.html|Universalité et notation φ
 -->
 
+<clair>
+<p>Un programme peut lire, modifier et fabriquer d’autres programmes : c’est le métier des compilateurs, des éditeurs de code, des antivirus. Ce chapitre étudie deux théorèmes dus au logicien américain Stephen Kleene, qui disent ce qu’on peut faire de ce pouvoir.</p>
+<p>Le premier dit qu’on peut toujours « spécialiser » un programme : à partir d’une recette générale de gâteau pour $n$ personnes, fabriquer la recette pour 6 personnes. Le second est plus étonnant : un programme peut toujours obtenir son propre texte et s’en servir. C’est le principe des virus qui se recopient, et des programmes qui affichent leur propre code.</p>
+</clair>
+
 <h2>Le théorème s-m-n</h2>
+
+<clair>
+<p>Si un programme prend deux données et qu’on en fixe une, on obtient un programme qui n’en prend plus qu’une. Le théorème dit que ce nouveau programme peut être fabriqué <em>par un calcul</em>, sans rien exécuter, en manipulant seulement le texte du premier.</p>
+</clair>
+
 
 <res type="Théorème" nom="Théorème s-m-n (Kleene)" id="smn">
 <enonce>
@@ -13,7 +24,8 @@ prerequis: universalite.html|Universalité et notation φ
 $$\varphi^{(m+n)}_e(y_1,\dots,y_m,z_1,\dots,z_n)\simeq\varphi^{(n)}_{s^m_n(e,y_1,\dots,y_m)}(z_1,\dots,z_n).$$
 </enonce>
 <philo>
-<p>Si un programme $P$ dépend de cinq entrées et que l’on connaît la valeur de deux d’entre elles, on peut fabriquer <em>mécaniquement</em> un programme $Q$ qui ne dépend plus que des trois autres : une version spécialisée de $P$. C’est l’<em>évaluation partielle</em> ; les compilateurs l’utilisent pour propager les constantes et calculer d’avance tout ce qui peut l’être. Le théorème dit que cette spécialisation est toujours possible, et qu’elle est elle-même un calcul simple, qui ne demande pas d’exécuter $P$.</p>
+<p class="en-clair"><strong>En clair.</strong> Si un programme dépend de plusieurs données et que l’on connaît la valeur de certaines, on peut fabriquer mécaniquement un programme plus spécialisé, qui ne dépend que des données restantes. Cette fabrication est elle-même un calcul.</p>
+<p>C’est ce que fait quiconque adapte une recette : « pour $n$ personnes, prendre $100\times n$ grammes de farine » devient « prendre 600 grammes de farine ». Le résultat paraît évident ; son intérêt est qu’il se fait sans exécuter la recette, en réécrivant seulement son texte. C’est la base de la compilation et de l’optimisation des programmes.</p>
 </philo>
 <tech>
 <p>À partir de $e$ et $\vec y$, on construit la machine qui, partant de $\overline{z_1}B\cdots B\overline{z_n}$, écrit $\overline{y_1}B\cdots B\overline{y_m}B$ à gauche de son entrée, replace la tête au début, puis exécute la machine d’indice $e$ (états renommés). Le code de cette machine s’obtient à partir de $\eta(e)$ et de $\vec y$ par des opérations récursives primitives sur les nombres de Gödel (concaténation, renommage d’états, construction d’une suite de $y_i+1$ quadruplets d’écriture), et l’on revient à un indice par $\eta^{-1}$.</p>
@@ -38,20 +50,38 @@ r3 1 B r4</pre></div>
 </techno>
 </res>
 
+<atelier titre="s-m-n sur les machines de Turing">
+<p>La fonction <code>smn(Z, a)</code> de <code>recursion.py</code> fabrique, à partir d’une machine $Z$ qui calcule $f(a,y)$ et d’un entier $a$, une machine qui calcule $y\mapsto f(a,y)$. Elle ajoute devant $Z$ un préambule de $2a+5$ quadruplets, qui écrit le bloc $\overline a$ à gauche de l’entrée et ramène la tête sur sa première barre ; les états de $Z$ sont renommés pour ne pas entrer en collision avec ceux du préambule. Le nombre de quadruplets ajoutés est une fonction simple de $a$ : la fabrication est un calcul, c’est tout le contenu du théorème.</p>
+<inclure fichier="assets/programmes/recursion.py" de="def smn(machine, a):" a="# ------------------------------------------------------------------ point fixe" titre="La construction s-m-n" ouvert="1"/>
+<pre><code>$ python3 recursion.py
+1. s-m-n sur les machines de Turing
+   add(2, y) pour y = 0..3 : [2, 3, 4, 5]   (machine de 1304 quadruplets, 9 de plus que Z)
+   mult(3, y) pour y = 0..3 : [0, 3, 6, 9]   (machine de 2770 quadruplets, 11 de plus que Z)</code></pre>
+</atelier>
+
+
 <res type="Corollaire" nom="Indice d’une composée" id="composee">
 <enonce><p>Il existe une fonction récursive primitive $c$ telle que $\varphi_{c(x,y)}=\varphi_x\circ\varphi_y$ pour tous $x,y$.</p></enonce>
 <tech><p>La fonction $\theta(x,y,z)\simeq\varphi_x(\varphi_y(z))\simeq u(x,u(y,z))$, où $u$ est la fonction universelle, est calculable ; soit $k$ un de ses indices. Par s-m-n, $\theta(x,y,z)\simeq\varphi^{(3)}_k(x,y,z)\simeq\varphi_{s^2_1(k,x,y)}(z)$. On pose $c(x,y)=s^2_1(k,x,y)$.</p>
 </tech>
-<philo><p>On peut « brancher » deux programmes l’un derrière l’autre sans les exécuter, par une simple manipulation de leur texte, comme le fait un éditeur de liens. C’est banal pour un programmeur ; l’intérêt est que la construction est uniforme et calculable.</p></philo>
+<philo>
+<p class="en-clair"><strong>En clair.</strong> À partir des textes de deux programmes, on peut calculer le texte d’un programme qui les enchaîne, sans les exécuter.</p>
+<p>On « branche » deux programmes l’un derrière l’autre par une simple manipulation de leur texte, comme le fait un éditeur de liens, ou comme on enchaîne deux commandes dans un terminal.</p>
+</philo>
 </res>
 
 <h2 id="recursion">Le théorème de récursion</h2>
 
+<clair>
+<p>Peut-on écrire un programme qui affiche exactement son propre texte, sans tricher en lisant son fichier ? Essayez : si le programme contient l’instruction « affiche … », il faut mettre dans les points de suspension le texte entier du programme, qui contient lui-même ces points de suspension… La réponse est pourtant oui, et le théorème de récursion dit bien plus : <em>tout</em> programme peut être réécrit de façon à connaître son propre texte.</p>
+</clair>
+
+
 <res type="Théorème" nom="Théorème de récursion de Kleene (forme du point fixe)" id="kleene">
 <enonce><p>Pour toute fonction calculable totale $f:\N\to\N$, il existe un indice $n$ tel que $\varphi_{f(n)}=\varphi_n$.</p></enonce>
 <philo>
-<p>Interprétons $f$ comme une transformation de programmes qui s’arrête toujours : un compilateur, un optimiseur, un « virus » qui modifie le code, ou n’importe quelle réécriture. Le théorème affirme qu’il existe toujours un programme dont la transformation <em>ne change pas le comportement</em>. Aucune transformation calculable ne peut modifier le sens de tous les programmes.</p>
-<p>Sa conséquence la plus étonnante : un programme peut <em>utiliser son propre texte</em>. Il existe des programmes qui affichent leur propre code source (des « quines »), des programmes qui calculent leur propre numéro, et plus généralement, pour toute tâche qui utilise « le texte du programme qui l’exécute », un programme qui l’accomplit. C’est la version calculatoire de la réflexivité : le λ-calcul la réalise avec le combinateur $\mathsf Y$, la biologie avec l’ADN, qui contient la description de la machinerie qui le copie (von Neumann a étudié dès les années 1940 des automates auto-reproducteurs fondés sur ce principe).</p>
+<p class="en-clair"><strong>En clair.</strong> Quelle que soit la façon (calculable) dont on transforme les programmes, il existe un programme que cette transformation ne change pas : il calcule la même chose avant et après.</p>
+<p>Imaginons une transformation qui modifie tous les programmes : un compilateur, un optimiseur, un virus qui altère le code. Le théorème affirme qu’il existe toujours un programme dont le comportement résiste à la transformation. Il en découle qu’un programme peut toujours être écrit comme s’il connaissait déjà son propre texte. Les programmes qui s’affichent eux-mêmes, appelés « quines » en hommage au philosophe Willard Quine, en sont l’exemple le plus célèbre.</p>
 </philo>
 <tech>
 <p>Soit $\Psi(u,x)\simeq\varphi_{\varphi_u(u)}(x)$ (indéfinie si $\varphi_u(u)\ind$). Elle est calculable : on calcule $t=\varphi_u(u)$, puis $\varphi_t(x)$, par la fonction universelle. Par s-m-n, il existe $g$ récursive primitive, donc totale, telle que $\varphi_{g(u)}(x)\simeq\Psi(u,x)$, c’est-à-dire
@@ -71,12 +101,28 @@ print(s % s)</code></pre>
 </techno>
 </res>
 
+<atelier titre="un point fixe en Python : programmes qui connaissent leur texte">
+<p>La fonction <code>point_fixe(corps)</code> de <code>recursion.py</code> réalise la construction de la preuve pour des programmes Python. Elle part d’un gabarit $T$ qui contient une marque <code>@@</code> à l’endroit où devra figurer sa propre description ; le programme final est $T$ dans lequel la marque est remplacée par <code>repr(T)</code>, l’écriture de $T$ comme chaîne de caractères. C’est l’application « d’un programme à sa propre description », le $s(e,e)$ de la démonstration.</p>
+<inclure fichier="assets/programmes/recursion.py" de="def point_fixe(corps):" a="def executer(source" titre="Le point fixe" ouvert="1"/>
+<p>Avec <code>corps = "print(MOI, end='')"</code>, on obtient une quine de trois lignes, que <code>tests.py</code> exécute en vérifiant que sa sortie est exactement son texte :</p>
+<pre><code>_T = "_T = @@\nMOI = _T.replace('@' + '@', repr(_T))\nprint(MOI, end='')\n"
+MOI = _T.replace('@' + '@', repr(_T))
+print(MOI, end='')</code></pre>
+<pre><code>$ python3 recursion.py --quine > quine.py
+$ python3 quine.py | diff - quine.py     # aucune différence</code></pre>
+<p>Le même mécanisme sert au programme diagonal du chapitre <a href="indecidabilite.html#arret">Indécidabilité</a>, qui doit interroger un « décideur » sur son propre texte.</p>
+</atelier>
+
+
 <res type="Théorème" nom="Récursion avec paramètres et forme uniforme" id="kleene-parametres">
 <enonce>
 <p>(1) Pour toute fonction calculable $\psi(e,x)$, il existe $n$ tel que $\varphi_n(x)\simeq\psi(n,x)$ pour tout $x$.<br>
 (2) Il existe une fonction récursive primitive $h$ telle que, pour tout $z$ tel que $\varphi_z$ soit totale, $\varphi_{h(z)}=\varphi_{\varphi_z(h(z))}$.</p>
 </enonce>
-<philo><p>La forme (1) est la plus utilisée : « pour écrire le programme $n$, on peut supposer qu’on connaît déjà $n$ ». Elle justifie après coup toutes les définitions récursives : un programme peut s’appeler lui-même par son numéro.</p></philo>
+<philo>
+<p class="en-clair"><strong>En clair.</strong> Quand on écrit un programme, on peut toujours supposer qu’on dispose de son propre numéro, et s’en servir dans le programme lui-même. Le point fixe peut de plus se calculer à partir de la transformation.</p>
+<p>C’est ce qui justifie toutes les définitions « qui s’appellent elles-mêmes » des langages de programmation : une fonction qui, pour calculer la factorielle de 5, demande la factorielle de 4. Le langage n’a pas besoin d’un mécanisme spécial : l’auto-référence est toujours possible.</p>
+</philo>
 <tech>
 <p>(1) Par s-m-n, $\psi(e,x)\simeq\varphi_{s(e)}(x)$ pour une $s$ récursive primitive. Le théorème de Kleene appliqué à $s$ donne $n$ avec $\varphi_n=\varphi_{s(n)}$, d’où $\varphi_n(x)\simeq\psi(n,x)$.</p>
 <p>(2) Dans la preuve précédente, l’indice $w$ de $f\circ g$ s’obtient à partir d’un indice $z$ de $f$ par l’indice de la composée : $w=c(z,d_0)$ où $d_0$ est un indice fixe de $g$. Le point fixe $h(z)=g(c(z,d_0))$ est donc une fonction récursive primitive de $z$. </p>
@@ -87,8 +133,8 @@ print(s % s)</code></pre>
 <enonce><p>Pour toute fonction calculable totale $f:\N^{k+1}\to\N$, il existe une fonction récursive primitive $n_f:\N^k\to\N$ telle que, pour tout $\vec x\in\N^k$,
 $$\varphi_{n_f(\vec x)}=\varphi_{f(n_f(\vec x),\,\vec x)}.$$</p></enonce>
 <philo>
-<p>Le théorème de Kleene donne un point fixe pour <em>une</em> transformation. Ici la transformation dépend de paramètres $\vec x$, et le point fixe se calcule à partir des paramètres, par une simple manipulation de textes. Un seul « générateur » fabrique, pour chaque valeur des paramètres, un programme qui se connaît lui-même : par exemple, pour chaque $x$, un programme qui affiche son propre texte suivi de $x$, ou un programme qui contient son numéro et la valeur de $x$ à laquelle il a été fabriqué.</p>
-<p>C’est cette uniformité qui permet d’enchaîner les points fixes : on fixe d’abord un programme en fonction d’un second encore inconnu, puis on fixe le second. C’est ainsi qu’on obtient la <a href="#double-recursion">double récursion</a>.</p>
+<p class="en-clair"><strong>En clair.</strong> Quand la transformation dépend de réglages, le programme qui lui résiste peut être calculé à partir de ces réglages.</p>
+<p>Le point fixe n’est pas un objet mystérieux qu’on trouve par chance : on le fabrique, et la fabrication s’adapte quand on change les paramètres.</p>
 </philo>
 <tech>
 <p>La fonction $\Psi(u,\vec x,y)\simeq\varphi_{\varphi^{(k+1)}_u(u,\vec x)}(y)$ (indéfinie si $\varphi^{(k+1)}_u(u,\vec x)\ind$) est calculable par la fonction universelle ; soit $d$ un de ses indices. Par <a href="#smn">s-m-n</a>, la fonction $\tilde g(u,\vec x)=s^{k+1}_1(d,u,\vec x)$ est récursive primitive et vérifie
@@ -116,7 +162,10 @@ print(s % (x, s))</code></pre>
 <res type="Théorème" nom="Double récursion (Smullyan)" id="double-recursion">
 <enonce><p>Pour toutes fonctions calculables totales $f,g:\N^2\to\N$, il existe $a,b$ tels que $\varphi_a=\varphi_{f(a,b)}$ et $\varphi_b=\varphi_{g(a,b)}$.</p></enonce>
 <tech><p>Par la <a href="#kleene-uniforme">troisième forme</a> (avec un paramètre), on trouve d’abord, pour tout $b$, un point fixe $a(b)$ de $x\mapsto f(x,b)$, avec $a$ récursive primitive : $\varphi_{a(b)}=\varphi_{f(a(b),b)}$. On applique ensuite le théorème de Kleene à $y\mapsto g(a(y),y)$ : il existe $b$ avec $\varphi_b=\varphi_{g(a(b),b)}$, et l’on pose $a=a(b)$. </p></tech>
-<philo><p>Deux programmes peuvent se connaître mutuellement : chacun peut utiliser le texte de l’autre. C’est le principe des paires de virus qui se réinstallent l’un l’autre, ou de deux quines qui s’affichent mutuellement.</p></philo>
+<philo>
+<p class="en-clair"><strong>En clair.</strong> Deux programmes peuvent chacun connaître le texte de l’autre.</p>
+<p>C’est le principe des paires de programmes malveillants qui se réinstallent mutuellement : si l’on efface l’un, l’autre le recrée. Le théorème montre que ce n’est pas une prouesse technique, mais une possibilité garantie par la théorie.</p>
+</philo>
 </res>
 
 <!--EXERCICES-->

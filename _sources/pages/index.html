@@ -1,4 +1,5 @@
 <!--
+philo_tout: oui
 titre: Calculabilité
 court: Accueil
 chapo: Ce qu’une machine peut calculer, ce qu’aucune ne pourra jamais calculer, et pourquoi cela nous concerne tous. Une monographie autonome qui se lit à trois niveaux.
@@ -10,6 +11,11 @@ chapo: Ce qu’une machine peut calculer, ce qu’aucune ne pourra jamais calcul
 
 <p>Ce manuel a d’abord été rédigé en LaTeX. Le format de la page imprimée imposait un ordre de lecture unique, alors que le sujet s’y prête mal : la calculabilité intéresse aussi bien la personne qui programme et veut <em>voir</em> une machine de Turing calculer, que la mathématicienne qui veut une preuve correcte, ou le lecteur curieux qui veut comprendre ce que signifie, pour la vie de tous les jours, qu’un problème soit « indécidable ». Le format HTML permet de superposer ces lectures au lieu de les juxtaposer.</p>
 
+<clair>
+<p>Ce manuel parle d’une question simple : qu’est-ce qu’une machine peut calculer, et qu’est-ce qu’aucune machine ne pourra jamais calculer ? La réponse, trouvée dans les années 1930 par Alan Turing, Alonzo Church et Kurt Gödel, est l’une des grandes découvertes du XX<sup>e</sup> siècle. Elle a donné naissance à l’ordinateur, et elle fixe des limites définitives à ce que les programmes, y compris les intelligences artificielles, peuvent garantir.</p>
+<p>Vous lisez le niveau philosophique : il ne suppose que le bac. Les boutons en haut de la page permettent de passer à tout moment au niveau technique (les démonstrations) ou technologique (les constructions complètes et les programmes).</p>
+</clair>
+
 <p>Le texte est <strong>autonome</strong> : tout ce qui est utilisé est défini, soit dans le chapitre, soit dans les <a href="bases.html">annexes</a>. Il ne suppose aucune connaissance de programmation, mais il en donne beaucoup, et il ne suppose rien de plus en mathématiques que le raisonnement par récurrence.</p>
 
 <h2>Mode d’emploi : trois niveaux de lecture</h2>
@@ -17,9 +23,13 @@ chapo: Ce qu’une machine peut calculer, ce qu’aucune ne pourra jamais calcul
 <p>Chaque résultat (définition, théorème, proposition) est présenté dans un cadre. Son énoncé est toujours visible ; en dessous, trois onglets donnent trois manières de le comprendre :</p>
 
 <div class="niveaux-intro">
-  <div class="philo"><h4>Philosophique</h4>Que signifie le résultat ? Pourquoi est-il surprenant, et qu’implique-t-il concrètement : pour l’informatique, pour la science, pour la vie courante ? Aucune formule n’y est indispensable.</div>
+  <div class="philo"><h4>Philosophique</h4>Lisible avec le bac, sans prérequis. Chaque chapitre devient un récit continu : on y lit ce que dit chaque résultat, en mots de tous les jours, pourquoi il est surprenant, et ce qu’il implique pour l’informatique, la science et la vie courante. Les énoncés formels, les démonstrations et les exercices sont masqués.</div>
   <div class="tech"><h4>Technique</h4>Des preuves mathématiques correctes et complètes dans leurs articulations, qui admettent seulement les constructions dont la réalisation est routinière (« on construit une machine qui… »).</div>
-  <div class="techno"><h4>Technologique</h4>Les constructions jusqu’au bout : programmes complets de machines de Turing, codages explicites, termes du λ-calcul. La plupart s’exécutent dans la page, et leurs résultats ont été testés automatiquement.</div>
+  <div class="techno"><h4>Technologique</h4>Les constructions jusqu’au bout, dans des « ateliers » : programmes complets de machines de Turing, codages explicites, termes du λ-calcul, et des <a href="programmes.html">programmes Python à télécharger</a> qui les réalisent, du compilateur des fonctions récursives vers les machines de Turing jusqu’à une machine universelle de trente millions de quadruplets.</div>
+</div>
+
+<div class="encadre philo-aussi">
+<p><strong>Version 2.</strong> Cette version accentue les différences entre les niveaux. Le niveau philosophique a été réécrit pour un lecteur qui a le bac : il forme un texte à part entière, qui remplace les énoncés formels. Le niveau technique est inchangé. Le niveau technologique s’enrichit d’ateliers qui donnent les constructions complètes et le code qui les exécute, vérifié par <code>tests.py</code>.</p>
 </div>
 
 <p>Le sélecteur en haut de chaque page choisit le niveau affiché partout ; l’onglet d’un cadre change seulement ce cadre. Le choix « Tout » affiche les trois niveaux l’un sous l’autre (c’est aussi ce qui s’imprime). Le choix est mémorisé par le navigateur.</p>

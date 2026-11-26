@@ -2,18 +2,32 @@
 titre: Autres modèles de calcul
 court: Autres modèles
 chapo: Deux compteurs, des dominos, des fractions, une règle locale à deux états : l’universalité surgit dans des systèmes d’une simplicité déconcertante. Et une pile ne suffit pas.
+chapo_clair: Deux compteurs, des dominos, des fractions, une rangée de cases qui changent de couleur selon leurs voisines : la capacité de tout calculer surgit dans des systèmes d’une simplicité déconcertante.
 prerequis: equivalence.html|Équivalence des modèles ; indecidabilite.html|Indécidabilité ; langages.html|Langages et grammaires
 -->
 
 
 
+<clair>
+<p>La machine de Turing n’est pas le seul dispositif capable de tout calculer. Ce chapitre présente des systèmes beaucoup plus pauvres en apparence qui en sont aussi capables : une machine qui ne dispose que de deux compteurs qu’elle peut augmenter, diminuer et tester ; une liste de fractions qu’on multiplie ; une rangée de cases noires et blanches qui changent selon une règle locale.</p>
+<p>Le phénomène est général : dès qu’un système permet de stocker une quantité arbitraire d’information et de la transformer selon des règles conditionnelles, il devient universel. C’est pourquoi on trouve de l’universalité, et donc de l’indécidabilité, un peu partout, jusque dans des jeux et des modèles physiques.</p>
+</clair>
+
 <h2>Machines à compteurs</h2>
+
+<clair>
+<p>Une machine à compteurs a quelques compteurs, comme des bouliers, qu’elle peut augmenter de 1, diminuer de 1, ou tester à zéro. Avec deux compteurs seulement, elle peut tout calculer, à condition de coder les données de façon astucieuse.</p>
+</clair>
+
 
 <res type="Théorème" nom="Universalité des machines à deux compteurs (Minsky, 1961)" id="compteurs">
 <enonce>
 <p>Une <strong>machine à compteurs</strong> possède un nombre fini de registres contenant des entiers naturels et un programme fait d’instructions numérotées de deux sortes : $\mathrm{INC}(r,j)$ (ajouter 1 au registre $r$, aller à l’instruction $j$) et $\mathrm{DEC}(r,j,k)$ (si $r>0$, retirer 1 et aller en $j$ ; sinon aller en $k$). Toute fonction calculable est calculable par une machine à compteurs, et même par une machine à <em>deux</em> compteurs, à condition de coder l’entrée $x$ par $2^x$ et la sortie $y$ par $2^y$.</p>
 </enonce>
-<philo><p>Deux boîtes de cailloux, et l’on ne sait qu’ajouter ou retirer un caillou et tester si une boîte est vide : cela suffit à tout calculer. La mémoire n’a pas besoin d’être structurée ; il suffit qu’elle soit non bornée.</p></philo>
+<philo>
+<p class="en-clair"><strong>En clair.</strong> Une machine qui n’a que deux compteurs, qu’elle peut augmenter de 1, diminuer de 1 et comparer à zéro, peut calculer tout ce qu’une machine de Turing calcule. Il faut seulement coder les données de façon astucieuse dans les compteurs.</p>
+<p>Imaginons deux boîtes de cailloux. On sait seulement ajouter un caillou, en retirer un, et regarder si une boîte est vide. Cela suffit à tout calculer ! La mémoire n’a pas besoin d’être bien rangée, avec des cases et des adresses ; il suffit qu’elle soit sans limite.</p>
+</philo>
 <tech>
 <p><strong>Étape 1 : un nombre quelconque de compteurs.</strong> Une machine à compteurs $M$ <em>calcule</em> $f:\N^n\rightharpoonup\N$ si, lancée sur l’instruction $1$ avec $x_1,\dots,x_n$ dans les compteurs $r_1,\dots,r_n$ et $0$ dans les autres, elle atteint l’instruction d’arrêt si et seulement si $f(\vec x)$ est défini, et alors $r_0$ contient $f(\vec x)$ (les autres compteurs contiennent n’importe quoi). On programme d’abord quelques fragments, qui s’enchaînent en remplaçant leur « fin » par l’instruction suivante :</p>
 <ul>
@@ -46,7 +60,10 @@ prerequis: equivalence.html|Équivalence des modèles ; indecidabilite.html|Ind�
 
 <res type="Théorème" nom="Deux compteurs ne calculent pas 2^x (Schroeppel, 1972)" id="schroeppel">
 <enonce><p>Soit une machine à deux compteurs qui, lancée sur $(x,0)$, s’arrête pour tout $x$, avec $f(x)$ dans son premier compteur, où $f$ est injective. Alors il existe des entiers $x_0\ge0$, $L\ge1$ et $G\ge0$ tels que $f(x_0+kL)=f(x_0)+kG$ pour tout $k\ge0$. En particulier, aucune machine à deux compteurs ne calcule $x\mapsto2^x$, ni $x\mapsto x^2$, sur l’entrée $x$ codée directement.</p></enonce>
-<philo><p>Avec deux compteurs, l’un des deux est presque toujours vide quand l’autre est grand : la machine ne garde alors en mémoire qu’un seul nombre et son état. Sur des entrées assez grandes et bien choisies, tout ce qu’elle peut faire avec ce nombre est le multiplier par une fraction fixe et lui ajouter une constante ; son comportement est « affine par morceaux ». Elle ne peut pas fabriquer une croissance exponentielle à partir de $x$ ; il faut qu’on la lui donne en entrée, sous la forme $2^x$.</p></philo>
+<philo>
+<p class="en-clair"><strong>En clair.</strong> Avec deux compteurs, si l’on donne le nombre de départ tel quel, on ne peut pas calculer 2 multiplié par lui-même ce nombre de fois. Le codage astucieux des données est donc indispensable.</p>
+<p>Avec deux boîtes de cailloux, l’une est presque toujours vide quand l’autre est pleine : la machine ne garde vraiment en tête qu’un seul nombre. Tout ce qu’elle sait en faire, à la longue, c’est le multiplier par une fraction fixe et lui ajouter une quantité fixe. Elle ne peut pas fabriquer elle-même une croissance très rapide ; il faut la lui fournir dès le départ, dans la façon d’écrire l’entrée.</p>
+</philo>
 <tech>
 <p>Les instructions sont numérotées $1,\dots,m$ et une configuration est un triplet $(i,a,b)$. Elle est <em>nulle</em> si $a=0$ ou $b=0$.</p>
 <p><strong>Lemme des phases.</strong> Pour chaque instruction $i$, il existe des entiers $T_i$ et $d_i\ge1$ tels que l’une des deux choses suivantes ait lieu pour tous les $n\ge T_i$ : (α) le calcul issu de $(i,n,0)$ n’atteint jamais, après au moins un pas, de configuration nulle ni d’arrêt ; (β) il en atteint une première, $C(n)$, d’instruction $i'$ indépendante de $n$, et il existe $(u,v)\in\N^2$ indépendants de $n$ tels que $C(n+d_i)=C(n)+(0,u,v)$, avec $u=0$ si le premier compteur de $C(n)$ est nul et $v=0$ si le second l’est. Il en va de même, symétriquement, en partant de $(i,0,n)$.</p>
@@ -64,19 +81,35 @@ prerequis: equivalence.html|Équivalence des modèles ; indecidabilite.html|Ind�
 
 <h2>Automates à pile</h2>
 
+<clair>
+<p>Un automate qui dispose d’une seule pile, où il ne peut lire que l’élément du dessus, ne peut pas tout calculer. Avec deux piles, il le peut : les deux piles jouent le rôle des deux moitiés du ruban d’une machine de Turing.</p>
+</clair>
+
+
 <res type="Proposition" nom="Une pile ne suffit pas, deux piles suffisent" id="piles">
 <enonce><p>Les automates à une pile (automate fini muni d’une pile) reconnaissent exactement les langages algébriques (hors contexte) ; ils ne sont pas universels : par exemple le langage $\{a^nb^nc^n:n\ge0\}$, évidemment décidable, n’est reconnu par aucun automate à pile. En revanche, un automate fini muni de <em>deux</em> piles simule une machine de Turing.</p></enonce>
-<philo><p>Une pile est une mémoire dont on ne voit que le sommet : on peut s’en servir pour vérifier des parenthèses, pas pour comparer trois quantités. Deux piles dos à dos forment une bande de Turing : la tête est entre les deux sommets. La frontière de l’universalité passe entre « une » et « deux ».</p></philo>
+<philo>
+<p class="en-clair"><strong>En clair.</strong> Un automate muni d’une seule pile ne peut pas tout calculer. Avec deux piles, il le peut.</p>
+<p>Une pile est une mémoire dont on ne voit que le dessus, comme une pile d’assiettes. Elle suffit pour vérifier des parenthèses, pas pour comparer trois quantités. Deux piles placées dos à dos forment un ruban de Turing : ce qui est à gauche de la tête est dans la première pile, ce qui est à droite dans la seconde, et déplacer la tête revient à faire passer une assiette d’une pile à l’autre. La frontière de l’universalité passe entre « une » et « deux ».</p>
+</philo>
 <tech><p>Simulation d’une bande par deux piles : la pile gauche contient les cases à gauche de la tête (sommet = case voisine), la pile droite la case lue et les suivantes. Un déplacement à droite dépile à droite et empile à gauche. Les automates à une pile acceptent exactement les langages hors-contexte (<a href="langages.html#automates-pile">démonstration</a>), et le <a href="langages.html#lemme-etoile">lemme de l’étoile</a> montre que $a^nb^nc^n$ n’est pas hors-contexte. Les problèmes sur les automates à pile restent partiellement décidables (le vide d’un langage hors-contexte est <a href="langages.html#decidables-grammaires">décidable</a>), mais l’<em>équivalence</em> de deux automates à pile non déterministes, ou l’universalité d’une grammaire, sont <a href="langages.html#indecidables-2">indécidables</a> (on passe des grammaires aux automates et inversement de façon effective).</p></tech>
 </res>
 
 <h2>Problème de correspondance de Post</h2>
 
+<clair>
+<p>Le jeu de dominos de Post, déjà rencontré au chapitre <a href="langages.html">Langages</a>, peut imiter n’importe quel calcul ; c’est pourquoi on ne peut pas décider s’il a une solution.</p>
+</clair>
+
+
 <res type="Théorème" nom="Indécidabilité du problème de correspondance de Post (1946)" id="pcp">
 <enonce>
 <p>Une <strong>instance</strong> est une liste finie de dominos $\frac{u_1}{v_1},\dots,\frac{u_k}{v_k}$, où les $u_i,v_i$ sont des mots. Une <strong>solution</strong> est une suite non vide d’indices $i_1,\dots,i_m$ (avec répétitions permises) telle que $u_{i_1}\cdots u_{i_m}=v_{i_1}\cdots v_{i_m}$. Il n’existe pas d’algorithme qui décide si une instance a une solution.</p>
 </enonce>
-<philo><p>Un jeu de dominos qu’un enfant comprend, et aucun programme ne peut dire en général s’il a une solution. Le problème de Post est l’outil favori pour montrer l’indécidabilité de questions sur les grammaires et les langages, parce qu’il ne parle que de mots. Il sert aussi à montrer l’indécidabilité de questions sur les <a href="mathematiques-indecidables.html#matrices-post">produits de matrices</a>.</p></philo>
+<philo>
+<p class="en-clair"><strong>En clair.</strong> On a un jeu de dominos, chacun portant un mot en haut et un mot en bas. On ne peut pas décider en général si l’on peut les aligner (en réutilisant chaque domino autant qu’on veut) pour lire le même mot en haut et en bas.</p>
+<p>Un jeu qu’un enfant comprend, et aucun programme ne peut dire en général s’il a une solution. Ce jeu, inventé par Post en 1946, est l’outil favori pour montrer que des questions sur les grammaires et les langages sont indécidables, parce qu’il ne parle que de mots. Il sert aussi pour les <a href="mathematiques-indecidables.html#matrices-post">produits de matrices</a>. Le simulateur de la page permet de chercher des solutions et de constater qu’elles peuvent être très longues.</p>
+</philo>
 <tech><p>La preuve complète est donnée au chapitre <a href="langages.html#post-langages">Langages et grammaires</a> : on réduit le problème du mot d’un système semi-thuéen, lui-même indécidable par une réduction de l’arrêt, au problème de Post modifié (dont la solution doit commencer par un domino imposé), puis celui-ci au problème de Post. Les dominos sont conçus pour que la seule manière d’égaliser le haut et le bas soit d’écrire, en haut, la suite des mots d’une dérivation, le bas ayant toujours un mot d’avance ; le rattrapage n’est possible que si la dérivation atteint le mot cherché. Le problème est semi-décidable (on essaie toutes les suites par longueur croissante), donc $\Sigma_1$-complet. Il est décidable pour deux dominos, indécidable à partir de cinq (Neary, 2015).</p></tech>
 <techno>
 <p>Exemple : dominos $\frac{a}{baa}$, $\frac{ab}{aa}$, $\frac{bba}{bb}$. La suite $3,2,3,1$ donne en haut $bba\cdot ab\cdot bba\cdot a=bbaabbbaa$ et en bas $bb\cdot aa\cdot bb\cdot baa=bbaabbbaa$ : c’est une solution.</p>
@@ -85,13 +118,26 @@ prerequis: equivalence.html|Équivalence des modèles ; indecidabilite.html|Ind�
 
 <h2 id="diophantiennes">Équations diophantiennes</h2>
 
+<clair>
+<p>Les équations polynomiales en nombres entiers sont aussi un modèle de calcul universel (voir <a href="equations-diophantiennes.html">Équations diophantiennes</a>).</p>
+</clair>
+
+
 <p>Les équations polynomiales à coefficients entiers forment elles aussi un modèle de calcul universel : un ensemble est semi-décidable si et seulement s’il est l’ensemble des paramètres pour lesquels une équation a une solution entière. Ce résultat, le théorème de Matiyasevich-Robinson-Davis-Putnam, et ses conséquences en arithmétique ont leur propre chapitre : <a href="equations-diophantiennes.html">Équations diophantiennes</a>.</p>
 
 <h2>Systèmes multiplicatifs : FRACTRAN</h2>
 
+<clair>
+<p>John Conway a inventé un langage dont les programmes sont des listes de fractions. On part d’un nombre, on le multiplie par la première fraction de la liste qui donne un résultat entier, et l’on recommence. Ce jeu d’école primaire suffit à tout calculer.</p>
+</clair>
+
+
 <res type="Théorème" nom="Universalité de FRACTRAN (Conway, 1987)" id="fractran">
 <enonce><p>Un programme FRACTRAN est une liste finie de fractions $f_1,\dots,f_k$. À partir d’un entier $n$, on cherche la première fraction $f_i$ telle que $n f_i$ soit entier, on remplace $n$ par $nf_i$, et l’on recommence ; on s’arrête si aucune ne convient. Ce modèle est universel : pour toute fonction calculable $f$, il existe un programme et un nombre premier $q$ tels que, partant de $q\,2^x$, le programme s’arrête si et seulement si $f(x)$ est défini, et alors sur $3^{f(x)}$.</p></enonce>
-<philo><p>Un programme est une liste de fractions ; calculer, c’est multiplier. Le langage le plus étrange et le plus économe qui soit, et pourtant il calcule tout ce qui est calculable. John Conway a même écrit un programme de quatorze fractions (PRIMEGAME) qui engendre les nombres premiers. Un programme FRACTRAN est aussi une fonction de Collatz généralisée, ce qui rend ces itérations <a href="mathematiques-indecidables.html#collatz-generalise">indécidables</a>.</p></philo>
+<philo>
+<p class="en-clair"><strong>En clair.</strong> Un programme FRACTRAN est une simple liste de fractions. On part d’un nombre entier ; on le multiplie par la première fraction de la liste qui donne encore un résultat entier ; et l’on recommence. Ce langage étrange peut calculer tout ce qui est calculable.</p>
+<p>Calculer, ici, c’est multiplier, et rien d’autre. Le secret est la décomposition en nombres premiers : un nombre comme 2<sup>3</sup> × 3<sup>5</sup> × 7 contient trois « compteurs » (les exposants 3, 5 et 1), et multiplier par une fraction ajoute ou retire des unités à ces compteurs. On retrouve les machines à compteurs. Le mathématicien John Conway a même écrit un programme de quatorze fractions qui produit, l’un après l’autre, tous les nombres premiers.</p>
+</philo>
 <tech>
 <p>Soit $f$ une fonction calculable et $M$ une machine à compteurs qui la calcule au sens de l’étape 1 du <a href="#compteurs">théorème de Minsky</a> (entrée dans $r_1$ ; à l’arrêt, résultat dans $r_0$ et autres compteurs nuls, quitte à les vider). On suppose aussi qu’aucune instruction ne saute vers elle-même : on remplace au besoin une telle instruction $i$ par un passage par deux instructions nouvelles, $\mathrm{INC}(t,i^*)$ et $i^*:\mathrm{DEC}(t,i,i)$, sur un compteur $t$ inutilisé.</p>
 <p>On associe un nombre premier $p_r$ à chaque compteur $r_r$, avec $p_1=2$ et $p_0=3$ (ici l’indice est celui du compteur, et non le rang du nombre premier), et un nombre premier $q_i$ à chaque instruction, tous distincts. La configuration « instruction $i$, compteurs $c_r$ » est codée par $n=q_i\prod_rp_r^{c_r}$. Le programme FRACTRAN contient, pour chaque instruction $i$ :</p>
@@ -108,12 +154,20 @@ prerequis: equivalence.html|Équivalence des modèles ; indecidabilite.html|Ind�
 
 <h2 id="automates-cellulaires">Automates cellulaires</h2>
 
+<clair>
+<p>Un automate cellulaire est une rangée de cases, chacune noire ou blanche, qui changent toutes en même temps selon la couleur de leurs voisines. Le célèbre « jeu de la vie » de Conway en est un exemple à deux dimensions. Même la règle 110, l’une des plus simples à une dimension, peut tout calculer.</p>
+</clair>
+
+
 <res type="Définition" nom="Automates cellulaires, automates élémentaires" id="def-automate-cellulaire">
 <enonce>
 <p>Un <strong>automate cellulaire</strong> à une dimension est donné par un ensemble fini d’états $Q$, un rayon $r\ge1$ et une <strong>règle locale</strong> $f:Q^{2r+1}\to Q$. Une configuration est une suite $c\in Q^{\mathbb Z}$ (une ligne infinie de cellules) ; en un pas, toutes les cellules changent en même temps, selon $c'_i=f(c_{i-r},\dots,c_{i+r})$. Les <strong>automates élémentaires</strong> sont ceux de rayon $1$ sur $Q=\{0,1\}$. Leur règle est donnée par les huit valeurs $f(1,1,1),f(1,1,0),\dots,f(0,0,0)$, que l’on lit comme l’écriture binaire d’un entier entre $0$ et $255$, le <em>numéro de Wolfram</em> de la règle. Ainsi la <strong>règle 110</strong>, $110=01101110$ en binaire, est :</p>
 $$\begin{array}{cccccccc}111&110&101&100&011&010&001&000\\\downarrow&\downarrow&\downarrow&\downarrow&\downarrow&\downarrow&\downarrow&\downarrow\\0&1&1&0&1&1&1&0\end{array}$$
 </enonce>
-<philo><p>C’est le modèle de calcul le plus « physique » de ce chapitre : pas de tête de lecture, pas de programme central, seulement une règle locale appliquée partout à la fois, comme les lois de la physique. Von Neumann et Ulam l’ont inventé vers 1950 pour étudier des machines capables de se reproduire. L’histoire d’une configuration se dessine ligne par ligne, le temps vers le bas : c’est un <em>diagramme espace-temps</em>, exactement celui qui sert pour les <a href="mathematiques-indecidables.html#pavage-origine">pavages</a>, pour le <a href="complexite.html#cook-levin">théorème de Cook et Levin</a> et pour le <a href="logique-types.html#binaire">problème de la décision</a>.</p></philo>
+<philo>
+<p class="en-clair"><strong>En clair.</strong> Un <em>automate cellulaire</em> est une rangée de cases, blanches ou noires par exemple. À chaque instant, toutes les cases changent en même temps, et chacune choisit sa nouvelle couleur en regardant seulement sa couleur et celle de ses voisines.</p>
+<p>C’est le modèle de calcul le plus proche de la physique : pas de tête de lecture, pas de chef d’orchestre, seulement une règle locale appliquée partout à la fois, comme les lois de la nature. John von Neumann et Stanisław Ulam l’ont inventé vers 1950 pour étudier des machines capables de se reproduire. En dessinant les rangées successives les unes sous les autres, on obtient une image de toute l’histoire du calcul, le même grand tableau qui sert pour les <a href="mathematiques-indecidables.html#pavage-origine">carrelages</a> et pour la <a href="logique-types.html#binaire">logique</a>.</p>
+</philo>
 <techno>
 <div class="ac-widget" data-regle="110" data-depart="droite" data-titre="Diagramme espace-temps d’un automate élémentaire"></div>
 <p>Le simulateur ci-dessus dessine $100$ pas sur une ligne de $160$ cellules refermée en anneau. Quelques règles à essayer : $110$ (des structures localisées qui se déplacent et interagissent), $90$ (le triangle de Sierpinski, voir l’<a href="#ex-am-regle90">exercice</a>), $30$ (un comportement d’apparence aléatoire), $184$ (un modèle de circulation automobile), $240$ (un simple décalage).</p>
@@ -122,7 +176,10 @@ $$\begin{array}{cccccccc}111&110&101&100&011&010&001&000\\\downarrow&\downarrow&
 
 <res type="Théorème" nom="Un automate cellulaire simule une machine de Turing en temps réel" id="ac-simule-mt">
 <enonce><p>Pour toute machine de Turing $Z$, il existe un automate cellulaire de rayon $1$ dont chaque pas réalise un pas de $Z$. Par conséquent, la question « partant de cette configuration finie (entourée de cellules blanches), l’automate fera-t-il apparaître tel état ? » est indécidable pour certains automates. Inversement, l’évolution d’un automate cellulaire à partir d’une configuration finie se calcule par une machine de Turing.</p></enonce>
-<philo><p>Les deux modèles se simulent mutuellement : un automate cellulaire n’est rien d’autre qu’une machine de Turing où chaque case serait son propre processeur. Il ne calcule pas plus de fonctions, mais il peut aller plus vite pour certaines tâches, puisque toutes les cellules travaillent en parallèle. La simulation ci-dessous est l’analogue exact, pour une règle locale qui se répète dans le temps, du jeu de tuiles de Wang qui sert à démontrer l’indécidabilité du <a href="mathematiques-indecidables.html#pavage-origine">pavage avec tuile d’origine</a>.</p></philo>
+<philo>
+<p class="en-clair"><strong>En clair.</strong> Un automate cellulaire peut imiter une machine de Turing, à raison d’une étape de la machine pour une étape de l’automate. Inversement, une machine de Turing peut calculer l’évolution d’un automate cellulaire.</p>
+<p>Il suffit que chaque case de l’automate représente une case du ruban, avec en plus une marque « la tête est ici, à telle étape ». La case marquée et ses voisines se mettent à jour selon le programme de la machine, les autres ne bougent pas. Les deux modèles calculent donc exactement les mêmes choses. L’automate peut seulement aller plus vite pour certaines tâches, puisque toutes ses cases travaillent ensemble.</p>
+</philo>
 <tech><p>Prenons pour états de l’automate les symboles $s$ de $Z$ et les couples $(q,s)$ (« la tête, dans l’état $q$, est sur cette case, qui contient $s$ »). La configuration initiale porte $(q_0,\text{blanc})$ en une case et des blancs ailleurs. La règle locale $f(g,c,d)$ est la suivante. Si $c=(q,s)$ et que $Z$ a la transition « écrire $s'$, aller dans l’état $q'$, se déplacer », alors la nouvelle valeur est $s'$ (la tête s’en va) ; si $q$ est un état d’arrêt, la case garde la valeur $(q,s)$. Si $c=s$ est un symbole et que le voisin de gauche $g=(q,t)$ porte une transition vers la droite d’état d’arrivée $q'$, la nouvelle valeur est $(q',s)$ (la tête arrive) ; de même avec le voisin de droite pour une transition vers la gauche. Sinon, $c$ ne change pas. Comme il n’y a qu’une tête, ces cas ne se recouvrent pas, et la configuration au temps $t$ est exactement celle de $Z$ après $t$ pas. L’état $(q_{\text{arrêt}},s)$ apparaît si et seulement si $Z$ s’arrête : on conclut par l’<a href="indecidabilite.html#arret">indécidabilité de l’arrêt</a>. Pour la réciproque, une configuration finie reste finie (elle grandit d’au plus $r$ cases de chaque côté à chaque pas), et l’on applique la règle cellule par cellule.</p></tech>
 <techno><p>Le programme <a href="assets/code/automates.py">automates.py</a> construit cette règle locale pour une machine de Radó à 3 états, et vérifie que l’automate et la machine ont la même configuration après chacun des 20 premiers pas ; la machine s’arrête au pas 14 avec six symboles $1$, la valeur de <a href="castors-affaires.html#valeurs-bb">Σ(3)</a>.</p></techno>
 </res>
@@ -130,8 +187,9 @@ $$\begin{array}{cccccccc}111&110&101&100&011&010&001&000\\\downarrow&\downarrow&
 <res type="Théorème" nom="La règle 110 est universelle (Cook, 2004)" id="regle-110">
 <enonce><p>L’automate élémentaire 110 est universel : pour toute machine de Turing et toute entrée, il existe une configuration de la règle 110, formée d’un motif fini placé sur un fond périodique, dont l’évolution simule le calcul de la machine. (Résultat cité pour information, conjecturé par Wolfram en 1985 et démontré par Matthew Cook, dont la démonstration a été publiée en 2004.)</p></enonce>
 <philo>
-<p>Deux états, trois voisins, huit cas : il est difficile d’imaginer une règle plus simple, et elle calcule pourtant tout ce qui est calculable. La règle 110 rejoint la liste des systèmes universels presque sans structure : les <a href="#compteurs">machines à deux compteurs</a>, <a href="#fractran">FRACTRAN</a>, les équations diophantiennes, le <a href="mathematiques-indecidables.html#groupes-topologie">Jeu de la vie</a>. Comme pour eux, l’universalité entraîne l’indécidabilité de questions simples sur l’évolution de la règle à partir d’une configuration donnée.</p>
-<p>La démonstration ne passe pas directement par les machines de Turing. Dans le diagramme de la règle 110, des structures localisées, des « vaisseaux », se déplacent à différentes vitesses sur un fond périodique et se heurtent. Cook a montré qu’en disposant convenablement ces vaisseaux, leurs collisions simulent un <em>système de tag cyclique</em>, variante des <a href="langages.html#systemes-normaux">systèmes de Post</a>, qui est lui-même universel.</p>
+<p class="en-clair"><strong>En clair.</strong> Dans la « règle 110 », chaque case est blanche ou noire et ne regarde que ses deux voisines immédiates. Cette règle minuscule peut pourtant tout calculer.</p>
+<p>Deux couleurs, trois cases regardées, huit situations possibles : on peut difficilement imaginer plus simple. Le physicien Stephen Wolfram l’a soupçonné en 1985, et Matthew Cook l’a démontré en 2004. Dans les images produites par cette règle, on voit des motifs qui se déplacent comme des petits vaisseaux sur un fond régulier et qui se heurtent. Cook a montré qu’en disposant bien ces vaisseaux, leurs collisions reproduisent un calcul.</p>
+<p>La règle 110 rejoint la liste des systèmes qui savent tout calculer avec presque rien : deux compteurs, une liste de fractions, des équations en nombres entiers, le célèbre Jeu de la vie. Comme pour eux, cette puissance a un revers : des questions simples sur son évolution n’ont pas de réponse calculable.</p>
 </philo>
 <tech><p>Deux précisions, citées pour information. D’abord, la configuration initiale n’est pas finie au sens du <a href="#ac-simule-mt">théorème précédent</a> : il faut un fond périodique infini, et même une répétition périodique d’un motif à droite et d’un autre à gauche ; c’est une configuration calculable, mais pas une configuration à support fini. Ensuite, la simulation de Cook était exponentiellement lente ; Neary et Woods (2006) l’ont rendue polynomiale, ce qui montre que prédire l’évolution de la règle 110 est un problème $\mathsf P$-complet. La règle 110 a aussi servi à construire de très petites machines de Turing universelles.</p></tech>
 </res>
@@ -145,7 +203,10 @@ $$\begin{array}{cccccccc}111&110&101&100&011&010&001&000\\\downarrow&\downarrow&
 <li><strong>Jardins d’Éden.</strong> Une configuration est un <em>jardin d’Éden</em> si elle n’a pas d’antécédent : on ne peut l’obtenir qu’au départ. Par le théorème de Moore et Myhill (1962–1963), un automate a des jardins d’Éden si et seulement s’il existe deux configurations distinctes, ne différant que sur un nombre fini de cellules, qui ont la même image. Le Jeu de la vie a des jardins d’Éden. Leur existence est décidable en dimension 1 et indécidable en dimension 2 (Kari).</li>
 </ul>
 </enonce>
-<philo><p>La frontière entre dimension 1 et dimension 2 rappelle celle de la <a href="logique-types.html#binaire">logique</a> entre relations unaires et binaires, et celle des pavages : une ligne se laisse analyser par des automates finis, un plan peut contenir un diagramme espace-temps, donc un calcul. Pour les questions sur le comportement à partir d’une configuration donnée, au contraire, une dimension suffit déjà à l’indécidabilité, puisque le temps fournit la deuxième.</p></philo>
+<philo>
+<p class="en-clair"><strong>En clair.</strong> Wolfram a rangé les automates cellulaires en quatre familles selon ce qu’on observe : ceux qui deviennent uniformes, ceux qui se répètent, ceux qui ont l’air chaotiques, et ceux qui produisent des structures complexes. Savoir à quelle famille appartient un automate donné est en général indécidable.</p>
+<p>La classification est très parlante quand on regarde les images, mais elle n’est pas une définition précise : elle décrit ce qu’on voit en essayant quelques départs au hasard. Les automates de la quatrième famille, ceux qui ressemblent à de la vie, sont justement ceux qui savent calculer, et pour eux on ne peut pas prévoir à coup sûr ce qui finira par se passer.</p>
+</philo>
 </res>
 
 <!--EXERCICES-->

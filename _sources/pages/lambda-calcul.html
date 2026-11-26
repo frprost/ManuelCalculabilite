@@ -2,10 +2,21 @@
 titre: Le λ-calcul
 court: λ-calcul
 chapo: Trois constructions, une seule règle de calcul, et pourtant toute l’informatique : le modèle de Church, où tout est fonction, y compris les nombres.
+chapo_clair: Un langage où il n’y a ni nombres, ni mémoire, ni boucles : seulement des fonctions qui s’appliquent à d’autres fonctions. Alonzo Church l’a inventé en 1936, et il calcule, lui aussi, tout ce qui est calculable.
 prerequis: bases.html#mots|Alphabets et mots ; bases.html#fonctions|Notation des fonctions
 -->
 
+<clair>
+<p>Au lycée, on écrit $f(x)=x^2+1$ et l’on calcule $f(3)$ en remplaçant $x$ par 3. Le λ-calcul ne garde que cela : définir une fonction, et l’appliquer en remplaçant son paramètre par une valeur. Il n’y a même pas de nombres au départ ; on les fabrique avec des fonctions.</p>
+<p>Le mathématicien américain Alonzo Church a proposé ce langage en 1936, quelques mois avant Turing, pour répondre à la même question : qu’est-ce qu’un calcul ? Les deux réponses, l’une faite de mécanique et l’autre de pure substitution, se sont révélées équivalentes. Le λ-calcul est aujourd’hui le cœur de langages de programmation comme OCaml, Haskell, et de toutes les « fonctions anonymes » de Python ou JavaScript.</p>
+</clair>
+
 <h2>Variable, abstraction, application</h2>
+
+<clair>
+<p>On écrit $\lambda x.\,x+1$ pour « la fonction qui à $x$ associe $x+1$ », sans lui donner de nom. La lettre grecque λ (lambda) signale simplement qu’on définit une fonction. Appliquer cette fonction au nombre 3, c’est écrire les deux côte à côte, puis remplacer $x$ par 3 dans le corps. Le langage entier se résume à ces trois gestes : nommer une variable, fabriquer une fonction, appliquer une fonction à quelque chose.</p>
+</clair>
+
 
 <p>Dans les années 1930, Alonzo Church cherchait une théorie générale des fonctions, d’abord comme fondement de la logique. Le λ-calcul qui en est issu est un des premiers modèles de calcul à avoir donné une définition précise des fonctions calculables (λ-définissabilité, 1933–1936), contemporain des fonctions récursives générales de Herbrand et Gödel (1934) et des machines de Turing (1936).</p>
 
@@ -19,6 +30,11 @@ prerequis: bases.html#mots|Alphabets et mots ; bases.html#fonctions|Notation des
 
 <h2>Syntaxe et règle de calcul</h2>
 
+<clair>
+<p>La seule règle de calcul est le remplacement du paramètre par l’argument, exactement comme lorsqu’on calcule $f(3)$. Il faut seulement prendre garde à ne pas confondre deux variables qui portent le même nom, de même qu’en français « il » peut désigner deux personnes différentes dans deux phrases voisines.</p>
+</clair>
+
+
 <res type="Définition" nom="λ-termes, variables libres et liées" id="def-termes">
 <enonce>
 <p>Soit $\mathcal V$ un ensemble infini dénombrable de variables. Les <strong>λ-termes</strong> sont définis par la grammaire</p>
@@ -29,6 +45,10 @@ $$\begin{aligned}
 \mathrm{VB}(x)&=\emptyset & \mathrm{VB}(M_1M_2)&=\mathrm{VB}(M_1)\cup\mathrm{VB}(M_2) & \mathrm{VB}(\lambda x.M)&=\mathrm{VB}(M)\cup\{x\}
 \end{aligned}$$
 </enonce>
+<philo>
+<p class="en-clair"><strong>En clair.</strong> Une expression du λ-calcul est construite avec trois règles : une variable ($x$) est une expression ; « la fonction qui à $x$ associe $M$ », notée $\lambda x.M$, est une expression ; « $M$ appliqué à $N$ », noté $M\,N$, est une expression.</p>
+<p>Une variable est « liée » quand elle est le paramètre d’une fonction qui l’entoure, comme $x$ dans $f(x)=x+1$ : son nom n’a pas d’importance, on pourrait l’appeler $t$. Elle est « libre » sinon, comme $a$ dans $x+a$, dont la valeur doit venir d’ailleurs. Cette distinction, banale au lycée, demande de la précision dès qu’on veut faire calculer une machine.</p>
+</philo>
 <tech>
 <p>Conventions d’écriture : l’application associe à gauche ($MNP$ abrège $((MN)P)$), le corps d’une abstraction s’étend le plus loin possible à droite, et $\lambda xy.M$ abrège $\lambda x.\lambda y.M$.</p>
 </tech>
@@ -47,7 +67,10 @@ x[x:=N]&=N, \qquad y[x:=N]=y\ \ (y\neq x),\qquad (M_1M_2)[x:=N]=(M_1[x:=N]\ M_2[
 <p>Deux termes sont <strong>α-équivalents</strong> s’ils ne diffèrent que par le nom de variables liées : $\lambda x.M=_\alpha\lambda z.M[x:=z]$ pour $z\notin\mathrm{VL}(M)\cup \mathrm{VB}(M)$, et cette relation est close par passage aux sous-termes. On travaille désormais modulo $=_\alpha$.</p>
 <p>La <strong>β-réduction</strong> $\to_\beta$ est la plus petite relation telle que $(\lambda x.M)\,N\to_\beta M[x:=N]$ et close par contexte : si $M\to_\beta M'$, alors $MN\to_\beta M'N$, $NM\to_\beta NM'$ et $\lambda x.M\to_\beta\lambda x.M'$. On note $\twoheadrightarrow_\beta$ sa clôture réflexive et transitive, et $=_\beta$ la relation d’équivalence engendrée.</p>
 </enonce>
-<philo><p>Une seule règle de calcul : remplacer le paramètre formel par l’argument. C’est le mécanisme que l’on apprend au collège pour évaluer $f(4)$. La seule subtilité est de ne pas <em>capturer</em> une variable : dans $\lambda y.x$, remplacer $x$ par $y$ ne doit pas donner $\lambda y.y$ (l’identité !) mais $\lambda z.y$ (la fonction constante égale à $y$). Les variables liées sont des noms internes, qu’on peut renommer.</p></philo>
+<philo>
+<p class="en-clair"><strong>En clair.</strong> Pour calculer « la fonction $\lambda x.M$ appliquée à $N$ », on remplace $x$ par $N$ dans $M$. C’est la seule règle de calcul du langage. On peut aussi renommer un paramètre sans rien changer au sens.</p>
+<p>C’est le geste que l’on fait au collège pour calculer $f(4)$. La seule subtilité est d’éviter les collisions de noms : si $N$ contient une variable qui porte le même nom qu’une variable liée de $M$, on renomme d’abord cette dernière, pour ne pas mélanger deux choses distinctes.</p>
+</philo>
 <tech>
 <p>Un sous-terme de la forme $(\lambda x.M)N$ s’appelle un <em>rédex</em>. Un terme sans rédex est une <strong>forme normale</strong>. Un terme <em>a une forme normale</em> s’il se réduit vers une forme normale.</p>
 </tech>
@@ -67,10 +90,16 @@ $$\mathbf2\,\mathbf3\to_\beta\lambda x.\,\mathbf3(\mathbf3\,x)\twoheadrightarrow
 
 <h2 id="confluence">Confluence</h2>
 
+<clair>
+<p>Dans une expression compliquée, on peut souvent choisir par où commencer le calcul. Ces choix peuvent-ils mener à des résultats différents ? Non : c’est le premier grand théorème du λ-calcul. En revanche, certains choix peuvent mener à un calcul sans fin là où d’autres aboutissent. Il existe heureusement une stratégie qui aboutit toujours quand c’est possible.</p>
+</clair>
+
+
 <res type="Théorème" nom="Confluence (Church-Rosser, 1936)" id="church-rosser">
 <enonce><p>Si $M\twoheadrightarrow_\beta N_1$ et $M\twoheadrightarrow_\beta N_2$, il existe $Q$ tel que $N_1\twoheadrightarrow_\beta Q$ et $N_2\twoheadrightarrow_\beta Q$. En particulier, un terme a au plus une forme normale.</p></enonce>
 <philo>
-<p>Quel que soit l’ordre dans lequel on fait les calculs, on ne peut pas aboutir à deux résultats différents. Comme à l’école : on peut calculer $(2+3)\times(4+1)$ en commençant par la gauche ou par la droite, le résultat est le même. Le programmeur fonctionnel n’a donc pas à se soucier de l’ordre d’évaluation… pour le <em>résultat</em>. Pour la <em>terminaison</em>, l’ordre compte : $(\lambda x.y)\,(\delta\,\delta)$ donne $y$ si l’on réduit d’abord le rédex externe, et ne termine jamais si l’on s’obstine sur $\delta\,\delta$.</p>
+<p class="en-clair"><strong>En clair.</strong> Quel que soit l’ordre dans lequel on effectue les remplacements, on ne peut pas aboutir à deux résultats finaux différents.</p>
+<p>Comme à l’école : pour calculer $(2+3)\times(4+1)$, on peut commencer par la gauche ou par la droite, on trouve toujours 25. Ce qui est évident pour l’arithmétique demande ici une vraie démonstration, car certains ordres de calcul peuvent tourner sans fin. Le théorème garantit au moins que le résultat, s’il existe, est unique.</p>
 </philo>
 <tech>
 <p>On suit la méthode de Tait et Martin-Löf. On définit la <strong>réduction parallèle</strong> $\Rightarrow$ :</p>
@@ -95,7 +124,10 @@ $$(\lambda y.P)\,Q\,M_1\cdots M_n\ \to_t\ P[y:=Q]\,M_1\cdots M_n\qquad(n\ge0),$$
 <p>et rien d’autre (on ne réduit jamais sous un $\lambda$). Elle est déterministe. Un terme sans tel rédex est une <strong>forme normale de tête faible</strong> : c’est soit une abstraction $\lambda x.P$, soit un terme $v\,M_1\cdots M_n$ de tête une variable.</p>
 <p><em>Théorème.</em> Si $M\twoheadrightarrow_\beta N$ et si $N$ est une forme normale de tête faible, alors la réduction de tête faible de $M$ termine. En particulier, si un terme clos a une forme normale, sa réduction de tête faible termine (une forme normale close est une abstraction).</p>
 </enonce>
-<philo><p>Pour savoir si un calcul peut aboutir, il suffit de regarder la stratégie la plus paresseuse : celle qui ne travaille que sur ce qui est « en tête », là où se décide la forme du résultat. Si même elle tourne en rond, aucune autre stratégie ne trouvera de forme normale. C’est l’outil qui permet de <em>démontrer</em> qu’un programme ne termine pas, et non seulement de le constater sur un réducteur.</p></philo>
+<philo>
+<p class="en-clair"><strong>En clair.</strong> Pour savoir si un calcul peut aboutir, il suffit de suivre la stratégie la plus paresseuse, qui ne calcule que ce qui est immédiatement nécessaire.</p>
+<p>C’est la stratégie du travail « à la demande » : ne jamais calculer quelque chose dont on n’a pas encore besoin. Elle est utilisée par des langages comme Haskell, et elle permet même de manipuler des listes infinies dont on ne calcule que le début.</p>
+</philo>
 <tech>
 <p>On utilise la réduction parallèle $\Rightarrow$ et son lemme de substitution, démontrés pour la <a href="#church-rosser">confluence</a>. Une étape $M\Rightarrow N$ est <strong>interne</strong>, notée $M\Rightarrow_{\mathrm{int}}N$, si elle ne contracte pas le rédex de tête faible, c’est-à-dire si l’on est dans l’un des trois cas : (i) $M=\lambda x.P$, $N=\lambda x.P'$ avec $P\Rightarrow P'$ ; (ii) $M=v\,M_1\cdots M_n$, $N=v\,N_1\cdots N_n$ avec $M_i\Rightarrow N_i$ ; (iii) $M=(\lambda y.P)\,Q\,M_1\cdots M_n$, $N=(\lambda y.P')\,Q'\,N_1\cdots N_n$ avec $P\Rightarrow P'$, $Q\Rightarrow Q'$, $M_i\Rightarrow N_i$.</p>
 <p><strong>Fait 0.</strong> Si $M\to_tM'$, alors $M[x:=Q]\to_tM'[x:=Q]$ et $M\,R\to_tM'\,R$ (le rédex de tête faible reste en tête). Si $M\Rightarrow_{\mathrm{int}}M'$ et $R\Rightarrow R'$, alors $M\,R\Rightarrow_{\mathrm{int}}M'\,R'$ (dans le cas (i), $(\lambda x.P)\,R\Rightarrow(\lambda x.P')\,R'$ est du type (iii)). Si $M\Rightarrow_{\mathrm{int}}M'$ et $Q\Rightarrow Q'$ et si la tête de $M$ n’est pas $x$, alors $M[x:=Q]\Rightarrow_{\mathrm{int}}M'[x:=Q']$ (lemme de substitution, composante par composante).</p>
@@ -114,6 +146,10 @@ $$(\lambda y.P)\,Q\,M_1\cdots M_n\ \to_t\ P[y:=Q]\,M_1\cdots M_n\qquad(n\ge0),$$
 
 <res type="Théorème" nom="La stratégie normale trouve la forme normale" id="normalisation">
 <enonce><p>Si $M$ a une forme normale, la stratégie qui réduit toujours le rédex le plus à gauche et le plus externe (<em>ordre normal</em>) l’atteint.</p></enonce>
+<philo>
+<p class="en-clair"><strong>En clair.</strong> Il existe une stratégie de calcul, toujours la même, qui trouve le résultat final chaque fois qu’il en existe un : effectuer toujours le remplacement le plus à gauche et le plus extérieur.</p>
+<p>D’autres stratégies peuvent se perdre dans un calcul sans fin, par exemple en s’acharnant à calculer un argument qui ne servira jamais. La stratégie normale évite ce piège en n’évaluant un argument que lorsqu’il est réellement utilisé. Le réducteur de la page et le programme Python du manuel l’appliquent.</p>
+</philo>
 <tech><p>Par récurrence sur la taille de la forme normale $N$ de $M$. Par le théorème de <a href="#tete-faible">normalisation de tête faible</a>, la réduction de tête faible de $M$ termine sur une forme normale de tête faible $L$. Tant qu’un terme a un rédex de tête faible, ce rédex est le plus à gauche et le plus externe : l’ordre normal commence donc par ces pas, et arrive à $L$. Par la seconde remarque qui suit ce théorème, deux cas se présentent.</p>
 <ul>
 <li>$N=\lambda x.N_0$ et $L=\lambda x.L_0$ avec $L_0\twoheadrightarrow N_0$. Le rédex le plus à gauche et le plus externe de $\lambda x.L_0$ est celui de $L_0$ : l’ordre normal se poursuit par celui de $L_0$, qui atteint $N_0$ par hypothèse de récurrence ($N_0$ est plus petit que $N$).</li>
@@ -132,7 +168,10 @@ $$(\lambda y.P)\,Q\,M_1\cdots M_n\ \to_t\ P[y:=Q]\,M_1\cdots M_n\qquad(n\ge0),$$
 <li>(S3) si $M\to_t^*P\,Q$, $P\twoheadrightarrow_sP'$ et $Q\twoheadrightarrow_sQ'$, alors $M\twoheadrightarrow_sP'\,Q'$.</li>
 </ul>
 <p>Le théorème dit : $M\twoheadrightarrow_\beta N$ implique $M\twoheadrightarrow_sN$.</p></enonce>
-<philo><p>Toute réduction, si désordonnée soit-elle, peut être remise dans l’ordre « de gauche à droite et de l’extérieur vers l’intérieur ». Le résultat ne dépend donc pas de l’ordre de travail, et une stratégie mécanique, fixée à l’avance, suffit pour tout atteindre.</p></philo>
+<philo>
+<p class="en-clair"><strong>En clair.</strong> Tout calcul, même mené dans le désordre, peut être réorganisé pour se faire « de gauche à droite et de l’extérieur vers l’intérieur ».</p>
+<p>On peut donc toujours remettre un calcul dans un ordre standard sans changer ce qu’il produit. C’est un résultat technique qui sert à démontrer les précédents.</p>
+</philo>
 <tech>
 <p>La forme inductive ci-dessus est due à Takahashi (1995). Chaque dérivation de $M\twoheadrightarrow_sN$ décrit une suite de réductions : les pas de tête faible, puis (S2) ceux de $P$ sous le $\lambda$, ou (S3) ceux de $P$ puis ceux de $Q$. En particulier $M\twoheadrightarrow_sN$ implique $M\twoheadrightarrow_\beta N$. On utilise le fait 0 de la <a href="#tete-faible">normalisation de tête faible</a> : si $M\to_tM'$, alors $M[x:=Q]\to_tM'[x:=Q]$ et $M\,R\to_tM'\,R$.</p>
 <p><strong>Lemme 1.</strong> $M\twoheadrightarrow_sM$, par récurrence sur $M$, avec zéro pas de tête.</p>
@@ -156,6 +195,11 @@ $$(\lambda y.P)\,Q\,M_1\cdots M_n\ \to_t\ P[y:=Q]\,M_1\cdots M_n\qquad(n\ge0),$$
 
 <h2>Programmer en λ-calcul</h2>
 
+<clair>
+<p>Comment calculer sans nombres ? L’idée de Church est de représenter le nombre 3 par l’action « faire trois fois ». Le nombre 3 devient la fonction qui prend une opération et l’applique trois fois de suite. Avec cette idée, l’addition, la multiplication, les tests « vrai ou faux » et même les boucles s’écrivent comme des fonctions.</p>
+</clair>
+
+
 <p>Le λ-calcul n’a aucune structure de données : il faut tout coder par des fonctions. Pour la calculabilité, il suffit de coder les entiers. L’idée de Church est de voir un entier comme un <em>itérateur</em> : l’entier $n$ est « appliquer $n$ fois ».</p>
 
 <res type="Définition" nom="Entiers de Church et fonctions λ-définissables" id="church">
@@ -166,7 +210,10 @@ $$(\lambda y.P)\,Q\,M_1\cdots M_n\ \to_t\ P[y:=Q]\,M_1\cdots M_n\qquad(n\ge0),$$
 <li>si $f(n_1,\dots,n_k)\ind$, alors $F\,\mathbf n_1\cdots\mathbf n_k$ n’a pas de forme normale.</li>
 </ul>
 </enonce>
-<philo><p>Un nombre n’est plus une quantité mais une action : « trois », c’est « faire trois fois ». $\mathbf 4\,P\,V\twoheadrightarrow P(P(P(P\,V)))$ : c’est la boucle <code>pour i de 1 à 4 faire P</code>. Le lecteur logicien reconnaît la présentation de Peano, où $f$ joue le rôle du successeur et $x$ celui de zéro.</p></philo>
+<philo>
+<p class="en-clair"><strong>En clair.</strong> Le nombre $n$ est représenté par la fonction qui applique une opération $n$ fois. Une fonction sur les nombres est « λ-définissable » s’il existe une expression du λ-calcul qui, appliquée à la représentation de $x$, se calcule en la représentation de $f(x)$.</p>
+<p>Un nombre cesse d’être une quantité et devient une action : « trois », c’est « faire trois fois ». C’est d’ailleurs ainsi que les jeunes enfants apprennent à compter, en répétant un geste. Avec cette idée, une boucle « répéter $n$ fois » n’est rien d’autre que le nombre $n$ lui-même.</p>
+</philo>
 <tech>
 <p>On démontre au chapitre <a href="equivalence.html#lambda">Équivalence</a> que les fonctions λ-définissables sont exactement les fonctions récursives. Ce résultat montre aussi que le choix des entiers de Church n’est pas limitant : tout autre codage <em>calculable</em> des entiers (où l’on passe d’un codage à l’autre par un terme) donne la même classe. Un codage non calculable pourrait en revanche « cacher » de l’information dans la représentation des nombres.</p>
 </tech>
@@ -186,8 +233,8 @@ $$\begin{aligned}
 \end{aligned}$$
 </enonce>
 <philo>
-<p>Le combinateur $\mathsf Y$ est la clé de la récursion : il donne à une fonction le moyen de s’appeler elle-même alors que le λ-calcul n’a pas de noms. $\mathsf Y\,G$ est un <em>point fixe</em> de $G$. C’est la même idée réflexive que celle du <a href="smn-recursion.html#recursion">théorème de récursion de Kleene</a> et des programmes qui affichent leur propre texte.</p>
-<p>Le prédécesseur est étonnamment difficile : Church lui-même ne savait pas le définir, et c’est son étudiant Stephen Kleene qui trouva une solution (selon la légende, chez le dentiste). Retirer une itération à un itérateur demande une astuce.</p>
+<p class="en-clair"><strong>En clair.</strong> On sait écrire en λ-calcul l’addition, la multiplication, la soustraction, le vrai et le faux, le « si… alors… sinon… », et une expression, appelée combinateur de point fixe, qui permet à une fonction de s’appeler elle-même.</p>
+<p>Le λ-calcul n’a pas de noms : une fonction ne peut pas dire « appelle-moi à nouveau ». Le combinateur de point fixe contourne l’obstacle par une astuce d’auto-reproduction : il fabrique une copie de la fonction et la lui donne en argument. C’est la même idée que celle des programmes qui s’affichent eux-mêmes, étudiés au chapitre <a href="smn-recursion.html">s-m-n et récursion</a>.</p>
 </philo>
 <tech>
 <p>$\mathsf{plus}\,\mathbf m\,\mathbf n\twoheadrightarrow\lambda f.\lambda x.\,\mathbf m\,f\,(\mathbf n\,f\,x)$ : $\mathbf n\,f\,x$ applique $n$ fois $f$ à $x$, puis $\mathbf m\,f$ l’applique encore $m$ fois. Pour $\mathsf Y$ :</p>
@@ -212,7 +259,47 @@ Y g</pre></div>
 </techno>
 </res>
 
+<atelier titre="un réducteur de λ-termes en Python">
+<p>Le fichier <code>lambda_calcul.py</code> des <a href="programmes.html">programmes à télécharger</a> contient un réducteur complet en environ 150 lignes. Les termes sont lus dans la syntaxe des pages ($\lambda x\,y.M$ ou <code>\x y.M</code>, entiers écrits en chiffres et traduits en entiers de Church, définitions <code>NOM = terme</code>), puis traduits en <strong>indices de de Bruijn</strong> : chaque variable est remplacée par le nombre de λ qu’il faut traverser pour atteindre celui qui la lie. Ainsi $\lambda f.\lambda x.f\,(f\,x)$ devient $\lambda.\lambda.\,1\,(1\,0)$ ; l’α-équivalence devient l’égalité, et aucune capture de variable n’est possible.</p>
+<p>La substitution $M[0:=N]$ demande de décaler les indices libres de $N$ quand on passe sous un λ, et de décrémenter ceux de $M$ supérieurs à la variable substituée :</p>
+<pre><code>def decaler(t, d, c=0):                 # ajoute d aux indices libres (>= c)
+    if t[0] == "V": return ("V", t[1] + d) if t[1] >= c else t
+    if t[0] == "L": return ("L", decaler(t[1], d, c + 1))
+    return ("A", decaler(t[1], d, c), decaler(t[2], d, c))
+
+def substituer(t, j, s):                # t[j := s], puis on retire le lieur
+    if t[0] == "V":
+        if t[1] == j: return decaler(s, j)
+        return ("V", t[1] - 1) if t[1] > j else t
+    if t[0] == "L": return ("L", substituer(t[1], j + 1, s))
+    return ("A", substituer(t[1], j, s), substituer(t[2], j, s))
+
+def pas_normal(t):                      # un pas gauche-externe, None si normal
+    if t[0] == "A":
+        if t[1][0] == "L":              # redex en tête : (λ.M) N -> M[0 := N]
+            return substituer(t[1][1], 0, t[2])
+        f = pas_normal(t[1])
+        if f is not None: return ("A", f, t[2])
+        x = pas_normal(t[2])
+        return None if x is None else ("A", t[1], x)
+    if t[0] == "L":
+        b = pas_normal(t[1])
+        return None if b is None else ("L", b)
+    return None</code></pre>
+<p>Répéter <code>pas_normal</code> jusqu’à obtenir <code>None</code> réalise la stratégie normale, qui trouve la forme normale si elle existe (<a href="#normalisation">théorème</a>). Une forme normale $\lambda.\lambda.\,1\,(1\,(\cdots 0))$ est reconnue comme un entier de Church.</p>
+<pre><code>$ python3 lambda_calcul.py "(λm n f.m (n f)) 2 3"
+forme normale : λx0.λx1.x0 (x0 (x0 (x0 (x0 (x0 x1)))))
+(7 pas)   entier de Church : 6</code></pre>
+<p>Le même fichier contient le compilateur des fonctions récursives vers le λ-calcul ; il est décrit au chapitre <a href="equivalence.html#lambda">Équivalence</a>.</p>
+</atelier>
+
+
 <h2 id="bibliotheque-commune">Une bibliothèque commune aux trois modèles</h2>
+
+<clair>
+<p>Les douze fonctions communes aux trois modèles s’écrivent ici comme des fonctions de fonctions. On peut les essayer directement dans la page avec le réducteur intégré : il effectue les remplacements un par un et affiche le résultat.</p>
+</clair>
+
 <p>Les mêmes douze fonctions sont définies dans les trois modèles de ce manuel (voir aussi les chapitres <a href="fonctions-recursives.html#bibliotheque-commune">Fonctions récursives</a> et <a href="machines-turing.html#bibliotheque-commune">Machines de Turing</a>). Pour chaque terme, on démontre qu’il <a href="#church">λ-définit</a> sa spécification : appliqué à des entiers de Church, il se réduit vers l’entier de Church du résultat, et, pour le quotient par $0$, il n’a pas de forme normale. Les preuves reposent sur un seul lemme d’itération. Quand c’est éclairant, on donne aussi la <em>traduction littérale</em> de la définition récursive, à côté du terme le plus court. Tous les termes ont été vérifiés avec le réducteur sur des grilles d’entrées.</p>
 <table class="table-trois">
 <tr><th>Fonction</th><th>Spécification</th><th>Récursive</th><th>Turing</th><th>λ-calcul</th></tr>
@@ -239,7 +326,10 @@ Y g</pre></div>
 <li>(Couples) Avec $\mathsf{pair}=\lambda a.\lambda b.\lambda s.\,s\,a\,b$, $\mathsf{fst}=\lambda p.\,p\,\mathsf{tt}$, $\mathsf{snd}=\lambda p.\,p\,\mathsf{ff}$ : $\mathsf{fst}\,(\mathsf{pair}\,M\,N)\twoheadrightarrow M$ et $\mathsf{snd}\,(\mathsf{pair}\,M\,N)\twoheadrightarrow N$. Si un terme $P$ envoie tout couple $\mathsf{pair}\,\mathbf k\,\mathbf{v}$ (avec $v=f(k)$) sur un terme qui se réduit vers $\mathsf{pair}\,\mathbf{k+1}\,\mathbf{f(k+1)}$, alors $\mathbf y\,P\,(\mathsf{pair}\,\mathbf0\,\mathbf{f(0)})\twoheadrightarrow\mathsf{pair}\,\mathbf y\,\mathbf{f(y)}$.</li>
 </ol>
 </enonce>
-<philo><p>Un entier de Church est une boucle « pour ». Une récurrence primitive dont le pas ne dépend que de la valeur précédente est donc directement une boucle : $\mathbf y\,H\,A$. Quand le pas dépend aussi du compteur (factorielle, prédécesseur), on fait tourner la boucle sur un couple (compteur, valeur), exactement comme on le ferait dans un langage impératif avec deux variables.</p></philo>
+<philo>
+<p class="en-clair"><strong>En clair.</strong> Puisqu’un nombre est une boucle « répéter $n$ fois », une définition par récurrence se traduit directement : on répète $n$ fois le pas de la récurrence. Pour se souvenir à la fois du compteur et du résultat, on transporte un couple de valeurs.</p>
+<p>C’est la technique du randonneur qui note à chaque étape le numéro de l’étape et la distance parcourue : avec ces deux nombres, il sait toujours où il en est.</p>
+</philo>
 <tech><p>(1) $\mathbf n\,F\,X=(\lambda f.\lambda x.\,f^nx)\,F\,X\to(\lambda x.\,F^nx)\,X\to F^nX$ ($x$ n’est pas libre dans $F$, quitte à renommer). (2) Un seul pas : $\mathbf n\,F\to\lambda x.\,F^nx$. (3) Par (1), $\mathbf y\,H\,A\twoheadrightarrow H^y\,A$ ; par récurrence sur $y$, $H^y\,A\twoheadrightarrow\mathbf{f(y)}$ : c’est l’hypothèse sur $A$ pour $y=0$, et $H(H^yA)\twoheadrightarrow H\,\mathbf{f(y)}\twoheadrightarrow\mathbf{h(f(y))}=\mathbf{f(y+1)}$ (on réduit d’abord l’argument, ce qui est permis puisque $\twoheadrightarrow$ autorise la réduction de n’importe quel sous-terme). (4) $\mathsf{fst}\,(\mathsf{pair}\,M\,N)\twoheadrightarrow(\lambda s.\,s\,M\,N)\,\mathsf{tt}\to\mathsf{tt}\,M\,N\twoheadrightarrow M$, de même pour $\mathsf{snd}$ ; la seconde partie est (1) suivi d’une récurrence sur $y$ comme en (3).</p></tech>
 </res>
 

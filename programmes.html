@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Frédéric Prost et Claude">
+<title>Programmes à télécharger · Calculabilité</title>
+<link rel="stylesheet" href="assets/katex/katex.min.css">
+<link rel="stylesheet" href="assets/style.css">
+<script>try{var t=localStorage.getItem('calc-theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}document.documentElement.classList.add('js');</script>
+</head>
+<body>
+<header class="entete"><div class="entete-int">
+  <button type="button" class="btn-menu" aria-label="Sommaire">☰ Sommaire</button>
+  <a class="titre-site" href="index.html">Calculabilité <span>·</span> un manuel à trois niveaux <span class="version">version 2</span></a>
+  <span class="selecteur-legende">Niveau de lecture :</span>
+  <div class="selecteur" role="group" aria-label="Niveau de lecture">
+    <button type="button" data-niveau="philo" title="Sens et implications">Philosophique</button>
+    <button type="button" data-niveau="tech" title="Preuves mathématiques">Technique</button>
+    <button type="button" data-niveau="techno" title="Constructions complètes, machines de Turing">Technologique</button>
+    <button type="button" data-niveau="tout" title="Afficher les trois niveaux">Tout</button>
+  </div>
+  <button type="button" class="btn-theme" aria-label="Changer de thème" title="Clair / sombre">◐</button>
+</div></header>
+<div class="page">
+<nav class="sommaire" aria-label="Sommaire"><ul><li><a href="index.html">Accueil et mode d’emploi</a></li></ul><h2>Entrer dans le sujet</h2><ol><li><a href="motivations.html"><span class="num">1</span>Motivations</a></li><li><a href="trois-approches.html"><span class="num">2</span>Trois approches du calcul</a></li></ol><h2>Modèles de calcul</h2><ol><li><a href="machines-turing.html"><span class="num">3</span>Machines de Turing</a></li><li><a href="fonctions-recursives.html"><span class="num">4</span>Fonctions récursives</a></li><li><a href="lambda-calcul.html"><span class="num">5</span>λ-calcul</a></li><li><a href="equivalence.html"><span class="num">6</span>Équivalence des modèles</a></li><li><a href="these-church.html"><span class="num">7</span>Thèse de Church-Turing</a></li></ol><h2>Théorèmes fondamentaux</h2><ol><li><a href="universalite.html"><span class="num">8</span>Universalité</a></li><li><a href="smn-recursion.html"><span class="num">9</span>s-m-n et récursion</a></li></ol><h2>Limites du calcul</h2><ol><li><a href="indecidabilite.html"><span class="num">10</span>Indécidabilité</a></li><li><a href="semi-decidabilite.html"><span class="num">11</span>Semi-décidabilité</a></li><li><a href="hierarchie-arithmetique.html"><span class="num">12</span>Hiérarchie arithmétique</a></li><li><a href="incompletude.html"><span class="num">13</span>Incomplétude</a></li><li><a href="equations-diophantiennes.html"><span class="num">14</span>Équations diophantiennes</a></li><li><a href="logique-types.html"><span class="num">15</span>Logique et types</a></li><li><a href="theories-decidables.html"><span class="num">16</span>Théories décidables</a></li><li><a href="mathematiques-indecidables.html"><span class="num">17</span>Mathématiques ordinaires</a></li><li><a href="kolmogorov-omega.html"><span class="num">18</span>Kolmogorov et Ω</a></li><li><a href="langages.html"><span class="num">19</span>Langages et grammaires</a></li></ol><h2>Complexité</h2><ol><li><a href="complexite.html"><span class="num">20</span>Complexité</a></li><li><a href="hasard-quantique.html"><span class="num">21</span>Hasard et quantique</a></li></ol><h2>Études de cas</h2><ol><li><a href="ackermann.html"><span class="num">22</span>Fonction d’Ackermann</a></li><li><a href="castors-affaires.html"><span class="num">23</span>Castors affairés</a></li><li><a href="calculabilite-ia.html"><span class="num">24</span>Calculabilité et IA</a></li><li><a href="autres-modeles.html"><span class="num">25</span>Autres modèles</a></li></ol><h2>Annexes</h2><ol><li><a href="parcours.html">Parcours de lecture</a></li><li><a href="cantor.html">Diagonale de Cantor</a></li><li><a href="bases.html">Notions de base</a></li><li><a href="leibniz.html">Leibniz et le binaire</a></li><li><a href="programmes.html" aria-current="page">Programmes Python</a></li><li><a href="bibliographie.html">Bibliographie</a></li></ol></nav>
+<main class="contenu">
+<h1>Programmes à télécharger</h1>
+<p class="chapo">Toutes les constructions du niveau technologique existent sous forme de programmes Python qu’on peut télécharger, lire, modifier et exécuter sur sa propre machine.</p>
+
+<nav class="toc-locale" aria-label="Dans ce chapitre"><strong>Dans ce chapitre</strong><ol><li><a href="#installer">Installer et lancer</a></li><li><a href="#fichiers">Les fichiers</a></li><li><a href="#exemples">Quelques commandes</a></li><li><a href="#autres">Les autres programmes du manuel</a></li><li><a href="#licence">Licence</a></li></ol></nav>
+
+
+<div class="seulement philo clair">
+<p>Le niveau technologique du manuel décrit des machines complètes : chaque instruction y est écrite. Ces machines ont souvent des milliers d’instructions, et personne ne les vérifierait à la main. On les a donc programmées. Les programmes sont rassemblés ici ; il n’est pas nécessaire de savoir programmer pour les lancer, il suffit de suivre les instructions d’installation.</p>
+</div>
+
+<p class="philo-aussi"><a class="telechargement" href="assets/programmes.zip" download>Télécharger les programmes (programmes.zip)</a></p>
+
+<h2 id="installer">Installer et lancer</h2>
+
+<p class="philo-aussi">Les programmes n’ont besoin que de Python 3 (version 3.8 ou plus récente), sans aucune bibliothèque supplémentaire.</p>
+<ol class="philo-aussi">
+<li><strong>Installer Python.</strong> Sous Linux et macOS, il est en général déjà présent : taper <code>python3 --version</code> dans un terminal. Sinon, ou sous Windows, le télécharger sur <a href="https://www.python.org/downloads/">python.org</a> (sous Windows, cocher « Add Python to PATH » pendant l’installation).</li>
+<li><strong>Décompresser</strong> <code>programmes.zip</code> : on obtient un dossier <code>programmes</code>.</li>
+<li><strong>Ouvrir un terminal dans ce dossier</strong> (sous Windows : clic droit dans le dossier, « Ouvrir dans le terminal » ; sous macOS : clic droit, « Nouveau terminal au dossier »).</li>
+<li><strong>Lancer la vérification</strong> : <code>python3 tests.py</code> (sous Windows : <code>py tests.py</code>). Au bout d’une dizaine de secondes, le programme affiche « Tout est conforme. »</li>
+</ol>
+<p class="philo-aussi">Chaque fichier lancé sans argument (<code>python3 compilateur.py</code>) affiche son mode d’emploi.</p>
+
+<h2 id="fichiers">Les fichiers</h2>
+
+<div class="seulement philo clair"><p>Chaque programme correspond à un chapitre. Les trois premiers suffisent pour voir une machine de Turing calculer et pour fabriquer automatiquement une machine à partir d’une formule.</p></div>
+
+<table class="philo-aussi">
+<tr><th>Fichier</th><th>Ce qu’il fait</th><th>Chapitre</th></tr>
+<tr><td><code>machines.py</code></td><td>Simulateur de machines de Turing à quadruplets. Lit les fichiers <code>.tm</code> (un quadruplet par ligne) et affiche, si on le demande, chaque étape du calcul.</td><td><a href="machines-turing.html">Machines de Turing</a></td></tr>
+<tr><td><code>exemples/*.tm</code></td><td>Les machines du chapitre 3 : addition, soustractions, constantes, projections, multiplication, signe, égalité.</td><td><a href="machines-turing.html#exemples">Exemples</a></td></tr>
+<tr><td><code>recursives.py</code></td><td>Les fonctions récursives : les six briques $C$, $S$, $A$, $\sigma$, $\rho$, $\mu$, l’évaluation d’un terme, une bibliothèque (opérations, comparaisons, quotient, couples de Cantor…), et l’écriture commode par substitution générale.</td><td><a href="fonctions-recursives.html">Fonctions récursives</a></td></tr>
+<tr><td><code>compilateur.py</code></td><td>Le compilateur des fonctions récursives vers les machines de Turing : il écrit la machine complète, l’exécute, compare le résultat.</td><td><a href="equivalence.html#recursives-turing">Équivalence</a></td></tr>
+<tr><td><code>turing_vers_recursif.py</code></td><td>Le sens réciproque : une machine de Turing devient un terme récursif avec une seule minimisation (forme normale de Kleene), vérifié pas à pas.</td><td><a href="equivalence.html#turing-recursives">Équivalence</a></td></tr>
+<tr><td><code>lambda_calcul.py</code></td><td>Réducteur de λ-termes en ordre normal, entiers de Church, et compilateur des fonctions récursives vers le λ-calcul.</td><td><a href="lambda-calcul.html">λ-calcul</a>, <a href="equivalence.html#lambda">Équivalence</a></td></tr>
+<tr><td><code>universelle.py</code></td><td>Une fonction universelle $U(e,x)$ écrite avec les six briques, puis, en la compilant, une machine de Turing universelle (environ 30 millions de quadruplets).</td><td><a href="universalite.html">Universalité</a></td></tr>
+<tr><td><code>recursion.py</code></td><td>Le théorème s-m-n sur les machines de Turing ; le point fixe de Kleene ; un programme qui affiche son propre texte.</td><td><a href="smn-recursion.html">s-m-n et récursion</a></td></tr>
+<tr><td><code>arret.py</code></td><td>L’argument diagonal exécuté : quatre « décideurs de l’arrêt » candidats, et le programme qui met chacun en défaut.</td><td><a href="indecidabilite.html">Indécidabilité</a></td></tr>
+<tr><td><code>tests.py</code></td><td>Vérifie toutes les affirmations précédentes.</td><td></td></tr>
+</table>
+
+<h2 id="exemples">Quelques commandes</h2>
+
+<pre class="philo-aussi"><code>python3 machines.py exemples/addition.tm 2 3 --trace
+python3 recursives.py "rho[A(1,1), sigma[S, A(3,2)]]" 2 3
+python3 compilateur.py mult 2 3 --sortie mult.tm
+python3 machines.py mult.tm 2 3
+python3 turing_vers_recursif.py exemples/soustraction_propre.tm 5 2
+python3 lambda_calcul.py --compiler fact 3
+python3 universelle.py
+python3 universelle.py --machine
+python3 recursion.py
+python3 arret.py</code></pre>
+
+<p>La syntaxe des termes est celle du chapitre <a href="fonctions-recursives.html">Fonctions récursives</a> : <code>C(k,m)</code> pour la constante $m^{(k)}$, <code>S</code>, <code>A(k,i)</code> pour $A^{(k)}_i$, <code>sigma[g, h1, ..., hk]</code>, <code>rho[g, h]</code>, <code>mu[g]</code> ; les lettres grecques σ, ρ, μ sont acceptées, ainsi que les noms de la bibliothèque (<code>python3 recursives.py --liste</code>).</p>
+
+<h2 id="autres">Les autres programmes du manuel</h2>
+
+<p class="philo-aussi">Les programmes de vérification des chapitres plus avancés (castors affairés, complexité, Presburger, Kolmogorov, hasard quantique…) sont dans le dossier <code>assets/code/</code> du site ; chacun se lance avec <code>python3 fichier.py</code> (ou se compile avec <code>cc</code> pour les fichiers en C) et vérifie ce qu’il affirme.</p>
+
+<h2 id="licence">Licence</h2>
+<p class="philo-aussi">Les programmes sont sous licence MIT : on peut les copier, les modifier et les redistribuer librement, en conservant la mention des auteurs (Frédéric Prost et Claude).</p>
+
+<nav class="nav-chap"><a href="leibniz.html"><small>← Précédent</small>Leibniz et l’arithmétique binaire</a><a href="bibliographie.html" style="text-align:right"><small>Suivant →</small>Bibliographie</a></nav>
+<footer class="pied">Calculabilité — manuel à trois niveaux de lecture. Auteurs : Frédéric Prost et Claude. Texte sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" rel="license">CC BY-SA 4.0</a>, code sous licence MIT. Les mathématiques sont rendues par KaTeX (licence MIT), embarqué localement : le site se lit sans connexion.</footer>
+</main>
+</div>
+<script src="assets/katex/katex.min.js"></script>
+<script src="assets/katex/contrib/auto-render.min.js"></script>
+<script src="assets/turing.js"></script>
+<script src="assets/lambda.js"></script>
+<script src="assets/pcp.js"></script>
+<script src="assets/automates.js"></script>
+<script src="assets/niveaux.js"></script>
+<script src="assets/widgets.js"></script>
+</body>
+</html>

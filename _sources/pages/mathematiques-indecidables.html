@@ -2,18 +2,28 @@
 titre: L’indécidable dans les mathématiques ordinaires
 court: Mathématiques ordinaires
 chapo: L’indécidabilité ne concerne pas seulement les programmes et la logique. Des questions posées par des mathématiciens qui ne pensaient pas aux machines (itérations arithmétiques, produits de matrices, pavages du plan, zéros de fonctions, groupes, variétés) sont indécidables, parce qu’elles savent toutes décrire un calcul.
+chapo_clair: L’indécidable n’est pas réservé aux programmes. Des questions posées par des mathématiciens qui ne pensaient pas aux machines (suites de nombres, produits de matrices, pavages, groupes) sont indécidables, parce qu’elles savent, sans le vouloir, décrire un calcul.
 prerequis: indecidabilite.html#arret|Problème de l’arrêt ; autres-modeles.html#fractran|FRACTRAN ; autres-modeles.html#pcp|Problème de Post ; equations-diophantiennes.html#mrdp|Théorème MRDP
 -->
+
+<clair>
+<p>On pourrait croire que l’indécidabilité est une curiosité de logiciens, qui ne concerne que les programmes et les démonstrations. Ce chapitre montre le contraire : des questions issues de l’arithmétique, de l’algèbre, de la géométrie et de l’analyse sont indécidables. À chaque fois, la raison est la même : un objet mathématique en apparence innocent (une suite de nombres, un jeu de carreaux, un produit de matrices) est assez riche pour imiter une machine de Turing.</p>
+</clair>
 
 <p>Le problème de l’arrêt est une question sur les programmes. On pourrait penser que l’indécidabilité reste confinée à l’informatique et à la logique, et que les mathématiques « ordinaires » (l’arithmétique, l’algèbre, la géométrie, l’analyse) n’en sont pas affectées. Le <a href="equations-diophantiennes.html">dixième problème de Hilbert</a> a déjà montré le contraire. Ce chapitre rassemble d’autres exemples, choisis parce qu’ils ont été posés indépendamment de toute idée de calcul. Chaque fois, la démonstration a la même forme : on montre que la question sait <em>décrire</em> le calcul d’une machine, et l’on se ramène à l’arrêt. Trois réductions sont démontrées en entier et vérifiées par le programme <a href="assets/code/maths_indecidables.py">maths_indecidables.py</a> ; les autres résultats sont cités pour information.</p>
 
 <h2 id="iterations">Itérations arithmétiques</h2>
 
+<clair>
+<p>La célèbre suite de Syracuse (diviser par 2 si le nombre est pair, sinon multiplier par 3 et ajouter 1) atteint-elle toujours 1 ? Personne ne le sait. John Conway a montré qu’une famille de règles semblables permet de programmer n’importe quel calcul : pour ces règles, la question est indécidable.</p>
+</clair>
+
+
 <res type="Théorème" nom="Les problèmes de Collatz généralisés sont indécidables (Conway, 1972)" id="collatz-generalise">
 <enonce><p>Une <strong>fonction de Collatz généralisée</strong> est une fonction $g:\N\to\N$ définie par un entier $M\ge1$ et des rationnels $c_0,\dots,c_{M-1}$, par $g(n)=c_r\,n$ lorsque $n\equiv r\pmod M$ (on suppose les $c_r$ choisis de sorte que $g(n)$ soit toujours entier). Il n’existe pas d’algorithme qui, étant donné $g$ et $n$, décide si la suite $n,g(n),g(g(n)),\dots$ atteint un point fixe.</p></enonce>
 <philo>
-<p>La conjecture de Collatz (ou de Syracuse) porte sur la fonction $n\mapsto n/2$ si $n$ est pair, $3n+1$ si $n$ est impair : partant de n’importe quel entier, atteint-on toujours $1$ ? Malgré son énoncé d’écolier, elle résiste depuis 1937. Le théorème de Conway n’a rien à dire sur cette fonction-là, mais il explique pourquoi la question est si difficile : les fonctions de la même famille, définies par une congruence et une multiplication, sont des ordinateurs. La fonction de Collatz est peut-être un ordinateur, peut-être pas ; personne ne le sait.</p>
-<p>Résultat cité pour information : la question « la suite atteint-elle $1$ pour <em>tout</em> point de départ ? », qui est la forme de la conjecture de Collatz, est indécidable pour les fonctions de Collatz généralisées, et même $\Pi_2$-complète (Kurtz et Simon, 2007) : elle est du même niveau que la <a href="hierarchie-arithmetique.html#fin-tot">totalité d’un programme</a>.</p>
+<p class="en-clair"><strong>En clair.</strong> Partons d’un nombre ; s’il est pair on le divise par 2, s’il est impair on le multiplie par 3 et on ajoute 1 ; et l’on recommence. Pour des règles de ce genre, on ne peut pas décider en général si la suite obtenue finit par s’arrêter sur une valeur.</p>
+<p>La règle ci-dessus est celle de la célèbre suite de Syracuse (ou de Collatz). Partant de 6, on obtient 3, 10, 5, 16, 8, 4, 2, 1. Arrive-t-on toujours à 1 ? Personne ne le sait depuis 1937, malgré un énoncé compréhensible au collège. Le théorème de Conway ne répond pas à cette question précise, mais il explique sa difficulté : les règles de la même famille (« selon le reste de la division par tel nombre, multiplier par telle fraction ») sont capables d’imiter n’importe quel ordinateur. La suite de Syracuse est peut-être un ordinateur déguisé, peut-être pas ; personne ne le sait.</p>
 </philo>
 <tech>
 <p>On se ramène à <a href="autres-modeles.html#fractran">FRACTRAN</a>. Soit $f_1,\dots,f_k$ un programme FRACTRAN, écrit avec des fractions irréductibles $f_i=a_i/b_i$, et $M$ le PPCM des $b_i$. Pour $n\in\N$, $nf_i$ est entier si et seulement si $b_i$ divise $n$. Comme $b_i$ divise $M$, cela ne dépend que du reste $r$ de $n$ modulo $M$ : $b_i\mid n\iff b_i\mid r$. On pose donc $c_r=f_i$ pour le premier $i$ tel que $b_i\mid r$, et $c_r=1$ s’il n’y en a pas. Alors $g(n)=c_r\,n$ est exactement un pas du programme FRACTRAN, sauf lorsque le programme s’arrête, où $g(n)=n$. Comme $f_i\ne1$ (une fraction égale à $1$ ferait boucler le programme, et l’on peut l’enlever), la suite atteint un point fixe si et seulement si le programme FRACTRAN s’arrête sur $n$. Par l’<a href="autres-modeles.html#fractran">universalité de FRACTRAN</a>, décider cela déciderait l’arrêt des machines à compteurs, donc l’<a href="indecidabilite.html#arret">arrêt des machines de Turing</a>.</p>
@@ -23,9 +33,17 @@ prerequis: indecidabilite.html#arret|Problème de l’arrêt ; autres-modeles.ht
 
 <h2 id="matrices">Produits de matrices</h2>
 
+<clair>
+<p>On se donne quelques tableaux de nombres (des matrices) et l’on se demande si, en les multipliant entre elles dans un certain ordre, on peut obtenir un tableau dont une case vaut zéro. Il n’existe pas de méthode générale pour répondre.</p>
+</clair>
+
+
 <res type="Théorème" nom="Une question indécidable sur les produits de matrices entières" id="matrices-post">
 <enonce><p>Il n’existe pas d’algorithme qui, étant donné une liste finie de matrices $3\times3$ à coefficients entiers, décide s’il existe un produit non vide de ces matrices (avec répétitions permises) dont les coefficients $(1,3)$ et $(2,3)$ sont égaux.</p></enonce>
-<philo><p>Multiplier des matrices est le calcul le plus routinier de l’algèbre linéaire. Pourtant la question « peut-on atteindre telle propriété en multipliant des matrices prises dans un stock fini ? » est indécidable : un produit de matrices peut garder en mémoire deux mots et les allonger, et l’on retrouve le <a href="autres-modeles.html#pcp">problème de Post</a>. Le phénomène concerne directement les systèmes dynamiques et le contrôle : un système qui, à chaque étape, applique l’une de plusieurs transformations linéaires est un ordinateur.</p></philo>
+<philo>
+<p class="en-clair"><strong>En clair.</strong> On dispose d’une petite liste de tableaux de nombres entiers (des matrices) qu’on peut multiplier entre eux autant de fois qu’on veut, dans l’ordre qu’on veut. On ne peut pas décider en général si l’un de ces produits aura une propriété très simple, comme deux nombres égaux à des places fixées.</p>
+<p>Multiplier des matrices est l’opération la plus banale de l’algèbre linéaire, enseignée dès les premières années d’université. Pourtant un produit de matrices peut garder en mémoire deux mots et les allonger à chaque étape, et l’on retrouve le <a href="autres-modeles.html#pcp">jeu de dominos de Post</a>, indécidable. La conséquence est concrète : un système qui, à chaque instant, applique l’une de plusieurs transformations simples (un robot, un circuit de contrôle) peut se comporter comme un ordinateur, et l’on ne peut pas toujours prévoir où il ira.</p>
+</philo>
 <tech>
 <p>Soit $A=\{a_1,\dots,a_k\}$ un alphabet. À un mot $w=a_{j_1}\cdots a_{j_\ell}$ on associe l’entier $\sigma(w)=\sum_{t=1}^{\ell}j_t\,(k+1)^{\ell-t}$ : l’écriture de $w$ en base $k+1$ avec les chiffres $1,\dots,k$. Comme aucun chiffre n’est nul, $\sigma$ est injective, et $\sigma(uv)=\sigma(u)\,(k+1)^{|v|}+\sigma(v)$. Posons, pour deux mots $u,v$,</p>
 $$N(u,v)=\begin{pmatrix}(k+1)^{|u|}&0&\sigma(u)\\0&(k+1)^{|v|}&\sigma(v)\\0&0&1\end{pmatrix}.$$
@@ -40,11 +58,17 @@ $$N(u,v)=\begin{pmatrix}(k+1)^{|u|}&0&\sigma(u)\\0&(k+1)^{|v|}&\sigma(v)\\0&0&1\
 
 <h2 id="pavages">Pavages du plan</h2>
 
+<clair>
+<p>On se donne des carreaux carrés aux bords colorés, et l’on veut carreler le sol à l’infini en faisant toujours se toucher des bords de même couleur. Peut-on savoir à l’avance si c’est possible ? Non : un carrelage peut imiter le déroulement d’un calcul, rangée après rangée.</p>
+</clair>
+
+
 <res type="Théorème" nom="Le problème du pavage avec tuile d’origine est indécidable" id="pavage-origine">
 <enonce><p>Une <strong>tuile de Wang</strong> est un carré unité dont les quatre côtés portent des couleurs. Un jeu de tuiles $T$ (fini) <strong>pave</strong> une région du plan quadrillé si l’on peut poser une copie d’une tuile de $T$ dans chaque case, sans rotation, de sorte que deux côtés communs aient la même couleur. Il n’existe pas d’algorithme qui, étant donné $T$ et une tuile $t_0\in T$, décide si $T$ pave le quart de plan $\N\times\N$ avec $t_0$ dans la case $(0,0)$.</p></enonce>
 <philo>
-<p>Hao Wang a posé la question en 1961 en étudiant la logique : un jeu de tuiles qui pave le plan le pave-t-il toujours de façon périodique ? Si oui, le pavage serait décidable (on chercherait en parallèle un motif périodique et un carré impossible à paver). Son élève Robert Berger a montré en 1966 que non : il existe des jeux <em>apériodiques</em>, qui pavent le plan mais jamais périodiquement, et la question « ce jeu pave-t-il le plan ? », sans tuile d’origine, est indécidable (résultat cité pour information).</p>
-<p>La démonstration ci-dessous, avec tuile d’origine, contient l’idée : chaque ligne de tuiles est la bande de la machine à un instant, et les couleurs obligent la ligne suivante à être l’instant suivant. Paver le quart de plan, c’est faire tourner la machine pour toujours. C’est le diagramme espace-temps qui servait déjà pour le <a href="logique-types.html#binaire">problème de la décision</a> et pour le <a href="complexite.html#cook-levin">théorème de Cook et Levin</a>.</p>
+<p class="en-clair"><strong>En clair.</strong> On a un nombre fini de sortes de carreaux carrés dont les quatre bords sont colorés. On veut carreler un sol infini en posant côte à côte des carreaux dont les bords communs ont la même couleur. On ne peut pas décider en général si c’est possible, une fois imposé le carreau du coin.</p>
+<p>Le mathématicien Hao Wang s’est posé la question en 1961. Il pensait que tout carrelage possible pouvait se faire avec un motif qui se répète, comme sur un papier peint ; on aurait alors pu décider la question. Son élève Robert Berger a montré en 1966 que c’est faux : il existe des jeux de carreaux qui couvrent tout le plan, mais jamais de façon répétitive.</p>
+<p>L’idée de la démonstration est simple à dire. Chaque rangée de carreaux représente le ruban d’une machine de Turing à un instant donné, et les couleurs obligent la rangée du dessus à représenter l’instant suivant. Carreler tout le sol revient alors à faire tourner la machine pour toujours. On retrouve le grand tableau du calcul, déjà rencontré à propos de la <a href="logique-types.html#binaire">logique</a>.</p>
 </philo>
 <tech>
 <p>Soit $Z$ une machine de Turing sur une bande infinie à droite, qui démarre dans l’état $q_0$ sur la case $0$ d’une bande blanche et ne cherche jamais à sortir à gauche (on peut toujours s’y ramener ; si elle essaie, la construction ci-dessous la traite comme un arrêt). L’arrêt sur bande blanche est indécidable : à une machine $Z'$ et une entrée $x$, on associe calculablement la machine qui écrit $x$ puis se comporte comme $Z'$, et elle s’arrête sur bande blanche si et seulement si $Z'$ s’arrête sur $x$ ; on conclut par l’<a href="indecidabilite.html#arret">indécidabilité de l’arrêt</a>.</p>
@@ -68,14 +92,26 @@ $$N(u,v)=\begin{pmatrix}(k+1)^{|u|}&0&\sigma(u)\\0&(k+1)^{|v|}&\sigma(v)\\0&0&1\
 
 <res type="Proposition" nom="Paver le plan est co-semi-décidable" id="pavage-pi1">
 <enonce><p>L’ensemble des jeux de tuiles (avec ou sans tuile d’origine) qui <em>ne</em> pavent <em>pas</em> le quart de plan est semi-décidable. Un jeu pave le quart de plan si et seulement s’il pave tous les carrés $n\times n$ (avec la tuile d’origine en bas à gauche, s’il y en a une).</p></enonce>
+<philo>
+<p class="en-clair"><strong>En clair.</strong> Si un jeu de carreaux ne permet pas de carreler le sol, on finit par le découvrir, en essayant des carrés de plus en plus grands jusqu’à tomber sur un carré impossible. S’il le permet, on peut ne jamais en être sûr.</p>
+<p>C’est la dissymétrie de l’arrêt, retournée : ici, c’est l’échec qui se constate et le succès qui ne se constate pas. Un carrelage infini ne se vérifie jamais en entier ; un carré de dix carreaux sur dix impossible à remplir, si.</p>
+</philo>
 <tech><p>Le sens direct est clair. Réciproquement, supposons que $T$ pave chaque carré $n\times n$. On construit un arbre : les nœuds de profondeur $n$ sont les pavages du carré $n\times n$, et le père d’un pavage est sa restriction au carré $(n-1)\times(n-1)$. Chaque niveau est fini et non vide, donc l’arbre est infini et à branchement fini : par le <em>lemme de König</em>, il a une branche infinie, une suite de pavages compatibles dont la réunion pave le quart de plan. Pour semi-décider le non-pavage, on essaie $n=1,2,\dots$ et l’on s’arrête dès qu’un carré n’est pas pavable (chaque essai est une recherche finie). Avec le théorème précédent, le pavage avec tuile d’origine est donc $\Pi_1$-complet, comme le complémentaire de l’arrêt.</p></tech>
 </res>
 
 <h2 id="analyse">Analyse : les zéros des fonctions</h2>
 
+<clair>
+<p>Même en analyse, avec des fonctions comme le sinus, on ne peut pas décider en général si une expression s’annule quelque part.</p>
+</clair>
+
+
 <res type="Théorème" nom="Existence d’un zéro d’une fonction avec sinus" id="zeros-sinus">
 <enonce><p>Il n’existe pas d’algorithme qui, étant donné une expression $F(x_1,\dots,x_n)$ construite à partir des variables, des entiers, de $\pi$, de l’addition, de la multiplication et de la fonction sinus, décide si $F$ s’annule en un point de $\R^n$.</p></enonce>
-<philo><p>Pour les polynômes seuls, la question est décidable : c’est le <a href="theories-decidables.html#tarski">théorème de Tarski</a>. Il suffit d’ajouter le sinus pour que tout bascule, parce que le sinus « voit » les entiers : $\sin(\pi x)=0$ si et seulement si $x$ est un entier. Avec les entiers, on retrouve le dixième problème de Hilbert. Une question d’analyse élémentaire (cette fonction a-t-elle un zéro ?) est indécidable, et des logiciels de calcul formel ne peuvent pas, en général, simplifier une expression jusqu’à savoir si elle est nulle.</p></philo>
+<philo>
+<p class="en-clair"><strong>En clair.</strong> Prenons une expression construite avec des nombres, des inconnues, l’addition, la multiplication et la fonction sinus. On ne peut pas décider en général si elle vaut zéro pour certaines valeurs des inconnues.</p>
+<p>Sans le sinus, avec des polynômes seulement, la question se décide (<a href="theories-decidables.html#tarski">théorème de Tarski</a>). Le sinus fait tout basculer parce qu’il « voit » les entiers : sin(π × x) vaut zéro exactement quand x est un nombre entier. On peut donc forcer les inconnues à être entières, et l’on retrouve les <a href="equations-diophantiennes.html">équations en nombres entiers</a>, qui sont indécidables. Conséquence pratique : un logiciel de calcul formel ne peut pas toujours savoir si une expression mathématique est nulle.</p>
+</philo>
 <tech>
 <p>Par le <a href="equations-diophantiennes.html#mrdp">théorème MRDP</a>, on ne peut pas décider si un polynôme $P$ à coefficients entiers a un zéro dans $\N^n$. Par le théorème des quatre carrés de Lagrange, $P$ a un zéro dans $\N^n$ si et seulement si $Q(\vec y)=P(y_{1,1}^2+\cdots+y_{1,4}^2,\ \dots,\ y_{n,1}^2+\cdots+y_{n,4}^2)$ a un zéro dans $\mathbb Z^{4n}$. Il suffit donc de réduire les zéros entiers aux zéros réels. Pour un polynôme $Q(z_1,\dots,z_m)$, posons</p>
 $$F(\vec z)=Q(\vec z)^2+\sin^2(\pi z_1)+\cdots+\sin^2(\pi z_m).$$
@@ -85,6 +121,11 @@ $$F(\vec z)=Q(\vec z)^2+\sin^2(\pi z_1)+\cdots+\sin^2(\pi z_m).$$
 </res>
 
 <h2 id="algebre">Groupes et topologie</h2>
+
+<clair>
+<p>Des questions d’algèbre (deux mots représentent-ils le même élément d’un groupe ?) et de topologie (deux formes sont-elles équivalentes ?) sont également indécidables.</p>
+</clair>
+
 
 <res type="Remarque" nom="Groupes, variétés, automates cellulaires" id="groupes-topologie">
 <enonce>
@@ -97,8 +138,9 @@ $$F(\vec z)=Q(\vec z)^2+\sin^2(\pi z_1)+\cdots+\sin^2(\pi z_m).$$
 </ul>
 </enonce>
 <philo>
-<p>Ces exemples ne sont pas des curiosités : les problèmes du mot et de l’homéomorphisme sont des questions centrales, posées bien avant les ordinateurs. Ce qu’ils ont en commun, c’est une forme de liberté de construction. Une présentation de groupe, une triangulation, un jeu de tuiles ou une configuration d’automate peuvent être aussi compliqués qu’on veut, et ce pouvoir de description suffit pour qu’on y écrive des programmes.</p>
-<p>Il y a une contrepartie positive. Dans chacun de ces domaines, l’indécidabilité ne s’applique qu’à la question générale. Elle laisse place à des classes entières de cas décidables (les groupes hyperboliques, les variétés de dimension $3$, les jeux de tuiles d’un type particulier), et elle oriente la recherche vers ces classes. Savoir qu’un problème est indécidable en général, c’est savoir qu’il faut chercher des hypothèses supplémentaires.</p>
+<p class="en-clair"><strong>En clair.</strong> D’autres grandes questions d’algèbre et de géométrie sont indécidables pour la même raison : elles permettent de décrire un calcul.</p>
+<p>Parmi elles : savoir si deux formes géométriques en dimension 4 ou plus sont « la même forme déformée », ou savoir si un assemblage de règles algébriques revient à ne rien dire du tout. Ces questions ont été posées bien avant les ordinateurs. Leur point commun est une grande liberté de construction : on peut y fabriquer des objets aussi compliqués qu’on veut, et cette liberté suffit pour y cacher des programmes.</p>
+<p>Il y a une bonne nouvelle. L’indécidabilité ne concerne que la question posée en toute généralité. Elle laisse place à des familles entières de cas où l’on sait répondre, comme les formes géométriques de dimension 3, et elle oriente la recherche vers ces familles. Savoir qu’un problème est indécidable en général, c’est savoir qu’il faut chercher des hypothèses supplémentaires.</p>
 </philo>
 </res>
 

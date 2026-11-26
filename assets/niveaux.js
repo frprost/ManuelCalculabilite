@@ -29,6 +29,8 @@
       n = dispo.indexOf('tech') >= 0 ? 'tech' : dispo[0];
     }
     res.querySelectorAll(':scope > .niveau').forEach(function (d) { d.classList.toggle('actif', d.dataset.niveau === n); });
+    // au niveau philosophique, le récit en clair remplace l'énoncé formel
+    res.classList.toggle('vue-philo', n === 'philo' && !doc.classList.contains('tout'));
     res.querySelectorAll(':scope > .onglets button').forEach(function (b) { b.setAttribute('aria-selected', b.dataset.niveau === n ? 'true' : 'false'); });
   }
 

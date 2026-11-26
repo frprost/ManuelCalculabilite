@@ -2,12 +2,23 @@
 titre: Équations diophantiennes et dixième problème de Hilbert
 court: Équations diophantiennes
 chapo: Une équation polynomiale à coefficients entiers a-t-elle une solution entière ? Hilbert demandait une méthode ; il n’y en a pas, parce que les équations de Diophante sont un langage de programmation universel. En retour, la calculabilité livre des résultats inattendus sur les nombres.
+chapo_clair: Une équation comme $x^2+y^2=z^2$ a-t-elle des solutions en nombres entiers ? En 1900, Hilbert demandait une méthode qui réponde pour toutes les équations. Il n’y en a pas : les équations sont, à elles seules, un langage de programmation.
 prerequis: semi-decidabilite.html|Semi-décidabilité ; incompletude.html#representabilite|Définissabilité arithmétique ; indecidabilite.html#arret|Problème de l’arrêt ; bases.html#premiers|Nombres premiers
 -->
+
+<clair>
+<p>Les équations diophantiennes, du nom du mathématicien grec Diophante d’Alexandrie, sont des équations dont on cherche les solutions en nombres entiers. Certaines sont célèbres : $x^2+y^2=z^2$ a une infinité de solutions (3, 4, 5 par exemple) ; $x^n+y^n=z^n$ n’en a aucune pour $n\ge3$, c’est le grand théorème de Fermat, démontré en 1994 après plus de trois siècles d’efforts.</p>
+<p>En 1900, David Hilbert a demandé, dans sa liste de grands problèmes pour le siècle, une méthode générale qui dise si une équation a des solutions entières. En 1970, après les travaux de Martin Davis, Hilary Putnam et Julia Robinson, le jeune Russe Youri Matiyasevich a montré qu’il n’en existe pas. La raison est surprenante : avec des équations, on peut écrire n’importe quel programme.</p>
+</clair>
 
 <p>Au congrès international de Paris, en 1900, David Hilbert posa ce problème, le dixième de sa liste : « étant donnée une équation diophantienne à un nombre quelconque d’inconnues et à coefficients entiers, trouver une méthode par laquelle on puisse décider, en un nombre fini d’opérations, si l’équation a des solutions en nombres entiers ». L’énoncé est simplissime, et la réponse aussi : <em>non</em> (Matiyasevich, 1970). Comme souvent, c’est moins la réponse qui surprend que le chemin. Il passe par une équivalence entre programmes et équations : tout programme se traduit en une équation qui a une solution exactement quand le programme s’arrête. Lue dans un sens, l’équivalence ramène un problème indécidable de la calculabilité aux équations de Diophante ; lue dans l’autre, elle transporte en théorie des nombres des résultats de calculabilité, et en tire des énoncés arithmétiques étonnants. Deux domaines que tout semblait séparer, y compris deux mille ans d’histoire, se révèlent très proches.</p>
 
 <h2 id="equations">Équations et ensembles diophantiens</h2>
+
+<clair>
+<p>Une équation peut servir à décrire un ensemble de nombres : le nombre $a$ fait partie de l’ensemble si l’équation a une solution quand on y remplace un paramètre par $a$. Par exemple, $a=x^2$ décrit les carrés, $a=(x+2)(y+2)$ décrit les nombres qui ne sont pas premiers.</p>
+</clair>
+
 
 <res type="Définition" nom="Équations, familles et ensembles diophantiens" id="def-diophantien">
 <enonce>
@@ -21,7 +32,10 @@ $$E=\{(a_1,\dots,a_m)\in\N^m:\exists x_1,\dots,x_n\in\N\ \ D(\vec a,\vec x)=0\}.
 <li>les nombres qui ne sont pas des carrés : $(a-z^2-x-1)^2+\big((z+1)^2-a-y-1\big)^2=0$.</li>
 </ul>
 </enonce>
-<philo><p>Une famille d’équations est une <em>définition implicite</em> d’un ensemble : $a$ en fait partie s’il existe des inconnues qui « témoignent » pour lui. Le troisième exemple montre que la définition peut être indirecte : un nombre n’est pas un carré s’il est strictement compris entre deux carrés consécutifs, ce qu’exprime l’existence de $z$, $x$ et $y$. Les questions qui viennent naturellement : les nombres premiers, les puissances de 2 sont-ils diophantiens ? Le complémentaire d’un ensemble diophantien l’est-il ? Le théorème central de ce chapitre répond à toutes d’un coup.</p></philo>
+<philo>
+<p class="en-clair"><strong>En clair.</strong> Une équation diophantienne est une équation polynomiale à coefficients entiers dont on cherche les solutions entières. Un ensemble est diophantien si une équation à paramètre le décrit : $a$ est dans l’ensemble quand l’équation a une solution pour cette valeur de $a$.</p>
+<p>Les inconnues jouent le rôle de « témoins » : pour prouver qu’un nombre est dans l’ensemble, on exhibe la solution, et chacun peut vérifier le calcul.</p>
+</philo>
 <tech><p>Pour le troisième exemple : la somme de deux carrés est nulle si et seulement si les deux le sont, c’est-à-dire $a=z^2+x+1$ et $(z+1)^2=a+y+1$, soit $z^2<a<(z+1)^2$ pour un $z$. C’est exactement dire que $a$ n’est pas un carré. Pour le deuxième, un nombre est composé s’il est produit de deux entiers au moins égaux à 2.</p></tech>
 <techno><p>Les ensembles diophantiens sont semi-décidables : pour savoir si $a\in E$, on essaie les $n$-uplets d’inconnues l’un après l’autre (par exemple par somme croissante), et l’on s’arrête si l’un d’eux annule $D$. Le programme s’arrête si $a\in E$, et tourne indéfiniment sinon. Toute la question du chapitre est de savoir si l’on peut faire mieux.</p></techno>
 </res>
@@ -35,8 +49,8 @@ $$E=\{(a_1,\dots,a_m)\in\N^m:\exists x_1,\dots,x_n\in\N\ \ D(\vec a,\vec x)=0\}.
 </ol>
 </enonce>
 <philo>
-<p>Le premier aller-retour (une équation devient un système de petites équations, puis le système redevient une équation) a une conséquence frappante : le dixième problème de Hilbert se ramène aux équations de degré au plus 4. La complexité d’une équation peut toujours être transférée du degré vers le nombre d’inconnues.</p>
-<p>Le choix entre solutions entières et solutions positives ne change pas la question générale, mais il change chaque équation particulière : $(x+1)^3+(y+1)^3=(z+1)^3$ n’a aucune solution dans $\N$ (c’est le théorème de Fermat pour l’exposant 3, démontré par Euler), alors qu’elle en a dans $\mathbb Z$, par exemple $x=-1$, $y=z$.</p>
+<p class="en-clair"><strong>En clair.</strong> Plusieurs équations peuvent toujours être regroupées en une seule (en additionnant leurs carrés), et une équation compliquée peut être découpée en petites équations de degré 2 au plus.</p>
+<p>On en déduit que, si le problème est impossible pour toutes les équations, il l’est déjà pour les équations de degré 4.</p>
 </philo>
 <tech>
 <p>(1) Une somme de carrés d’entiers est nulle si et seulement si chacun est nul. Pour $D_g=D_d$, on fait passer de l’autre côté les monômes de coefficient négatif.</p>
@@ -48,6 +62,11 @@ $$E=\{(a_1,\dots,a_m)\in\N^m:\exists x_1,\dots,x_n\in\N\ \ D(\vec a,\vec x)=0\}.
 </res>
 
 <h2 id="mrdp-section">Programmes et équations : le théorème MRDP</h2>
+
+<clair>
+<p>Le cœur du chapitre est la démonstration que tout ce qu’un programme peut confirmer, une équation peut le décrire. Le pas le plus difficile est de décrire par une équation des nombres qui croissent très vite, comme les puissances ; Matiyasevich y est parvenu grâce à une équation étudiée depuis le XVII<sup>e</sup> siècle, l’équation de Pell.</p>
+</clair>
+
 
 
 <p>Les cinq résultats qui suivent préparent le sens difficile du <a href="#mrdp">théorème de Matiyasevich-Robinson-Davis-Putnam</a>, énoncé et démontré ensuite ; on suit l’exposé de Martin Davis (« Hilbert’s tenth problem is unsolvable », 1973). Les variables désignent des entiers naturels, et « diophantien » a le sens de la <a href="#def-diophantien">définition</a> ci-dessus. Le sens facile de MRDP a déjà été vu : un ensemble diophantien est semi-décidable. Tout le travail porte sur la réciproque, et le point clé est de montrer que l’exponentielle, qui croît trop vite pour un polynôme, est pourtant diophantienne.</p>
@@ -88,7 +107,10 @@ $$\begin{array}{ll}
 \text{(III)}\ s^2-(b^2-1)t^2=1 & \text{(VII)}\ t=k+4(d'-1)y\\
 \text{(IV)}\ v=(r+1)y^2 & \text{(VIII)}\ y=k+e-1
 \end{array}$$</enonce>
-<philo><p>C’est le cœur du théorème, trouvé par Matiyasevich en 1970 : une relation qui croît exponentiellement ($y_k(a)$ est de l’ordre de $(2a)^k$) définie par des équations polynomiales. Les inconnues auxiliaires servent de « certificat » : elles imposent, par des congruences, que l’indice $k$ et l’indice caché de $y$ coïncident.</p></philo>
+<philo>
+<p class="en-clair"><strong>En clair.</strong> Les solutions de l’équation de Pell, $x^2-(a^2-1)y^2=1$, croissent aussi vite que des puissances, et pourtant on peut les décrire par une équation polynomiale.</p>
+<p>C’est la clé de voûte, trouvée par Matiyasevich en 1970 : décrire une croissance exponentielle avec de simples polynômes. Julia Robinson avait montré vingt ans plus tôt que tout le reste en découlerait.</p>
+</philo>
 <tech>
 <p><em>Condition nécessaire.</em> Soit $x=x_k$, $y=y_k$ (donc $y\ge k\ge1$). Posons $m=2ky$, $u=x_m$, $v=y_m$. Par le <a href="#pell">lemme</a> (5), $y^2\mid v$ puisque $ky\mid m$, et $v>0$ : $v=(r+1)y^2$. Comme $m$ est pair, $v=y_m=2x_{m/2}y_{m/2}$ est pair, donc $u$ est impair ($u^2=1+dv^2$) ; et $u$ est premier avec $v$, donc avec $y$. Ainsi $u$ et $4y$ sont premiers entre eux, et par le théorème chinois il existe $b$ aussi grand qu’on veut avec $b\equiv1\pmod{4y}$ et $b\equiv a\pmod u$ : (V) avec $p,q\ge0$, et $b>a$. On pose $s=x_k(b)$, $t=y_k(b)$ : (III). Par le lemme (3), $s\equiv x_k(a)=x\pmod{b-a}$, donc modulo $u$, et $s\ge x$ par (4) : (VI). De même $t\equiv k\pmod{b-1}$, donc modulo $4y$, et $t\ge k$ : (VII) avec $d'\ge1$. Enfin $e=y-k+1\ge1$ : (VIII).</p>
 <p><em>Condition suffisante.</em> Supposons le système satisfait. Par (I) et le lemme (1), $x=x_i(a)$, $y=y_i(a)$ pour un $i$. Par (V), $b\ge a\ge2$, et $y\ne0$ (sinon $b=1$) : donc $i\ge1$. Par (II), $u=x_n(a)$, $v=y_n(a)$, et $n\ge1$ puisque $v\ge y^2>0$. Par (III), $s=x_j(b)$, $t=y_j(b)$ pour un $j$. Par (IV), $y_i^2\mid y_n$, donc $iy_i\mid n$ (lemme (5)) : en particulier $y\mid n$ et $i\le y\le n$.</p>
@@ -111,7 +133,10 @@ $$\begin{array}{ll}
 
 <res type="Lemme" nom="Le quantificateur universel borné (Davis, Putnam, Robinson, 1961)" id="quantificateur-borne">
 <enonce><p>Si $P(y,k,\vec x,\vec v)$ est un polynôme, la relation $R(y,\vec v)\iff\forall k\ (1\le k\le y\Rightarrow\exists\vec x\ P(y,k,\vec x,\vec v)=0)$ est diophantienne.</p></enonce>
-<philo><p>C’est le point où les équations semblent le plus loin des programmes : un programme fait des boucles, une équation ne parle que d’un nombre fixé d’inconnues. Le lemme remplace une boucle « pour $k$ de $1$ à $y$ » par un seul entier $c$ qui, modulo des nombres premiers bien choisis, « vaut » successivement $1,2,\dots,y$.</p></philo>
+<philo>
+<p class="en-clair"><strong>En clair.</strong> Une affirmation de la forme « pour tout $k$ de 1 à $y$, il existe une solution… » peut s’écrire comme une seule équation.</p>
+<p>C’est le point où les équations semblent le plus éloignées des programmes : un programme répète des actions, une équation n’a qu’un nombre fixé d’inconnues. L’astuce consiste à coder toutes les répétitions dans quelques très grands nombres.</p>
+</philo>
 <tech>
 <p>Notons $\vec x=(x_1,\dots,x_m)$. D’abord, $R(y,\vec v)$ équivaut à l’existence d’un $u$ tel que les témoins puissent être choisis $\le u$ pour tous les $k\le y$. Soit $Q(y,u,\vec v)$ un polynôme tel que $Q\ge2$, $Q>y$ et $Q>|P(y,k,\vec x,\vec v)|$ pour $k\le y$ et $\vec x\le u$ (par exemple $y+2$ plus la somme des valeurs absolues des coefficients de $P$ multipliée par $(y+u+|\vec v|+1)^{\deg P}$). Posons $t=Q!$ et $M=\prod_{k=1}^{y}(1+kt)$. Montrons que $R(y,\vec v)$ équivaut à l’existence de $u,c,a_1,\dots,a_m$ tels que</p>
 $$1+ct=M,\qquad M\ \Big|\ \prod_{j=0}^{u}(a_i-j)\ \ (i=1,\dots,m),\qquad M\mid P(y,c,a_1,\dots,a_m,\vec v).$$
@@ -127,8 +152,8 @@ $$1+ct=M,\qquad M\ \Big|\ \prod_{j=0}^{u}(a_i-j)\ \ (i=1,\dots,m),\qquad M\mid P
 <res type="Théorème" nom="Théorème de Matiyasevich-Robinson-Davis-Putnam (1970)" id="mrdp">
 <enonce><p>Un ensemble $A\subseteq\N$ est semi-décidable si et seulement s’il est <strong>diophantien</strong> : il existe un polynôme $P(x,y_1,\dots,y_k)$ à coefficients entiers tel que $x\in A\iff\exists y_1,\dots,y_k\in\N\ P(x,\vec y)=0$. Par conséquent, le <strong>dixième problème de Hilbert</strong> (trouver une méthode qui décide si une équation polynomiale à coefficients entiers a une solution entière) n’a pas de solution.</p></enonce>
 <philo>
-<p>Les équations polynomiales en nombres entiers, étudiées depuis Diophante d’Alexandrie, sont un langage de programmation universel. Les conséquences de ce fait, en arithmétique, font l’objet de la <a href="#relecture">section suivante</a>.</p>
-<p>C’est la réponse négative au dixième problème posé par Hilbert en 1900, aboutissement de vingt ans de travaux de Martin Davis, Hilary Putnam et Julia Robinson, achevés par Youri Matiyasevich à 22 ans.</p>
+<p class="en-clair"><strong>En clair.</strong> Un ensemble de nombres peut être listé par un programme si et seulement s’il peut être décrit par une équation polynomiale à coefficients entiers. Par conséquent, aucune méthode ne peut dire si une équation quelconque a des solutions entières.</p>
+<p>Les équations étudiées depuis Diophante sont un langage de programmation universel. Dire si une équation a une solution, c’est dire si un programme s’arrête. La réponse au dixième problème de Hilbert est donc négative, et elle l’est pour une raison profonde : l’arithmétique la plus élémentaire contient déjà toute la complexité du calcul.</p>
 </philo>
 <tech>
 <p><strong>Sens facile.</strong> Si $x\in A\iff\exists\vec y\ P(x,\vec y)=0$, on énumère les $\vec y$ et l’on s’arrête quand on trouve une solution : $A$ est semi-décidable.</p>
@@ -144,6 +169,11 @@ $$1+ct=M,\qquad M\ \Big|\ \prod_{j=0}^{u}(a_i-j)\ \ (i=1,\dots,m),\qquad M\mid P
 
 <h2 id="relecture">Relire la calculabilité en arithmétique</h2>
 
+<clair>
+<p>Une fois le théorème établi, tout ce qu’on sait des programmes se traduit en résultats sur les équations, souvent étonnants : il existe un polynôme dont les valeurs positives sont exactement les nombres premiers, une seule équation qui contient toutes les autres, et des conjectures célèbres qui reviennent à dire qu’une certaine équation n’a pas de solution.</p>
+</clair>
+
+
 <p>Le théorème MRDP identifie deux classes définies indépendamment, à deux mille ans d’intervalle : les ensembles diophantiens et les ensembles semi-décidables. Tout ce que l’on sait des seconds se transporte aux premiers. Les résultats qui suivent sont, pour la plupart, des théorèmes de calculabilité déjà établis dans ce manuel, relus en arithmétique ; ils donnent des énoncés sur les nombres qu’aucun arithméticien n’aurait songé à conjecturer.</p>
 
 <res type="Corollaire" nom="Ce que sont les ensembles diophantiens" id="clotures-mrdp">
@@ -154,7 +184,10 @@ $$1+ct=M,\qquad M\ \Big|\ \prod_{j=0}^{u}(a_i-j)\ \ (i=1,\dots,m),\qquad M\mid P
 <li>Un ensemble est décidable si et seulement si lui et son complémentaire sont diophantiens.</li>
 </ol>
 </enonce>
-<philo><p>Les questions laissées ouvertes à la <a href="#def-diophantien">définition</a> trouvent toutes leur réponse, sans qu’il faille chercher une seule équation : il suffit de savoir écrire un programme. Écrire à la main une équation dont les solutions décrivent les nombres premiers est une autre affaire ; on en connaît (voir <a href="#polynome-premiers">plus bas</a>), et elles sont effrayantes. La dissymétrie du point 2 est remarquable : dire qu’un nombre « a des témoins » est diophantien, dire qu’il « n’en a pas » ne l’est pas toujours.</p></philo>
+<philo>
+<p class="en-clair"><strong>En clair.</strong> L’ensemble des nombres premiers, celui des puissances de 2, et tout ensemble qu’un programme sait reconnaître, peuvent être décrits par une équation.</p>
+<p>On n’a même pas besoin de chercher l’équation : il suffit de savoir écrire le programme, et le théorème garantit l’existence de l’équation.</p>
+</philo>
 <tech>
 <p>(1) Un ensemble décidable est semi-décidable, donc diophantien par le <a href="#mrdp">théorème MRDP</a>. Pour les puissances de 2, on peut aussi invoquer directement le <a href="#exp-diophantienne">caractère diophantien de l’exponentielle</a> : $a\in\{2^n\}\iff\exists n\ a=2^n$.</p>
 <p>(2) L’union, l’intersection et la projection sont traitées par le <a href="#dioph-clotures">lemme de clôture</a>. L’ensemble $K$ est semi-décidable, donc diophantien ; son complémentaire n’est pas semi-décidable (<a href="semi-decidabilite.html#kbar">corollaire</a>), donc pas diophantien, par le sens facile de MRDP.</p>
@@ -167,8 +200,8 @@ $$1+ct=M,\qquad M\ \Big|\ \prod_{j=0}^{u}(a_i-j)\ \ (i=1,\dots,m),\qquad M\mid P
 $$E=\{a:\exists y_1,\dots,y_n\in\N\ \ U(a,k,\vec y)=0\}.$$
 <p>On peut choisir $U$ de degré au plus 4.</p></enonce>
 <philo>
-<p>Une seule équation contient toutes les autres : choisir la valeur du paramètre $k$, c’est choisir un programme ; résoudre l’équation pour $a$, c’est exécuter ce programme sur l’entrée $a$. C’est l’équivalent arithmétique de la <a href="universalite.html">machine universelle</a>. Le nombre $n$ d’inconnues est fixé une fois pour toutes ; aucune famille d’équations, si compliquée soit-elle, n’en demande davantage.</p>
-<p>C’est aussi l’un des arguments les plus frappants en faveur de la <a href="these-church.html">thèse de Church</a>. Les ensembles diophantiens ont été définis par des questions d’arithmétique héritées de l’Antiquité, les ensembles semi-décidables par l’analyse du calcul mécanique au XX<sup>e</sup> siècle ; les deux définitions ne se doivent rien et donnent la même classe.</p>
+<p class="en-clair"><strong>En clair.</strong> Il existe une seule équation, avec un paramètre de réglage, qui contient toutes les autres : chaque valeur du réglage reproduit l’ensemble décrit par une autre équation.</p>
+<p>C’est la machine universelle, version équation : choisir le réglage, c’est choisir un programme.</p>
 </philo>
 <tech>
 <p>L’ensemble $W=\{\langle a,k\rangle:\varphi_k(a)\conv\}$ est semi-décidable (on simule $\varphi_k(a)$ par la machine universelle), où $\langle a,k\rangle=\frac{(a+k)(a+k+1)}2+a$ est le <a href="fonctions-recursives.html#cantor-couple">codage de Cantor</a>. Par MRDP, il existe un polynôme $P(c,\vec y)$ tel que $c\in W\iff\exists\vec y\ P(c,\vec y)=0$. On pose</p>
@@ -184,7 +217,10 @@ $$U(a,k,c,\vec y)=\big(2c-(a+k)(a+k+1)-2a\big)^2+P(c,\vec y)^2 .$$
 
 <res type="Théorème" nom="Un polynôme dont les valeurs positives sont les nombres premiers (Putnam, 1960)" id="polynome-premiers">
 <enonce><p>Pour tout ensemble diophantien $E\subseteq\N$, il existe un polynôme $Q(a,y_1,\dots,y_n)$ à coefficients entiers dont l’ensemble des valeurs strictement positives, quand $a,\vec y$ parcourent $\N$, est exactement $E\setminus\{0\}$. En particulier, il existe un polynôme dont les valeurs positives sont exactement les nombres premiers.</p></enonce>
-<philo><p>C’est le genre d’énoncé qu’on aurait cru faux. On sait depuis le XVIII<sup>e</sup> siècle qu’aucun polynôme non constant à une variable ne prend que des valeurs premières, et des formules comme $n^2+n+41$ (premier pour $0\le n\le39$, mais pas pour $n=40$) ont longtemps nourri l’espoir d’une « formule des nombres premiers ». Le théorème en livre une, mais l’astuce est dans le mot « positives » : le polynôme prend aussi des valeurs négatives, qui ne sont pas toutes des opposés de nombres premiers, et le tri est fait par le signe.</p></philo>
+<philo>
+<p class="en-clair"><strong>En clair.</strong> Il existe un polynôme à plusieurs variables dont les valeurs positives, quand on remplace les variables par des entiers, sont exactement les nombres premiers.</p>
+<p>On aurait cru cela impossible : on sait depuis Euler qu’aucun polynôme à une variable n’y parvient. Ce polynôme est explicite (on en connaît un à 26 variables), mais parfaitement inutilisable pour trouver des nombres premiers : presque toutes ses valeurs sont négatives.</p>
+</philo>
 <tech>
 <p>Soit $P$ tel que $a\in E\iff\exists\vec y\ P(a,\vec y)=0$, et posons $Q(a,\vec y)=a\,\big(1-P(a,\vec y)^2\big)$. Si $a\in E$ et $a>0$, il y a $\vec y$ avec $P=0$, et $Q(a,\vec y)=a$. Inversement, si $Q(a,\vec y)>0$, alors $a>0$ et $1-P^2>0$ ; comme $P$ est un entier, $P=0$, donc $a\in E$ et la valeur $Q(a,\vec y)=a$ est dans $E$. Pour les premiers, on applique ce résultat à l’ensemble des nombres premiers, diophantien par le <a href="#clotures-mrdp">corollaire</a>.</p>
 <p><em>Une variable ne suffit pas.</em> Soit $f$ un polynôme non constant à coefficients entiers, et $p=f(x_0)$ premier. Comme $u-v$ divise $f(u)-f(v)$, $p$ divise $f(x_0+kp)$ pour tout $k$. Si toutes ces valeurs étaient premières, elles vaudraient toutes $p$, et $f-p$ aurait une infinité de racines : $f$ serait constant.</p>
@@ -198,8 +234,8 @@ $$U(a,k,c,\vec y)=\big(2c-(a+k)(a+k+1)-2a\big)^2+P(c,\vec y)^2 .$$
 <res type="Théorème" nom="Pas de borne calculable sur les solutions" id="pas-de-borne">
 <enonce><p>Pour une équation diophantienne $D$ de code $e$, notons $m(e)$ le plus petit entier $m$ tel que $D$ a une solution dont toutes les inconnues sont au plus $m$, et $m(e)=0$ si $D$ n’a pas de solution. Aucune fonction calculable $f$ ne vérifie $m(e)\le f(e)$ pour tout $e$.</p></enonce>
 <philo>
-<p>Les solutions d’une équation peuvent être cachées arbitrairement loin, et l’on ne peut pas savoir à l’avance jusqu’où chercher. La fonction $m$ joue pour les équations le rôle que joue la <a href="castors-affaires.html#sigma-non-calculable">fonction du castor affairé</a> pour les machines : elle échappe à toute borne calculable.</p>
-<p>Des familles très simples donnent déjà une idée du phénomène. L’équation de Pell $x^2-dy^2=1$ a toujours une solution avec $y\ge1$ quand $d$ n’est pas un carré (Lagrange, 1768, cité ici pour information ; le <a href="#pell">lemme de Pell</a> traite le cas $d=a^2-1$) ; la plus petite vaut $(31,4)$ pour $d=60$, $(63,8)$ pour $d=62$, mais $(1\,766\,319\,049,\ 226\,153\,980)$ pour $d=61$. Il ne faut pas surinterpréter l’exemple : pour l’équation de Pell, on sait calculer la solution, et donc la borner (fractions continues). C’est sur l’ensemble de toutes les équations que la borne devient impossible.</p>
+<p class="en-clair"><strong>En clair.</strong> On ne peut pas calculer, à partir d’une équation, jusqu’où il faut chercher ses solutions : elles peuvent être cachées arbitrairement loin.</p>
+<p>Si l’on savait jusqu’où chercher, on n’aurait qu’à tout essayer jusque-là, et le dixième problème serait résolu.</p>
 </philo>
 <tech><p>Si une telle $f$ existait, voici une procédure de décision du dixième problème : étant donnée une équation de code $e$, essayer tous les uplets d’inconnues inférieures ou égales à $f(e)$, en nombre fini. Si l’un d’eux est solution, l’équation en a une ; sinon, elle n’en a pas, puisque $m(e)\le f(e)$ et qu’une équation qui a une solution en a une de taille au plus $m(e)$. Cela contredit le <a href="#mrdp">théorème MRDP</a>.</p></tech>
 <techno><p>La fonction <code>pell</code> de <a href="assets/code/diophante.py">diophante.py</a> calcule la plus petite solution par fractions continues. Pour $d=109$ elle vaut déjà $x=158\,070\,671\,986\,249$, $y=15\,140\,424\,455\,100$ ; une recherche exhaustive sur $y$, à un milliard d’essais par seconde, demanderait environ quatre heures, quand le développement en fraction continue la donne en quelques dizaines d’opérations. Pour une équation quelconque, aucune méthode de ce genre n’existe en général.</p></techno>
@@ -213,8 +249,8 @@ $$U(a,k,c,\vec y)=\big(2c-(a+k)(a+k+1)-2a\big)^2+P(c,\vec y)^2 .$$
 </ol>
 </enonce>
 <philo>
-<p>La conjecture de Goldbach (« tout nombre pair supérieur à 2 est somme de deux nombres premiers »), le grand théorème de Fermat, la cohérence de ZFC sont de la forme $\forall n\ R(n)$ avec $R$ décidable. Chacun équivaut donc à l’absence de solution d’une équation diophantienne particulière, que l’on peut écrire explicitement. C’est vrai aussi, ce qui est moins évident, de l’hypothèse de Riemann (Davis, Matiyasevich et Robinson, 1976, résultat cité ici pour information).</p>
-<p>Le second point est l’incomplétude de Gödel sous une forme arithmétique très pure : il y a des équations qui n’ont pas de solution, sans que les mathématiques usuelles puissent le démontrer. Pour l’équation qui exprime la cohérence de ZFC, c’est le <a href="incompletude.html#godel2">second théorème d’incomplétude</a> qui le dit, sous la seule hypothèse que ZFC est cohérente.</p>
+<p class="en-clair"><strong>En clair.</strong> La conjecture de Goldbach, la cohérence des mathématiques, et bien d’autres affirmations « pour tout nombre… » reviennent chacune à dire qu’une certaine équation n’a pas de solution.</p>
+<p>Des questions qui semblent n’avoir aucun rapport avec les équations se ramènent toutes à la même forme. Il est vertigineux de penser que la cohérence de toutes les mathématiques usuelles équivaut à l’absence de solution d’une équation qu’on peut écrire sur une page.</p>
 </philo>
 <tech>
 <p>(1) L’ensemble $A=\{x:\exists n\ \neg R(n)\}$ est semi-décidable (on cherche un contre-exemple), et il vaut $\N$ ou $\emptyset$ selon que l’énoncé est faux ou vrai. Par MRDP, dont la preuve est effective, on calcule $P$ avec $x\in A\iff\exists\vec y\ P(x,\vec y)=0$ ; l’équation $P(0,\vec y)=0$ convient. Pour Goldbach, $R(n)$ dit « $2n+4$ est somme de deux premiers », décidable par essais ; pour la cohérence de ZFC, $R(n)$ dit « $n$ n’est pas le code d’une preuve de $0=1$ dans ZFC », décidable parce que les axiomes de ZFC forment un ensemble décidable.</p>
@@ -231,7 +267,10 @@ $$U(a,k,c,\vec y)=\big(2c-(a+k)(a+k+1)-2a\big)^2+P(c,\vec y)^2 .$$
 <li><strong>Complexité</strong> : même quand le problème est décidable, il peut être difficile. Décider si $\alpha x^2+\beta y=\gamma$ a une solution dans $\N$, pour des entiers $\alpha,\beta,\gamma$ donnés en binaire, est NP-complet (Manders et Adleman, 1978).</li>
 </ul>
 </enonce>
-<philo><p>Le talk dont ce chapitre s’inspire se terminait sur une question : la calculabilité a éclairé la théorie des nombres ; l’inverse peut-il se produire, des résultats d’arithmétique éclairant la calculabilité ou la <a href="complexite.html">complexité</a> ? Le résultat de Manders et Adleman montre au moins que les équations diophantiennes sont aussi un bon langage pour la complexité : une équation de degré 2 à deux inconnues suffit à coder tout problème NP.</p></philo>
+<philo>
+<p class="en-clair"><strong>En clair.</strong> On sait résoudre les équations à une inconnue et celles de degré 2 ; on ne sait pas si les équations à trois inconnues, ou de degré 3, peuvent être traitées par une méthode générale.</p>
+<p>La frontière exacte entre ce qui se résout et ce qui ne se résout pas reste inconnue. C’est un domaine de recherche actif.</p>
+</philo>
 <tech><p><em>Une inconnue.</em> Si $D(x)=c_dx^d+\cdots+c_1x+c_0$ et $D(x)=0$, alors $x$ divise $c_0$ : si $c_0\ne0$, il suffit d’essayer les diviseurs de $c_0$, en nombre fini ; si $c_0=0$, $x=0$ est solution.</p></tech>
 </res>
 

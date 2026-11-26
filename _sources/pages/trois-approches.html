@@ -2,10 +2,16 @@
 titre: Trois approches du calcul : actionnelle, fonctionnelle, logique
 court: Trois approches du calcul
 chapo: Modifier une mémoire, réécrire une expression, définir une fonction : trois manières de penser le calcul, à l’origine des trois grandes familles de langages de programmation.
+chapo_clair: Changer le contenu d’une mémoire, simplifier une expression, définir une fonction : trois façons de penser le calcul, qui ont donné les trois grandes familles de langages de programmation.
 prerequis: motivations.html|Motivations
 -->
 
 <h2>Trois familles de modèles</h2>
+
+<clair>
+<p>Il y a plusieurs façons de décrire un calcul. On peut le voir comme une suite d’actions sur une mémoire (« mets 3 dans la case A, ajoute 1 »), comme la simplification progressive d’une expression (comme on réduit une fraction), ou comme la définition d’une fonction à partir de fonctions plus simples. Ces trois points de vue ont donné naissance à des modèles mathématiques différents, et aussi à des langages de programmation différents.</p>
+</clair>
+
 
 <p>Il existe plusieurs manières de spécifier un calcul. Trois familles dominent :</p>
 <ul>
@@ -16,6 +22,11 @@ prerequis: motivations.html|Motivations
 <p>Ces trois familles sont à l’origine des langages <em>impératifs</em> (C, Python), <em>fonctionnels</em> (Lisp, OCaml, Haskell) et <em>logiques</em> (Prolog, Datalog). Les langages modernes mélangent ces influences, mais on les reconnaît encore. Le résultat central de la première partie de ce manuel est que ces trois approches calculent <a href="equivalence.html">exactement les mêmes fonctions</a>.</p>
 
 <h2>Approche actionnelle</h2>
+
+<clair>
+<p>C’est le point de vue de la machine : une mémoire, et des instructions qui la modifient pas à pas. La machine de Turing, les processeurs des ordinateurs et les langages comme C ou Python en relèvent. On parle de programmation « impérative » : le programme donne des ordres.</p>
+</clair>
+
 
 <p>C’est une approche à la fois très intuitive et très « technologique » : le calcul d’une fonction n’y est pas une activité primitive, mais un <em>effet de bord</em> de la modification d’une mémoire. Le modèle des machines de Turing (1936) repose sur un automate qui lit et écrit des symboles sur une bande. Turing l’a explicitement conçu en analysant ce que fait un humain qui calcule avec un crayon sur du papier quadrillé : il ne regarde qu’un nombre borné de cases à la fois, il n’a qu’un nombre fini d’« états d’esprit », et chaque action modifie une case ou déplace son attention d’une case.</p>
 
@@ -30,7 +41,9 @@ prerequis: motivations.html|Motivations
 <p>Ces surcoûts sont <em>polynomiaux</em>, en général pas constants.</p>
 </enonce>
 <philo>
-<p>Les modèles raisonnables de calcul ne diffèrent pas seulement par ce qu’ils calculent (ils calculent tous la même chose) mais par la vitesse, et cette différence reste « modérée » : un facteur polynomial. C’est ce qui donne un sens robuste à la distinction entre problèmes « faisables » (temps polynomial, classe <a href="machines-turing.html#temps-p-np">$\mathsf P$</a>) et « infaisables », indépendamment du modèle choisi. C’est la <em>thèse de Church-Turing étendue</em>, discutée au chapitre <a href="these-church.html">Thèse de Church</a> ; l’ordinateur quantique en est aujourd’hui le principal défi.</p>
+<p class="en-clair"><strong>En clair.</strong> Il existe plusieurs sortes de machines : à un seul ruban, à plusieurs rubans, ou avec une mémoire où l’on accède directement à n’importe quelle case, comme un ordinateur. Elles savent toutes faire exactement les mêmes calculs. Chacune peut imiter les autres, en allant seulement un peu moins vite.</p>
+<p>« Un peu moins vite » a un sens précis : si un calcul demande mille étapes sur l’une, il en demandera au pire un million ou un milliard sur l’autre, mais jamais un nombre qui explose comme 2 multiplié par lui-même mille fois. On dit que le ralentissement est <em>polynomial</em>.</p>
+<p>Cette robustesse a une conséquence importante. On peut séparer les problèmes « faisables en pratique » des problèmes « infaisables », et ce classement ne dépend pas de la machine choisie. C’est ce qu’on appelle la <em>thèse de Church-Turing étendue</em>, discutée au chapitre <a href="these-church.html">Thèse de Church</a>. L’ordinateur quantique est aujourd’hui le principal candidat pour la mettre en défaut.</p>
 </philo>
 <tech>
 <p><strong>(1) $k$ bandes vers une.</strong> Une machine à $k$ bandes lit les $k$ symboles sous ses têtes et, selon son état, écrit $k$ symboles, déplace chaque tête d’une case à gauche, à droite ou pas du tout, et change d’état ; l’entrée est sur la première bande, les têtes au départ sur la case $0$. La machine à une bande $M'$ (à quintuplets, ce qui suffit, <a href="machines-turing.html#quintuplets">théorème</a>) utilise l’alphabet produit : le symbole d’une case est un $2k$-uplet donnant, pour chaque bande $i$, le symbole de la case $i$ et un drapeau « la tête $i$ est ici », plus un drapeau « extrémité gauche de la zone visitée ». Le blanc de $M'$ se lit comme le $2k$-uplet blanc sans drapeau.</p>
@@ -55,6 +68,11 @@ qui est $O\big(t^2(t+n)\big)$ quand $t\ge n$ et aussi, dans tous les cas, $O\big
 
 <h2>Approche fonctionnelle</h2>
 
+<clair>
+<p>C’est le point de vue de l’algèbre : on calcule en remplaçant une expression par une expression équivalente plus simple, jusqu’à ne plus pouvoir simplifier. Le λ-calcul et les langages comme OCaml ou Haskell en relèvent.</p>
+</clair>
+
+
 <p>Cette approche est à mi-chemin entre les machines et les définitions mathématiques. Le calcul y est une suite de transformations syntaxiques, comme celles que l’on apprend à l’école avec les identités remarquables : la règle $(a+b)^2 \to a^2+2ab+b^2$ transforme une expression en une expression équivalente. L’autre mécanisme de base est la <em>substitution</em> : la fonction $f$ est représentée par l’expression $x+1$ ; pour calculer $f(4)$, on remplace $x$ par $4$ puis on applique les règles de calcul.</p>
 
 <p>On n’y indique plus, à chaque instant, quelle opération effectuer. Pour évaluer $5+8+(4\times 5)$, on peut commencer par $5+8$ ou par $4\times 5$ : le résultat est le même, à condition que le système soit <em>confluent</em> (c’est un théorème pour le λ-calcul, voir <a href="lambda-calcul.html#confluence">Confluence</a>). Le programmeur spécifie <em>ce qu’il faut calculer</em>, pas <em>comment</em> : on parle de programmation <em>déclarative</em>.</p>
@@ -64,6 +82,11 @@ qui est $O\big(t^2(t+n)\big)$ quand $t\ge n$ et aussi, dans tous les cas, $O\big
 <p>Le style fonctionnel manie aussi naturellement l’<em>ordre supérieur</em> : des programmes qui prennent ou rendent des programmes, comme un compilateur, ou une fonction qui applique une transformation à chaque élément d’une liste. En contrepartie, il masque des détails d’implantation importants : si $f(x)=t$ où $x$ apparaît un million de fois dans $t$, le coût de $f(u)$ dépend de la manière dont la substitution est réalisée, alors qu’en λ-calcul elle compte pour un seul pas de réduction.</p>
 
 <h2>Approche mathématique et logique</h2>
+
+<clair>
+<p>C’est le point de vue du mathématicien : une fonction est définie à partir de fonctions déjà connues, ou bien un problème est décrit par des règles logiques, et l’on cherche ce qui en découle. Les fonctions récursives et des langages comme Prolog en relèvent.</p>
+</clair>
+
 
 <p>Cette approche formalise quelles fonctions sont acceptables plus qu’elle ne décrit un mécanisme. Son représentant principal est le formalisme des <a href="fonctions-recursives.html">fonctions récursives</a>, qui systématise la définition par récurrence : une fonction est bien définie si sa valeur en $0$ est donnée et si, connaissant $f(n)$, on sait calculer $f(n+1)$ par des opérations déjà admises. Les opérations de base sont très simples : constantes, ajout de 1, choix d’un argument, composition.</p>
 
